@@ -30,7 +30,7 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
                 self.chk_staffreports, self.chk_inventoryreport, self.chk_quoteinvoicereport, self.chk_paymentreport
             ],
         }
-
+        
         # Map main checkboxes
         self.main_checkboxes = {
             "CONTACT": self.chk_contact,

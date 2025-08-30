@@ -34,7 +34,7 @@ components:
           properties: {align: center, background: 'theme:Black', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: CONTACT}
           type: Label
         - data_bindings:
-          - {code: 'self.item['''']', property: tag, writeback: false}
+          - {code: 'self.item[''CONTACT'']', property: tag, writeback: false}
           layout_properties: {}
           name: chk_contact
           properties: {align: center, text: ''}
@@ -44,15 +44,21 @@ components:
         properties: {border: solid}
         type: DataRowPanel
       - components:
-        - layout_properties: {grid_position: 'KXOXYX,YWVDZX'}
+        - data_bindings:
+          - {code: 'self.item[''Contact_Client'']', property: tag, writeback: false}
+          layout_properties: {grid_position: 'KXOXYX,YWVDZX'}
           name: chk_clients
           properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Clients}
           type: CheckBox
-        - layout_properties: {grid_position: 'GFKLCA,FSREFU'}
+        - data_bindings:
+          - {code: 'self.item[''Contact_Technician'']', property: tag, writeback: false}
+          layout_properties: {grid_position: 'GFKLCA,FSREFU'}
           name: chk_technicians
           properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Technicians}
           type: CheckBox
-        - layout_properties: {grid_position: 'VKFLWM,YTJPFC'}
+        - data_bindings:
+          - {code: 'self.item[''Contact_Staffs'']', property: tag, writeback: false}
+          layout_properties: {grid_position: 'VKFLWM,YTJPFC'}
           name: chk_staffs
           properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Staffs}
           type: CheckBox

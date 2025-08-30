@@ -38,33 +38,21 @@ components:
         properties: {border: solid}
         type: DataRowPanel
       - components:
-        - layout_properties: {grid_position: 'KXOXYX,NJVZGR'}
-          name: spacer_1
-          properties: {height: 32}
-          type: Spacer
         - layout_properties: {grid_position: 'KXOXYX,YWVDZX'}
           name: chk_clients
           properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Clients}
           type: CheckBox
-        - layout_properties: {grid_position: 'GFKLCA,SAUBWX'}
-          name: spacer_3
-          properties: {height: 32}
-          type: Spacer
         - layout_properties: {grid_position: 'GFKLCA,FSREFU'}
           name: chk_technicians
           properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Technicians}
           type: CheckBox
-        - layout_properties: {grid_position: 'VKFLWM,UVYKVY'}
-          name: spacer_6
-          properties: {height: 32}
-          type: Spacer
         - layout_properties: {grid_position: 'VKFLWM,YTJPFC'}
           name: chk_staffs
           properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Staffs}
           type: CheckBox
         layout_properties: {grid_position: 'JCOFAN,HHMNJK'}
         name: column_panel_2
-        properties: {background: '', border: solid, col_widths: '{"NJVZGR":15,"YWVDZX":27,"SAUBWX":25,"FSREFU":35}'}
+        properties: {background: '', border: solid, col_widths: '{"YWVDZX":27,"FSREFU":35}'}
         type: ColumnPanel
       - components:
         - layout_properties: {}

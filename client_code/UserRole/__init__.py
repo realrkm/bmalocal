@@ -13,17 +13,18 @@ class UserRole(UserRoleTemplate):
         self.init_components(**properties)
 
         # Any code you write here will run before the form opens.
+        # Define sections with their subsections
         self.sections = {
             "CONTACT": [self.chk_clients, self.chk_technicians, self.chk_staffs],
             "JOB CARD": [],
-            "WORKFLOW": [self.chk_checkedin, self.chk_wf_technicians, self.chk_wf_staffs],
+            "WORKFLOW": [self.chk_checkedin, self.chk_createquote, self.chk_confirmquote, self.chk_inservice, self.chk_verifytask, self.chk_issueinvoice, self.chk_readyforpickup],
             "TRACKER": [],
-            "REVISION": [self.chk_rev_clients, self.chk_rev_technicians, self.chk_rev_staffs],
+            "REVISION": [self.chk_interimquote, self.chk_amendedinvoice, self.chk_repairpriorities, self.chk_brandcomparison],
             "PAYMENT": [],
-            "INVENTORY": [self.chk_add_parts, self.chk_add_stocks],
+            "INVENTORY": [self.chk_addnewparts, self.chk_addmorestock],
             "REPORTS": [
-                self.chk_r_clients, self.chk_r_cardetails, self.chk_r_technicians,
-                self.chk_r_staffs, self.chk_r_inventory, self.chk_r_quote, self.chk_r_payment
+                self.chk_clientreport, self.chk_cardetailsreport, self.chk_techniciansreport,
+                self.chk_staffreports, self.chk_inventoryreport, self.chk_quoteinvoicereport, self.chk_paymentreport
             ],
         }
 
@@ -36,7 +37,7 @@ class UserRole(UserRoleTemplate):
             "REVISION": self.chk_revision,
             "PAYMENT": self.chk_payment,
             "INVENTORY": self.chk_inventory,
-            "REPORTS": self.chk_reports,
+            "REPORTS": self.chk_report,
         }
     
         # Attach handlers

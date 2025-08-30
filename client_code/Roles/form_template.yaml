@@ -9,11 +9,15 @@ components:
     properties: {height: 7}
     type: Spacer
   - layout_properties: {grid_position: 'TASNES,FRVZJK'}
-    name: text_box_1
+    name: txtRole
     properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Role *}
     type: TextBox
+  - layout_properties: {grid_position: 'TASNES,ETHYWP'}
+    name: txtDescription
+    properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: 'Enter Role Description * '}
+    type: TextBox
   - event_bindings: {click: btn_AddRole_click}
-    layout_properties: {grid_position: 'TASNES,AMNXVH'}
+    layout_properties: {grid_position: 'YGTIAN,JIGEWS'}
     name: btn_AddRole
     properties: {align: full, background: '#0056D6', foreground: 'theme:White', text: ADD ROLE}
     type: Button

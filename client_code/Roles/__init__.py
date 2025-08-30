@@ -17,7 +17,16 @@ class Roles(RolesTemplate):
 
     def btn_AddRole_click(self, **event_args):
         """This method is called when the button is clicked"""
-        role = self.
+        role = self.txtRole.text
+        description = self.txtDescription.text
+        
+        if role is None or description is None:
+            alert("Sorry, please enter role and description to proceed.", title="Blank Field(s) Found", large=False)
+            self.txtRole.focus()
+            return
+        else:
+            anvil.server.call("addRole", role, description)
+            self.repeating_panel_1.items = anvil.server.call("listRoles")
 
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""

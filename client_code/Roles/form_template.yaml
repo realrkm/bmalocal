@@ -23,16 +23,18 @@ components:
     type: Button
   - layout_properties: {grid_position: 'LJVWSX,BSCIIT'}
     name: spacer_1
-    properties: {height: 32}
+    properties: {height: 12}
     type: Spacer
   - components:
-    - name: repeating_panel_1
-      properties: {item_template: Roles.RowTemplate16}
+    - layout_properties: {}
+      name: repeating_panel_1
+      properties: {border: solid, foreground: 'theme:White', item_template: Roles.RowTemplate16}
       type: RepeatingPanel
     layout_properties: {grid_position: 'YSWHVS,AZKFUU'}
     name: data_grid_1
     properties:
       background: theme:Black
+      border: solid
       columns:
       - {data_key: Roles, expand: true, id: JKSDUP, title: Roles}
       - {data_key: Description, expand: true, id: VJQQOR, title: Description}

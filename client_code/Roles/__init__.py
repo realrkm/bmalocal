@@ -17,17 +17,28 @@ class Roles(RolesTemplate):
 
     def btn_AddRole_click(self, **event_args):
         """This method is called when the button is clicked"""
-        role = self.txtRole.text
-        description = self.txtDescription.text
-        
-        if role is None or description is None:
-            alert("Sorry, please enter role and description to proceed.", title="Blank Field(s) Found", large=False)
+        role = self.txtRole.text.strip()
+        description = self.txtDescription.text.strip()
+    
+        if not role or not description:
+            alert("Sorry, please enter both role and description to proceed.", 
+                title="Blank Field(s) Found", large=False)
             self.txtRole.focus()
             return
-        else:
-            anvil.server.call("addRole", role, description)
-            self.repeating_panel_1.items = anvil.server.call("listRoles")
+    
+        result = anvil.server.call("duplicateRole", role, description)
+    
+        if result["status"] == "duplicate":
+            alert(f"Role '{result['role']}' already exists with description: {result['description']}",
+                title="Duplicate Role", large=False)
+        elif result["status"] == "inserted":
+            alert(f"Role '{result['role']}' added successfully!",
+                title="Success", large=False)
+    
+        # Refresh role list
+        self.repeating_panel_1.items = anvil.server.call("listRoles")
 
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.raise_event("x-close-alert", value=True)
+        get_open_form().btn_Settings_click("ROLES AND PERMISSIONS")

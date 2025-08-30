@@ -1,4 +1,4 @@
-from ._anvil_designer import UserRoleTemplate
+from ._anvil_designer import UserRolesAndPermissionsTemplate
 from anvil import *
 import anvil.server
 import anvil.users
@@ -8,7 +8,7 @@ from anvil.tables import app_tables
 from ..Roles import Roles
 
 
-class UserRole(UserRoleTemplate):
+class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
     def __init__(self, **properties):
         # Set Form properties and Data Bindings.
         self.init_components(**properties)
@@ -88,3 +88,37 @@ class UserRole(UserRoleTemplate):
     def btn_AddRole_click(self, **event_args):
         """This method is called when the button is clicked"""
         alert(content=Roles(), buttons=[],dismissible=False, large=True)
+
+    def btn_Save_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        role_id = self.drop_down_selectrole.selected_value
+        
+        if not role_id:
+            alert("Please select a role before saving permissions.", 
+                title="Missing Role", large=False)
+            return
+    
+        selected_permissions = {}
+    
+        # Collect checked states
+        for section, main_chk in self.main_checkboxes.items():
+            subs = self.sections.get(section, [])
+            selected_permissions[section] = {
+                "main": main_chk.checked,
+                "subs": {sub.tag: sub.checked for sub in subs}
+            }
+    
+        # ✅ Check if at least one permission is selected
+        any_selected = any(
+            section_data["main"] or any(section_data["subs"].values())
+            for section_data in selected_permissions.values()
+        )
+    
+        if not any_selected:
+            alert("Please select at least one permission before saving.",
+                title="No Permissions Selected", large=False)
+            return
+    
+        # Send to server
+        anvil.server.call("save_user_permissions", role_id, selected_permissions)
+        alert("Permissions saved successfully!", title="Success")

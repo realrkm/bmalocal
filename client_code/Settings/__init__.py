@@ -6,7 +6,7 @@ import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
 from ..UserAccounts import UserAccounts
-from ..UserRole import UserRole
+from ..UserRolesAndPermissions import UserRolesAndPermissions
 
 class Settings(SettingsTemplate):
     def __init__(self, buttonName, **properties):
@@ -21,7 +21,7 @@ class Settings(SettingsTemplate):
     def show_clicked_button(self, buttonName, **event_args):
         if buttonName == "USER ACCOUNT":
             self.btn_AddUser_click()
-        elif buttonName == "ACCOUNT ROLES":
+        elif buttonName == "ROLES AND PERMISSIONS":
             self.btn_UserRoles_click()
         
     def highlight_active_button(self, selected_text):
@@ -48,7 +48,7 @@ class Settings(SettingsTemplate):
         self.highlight_active_button("ROLES AND PERMISSIONS")
         self.card_2.visible=True
         self.card_2.clear()
-        self.card_2.add_component(UserRole())
+        self.card_2.add_component(UserRolesAndPermissions())
         self.btn_UserRoles.background = "#000000"
        
    

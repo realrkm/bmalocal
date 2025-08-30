@@ -1,0 +1,43 @@
+components:
+- components:
+  - layout_properties: {full_width_row: false, grid_position: 'SFINNH,IGSHCK'}
+    name: spacer_2
+    properties: {height: 32}
+    type: Spacer
+  - layout_properties: {full_width_row: false, grid_position: 'AFFRHS,KQESMY'}
+    name: label_title
+    properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', role: full-screen-form, text: Client Details}
+    type: Label
+  - components:
+    - layout_properties: {pinned: false}
+      name: client_repeater
+      properties: {item_template: ClientContactReport.RowTemplate3, role: null}
+      type: RepeatingPanel
+    data_bindings: []
+    layout_properties: {full_width_row: false, grid_position: 'WUUYLU,BXHIPD'}
+    name: data_grid_1
+    properties:
+      background: theme:Black
+      border: solid
+      columns:
+      - {data_key: 'No', expand: false, id: LXRVOX, title: 'No', width: 49}
+      - {data_key: Fullname, expand: true, id: CUNVFB, title: Fullname, width: 126.66665649414062}
+      - {data_key: Phone, expand: false, id: IUBBKG, title: Phone, width: 130}
+      - {data_key: Address, expand: false, id: BDLZGZ, title: Address, width: 143.6666259765625}
+      - {data_key: Email, expand: true, id: XCHXFY, title: Email, width: 155.6666259765625}
+      - {data_key: Narration, expand: false, id: JHCREX, title: Narration, width: 102.33331298828125}
+      foreground: theme:White
+      role: null
+      rows_per_page: 25
+      spacing_above: medium
+      spacing_below: medium
+      wrap_on: mobile
+    type: DataGrid
+  layout_properties: {full_width_row: false, grid_position: 'BHYZFO,GONIBV'}
+  name: card_1
+  properties: {border: solid, role: card, wrap_on: mobile}
+  type: ColumnPanel
+container:
+  properties: {role: full-screen-form}
+  type: ColumnPanel
+is_package: true

@@ -1,0 +1,77 @@
+import anvil.server
+import anvil.users
+import anvil.tables as tables
+import anvil.tables.query as q
+from anvil.tables import app_tables
+from ..Client import Client
+from ..JobCard import JobCard
+from ..Workflow import Workflow
+from ..Payment import Payment
+from ..Report import Report
+from ..Settings import Settings
+from ..Contacts import Contacts
+from ..Revision import Revision
+from ..ProgressTracker import ProgressTracker
+from ..ProgressTrackerMobileView import ProgressTrackerMobileView
+from ..Inventory import Inventory
+
+home_form = None
+
+def get_form():
+    if home_form is None:
+        raise Exception("You must set the home form first.")
+    return home_form
+    
+# ******************************** Load Forms in Main Form ***************************
+
+#Load Client Form
+def go_Contact(buttonName):
+    form = get_form()
+    form.load_component(Contacts(buttonName))
+
+#Load Job Card Form
+def go_JobCard():
+    form = get_form()
+    form.load_component(JobCard())
+
+#Load Workflowt Form
+def go_Workflow():
+    form = get_form()
+    form.load_component(Workflow())
+
+#Load Progress Tracker Form
+def go_Tracker():
+    form = get_form()
+    if anvil.js.window.innerWidth <= 768:
+        # Mobile device
+        form.load_component(ProgressTrackerMobileView())
+    else:
+        #Desktop device
+        form.load_component(ProgressTracker())
+
+#Load Revision Form
+def go_Revision(buttonName):
+    form = get_form()
+    form.load_component(Revision(buttonName))
+    
+#Load Payment Form
+def go_Payment():
+    form = get_form()
+    form.load_component(Payment())
+
+#Load Inventory Form
+def go_Inventory(buttonName):
+    form = get_form()
+    form.load_component(Inventory(buttonName))
+    
+  
+#Load Report Form
+def go_Report():
+    form = get_form()
+    form.load_component(Report())
+
+#Load Settings Form
+def go_Settings(buttonName):
+    form = get_form()
+    form.load_component(Settings(buttonName))
+

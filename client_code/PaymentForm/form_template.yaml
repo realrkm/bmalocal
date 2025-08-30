@@ -1,0 +1,68 @@
+components:
+- components:
+  - event_bindings: {click: btn_download_click}
+    layout_properties: {grid_position: 'QNUKKD,JNWOIN'}
+    name: btn_download
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: DOWNLOAD PAYMENT DETAILS}
+    type: Button
+  - layout_properties: {grid_position: 'EOGUWH,XOMGUC'}
+    name: spacer_3
+    properties: {height: '5'}
+    type: Spacer
+  - data_bindings: []
+    event_bindings: {click: btn_Close_click}
+    layout_properties: {grid_position: 'FFXUOB,WJSJRD'}
+    name: btn_Close
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: primary-color, text: Close}
+    type: Button
+  - layout_properties: {grid_position: 'SXGHRW,KSEDUV'}
+    name: label_JobCardID
+    properties: {visible: false}
+    type: Label
+  - layout_properties: {grid_position: 'WWJZZE,FCGGXF'}
+    name: image_1
+    properties: {source: _/theme/Invoice Header Logo.jpg, visible: true}
+    type: Image
+  - layout_properties: {full_width_row: false, grid_position: 'SFINNH,IGSHCK'}
+    name: spacer_2
+    properties: {height: 32}
+    type: Spacer
+  - layout_properties: {full_width_row: false, grid_position: 'AFFRHS,KQESMY'}
+    name: label_title
+    properties: {align: center, background: 'theme:Black', bold: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: full-screen-form, text: Payment Details}
+    type: Label
+  - components:
+    - layout_properties: {pinned: false}
+      name: client_repeater
+      properties: {item_template: ClientContactReport.RowTemplate3, role: null}
+      type: RepeatingPanel
+    data_bindings: []
+    layout_properties: {full_width_row: false, grid_position: 'WUUYLU,BXHIPD'}
+    name: data_grid_1
+    properties:
+      background: theme:Black
+      border: solid
+      columns:
+      - {data_key: 'No', expand: false, id: LXRVOX, title: 'No', width: 49}
+      - {data_key: Date, expand: false, id: CUNVFB, title: Date, width: 96}
+      - {data_key: JobCardRef, expand: true, id: IUBBKG, title: Ref, width: ''}
+      - {data_key: PaymentMode, expand: true, id: BDLZGZ, title: Mode, width: ''}
+      - {data_key: InvoiceAmount, expand: true, id: XCHXFY, title: Invoiced, width: ''}
+      - {data_key: AmountPaid, expand: true, id: JHCREX, title: Paid, width: ''}
+      - {data_key: Discount, expand: true, id: SHVONS, title: Discount}
+      - {data_key: Balance, expand: true, id: TWTWEL, title: Balance}
+      foreground: theme:White
+      role: null
+      rows_per_page: 25
+      spacing_above: medium
+      spacing_below: medium
+      wrap_on: mobile
+    type: DataGrid
+  layout_properties: {full_width_row: false, grid_position: 'BHYZFO,GONIBV'}
+  name: card_1
+  properties: {border: solid, role: card, wrap_on: mobile}
+  type: ColumnPanel
+container:
+  properties: {role: full-screen-form}
+  type: ColumnPanel
+is_package: true

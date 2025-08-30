@@ -1,0 +1,10 @@
+components:
+- event_bindings: {click: btn_DeleteRow_click}
+  layout_properties: {column: EBIXNS}
+  name: btn_DeleteRow2
+  properties: {background: '#0056D6', foreground: 'theme:White', icon: 'fa:trash-o', icon_align: right, text: '', tooltip: Delete Row}
+  type: Button
+container:
+  properties: {font: Roboto, font_size: 16}
+  type: DataRowPanel
+is_package: true

@@ -1,0 +1,273 @@
+components:
+- components:
+  - components:
+    - layout_properties: {grid_position: 'ZVIXZI,ZSHVHI'}
+      name: label_title
+      properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', role: null, text: Roles And Permissions}
+      type: Label
+    - components:
+      - layout_properties: {grid_position: 'WDHTAG,BWLTJK'}
+        name: label_1
+        properties: {align: center, background: 'theme:Gray 300', font: Mozilla Headline, font_size: 16, text: 'Add Role '}
+        type: Label
+      - data_bindings: []
+        layout_properties: {grid_position: 'QQEUVJ,XSHAOY'}
+        name: txtRole
+        properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Role *, type: text}
+        type: TextBox
+      layout_properties: {grid_position: 'WJDBTT,OIFRYO', row_background: 'theme:Black'}
+      name: card_3
+      properties: {role: card}
+      type: ColumnPanel
+    - components:
+      - layout_properties: {grid_position: 'GYVXRU,RBEMDM'}
+        name: label_1_copy
+        properties: {align: center, background: 'theme:Gray 300', font: Mozilla Headline, font_size: 16, text: Add Permissions}
+        type: Label
+      - components:
+        - layout_properties: {}
+          name: label_contact
+          properties: {align: center, background: 'theme:Black', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: CONTACT}
+          type: Label
+        - layout_properties: {}
+          name: chk_contact
+          properties: {align: center, text: ''}
+          type: CheckBox
+        layout_properties: {grid_position: 'REQOTA,TYOBZN'}
+        name: data_row_panel_1
+        properties: {border: solid}
+        type: DataRowPanel
+      - components:
+        - layout_properties: {grid_position: 'KXOXYX,NJVZGR'}
+          name: spacer_1
+          properties: {height: 32}
+          type: Spacer
+        - layout_properties: {grid_position: 'KXOXYX,YWVDZX'}
+          name: chk_clients
+          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Clients}
+          type: CheckBox
+        - layout_properties: {grid_position: 'GFKLCA,SAUBWX'}
+          name: spacer_3
+          properties: {height: 32}
+          type: Spacer
+        - layout_properties: {grid_position: 'GFKLCA,FSREFU'}
+          name: chk_technicians
+          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Technicians}
+          type: CheckBox
+        - layout_properties: {grid_position: 'VKFLWM,UVYKVY'}
+          name: spacer_6
+          properties: {height: 32}
+          type: Spacer
+        - layout_properties: {grid_position: 'VKFLWM,YTJPFC'}
+          name: chk_staffs
+          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Staffs}
+          type: CheckBox
+        layout_properties: {grid_position: 'JCOFAN,HHMNJK'}
+        name: column_panel_2
+        properties: {background: '', border: solid, col_widths: '{"NJVZGR":15,"YWVDZX":27,"SAUBWX":25,"FSREFU":35}'}
+        type: ColumnPanel
+      - components:
+        - layout_properties: {}
+          name: label_jobcard
+          properties: {align: center, background: 'theme:Black', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: JOB CARD}
+          type: Label
+        - layout_properties: {}
+          name: chk_jobcard
+          properties: {align: center, text: ''}
+          type: CheckBox
+        layout_properties: {grid_position: 'HASSTK,QMXOCT'}
+        name: data_row_panel_1_copy
+        properties: {border: solid}
+        type: DataRowPanel
+      - components:
+        - layout_properties: {}
+          name: label_workflow
+          properties: {align: center, background: 'theme:Black', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: WORKFLOW}
+          type: Label
+        - layout_properties: {}
+          name: chk_workflow
+          properties: {align: center, text: ''}
+          type: CheckBox
+        layout_properties: {grid_position: 'CHVCOD,RIZRNK'}
+        name: data_row_panel_1_copy_2
+        properties: {border: solid}
+        type: DataRowPanel
+      - components:
+        - layout_properties: {grid_position: 'KXOXYX,YWVDZX'}
+          name: chk_checkedin
+          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Checked In}
+          type: CheckBox
+        - layout_properties: {grid_position: 'GFKLCA,FSREFU'}
+          name: chk_createquote
+          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Create Quote}
+          type: CheckBox
+        - layout_properties: {grid_position: 'DUOJLJ,VXSWYA'}
+          name: chk_confirmquote
+          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Confirm Quote}
+          type: CheckBox
+        - layout_properties: {grid_position: 'ETPGQU,VDTBNS'}
+          name: chk_inservice
+          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: In Service}
+          type: CheckBox
+        - layout_properties: {grid_position: 'VBSWEC,CJVDZU'}
+          name: chk_verifytask
+          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Verify Task}
+          type: CheckBox
+        - layout_properties: {grid_position: 'FIWWAN,AAVVOZ'}
+          name: chk_issueinvoice
+          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Issue Invoice}
+          type: CheckBox
+        - layout_properties: {grid_position: 'NGDMEE,QIAJDW'}
+          name: chk_readyforpickup
+          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Ready For Pickup}
+          type: CheckBox
+        layout_properties: {grid_position: 'RYBLOR,NHHOCF'}
+        name: column_panel_2_copy
+        properties: {background: '', border: solid}
+        type: ColumnPanel
+      - components:
+        - layout_properties: {}
+          name: label_tracker
+          properties: {align: center, background: 'theme:Black', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: TRACKER}
+          type: Label
+        - layout_properties: {}
+          name: chk_tracker
+          properties: {align: center, text: ''}
+          type: CheckBox
+        layout_properties: {grid_position: 'DURUSJ,XWIPCT'}
+        name: data_row_panel_1_copy_copy
+        properties: {border: solid}
+        type: DataRowPanel
+      - components:
+        - layout_properties: {}
+          name: label_revision
+          properties: {align: center, background: 'theme:Black', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: REVISION}
+          type: Label
+        - layout_properties: {}
+          name: chk_revision
+          properties: {align: center, text: ''}
+          type: CheckBox
+        layout_properties: {grid_position: 'DYRRDP,AZPKXT'}
+        name: data_row_panel_1_copy_copy_copy
+        properties: {border: solid}
+        type: DataRowPanel
+      - components:
+        - layout_properties: {grid_position: 'KXOXYX,YWVDZX'}
+          name: chk_interimquote
+          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Interim Quotation}
+          type: CheckBox
+        - layout_properties: {grid_position: 'GFKLCA,FSREFU'}
+          name: chk_amendedinvoice
+          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Amended Invoice}
+          type: CheckBox
+        - layout_properties: {grid_position: 'DUOJLJ,VXSWYA'}
+          name: chk_repairpriorities
+          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Repair Priorities}
+          type: CheckBox
+        - layout_properties: {grid_position: 'ETPGQU,VDTBNS'}
+          name: chk_brandcomparison
+          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Brand Comparison}
+          type: CheckBox
+        layout_properties: {grid_position: 'DGQFRB,AEBNEW'}
+        name: column_panel_2_copy_copy_copy
+        properties: {background: '', border: solid}
+        type: ColumnPanel
+      - components:
+        - layout_properties: {}
+          name: label_payment
+          properties: {align: center, background: 'theme:Black', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: PAYMENT}
+          type: Label
+        - layout_properties: {}
+          name: chk_payment
+          properties: {align: center, text: ''}
+          type: CheckBox
+        layout_properties: {grid_position: 'VKRHZC,KZYTWK'}
+        name: data_row_panel_1_copy_copy_copy_2
+        properties: {border: solid}
+        type: DataRowPanel
+      - components:
+        - layout_properties: {}
+          name: label_inventory
+          properties: {align: center, background: 'theme:Black', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: INVENTORY}
+          type: Label
+        - layout_properties: {}
+          name: chk_inventory
+          properties: {align: center, text: ''}
+          type: CheckBox
+        layout_properties: {grid_position: 'SKAURV,TKICMA'}
+        name: data_row_panel_1_copy_copy_copy_3
+        properties: {border: solid}
+        type: DataRowPanel
+      - components:
+        - layout_properties: {grid_position: 'KXOXYX,YWVDZX'}
+          name: chk_addnewparts
+          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Add New Parts}
+          type: CheckBox
+        - layout_properties: {grid_position: 'GFKLCA,FSREFU'}
+          name: chk_addmorestock
+          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Add More Stocks}
+          type: CheckBox
+        layout_properties: {grid_position: 'ZKAYUC,XQBBSW'}
+        name: column_panel_2_copy_copy_copy_copy
+        properties: {background: '', border: solid}
+        type: ColumnPanel
+      - components:
+        - layout_properties: {}
+          name: label_report
+          properties: {align: center, background: 'theme:Black', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: REPORTS}
+          type: Label
+        - layout_properties: {}
+          name: chk_report
+          properties: {align: center, text: ''}
+          type: CheckBox
+        layout_properties: {grid_position: 'KAWQNV,IJVDCV'}
+        name: data_row_panel_1_copy_2_copy
+        properties: {border: solid}
+        type: DataRowPanel
+      - components:
+        - layout_properties: {grid_position: 'KXOXYX,YWVDZX'}
+          name: chk_clientreport
+          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Clients}
+          type: CheckBox
+        - layout_properties: {grid_position: 'GFKLCA,FSREFU'}
+          name: chk_cardetailsreport
+          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Car Details}
+          type: CheckBox
+        - layout_properties: {grid_position: 'DUOJLJ,VXSWYA'}
+          name: chk_techniciansreport
+          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Technicians}
+          type: CheckBox
+        - layout_properties: {grid_position: 'ETPGQU,VDTBNS'}
+          name: chk_staffreports
+          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Staffs}
+          type: CheckBox
+        - layout_properties: {grid_position: 'VBSWEC,CJVDZU'}
+          name: chk_inventoryreport
+          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Inventory}
+          type: CheckBox
+        - layout_properties: {grid_position: 'FIWWAN,AAVVOZ'}
+          name: chk_quoteinvoicereport
+          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Periodic Quote And Invoice}
+          type: CheckBox
+        - layout_properties: {grid_position: 'NGDMEE,QIAJDW'}
+          name: chk_paymentreport
+          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Periodic Payment Details}
+          type: CheckBox
+        layout_properties: {grid_position: 'KDNHOM,FQFVXC'}
+        name: column_panel_2_copy_copy
+        properties: {background: '', border: solid}
+        type: ColumnPanel
+      layout_properties: {grid_position: 'TVYZFH,TBMBOO', row_background: 'theme:Black'}
+      name: card_4
+      properties: {role: card}
+      type: ColumnPanel
+    layout_properties: {grid_position: 'VTZXZG,NVUXYW'}
+    name: card_2
+    properties: {role: card}
+    type: ColumnPanel
+  layout_properties: {full_width_row: true, grid_position: 'SOXRRM,GHLLLI', row_background: 'theme:Black'}
+  name: card_1
+  properties: {role: card}
+  type: ColumnPanel
+container: {type: ColumnPanel}
+is_package: true

@@ -1,0 +1,22 @@
+components:
+- components:
+  - event_bindings: {click: btn_AddUser_click}
+    layout_properties: {full_width_row: false, grid_position: 'JAZALO,LFUZWZ'}
+    name: btn_AddUser
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: '', text: USER ACCOUNT}
+    type: Button
+  - event_bindings: {click: btn_UserRoles_click}
+    layout_properties: {grid_position: 'JAZALO,UMMEKY'}
+    name: btn_UserRoles
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: '', text: ROLES AND PERMISSIONS}
+    type: Button
+  layout_properties: {grid_position: 'JUOZDD,TJLMRU'}
+  name: card_1
+  properties: {role: card}
+  type: ColumnPanel
+- layout_properties: {grid_position: 'ZGIGKD,JCGOPU'}
+  name: card_2
+  properties: {role: card}
+  type: ColumnPanel
+container: {type: ColumnPanel}
+is_package: true

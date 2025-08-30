@@ -1,0 +1,10 @@
+components:
+- event_bindings: {click: btn_Edit_click}
+  layout_properties: {column: CVIOMS}
+  name: btn_Edit
+  properties: {background: '#0056D6', foreground: 'theme:White', icon: 'fa:edit', text: '', tooltip: Edit Selling Price}
+  type: Button
+container:
+  properties: {font: Roboto, font_size: 16}
+  type: DataRowPanel
+is_package: true

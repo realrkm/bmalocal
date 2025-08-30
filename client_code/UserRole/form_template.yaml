@@ -10,14 +10,18 @@ components:
         name: label_1
         properties: {align: center, background: 'theme:Gray 300', font: Mozilla Headline, font_size: 16, text: 'Add Role '}
         type: Label
-      - data_bindings: []
-        layout_properties: {grid_position: 'QQEUVJ,XSHAOY'}
-        name: txtRole
-        properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Role *, type: text}
-        type: TextBox
+      - layout_properties: {grid_position: 'QQEUVJ,LNBDXI'}
+        name: drop_down_selectrole
+        properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Role *}
+        type: DropDown
+      - event_bindings: {click: btn_AddRole_click}
+        layout_properties: {grid_position: 'QQEUVJ,QCLXMD'}
+        name: btn_AddRole
+        properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: Add Role}
+        type: Button
       layout_properties: {grid_position: 'WJDBTT,OIFRYO', row_background: 'theme:Black'}
       name: card_3
-      properties: {role: card}
+      properties: {col_widths: '{"LNBDXI":40,"QCLXMD":20}', role: card}
       type: ColumnPanel
     - components:
       - layout_properties: {grid_position: 'GYVXRU,RBEMDM'}

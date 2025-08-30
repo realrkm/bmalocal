@@ -5,6 +5,7 @@ import anvil.users
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
+from ..Roles import Roles
 
 
 class UserRole(UserRoleTemplate):
@@ -13,6 +14,8 @@ class UserRole(UserRoleTemplate):
         self.init_components(**properties)
 
         # Any code you write here will run before the form opens.
+        self.drop_down_selectrole.items = anvil.server.call("getRoles")
+        
         # Define sections with their subsections
         self.sections = {
             "CONTACT": [self.chk_clients, self.chk_technicians, self.chk_staffs],
@@ -81,3 +84,7 @@ class UserRole(UserRoleTemplate):
             if checkbox in subs:
                 return section
         return None
+
+    def btn_AddRole_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        alert(content=Roles(), buttons=[],dismissible=False, large=True)

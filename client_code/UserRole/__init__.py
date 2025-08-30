@@ -49,14 +49,16 @@ class UserRole(UserRoleTemplate):
                 sub_chk.set_event_handler("change", self.sub_checkbox_changed)
     
     # --- Main Checkbox Logic ---
-    def main_checkbox_changed(self, checkbox, **event_args):
+    def main_checkbox_changed(self, **event_args):
+        checkbox = event_args['sender']
         section = self.get_section_from_checkbox(checkbox)
         subs = self.sections.get(section, [])
         for sub in subs:
             sub.checked = checkbox.checked
     
     # --- Sub Checkbox Logic ---
-    def sub_checkbox_changed(self, checkbox, **event_args):
+    def sub_checkbox_changed(self, **event_args):
+        checkbox = event_args['sender']
         section = self.get_section_from_sub(checkbox)
         main_chk = self.main_checkboxes[section]
         subs = self.sections[section]
@@ -65,7 +67,8 @@ class UserRole(UserRoleTemplate):
             main_chk.checked = True
         else:
             main_chk.checked = False
-    
+
+        
     # --- Helpers ---
     def get_section_from_checkbox(self, checkbox):
         for section, chk in self.main_checkboxes.items():

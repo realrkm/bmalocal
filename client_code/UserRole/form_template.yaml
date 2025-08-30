@@ -29,7 +29,9 @@ components:
           name: label_contact
           properties: {align: center, background: 'theme:Black', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: CONTACT}
           type: Label
-        - layout_properties: {}
+        - data_bindings:
+          - {code: 'self.item['''']', property: tag, writeback: false}
+          layout_properties: {}
           name: chk_contact
           properties: {align: center, text: ''}
           type: CheckBox

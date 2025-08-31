@@ -80,6 +80,9 @@ db_schema:
     - admin_ui: {width: 200}
       name: signed_up
       type: datetime
+    - admin_ui: {order: 7, width: 200}
+      name: role_id
+      type: number
     server: full
     title: Users
 dependencies: []

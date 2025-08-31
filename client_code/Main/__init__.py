@@ -19,13 +19,38 @@ class Main(MainTemplate):
         anvil.js.call('replaceBanner')
         while anvil.users.get_user() is None:
             anvil.users.login_with_form()
-            
+        user = anvil.users.get_user()
+        if user:
+            # Fetch permissions from server
+            self.permissions = anvil.server.call("get_user_permissions", user["role_id"])
+            self.apply_permissions()    
         user_agent = navigator.userAgent
         # Now call your server function and pass the user_agent
         anvil.server.call_s('get_stats', user_agent)
                 
         ModNavigation.home_form = self
-            
+        
+    def apply_permissions(self):
+        """Apply user permissions to the UI buttons"""
+        # Map your sidebar buttons to section names
+        section_map = {
+            "CONTACT": self.btn_Contact,
+            "JOB CARD": self.btn_JobCard,
+            "WORKFLOW": self.btn_Workflow,
+            "TRACKER": self.btn_Tracker,
+            "REVISION": self.btn_Revision,
+            "PAYMENT": self.btn_Payment,
+            "INVENTORY": self.btn_Inventory,
+            "REPORTS": self.btn_Report,
+        }
+
+        for section, button in section_map.items():
+            # If user has no permission → hide button
+            section_perms = self.permissions.get(section, {})
+            if not (section_perms.get("main") or any(section_perms.get("subs", {}).values())):
+                button.visible = False
+                button.enabled = False  
+                
     def highlight_active_button(self, selected_text):
         # Loop through all buttons in the panel
         for comp in self.column_panel_navigation.get_components():

@@ -20,11 +20,11 @@ components:
       type: Spacer
     layout_properties: {full_width_row: true, grid_position: 'CSTKFY,VFPDBF'}
     name: card_1
-    properties: {role: card}
+    properties: {background: 'theme:White', border: '', role: card}
     type: ColumnPanel
   layout_properties: {slot: default}
   name: column_panel_content
-  properties: {spacing_above: large, spacing_below: large}
+  properties: {background: 'theme:White', spacing_above: large, spacing_below: large}
   type: ColumnPanel
 - components:
   - event_bindings: {click: link_1_click}
@@ -46,82 +46,46 @@ components:
     name: btn_Contact
     properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:users', role: raised, text: CONTACT}
     type: Button
-  - layout_properties: {grid_position: 'SMTSKU,FYXHTM'}
-    name: spacer_2
-    properties: {height: '5'}
-    type: Spacer
   - event_bindings: {click: btn_JobCard_click}
     layout_properties: {full_width_row: false, grid_position: 'DBJWNM,QFZCSN'}
     name: btn_JobCard
     properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:clipboard', role: raised, text: JOB CARD}
     type: Button
-  - layout_properties: {grid_position: 'QJBMPJ,XKHREM'}
-    name: spacer_3
-    properties: {height: '5'}
-    type: Spacer
   - event_bindings: {click: btn_Workflow_click}
     layout_properties: {grid_position: 'DGUCNL,KLUVCT'}
     name: btn_Workflow
     properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:gears', role: raised, text: WORKFLOW}
     type: Button
-  - layout_properties: {grid_position: 'XJMEMB,YDJJGC'}
-    name: spacer_5_copy_copy
-    properties: {height: '5'}
-    type: Spacer
   - event_bindings: {click: btn_Tracker_click}
     layout_properties: {grid_position: 'YAITYQ,JVIJSE'}
     name: btn_Tracker
     properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:steam', role: raised, text: TRACKER}
     type: Button
-  - layout_properties: {grid_position: 'WRSLTK,FVMRIU'}
-    name: spacer_5
-    properties: {height: '5'}
-    type: Spacer
   - event_bindings: {click: btn_Revision_click}
     layout_properties: {grid_position: 'WXLDNR,KIFELS'}
     name: btn_Revision
     properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:rotate-right', role: raised, text: REVISION, visible: true}
     type: Button
-  - layout_properties: {grid_position: 'MKVXYR,JYOLGY'}
-    name: spacer_3_copy_copy_copy_copy_copy
-    properties: {height: '5', visible: true}
-    type: Spacer
   - event_bindings: {click: btn_Payment_click}
     layout_properties: {grid_position: 'XIUWUO,HQSLAS'}
     name: btn_Payment
     properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:money', role: raised, text: PAYMENT, visible: true}
     type: Button
-  - layout_properties: {grid_position: 'WAXPHP,COTCQD'}
-    name: spacer_3_copy_copy_copy_copy_copy_3
-    properties: {height: '5'}
-    type: Spacer
   - event_bindings: {click: btn_Inventory_click}
     layout_properties: {grid_position: 'OSQWPM,OQYHIG'}
     name: btn_Inventory
     properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:gift', role: raised, text: INVENTORY}
     type: Button
-  - layout_properties: {grid_position: 'UJCPNT,BTEUGE'}
-    name: spacer_5_copy
-    properties: {height: '5'}
-    type: Spacer
   - event_bindings: {click: btn_Report_click}
     layout_properties: {grid_position: 'RFMGUE,ANMPCK'}
     name: btn_Report
     properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:bar-chart', role: raised, text: REPORTS, visible: true}
     type: Button
-  - layout_properties: {grid_position: 'ZSYNTA,CJGGHZ'}
-    name: spacer_3_copy_copy_copy_copy
-    properties: {height: '5'}
-    type: Spacer
   - event_bindings: {click: btn_Settings_click}
     layout_properties: {grid_position: 'OETNOG,VUTIGC'}
     name: btn_Settings
     properties: {align: full, background: '#0056D6', enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:wrench', role: raised, text: SETTINGS, visible: true}
     type: Button
-  - layout_properties: {grid_position: 'ZFWUSK,ZGVITA'}
-    name: spacer_3_copy_copy_copy_copy_copy_4
-    properties: {height: '5', visible: true}
-    type: Spacer
   - event_bindings: {click: btn_Logout_click}
     layout_properties: {grid_position: 'BEMCGF,VNEXVK'}
     name: btn_Logout
@@ -129,7 +93,7 @@ components:
     type: Button
   layout_properties: {slot: left-nav}
   name: column_panel_navigation
-  properties: {}
+  properties: {background: 'theme:White', border: so}
   type: ColumnPanel
 container:
   properties: {html: '@theme:standard-page.html'}

@@ -15,6 +15,10 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
 
         # Any code you write here will run before the form opens.
         self.drop_down_selectrole.items = anvil.server.call("getRoles")
+        #Set checkbox tags
+        self.chk_contact.tag = "CONTACT"
+        self.chk_clients.tag = "Clients"
+        self.chk_technicians.tag = "Technicians" self.chk_staffs
         
         # Define sections with their subsections
         self.sections = {

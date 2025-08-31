@@ -28,6 +28,10 @@ components:
         name: label_1_copy
         properties: {align: center, background: 'theme:Gray 300', font: Mozilla Headline, font_size: 16, text: Add Permissions}
         type: Label
+      - layout_properties: {grid_position: 'BVCVWW,YQYAJT'}
+        name: label_3
+        properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, foreground: '#dc1818', text: Saving changes will overwrite all current permissions for this role.}
+        type: Label
       - components:
         - layout_properties: {}
           name: label_contact

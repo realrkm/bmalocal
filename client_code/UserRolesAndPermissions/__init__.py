@@ -18,7 +18,36 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
         #Set checkbox tags
         self.chk_contact.tag = "CONTACT"
         self.chk_clients.tag = "Clients"
-        self.chk_technicians.tag = "Technicians" self.chk_staffs
+        self.chk_technicians.tag = "Technicians"
+        self.chk_staffs.tag = "Staffs"
+        self.chk_jobcard.tag = "JOB CARDS"
+        self.chk_workflow.tag = "WORKFLOW"
+        self.chk_checkedin.tag = "Checked In"
+        self.chk_createquote.tag = "Create Quote"
+        self.chk_confirmquote.tag = "Confirm Quote"
+        self.chk_inservice.tag = "In Service"
+        self.chk_verifytask.tag = "Verify Task"
+        self.chk_issueinvoice.tag = "Issue Invoice"
+        self.chk_readyforpickup.tag = "Ready For Pickup"
+        self.chk_tracker.tag = "TRACKER"
+        self.chk_revision.tag = "REVISION"
+        self.chk_interimquote.tag = "Interim Quote"
+        self.chk_amendedinvoice.tag = "Amended Invoice"
+        self.chk_repairpriorities.tag = "Repair Priorities"
+        self.chk_brandcomparison.tag = "Brand Comparison"
+        self.chk_payment.tag = "PAYMENT"
+        self.chk_inventory.tag ="INVENTORY"
+        self.chk_addnewparts.tag = "Add New Parts"
+        self.chk_addmorestock.tag = "Add More Stock"
+        self.chk_report.tag = "REPORTS"
+        self.chk_clientreport.tag = "Client Report"
+        self.chk_cardetailsreport.tag = "Car Details Report"
+        self.chk_techniciansreport.tag = "Technicians Report"
+        self.chk_staffreports.tag = "Staffs Report"
+        self.chk_inventoryreport.tag = "Inventory Report"
+        self.chk_quoteinvoicereport.tag = "Quote And Invoice Report"
+        self.chk_paymentreport.tag = "Payment Report"
+
         
         # Define sections with their subsections
         self.sections = {
@@ -126,3 +155,6 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
         # Send to server
         anvil.server.call("save_user_permissions", role_id, selected_permissions)
         alert("Permissions saved successfully!", title="Success")
+        #Reload Form
+        get_open_form().btn_Settings_click("ROLES AND PERMISSIONS")
+

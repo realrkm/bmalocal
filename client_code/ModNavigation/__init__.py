@@ -25,9 +25,9 @@ def get_form():
 # ******************************** Load Forms in Main Form ***************************
 
 #Load Client Form
-def go_Contact(buttonName):
+def go_Contact(buttonName, permissions):
     form = get_form()
-    form.load_component(Contacts(buttonName))
+    form.load_component(Contacts(buttonName, permissions))
 
 #Load Job Card Form
 def go_JobCard():

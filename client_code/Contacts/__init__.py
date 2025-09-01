@@ -11,12 +11,43 @@ from ..Staffs import Staffs
 from .. import ModLoadSubformPermissions
 
 class Contacts(ContactsTemplate):
-    def __init__(self, buttonName, **properties):
+    def __init__(self, buttonName, permissions,  **properties):
         # Set Form properties and Data Bindings.
         self.init_components(**properties)
 
         # Any code you write here will run before the form opens.
+        self.permissions = permissions
+        self.apply_permissions()
         self.show_clicked_button(buttonName)
+
+    def apply_permissions(self):
+        """Apply only CONTACT-related permissions"""
+
+        contact_perms = self.permissions.get("CONTACT", {"main": False, "subs": {}})
+
+        # Example sub buttons (assume they exist in your ContactForm)
+        # btn_Client, btn_Technician, btn_Staff
+        section_map = {
+            "CLIENTS": self.btn_Client,
+            "TECHNICIANS": self.btn_Technician,
+            "STAFF": self.btn_Staff,
+        }
+
+        # If main CONTACT is False and all subs are False → hide whole form
+        if not (contact_perms["main"] or any(contact_perms["subs"].values())):
+            self.visible = False
+            return
+
+        # Otherwise apply each sub
+        for sub_name, button in section_map.items():
+            if contact_perms["main"]:
+                button.visible = True
+                button.enabled = True
+            else:
+                # Respect subsection permission
+                allowed = contact_perms["subs"].get(sub_name, False)
+                button.visible = allowed
+                button.enabled = allowed
         
     #This function is called when Contact form loads or when Save And New button is clicked in the forms loaded in card_2 component
     def show_clicked_button(self, buttonName, **event_args):

@@ -74,7 +74,7 @@ class Main(MainTemplate):
     def btn_Contact_click(self, buttonName="Client", **event_args):
         """This method is called when the button is clicked"""
         self.highlight_active_button("CONTACT")
-        ModNavigation.go_Contact(buttonName)
+        ModNavigation.go_Contact(buttonName, self.permissions)
         #Now hide sidebar after clicking link. 
         #Additional function in standard-page.html
         self.call_js('hideSidebarIfModal')

@@ -22,16 +22,13 @@ class Contacts(ContactsTemplate):
 
     def apply_permissions(self):
         """Apply only CONTACT-related permissions"""
-
         contact_perms = self.permissions.get("CONTACT", {"main": False, "subs": {}})
-        alert(contact_perms)
-
         # Example sub buttons (assume they exist in your ContactForm)
         # btn_Client, btn_Technician, btn_Staff
         section_map = {
-            "CLIENTS": self.btn_Client,
-            "TECHNICIANS": self.btn_Technician,
-            "STAFF": self.btn_Staff,
+            "Clients": self.btn_Client,
+            "Technicians": self.btn_Technician,
+            "Staffs": self.btn_Staff,
         }
 
         # If main CONTACT is False and all subs are False → hide whole form

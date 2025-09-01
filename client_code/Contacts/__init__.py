@@ -8,7 +8,6 @@ from anvil.tables import app_tables
 from ..Client import Client
 from ..Tehnicians import Tehnicians
 from ..Staffs import Staffs
-from .. import ModLoadSubformPermissions
 
 
 class Contacts(ContactsTemplate):
@@ -20,38 +19,37 @@ class Contacts(ContactsTemplate):
         # Store permissions
         self.permissions = permissions
 
-        # Apply permissions to buttons
+        # Apply permissions to buttons and load the first available subform
         self.apply_permissions()
 
-        # Load default or requested subform
-        #self.show_clicked_button(buttonName)
-
     def apply_permissions(self):
-        """Apply only CONTACT-related permissions."""
+        """Apply only CONTACT-related permissions and load the first available subform."""
         contact_perms = self.permissions.get("CONTACT", {"main": False, "subs": {}})
-        alert(contact_perms)
 
-        # Map subsection names to their corresponding buttons
-        section_map = {
-            "CLIENTS": self.btn_Client,
-            "TECHNICIANS": self.btn_Technician,
-            "STAFF": self.btn_Staff,
-        }
+        first_visible = None  # track which subform to load first
 
-        # If no permission at all → hide the entire form
-        if not (contact_perms["main"] or any(contact_perms["subs"].values())):
-            self.visible = False
-            return
+        for subsection, value in contact_perms["subs"].items():
+            if subsection == "CLIENTS":
+                self.btn_Client.visible = value
+                self.btn_Client.enabled = value
+                if value and first_visible is None:
+                    first_visible = "Client"
 
-        # Otherwise, check per subsection
-        for sub_name, button in section_map.items():
-            if contact_perms["main"]:
-                button.visible = True
-                button.enabled = True
-            else:
-                allowed = contact_perms["subs"].get(sub_name, False)
-                button.visible = allowed
-                button.enabled = allowed
+            elif subsection == "TECHNICIANS":
+                self.btn_Technician.visible = value
+                self.btn_Technician.enabled = value
+                if value and first_visible is None:
+                    first_visible = "Technician"
+
+            elif subsection == "STAFF":
+                self.btn_Staff.visible = value
+                self.btn_Staff.enabled = value
+                if value and first_visible is None:
+                    first_visible = "Staff"
+
+        # Load the first visible subform automatically
+        if first_visible:
+            self.show_clicked_button(first_visible)
 
     def show_clicked_button(self, buttonName, **event_args):
         """
@@ -79,21 +77,18 @@ class Contacts(ContactsTemplate):
     # --- Button click handlers ---
     def btn_Client_click(self, **event_args):
         """Load Clients subform."""
-        self.highlight_active_button("CLIENT")
+        self.highlight_active_button("CLIENTS")
         self.card_2.clear()
         self.card_2.add_component(Client())
-        self.btn_Client.background = "#000000"
 
     def btn_Technician_click(self, **event_args):
         """Load Technicians subform."""
         self.highlight_active_button("TECHNICIANS")
         self.card_2.clear()
         self.card_2.add_component(Tehnicians())
-        self.btn_Technician.background = "#000000"
 
     def btn_Staff_click(self, **event_args):
         """Load Staff subform."""
         self.highlight_active_button("STAFF")
         self.card_2.clear()
         self.card_2.add_component(Staffs())
-        self.btn_Staff.background = "#000000"

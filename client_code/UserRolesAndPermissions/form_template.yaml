@@ -267,7 +267,7 @@ components:
           properties: {align: center, background: 'theme:Black', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: SETTINGS}
           type: Label
         - layout_properties: {}
-          name: chk_report_copy
+          name: chk_settings
           properties: {align: center, text: ''}
           type: CheckBox
         layout_properties: {grid_position: 'FCJBMY,WROBCP'}

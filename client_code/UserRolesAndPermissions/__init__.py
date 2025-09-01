@@ -39,6 +39,7 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
         self.chk_inventory.tag ="INVENTORY"
         self.chk_addnewparts.tag = "Add New Parts"
         self.chk_addmorestock.tag = "Add More Stock"
+        self.chk_stocktaking.tag="Stock Taking"
         self.chk_report.tag = "REPORTS"
         self.chk_clientreport.tag = "Client Report"
         self.chk_cardetailsreport.tag = "Car Details Report"
@@ -47,7 +48,9 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
         self.chk_inventoryreport.tag = "Inventory Report"
         self.chk_quoteinvoicereport.tag = "Quote And Invoice Report"
         self.chk_paymentreport.tag = "Payment Report"
-        self.chk_sett
+        self.chk_settings.tag = "SETTINGS"
+        self.chk_useraccounts.tag = "User Accounts"
+        self.chk_roleasandpermissions.tag = "Roles And Permissions"
 
         
         # Define sections with their subsections
@@ -58,11 +61,12 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
             "TRACKER": [],
             "REVISION": [self.chk_interimquote, self.chk_amendedinvoice, self.chk_repairpriorities, self.chk_brandcomparison],
             "PAYMENT": [],
-            "INVENTORY": [self.chk_addnewparts, self.chk_addmorestock],
+            "INVENTORY": [self.chk_addnewparts, self.chk_addmorestock,self.chk_stocktaking],
             "REPORTS": [
                 self.chk_clientreport, self.chk_cardetailsreport, self.chk_techniciansreport,
                 self.chk_staffreports, self.chk_inventoryreport, self.chk_quoteinvoicereport, self.chk_paymentreport
             ],
+            "SETTINGS": [self.chk_useraccounts, self.chk_roleasandpermissions],
         }
         
         # Map main checkboxes
@@ -75,6 +79,7 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
             "PAYMENT": self.chk_payment,
             "INVENTORY": self.chk_inventory,
             "REPORTS": self.chk_report,
+            "SETTINGS": self.chk_settings,
         }
     
         # Attach handlers

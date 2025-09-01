@@ -50,21 +50,21 @@ components:
         - data_bindings: []
           layout_properties: {grid_position: 'KXOXYX,YWVDZX'}
           name: chk_clients
-          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Clients}
+          properties: {align: center, bold: true, font: Mozilla Headline, font_size: 16, text: Clients}
           type: CheckBox
         - data_bindings: []
-          layout_properties: {grid_position: 'GFKLCA,FSREFU'}
+          layout_properties: {grid_position: 'KXOXYX,NXABFZ'}
           name: chk_technicians
-          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Technicians}
+          properties: {align: center, bold: true, font: Mozilla Headline, font_size: 16, text: Technicians}
           type: CheckBox
         - data_bindings: []
-          layout_properties: {grid_position: 'VKFLWM,YTJPFC'}
+          layout_properties: {grid_position: 'KXOXYX,CEDXBB'}
           name: chk_staffs
-          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Staffs}
+          properties: {align: center, bold: true, font: Mozilla Headline, font_size: 16, text: Staffs}
           type: CheckBox
         layout_properties: {grid_position: 'JCOFAN,HHMNJK'}
         name: column_panel_2
-        properties: {background: '', border: solid, col_widths: '{"YWVDZX":27,"FSREFU":35}'}
+        properties: {background: '', border: solid, col_widths: '{"YWVDZX":24,"NXABFZ":18,"CEDXBB":18}'}
         type: ColumnPanel
       - components:
         - layout_properties: {}
@@ -95,31 +95,31 @@ components:
       - components:
         - layout_properties: {grid_position: 'KXOXYX,YWVDZX'}
           name: chk_checkedin
-          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Checked In}
+          properties: {align: center, bold: true, font: Mozilla Headline, font_size: 16, text: Checked In}
           type: CheckBox
-        - layout_properties: {grid_position: 'GFKLCA,FSREFU'}
+        - layout_properties: {grid_position: 'KXOXYX,GALHRC'}
           name: chk_createquote
-          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Create Quote}
+          properties: {align: center, bold: true, font: Mozilla Headline, font_size: 16, text: Create Quote}
           type: CheckBox
-        - layout_properties: {grid_position: 'DUOJLJ,VXSWYA'}
+        - layout_properties: {grid_position: 'KXOXYX,QXNTDL'}
           name: chk_confirmquote
-          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Confirm Quote}
+          properties: {align: center, bold: true, font: Mozilla Headline, font_size: 16, text: Confirm Quote}
           type: CheckBox
         - layout_properties: {grid_position: 'ETPGQU,VDTBNS'}
           name: chk_inservice
-          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: In Service}
+          properties: {align: center, bold: true, font: Mozilla Headline, font_size: 16, text: In Service}
           type: CheckBox
-        - layout_properties: {grid_position: 'VBSWEC,CJVDZU'}
+        - layout_properties: {grid_position: 'ETPGQU,STTUYT'}
           name: chk_verifytask
-          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Verify Task}
+          properties: {align: center, bold: true, font: Mozilla Headline, font_size: 16, text: Verify Task}
           type: CheckBox
-        - layout_properties: {grid_position: 'FIWWAN,AAVVOZ'}
+        - layout_properties: {grid_position: 'ETPGQU,ZRSIWP'}
           name: chk_issueinvoice
-          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Issue Invoice}
+          properties: {align: center, bold: true, font: Mozilla Headline, font_size: 16, text: Issue Invoice}
           type: CheckBox
         - layout_properties: {grid_position: 'NGDMEE,QIAJDW'}
           name: chk_readyforpickup
-          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Ready For Pickup}
+          properties: {align: center, bold: true, font: Mozilla Headline, font_size: 16, text: Ready For Pickup}
           type: CheckBox
         layout_properties: {grid_position: 'RYBLOR,NHHOCF'}
         name: column_panel_2_copy
@@ -154,19 +154,19 @@ components:
       - components:
         - layout_properties: {grid_position: 'KXOXYX,YWVDZX'}
           name: chk_interimquote
-          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Interim Quotation}
+          properties: {align: center, bold: true, font: Mozilla Headline, font_size: 16, text: Interim Quotation}
           type: CheckBox
-        - layout_properties: {grid_position: 'GFKLCA,FSREFU'}
+        - layout_properties: {grid_position: 'KXOXYX,OUKABQ'}
           name: chk_amendedinvoice
-          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Amended Invoice}
+          properties: {align: center, bold: true, font: Mozilla Headline, font_size: 16, text: Amended Invoice}
           type: CheckBox
         - layout_properties: {grid_position: 'DUOJLJ,VXSWYA'}
           name: chk_repairpriorities
-          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Repair Priorities}
+          properties: {align: center, bold: true, font: Mozilla Headline, font_size: 16, text: Repair Priorities}
           type: CheckBox
-        - layout_properties: {grid_position: 'ETPGQU,VDTBNS'}
+        - layout_properties: {grid_position: 'DUOJLJ,BQSTUO'}
           name: chk_brandcomparison
-          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Brand Comparison}
+          properties: {align: center, bold: true, font: Mozilla Headline, font_size: 16, text: Brand Comparison}
           type: CheckBox
         layout_properties: {grid_position: 'DGQFRB,AEBNEW'}
         name: column_panel_2_copy_copy_copy
@@ -201,11 +201,15 @@ components:
       - components:
         - layout_properties: {grid_position: 'KXOXYX,YWVDZX'}
           name: chk_addnewparts
-          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Add New Parts}
+          properties: {align: center, bold: true, font: Mozilla Headline, font_size: 16, text: Add New Parts}
           type: CheckBox
-        - layout_properties: {grid_position: 'GFKLCA,FSREFU'}
+        - layout_properties: {grid_position: 'KXOXYX,HPMZIZ'}
           name: chk_addmorestock
-          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Add More Stocks}
+          properties: {align: center, bold: true, font: Mozilla Headline, font_size: 16, text: Add More Stocks}
+          type: CheckBox
+        - layout_properties: {grid_position: 'GFKLCA,RVIAGC'}
+          name: chk_stocktaking
+          properties: {align: center, bold: true, font: Mozilla Headline, font_size: 16, text: STOCK TAKING}
           type: CheckBox
         layout_properties: {grid_position: 'ZKAYUC,XQBBSW'}
         name: column_panel_2_copy_copy_copy_copy
@@ -227,34 +231,60 @@ components:
       - components:
         - layout_properties: {grid_position: 'KXOXYX,YWVDZX'}
           name: chk_clientreport
-          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Clients}
+          properties: {align: center, bold: true, font: Mozilla Headline, font_size: 16, text: Clients}
           type: CheckBox
-        - layout_properties: {grid_position: 'GFKLCA,FSREFU'}
+        - layout_properties: {grid_position: 'KXOXYX,FIWMKB'}
           name: chk_cardetailsreport
-          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Car Details}
+          properties: {align: center, bold: true, font: Mozilla Headline, font_size: 16, text: Car Details}
           type: CheckBox
-        - layout_properties: {grid_position: 'DUOJLJ,VXSWYA'}
+        - layout_properties: {grid_position: 'KXOXYX,XOGISW'}
           name: chk_techniciansreport
-          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Technicians}
+          properties: {align: center, bold: true, font: Mozilla Headline, font_size: 16, text: Technicians}
           type: CheckBox
         - layout_properties: {grid_position: 'ETPGQU,VDTBNS'}
           name: chk_staffreports
-          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Staffs}
+          properties: {align: center, bold: true, font: Mozilla Headline, font_size: 16, text: Staffs}
           type: CheckBox
-        - layout_properties: {grid_position: 'VBSWEC,CJVDZU'}
+        - layout_properties: {grid_position: 'ETPGQU,NSSSQE'}
           name: chk_inventoryreport
-          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Inventory}
+          properties: {align: center, bold: true, font: Mozilla Headline, font_size: 16, text: Inventory}
           type: CheckBox
-        - layout_properties: {grid_position: 'FIWWAN,AAVVOZ'}
+        - layout_properties: {grid_position: 'ETPGQU,PQZBXL'}
           name: chk_quoteinvoicereport
-          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Periodic Quote And Invoice}
+          properties: {align: center, bold: true, font: Mozilla Headline, font_size: 16, text: Periodic Quote And Invoice}
           type: CheckBox
         - layout_properties: {grid_position: 'NGDMEE,QIAJDW'}
           name: chk_paymentreport
-          properties: {align: left, bold: true, font: Mozilla Headline, font_size: 16, text: Periodic Payment Details}
+          properties: {align: center, bold: true, font: Mozilla Headline, font_size: 16, text: Periodic Payment Details}
           type: CheckBox
         layout_properties: {grid_position: 'KDNHOM,FQFVXC'}
         name: column_panel_2_copy_copy
+        properties: {background: '', border: solid}
+        type: ColumnPanel
+      - components:
+        - layout_properties: {}
+          name: label_report_copy
+          properties: {align: center, background: 'theme:Black', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: SETTINGS}
+          type: Label
+        - layout_properties: {}
+          name: chk_report_copy
+          properties: {align: center, text: ''}
+          type: CheckBox
+        layout_properties: {grid_position: 'FCJBMY,WROBCP'}
+        name: data_row_panel_1_copy_2_copy_copy
+        properties: {border: solid}
+        type: DataRowPanel
+      - components:
+        - layout_properties: {grid_position: 'KXOXYX,YWVDZX'}
+          name: chk_useraccounts
+          properties: {align: center, bold: true, font: Mozilla Headline, font_size: 16, text: User Accounts}
+          type: CheckBox
+        - layout_properties: {grid_position: 'KXOXYX,QTYUCW'}
+          name: chk_roleasandpermissions
+          properties: {align: center, bold: true, font: Mozilla Headline, font_size: 16, text: Roles And Permissions}
+          type: CheckBox
+        layout_properties: {grid_position: 'FFCMDK,TMBPJV'}
+        name: column_panel_2_copy_copy_copy_2
         properties: {background: '', border: solid}
         type: ColumnPanel
       layout_properties: {grid_position: 'TVYZFH,TBMBOO', row_background: 'theme:Black'}

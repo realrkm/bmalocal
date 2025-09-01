@@ -47,6 +47,7 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
         self.chk_inventoryreport.tag = "Inventory Report"
         self.chk_quoteinvoicereport.tag = "Quote And Invoice Report"
         self.chk_paymentreport.tag = "Payment Report"
+        self.chk_sett
 
         
         # Define sections with their subsections

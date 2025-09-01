@@ -19,7 +19,7 @@ class Contacts(ContactsTemplate):
         self.permissions = permissions
         self.apply_permissions()
         self.show_clicked_button(buttonName)
-
+        
     def apply_permissions(self):
         """Apply only CONTACT-related permissions"""
         contact_perms = self.permissions.get("CONTACT", {"main": False, "subs": {}})
@@ -30,7 +30,7 @@ class Contacts(ContactsTemplate):
             "Technicians": self.btn_Technician,
             "Staffs": self.btn_Staff,
         }
-
+      
         # If main CONTACT is False and all subs are False → hide whole form
         if not (contact_perms["main"] or any(contact_perms["subs"].values())):
             self.visible = False

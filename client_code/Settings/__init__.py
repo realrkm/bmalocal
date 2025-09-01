@@ -9,7 +9,7 @@ from ..UserAccounts import UserAccounts
 from ..UserRolesAndPermissions import UserRolesAndPermissions
 
 class Settings(SettingsTemplate):
-    def __init__(self, buttonName, **properties):
+    def __init__(self, buttonName = "USER ACCOUNT", **properties):
         # Set Form properties and Data Bindings.
         self.init_components(**properties)
         # Any code you write here will run before the form opens.

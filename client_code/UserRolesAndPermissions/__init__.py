@@ -139,7 +139,6 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
 
         # Send to server
         anvil.server.call("save_user_permissions", role_id, selected_permissions)
-        alert(selected_permissions)
         alert("Permissions saved successfully!", title="Success")
 
         # Reload Form

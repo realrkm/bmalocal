@@ -24,6 +24,7 @@ class Contacts(ContactsTemplate):
         """Apply only CONTACT-related permissions"""
 
         contact_perms = self.permissions.get("CONTACT", {"main": False, "subs": {}})
+        alert(contact_perms)
 
         # Example sub buttons (assume they exist in your ContactForm)
         # btn_Client, btn_Technician, btn_Staff

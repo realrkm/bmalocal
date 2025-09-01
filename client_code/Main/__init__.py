@@ -31,8 +31,7 @@ class Main(MainTemplate):
         ModNavigation.home_form = self
         
     def apply_permissions(self):
-        """Apply user permissions to the UI buttons"""
-        # Map your sidebar buttons to section names
+        """Apply user permissions to the sidebar only"""
         section_map = {
             "CONTACT": self.btn_Contact,
             "JOB CARD": self.btn_JobCard,
@@ -44,13 +43,16 @@ class Main(MainTemplate):
             "REPORTS": self.btn_Report,
             "SETTINGS": self.btn_Settings,
         }
-
+    
         for section, button in section_map.items():
-            # If user has no permission → hide button
             section_perms = self.permissions.get(section, {})
+            # Hide main button if no access at all
             if not (section_perms.get("main") or any(section_perms.get("subs", {}).values())):
                 button.visible = False
-                button.enabled = False  
+                button.enabled = False
+            else:
+                button.visible = True
+                button.enabled = True
                 
     def highlight_active_button(self, selected_text):
         # Loop through all buttons in the panel

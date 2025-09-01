@@ -48,6 +48,7 @@ class Main(MainTemplate):
         for section, button in section_map.items():
             # If user has no permission → hide button
             section_perms = self.permissions.get(section, {})
+            alert(section_perms)
             if not (section_perms.get("main") or any(section_perms.get("subs", {}).values())):
                 button.visible = False
                 button.enabled = False  

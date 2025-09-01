@@ -8,6 +8,7 @@ from anvil.tables import app_tables
 from ..Client import Client
 from ..Tehnicians import Tehnicians
 from ..Staffs import Staffs
+from .. import ModLoadSubformPermissions
 
 class Contacts(ContactsTemplate):
     def __init__(self, buttonName, **properties):

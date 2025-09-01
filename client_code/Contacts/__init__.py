@@ -10,19 +10,12 @@ from ..Tehnicians import Tehnicians
 from ..Staffs import Staffs
 from .. import ModLoadSubformPermissions as perms
 
+
 class Contacts(ContactsTemplate):
-    def __init__(self, buttonName, permissions, **properties):
+    def __init__(self, permissions, **properties):
         self.init_components(**properties)
         self.permissions = permissions
-
-        # Bind button clicks dynamically
-        self.btn_Client.set_event_handler("click", lambda **e: self.show_clicked_button("Client"))
-        self.btn_Technician.set_event_handler("click", lambda **e: self.show_clicked_button("Technician"))
-        self.btn_Staff.set_event_handler("click", lambda **e: self.show_clicked_button("Staff"))
-
-        # Apply permissions and show selected
         self.apply_permissions()
-        self.show_clicked_button(buttonName)
 
     def apply_permissions(self):
         """Apply only CONTACT-related permissions"""
@@ -37,24 +30,34 @@ class Contacts(ContactsTemplate):
             self.visible = False
             return
 
+        # Track if we’ve auto-loaded one subsection
+        auto_loaded = False
+
         for sub_name, button in section_map.items():
             allowed = contact_perms["main"] or contact_perms["subs"].get(sub_name, False)
             button.visible = allowed
             button.enabled = allowed
 
+            # Auto-load the first allowed subsection
+            if allowed and not auto_loaded:
+                self.show_clicked_button(button.text)
+                auto_loaded = True
+
     def show_clicked_button(self, buttonName, **event_args):
-        # Map human labels -> DB subsection keys
+        """Called when a subsection button is clicked OR default-loaded"""
+        # Map button labels -> DB subsection keys
         name_to_subsection = {
-            "Client": "CLIENTS",
-            "Technician": "TECHNICIANS",
-            "Staff": "STAFF",
+            "CLIENTS": "CLIENTS",
+            "TECHNICIANS": "TECHNICIANS",
+            "STAFF": "STAFF",
         }
 
         subsection = name_to_subsection.get(buttonName)
+        
         if not subsection:
             return
 
-        # Button map
+        # Button map (for highlighting)
         button_map = {
             "CLIENTS": self.btn_Client,
             "TECHNICIANS": self.btn_Technician,
@@ -68,9 +71,12 @@ class Contacts(ContactsTemplate):
             "STAFF": lambda: self.load_staff(),
         }
 
-        perms.safe_load_subform(self, self.permissions, "CONTACT", subsection, button_map, loader_fn_map)
+        # Always goes through centralized permission + highlighting
+        perms.safe_load_subform(
+            self, self.permissions, "CONTACT", subsection, button_map, loader_fn_map
+        )
 
-    # loader functions
+    # --- Loader functions ---
     def load_client(self):
         self.card_2.clear()
         self.card_2.add_component(Client())
@@ -82,3 +88,13 @@ class Contacts(ContactsTemplate):
     def load_staff(self):
         self.card_2.clear()
         self.card_2.add_component(Staffs())
+
+    # --- Button click handlers (thin wrappers) ---
+    def btn_Client_click(self, **event_args):
+        self.show_clicked_button("Client")
+
+    def btn_Technician_click(self, **event_args):
+        self.show_clicked_button("Technician")
+
+    def btn_Staff_click(self, **event_args):
+        self.show_clicked_button("Staff")

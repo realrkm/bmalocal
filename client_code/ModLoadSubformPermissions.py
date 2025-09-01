@@ -3,6 +3,8 @@ import anvil.users
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
+from anvil import Button, Label
+
 
 def apply_sub_permissions(section_name, form, subsection_map, permissions):
     """Apply subsection permissions for a given section inside its form"""
@@ -13,7 +15,8 @@ def apply_sub_permissions(section_name, form, subsection_map, permissions):
         allowed = section_perms["main"] or section_perms["subs"].get(sub_tag, False)
         sub_button.visible = allowed
         sub_button.enabled = allowed
-        
+
+
 def has_permission(permissions, section, subsection=None):
     """Check if user has permission for a section/subsection."""
     section_perms = permissions.get(section, {"main": False, "subs": {}})
@@ -30,7 +33,7 @@ def has_permission(permissions, section, subsection=None):
 def safe_load_subform(self, permissions, section, subsection, button_map, loader_fn_map):
     """
     Generic permission check before showing subform.
-    
+
     Args:
         self: The form calling it
         permissions: dict of role permissions
@@ -40,14 +43,12 @@ def safe_load_subform(self, permissions, section, subsection, button_map, loader
         loader_fn_map: dict mapping subsection keys -> loader functions
     """
     if not has_permission(permissions, section, subsection):
-        anvil.alert(f"You do not have permission to access {subsection}.")
+        self.card_2.clear()
+        self.card_2.add_component(Label(text=f"You do not have permission to access {subsection}."))
         return
 
-    # Highlight button if it exists
-    button = button_map.get(subsection)
-    if button:
-        # Call your highlight helper here
-        self.highlight_active_button(button.text)
+    # Highlight the clicked button centrally
+    highlight_active_button(button_map, subsection)
 
     # Clear the content area before loading
     self.card_2.clear()
@@ -56,3 +57,14 @@ def safe_load_subform(self, permissions, section, subsection, button_map, loader
     loader_fn = loader_fn_map.get(subsection)
     if loader_fn:
         loader_fn()
+
+def highlight_active_button(button_map, selected_key):
+    """Highlight the active button in a button_map"""
+    for key, btn in button_map.items():
+        if isinstance(btn, Button):
+            if key == selected_key:
+                btn.background = "#000000"  # Highlighted black
+                btn.foreground = "white"
+            else:
+                btn.background = "#1976D2"  # Normal blue
+                btn.foreground = "white"

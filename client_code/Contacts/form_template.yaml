@@ -1,16 +1,16 @@
 components:
 - components:
-  - event_bindings: {click: btn_Client_click}
+  - event_bindings: {}
     layout_properties: {full_width_row: true, grid_position: 'ICYPZW,QXSSLB'}
     name: btn_Client
     properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, role: primary-color, text: CLIENTS}
     type: Button
-  - event_bindings: {click: btn_Technician_click}
+  - event_bindings: {}
     layout_properties: {full_width_row: true, grid_position: 'ICYPZW,KZTHLI'}
     name: btn_Technician
     properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, role: primary-color, text: TECHNICIANS}
     type: Button
-  - event_bindings: {click: btn_Staff_click}
+  - event_bindings: {}
     layout_properties: {grid_position: 'ICYPZW,NSPLJR'}
     name: btn_Staff
     properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, role: primary-color, text: STAFF}

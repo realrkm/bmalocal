@@ -71,10 +71,10 @@ class Main(MainTemplate):
         # Now refresh the page
         self.refresh_data_bindings()
         
-    def btn_Contact_click(self, buttonName="Client", **event_args):
+    def btn_Contact_click(self, buttonName="Clients", **event_args):
         """This method is called when the button is clicked"""
         self.highlight_active_button("CONTACT")
-        ModNavigation.go_Contact(buttonName, self.permissions)
+        ModNavigation.go_Contact(self.permissions)
         #Now hide sidebar after clicking link. 
         #Additional function in standard-page.html
         self.call_js('hideSidebarIfModal')

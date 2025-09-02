@@ -295,10 +295,10 @@ components:
     name: card_2
     properties: {role: card}
     type: ColumnPanel
-  - event_bindings: {click: btn_Save_click}
+  - event_bindings: {click: btn_UpdateRoleAndPermissions_click}
     layout_properties: {grid_position: 'BSAHBL,GXUZSO'}
-    name: btn_Save
-    properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: Add Role}
+    name: btn_UpdateRoleAndPermissions
+    properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: UPDATE Role And Permissions}
     type: Button
   layout_properties: {full_width_row: true, grid_position: 'SOXRRM,GHLLLI', row_background: 'theme:Black'}
   name: card_1

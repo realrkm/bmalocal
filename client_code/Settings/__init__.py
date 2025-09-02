@@ -9,12 +9,37 @@ from ..UserAccounts import UserAccounts
 from ..UserRolesAndPermissions import UserRolesAndPermissions
 
 class Settings(SettingsTemplate):
-    def __init__(self, buttonName = "USER ACCOUNT", **properties):
+    def __init__(self, permissions, **properties):
         # Set Form properties and Data Bindings.
         self.init_components(**properties)
         # Any code you write here will run before the form opens.
-        self.card_2.visible=False
-        self.show_clicked_button(buttonName)
+        self.permissions = permissions
+
+        # Apply permissions to buttons and load the first available subform
+        self.apply_permissions()
+
+    def apply_permissions(self):
+        """Apply only SETTINGS-related permissions and load the first available subform."""
+        settings_perms = self.permissions.get("SETTINGS", {"main": False, "subs": {}})
+
+        first_visible = None  # track which subform to load first
+
+        for subsection, value in settings_perms["subs"].items():
+            if subsection == "User Accounts":
+                self.btn_AddUser.visible = value
+                self.btn_AddUser.enabled = value
+                if value and first_visible is None:
+                    first_visible = "USER ACCOUNT"
+
+            elif subsection == "Roles And Permissions":
+                self.btn_UserRoles.visible = value
+                self.btn_UserRoles.enabled = value
+                if value and first_visible is None:
+                    first_visible = "ROLES AND PERMISSIONS"
+
+        # Load the first visible subform automatically
+        if first_visible:
+            self.show_clicked_button(first_visible)
 
     #This function is called when Contact form loads or when Save And New button is clicked in the forms loaded in card_2 component
     def show_clicked_button(self, buttonName, **event_args):

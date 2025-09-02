@@ -134,9 +134,9 @@ class Main(MainTemplate):
         #Additional function in standard-page.html
         self.call_js('hideSidebarIfModal') 
 
-    def btn_Settings_click(self, buttonName = "USER ACCOUNT", **event_args):
+    def btn_Settings_click(self, **event_args):
         self.highlight_active_button("SETTINGS")
-        ModNavigation.go_Settings(buttonName)
+        ModNavigation.go_Settings(self.permissions)
         #Now hide sidebar after clicking link. 
         #Additional function in standard-page.html
         self.call_js('hideSidebarIfModal') 

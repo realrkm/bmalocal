@@ -29,19 +29,19 @@ class Contacts(ContactsTemplate):
         first_visible = None  # track which subform to load first
 
         for subsection, value in contact_perms["subs"].items():
-            if subsection == "CLIENTS":
+            if subsection == "Clients":
                 self.btn_Client.visible = value
                 self.btn_Client.enabled = value
                 if value and first_visible is None:
                     first_visible = "Client"
 
-            elif subsection == "TECHNICIANS":
+            elif subsection == "Technicians":
                 self.btn_Technician.visible = value
                 self.btn_Technician.enabled = value
                 if value and first_visible is None:
                     first_visible = "Technician"
 
-            elif subsection == "STAFF":
+            elif subsection == "Staff":
                 self.btn_Staff.visible = value
                 self.btn_Staff.enabled = value
                 if value and first_visible is None:

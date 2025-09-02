@@ -16,8 +16,8 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
 
         # Set checkbox tags
         self.chk_contact.tag = "CONTACT"
-        self.chk_clients.tag = "CLIENTS"
-        self.chk_technicians.tag = "TECHNICIANS"
+        self.chk_clients.tag = "Clients"
+        self.chk_technicians.tag = "Technicians"
         self.chk_staffs.tag = "STAFF"
         self.chk_jobcard.tag = "JOB CARDS"
         self.chk_workflow.tag = "WORKFLOW"
@@ -108,7 +108,7 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
     def btn_AddRole_click(self, **event_args):
         alert(content=Roles(), buttons=[], dismissible=False, large=True)
 
-    def btn_Save_click(self, **event_args):
+    def btn_UpdateRoleAndPermissions_click(self, **event_args):
         role_id = self.drop_down_selectrole.selected_value
 
         if not role_id:
@@ -142,4 +142,8 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
         alert("Permissions saved successfully!", title="Success")
 
         # Reload Form
-        get_open_form().btn_Settings_click("ROLES AND PERMISSIONS")
+        get_open_form().btn_Settings_click()
+
+   
+
+    

@@ -27,21 +27,21 @@ class Inventory(InventoryTemplate):
         first_visible = None  # track which subform to load first
 
         for subsection, value in inventory_perms["subs"].items():
-            if subsection == "ADD NEW PARTS":
+            if subsection == "Add New Parts":
                 self.btn_AddNewParts.visible = value
                 self.btn_AddNewParts.enabled = value
                 if value and first_visible is None:
                     first_visible = "AddNewParts"
 
-            elif subsection == "ADD MORE STOCK":
+            elif subsection == "Add More Stock":
                 self.btn_AddMoreStock.visible = value
                 self.btn_AddMoreStock.enabled = value
                 if value and first_visible is None:
                     first_visible = "AddMoreStock"
 
-            elif subsection == "Repair Priorities":
-                self.btn_RepairPriorities.visible = value
-                self.btn_RepairPriorities.enabled = value
+            elif subsection == "Stock Taking":
+                self.btn_StockTaking.visible = value
+                self.btn_StockTaking.enabled = value
                 if value and first_visible is None:
                     first_visible = "StockTaking"
 

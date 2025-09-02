@@ -71,7 +71,7 @@ def go_Report():
     form.load_component(Report())
 
 #Load Settings Form
-def go_Settings(buttonName):
+def go_Settings(permissions):
     form = get_form()
-    form.load_component(Settings(buttonName))
+    form.load_component(Settings(permissions))
 

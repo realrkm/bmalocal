@@ -29,23 +29,29 @@ class Revision(RevisionTemplate):
         first_visible = None  # track which subform to load first
 
         for subsection, value in revision_perms["subs"].items():
-            if subsection == "CLIENTS":
-                self.btn_Client.visible = value
-                self.btn_Client.enabled = value
+            if subsection == "Interim Quote":
+                self.btn_InterimQuotation.visible = value
+                self.btn_InterimQuotation.enabled = value
                 if value and first_visible is None:
-                    first_visible = "Client"
+                    first_visible = "INTERIM QUOTATION"
 
-            elif subsection == "TECHNICIANS":
-                self.btn_Technician.visible = value
-                self.btn_Technician.enabled = value
+            elif subsection == "Amended Invoice":
+                self.btn_AmendedInvoice.visible = value
+                self.btn_AmendedInvoice.enabled = value
                 if value and first_visible is None:
-                    first_visible = "Technician"
+                    first_visible = "AMENDED INVOICE"
 
-            elif subsection == "STAFF":
-                self.btn_Staff.visible = value
-                self.btn_Staff.enabled = value
+            elif subsection == "Repair Priorities":
+                self.btn_RepairPriorities.visible = value
+                self.btn_RepairPriorities.enabled = value
                 if value and first_visible is None:
-                    first_visible = "Staff"
+                    first_visible = "REPAIR PRIORITIES"
+
+            elif subsection == "Brand Comparison":
+                self.btn_BrandComparison.visible = value
+                self.btn_BrandComparison.enabled = value
+                if value and first_visible is None:
+                    first_visible = "BRAND COMPARISON"
 
         # Load the first visible subform automatically
         if first_visible:

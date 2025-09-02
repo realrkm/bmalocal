@@ -10,12 +10,44 @@ from ..AddMoreStock import AddMoreStock
 from ..StockTake import StockTake
 
 class Inventory(InventoryTemplate):
-    def __init__(self, buttonName, **properties):
+    def __init__(self, permissions, **properties):
         # Set Form properties and Data Bindings.
         self.init_components(**properties)
 
         # Any code you write here will run before the form opens.
-        self.show_clicked_button(buttonName)
+        self.permissions = permissions
+
+        # Apply permissions to buttons and load the first available subform
+        self.apply_permissions()
+
+    def apply_permissions(self):
+        """Apply only INVENTORY-related permissions and load the first available subform."""
+        inventory_perms = self.permissions.get("INVENTORY", {"main": False, "subs": {}})
+
+        first_visible = None  # track which subform to load first
+
+        for subsection, value in inventory_perms["subs"].items():
+            if subsection == "ADD NEW PARTS":
+                self.btn_AddNewParts.visible = value
+                self.btn_AddNewParts.enabled = value
+                if value and first_visible is None:
+                    first_visible = "AddNewParts"
+
+            elif subsection == "ADD MORE STOCK":
+                self.btn_AddMoreStock.visible = value
+                self.btn_AddMoreStock.enabled = value
+                if value and first_visible is None:
+                    first_visible = "AddMoreStock"
+
+            elif subsection == "Repair Priorities":
+                self.btn_RepairPriorities.visible = value
+                self.btn_RepairPriorities.enabled = value
+                if value and first_visible is None:
+                    first_visible = "StockTaking"
+
+        # Load the first visible subform automatically
+        if first_visible:
+            self.show_clicked_button(first_visible)
 
     # This function is called when Contact form loads or when Save And New button is clicked in the forms loaded in card_2 component
     def show_clicked_button(self, buttonName, **event_args):
@@ -23,6 +55,8 @@ class Inventory(InventoryTemplate):
             self.btn_AddNewParts_click()
         elif buttonName == "AddMoreStock":
             self.btn_AddMoreStock_click()
+        elif buttonName == "StockTaking":
+            self.btn_StockTaking_click()
        
     def highlight_active_button(self, selected_text):
         # Loop through all buttons in the panel

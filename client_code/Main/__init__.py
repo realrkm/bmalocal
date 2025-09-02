@@ -71,7 +71,7 @@ class Main(MainTemplate):
         # Now refresh the page
         self.refresh_data_bindings()
         
-    def btn_Contact_click(self, buttonName="Clients", **event_args):
+    def btn_Contact_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.highlight_active_button("CONTACT")
         ModNavigation.go_Contact(self.permissions)
@@ -105,9 +105,9 @@ class Main(MainTemplate):
         #Additional function in standard-page.html
         self.call_js('hideSidebarIfModal') 
         
-    def btn_Revision_click(self, buttonName="INTERIM QUOTATION", **event_args):
+    def btn_Revision_click(self, **event_args):
         self.highlight_active_button("REVISION")
-        ModNavigation.go_Revision(buttonName)
+        ModNavigation.go_Revision(self.permissions)
         #Now hide sidebar after clicking link. 
         #Additional function in standard-page.html
         self.call_js('hideSidebarIfModal') 
@@ -119,10 +119,10 @@ class Main(MainTemplate):
         #Additional function in standard-page.html
         self.call_js('hideSidebarIfModal') 
         
-    def btn_Inventory_click(self, buttonName = "AddNewParts", **event_args):
+    def btn_Inventory_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.highlight_active_button("INVENTORY")
-        ModNavigation.go_Inventory(buttonName)
+        ModNavigation.go_Inventory(self.permissions)
         #Now hide sidebar after clicking link. 
         #Additional function in standard-page.html
         self.call_js('hideSidebarIfModal') 

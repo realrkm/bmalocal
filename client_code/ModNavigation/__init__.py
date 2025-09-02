@@ -60,9 +60,9 @@ def go_Payment():
     form.load_component(Payment())
 
 #Load Inventory Form
-def go_Inventory(buttonName):
+def go_Inventory(permissions):
     form = get_form()
-    form.load_component(Inventory(buttonName))
+    form.load_component(Inventory(permissions))
     
   
 #Load Report Form

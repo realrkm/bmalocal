@@ -10,10 +10,11 @@ components:
     properties:
       background: theme:Black
       columns:
-      - {data_key: 'No', expand: false, id: QCDZOW, title: 'No', width: 94.5}
+      - {data_key: 'No', expand: false, id: QCDZOW, title: 'No', width: 60}
       - {data_key: email, expand: true, id: JKSDUP, title: Account}
       - {data_key: last_login, expand: true, id: VJQQOR, title: Last Login}
       - {data_key: signed_up, expand: true, id: OJLQEN, title: Created At}
+      - {data_key: role, expand: true, id: WJMKUA, title: Role}
       - {data_key: enabled, expand: true, id: NBQTBW, title: Active}
       foreground: theme:White
     type: DataGrid

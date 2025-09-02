@@ -95,7 +95,7 @@ components:
         font_size: 16
         foreground: theme:Black
         include_placeholder: true
-        items: [Checked In, Create Quote, Confirm Quote, In Service, Verify Task, Issue Invoice, Ready for Pickup]
+        items: []
         placeholder: Select Workflow Status
       type: DropDown
     layout_properties: {width: 967.2727355957031}

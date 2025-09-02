@@ -27,7 +27,7 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
         self.chk_inservice.tag = "In Service"
         self.chk_verifytask.tag = "Verify Task"
         self.chk_issueinvoice.tag = "Issue Invoice"
-        self.chk_readyforpickup.tag = "Ready For Pickup"
+        self.chk_readyforpickup.tag = "Ready for Pickup"
         self.chk_tracker.tag = "TRACKER"
         self.chk_revision.tag = "REVISION"
         self.chk_interimquote.tag = "Interim Quote"
@@ -139,7 +139,7 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
 
         # Send to server
         anvil.server.call("save_user_permissions", role_id, selected_permissions)
-        alert("Permissions saved successfully!", title="Success")
+        alert("Permissions saved successfully", title="Success")
 
         # Reload Form
         get_open_form().btn_Settings_click()

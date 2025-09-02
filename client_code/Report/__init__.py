@@ -13,7 +13,7 @@ from ..PeriodicPayment import PeriodicPayment
 from .. import ModGetData
 
 class Report(ReportTemplate):
-    def __init__(self, **properties):
+    def __init__(self, permissions, **properties):
         self.init_components(**properties)
 
         # Any code you write here will run before the form opens.
@@ -29,6 +29,68 @@ class Report(ReportTemplate):
 
         # Handle what happens when a user selects a result
         self.search_keyword_1.set_event_handler('x-search-hints-result', self.searchValue)
+
+        #Load permissions
+        self.permissions = permissions
+
+        # Apply permissions to buttons and load the first available subform
+        self.apply_permissions()
+
+    def apply_permissions(self):
+        """Apply only REPORT-related permissions and load the first available subform."""
+        report_perms = self.permissions.get("REPORTS", {"main": False, "subs": {}})
+
+        first_visible = None  # track which dropdown item to load first
+
+        for subsection, value in report_perms["subs"].items():
+            if subsection == "Client Report":
+                if value and first_visible is None:
+                    first_visible = "Clients"
+                    self.add_item(first_visible)
+                    first_visible = None #Reset to None to enable addition of other items in the dropdown
+
+            elif subsection == "Car Details Report":
+                if value and first_visible is None:
+                    first_visible = "Car Details"
+                    self.add_item(first_visible)
+                    first_visible = None
+
+
+            elif subsection == "Technicians Report":
+                if value and first_visible is None:
+                    first_visible = "Technicians"
+                    self.add_item(first_visible)
+                    first_visible = None
+
+            elif subsection == "Staffs Report":
+                if value and first_visible is None:
+                    first_visible = "Staffs"
+                    self.add_item(first_visible)
+                    first_visible = None
+
+            elif subsection == "Inventory Report":
+                if value and first_visible is None:
+                    first_visible = "Inventory"
+                    self.add_item(first_visible)
+                    first_visible = None
+
+            elif subsection == "Quote And Invoice Report":
+                if value and first_visible is None:
+                    first_visible = "Periodic Quote And Invoice"
+                    self.add_item(first_visible)
+                    first_visible = None
+
+            elif subsection == "Payment Report":
+                if value and first_visible is None:
+                    first_visible = "Periodic Payment Details"
+                    self.add_item(first_visible)
+                    first_visible = None
+
+
+    def add_item(self, new_item):
+        items = list(self.cmbReport.items or [])
+        items.append(new_item)
+        self.cmbReport.items = items
 
     def handle_server_errors(self, exc):
         if isinstance(exc, anvil.server.UplinkDisconnectedError):

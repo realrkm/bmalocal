@@ -91,7 +91,7 @@ class Main(MainTemplate):
     def btn_Workflow_click(self, **event_args):
         self.highlight_active_button("WORKFLOW")
         """This method is called when the button is clicked"""
-        ModNavigation.go_Workflow()
+        ModNavigation.go_Workflow(self.permissions)
         #Now hide sidebar after clicking link. 
         #Additional function in standard-page.html
         self.call_js('hideSidebarIfModal') 
@@ -129,7 +129,7 @@ class Main(MainTemplate):
         
     def btn_Report_click(self, **event_args):
         self.highlight_active_button("REPORTS")
-        ModNavigation.go_Report()
+        ModNavigation.go_Report(self.permissions)
         #Now hide sidebar after clicking link. 
         #Additional function in standard-page.html
         self.call_js('hideSidebarIfModal') 

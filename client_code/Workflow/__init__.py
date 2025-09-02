@@ -10,7 +10,7 @@ from datetime import date
 from .. import ModGetData
 
 class Workflow(WorkflowTemplate):
-    def __init__(self, **properties):
+    def __init__(self, permissions, **properties):
         self.init_components(**properties)
 
         # Any code you write here will run before the form opens.
@@ -18,7 +18,66 @@ class Workflow(WorkflowTemplate):
         set_default_error_handling(self.handle_server_errors) #Set global server error handler
         self.load_dashboard_data()
         self.total_label.text = "Total Vehicles: 0"
-        
+        self.permissions = permissions
+
+        # Apply permissions to buttons and load the first available subform
+        self.apply_permissions()
+
+    def apply_permissions(self):
+        """Apply only WORKFLOW-related permissions and load the first available subform."""
+        workflow_perms = self.permissions.get("WORKFLOW", {"main": False, "subs": {}})
+
+        first_visible = None  # track which dropdown item to load first
+
+        for subsection, value in workflow_perms["subs"].items():
+            if subsection == "Checked In":
+                if value and first_visible is None:
+                    first_visible = "Checked In"
+                    self.add_item(first_visible)
+                    first_visible = None #Reset to None to enable addition of other items in the dropdown
+
+            elif subsection == "Create Quote":
+                if value and first_visible is None:
+                    first_visible = "Create Quote"
+                    self.add_item(first_visible)
+                    first_visible = None
+                    
+
+            elif subsection == "Confirm Quote":
+                if value and first_visible is None:
+                    first_visible = "Confirm Quote"
+                    self.add_item(first_visible)
+                    first_visible = None
+
+            elif subsection == "In Service":
+                if value and first_visible is None:
+                    first_visible = "In Service"
+                    self.add_item(first_visible)
+                    first_visible = None
+                    
+            elif subsection == "Verify Task":
+                if value and first_visible is None:
+                    first_visible = "Verify Task"
+                    self.add_item(first_visible)
+                    first_visible = None
+
+            elif subsection == "Issue Invoice":
+                if value and first_visible is None:
+                    first_visible = "Issue Invoice"
+                    self.add_item(first_visible)
+                    first_visible = None
+
+            elif subsection == "Ready for Pickup":
+                if value and first_visible is None:
+                    first_visible = "Ready for Pickup"
+                    self.add_item(first_visible)
+                    first_visible = None
+
+
+    def add_item(self, new_item):
+        items = list(self.cmbStatus.items or [])
+        items.append(new_item)
+        self.cmbStatus.items = items
 
     def handle_server_errors(self, exc):
         if isinstance(exc, anvil.server.UplinkDisconnectedError):

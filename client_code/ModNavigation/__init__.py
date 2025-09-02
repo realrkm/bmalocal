@@ -35,9 +35,9 @@ def go_JobCard():
     form.load_component(JobCard())
 
 #Load Workflowt Form
-def go_Workflow():
+def go_Workflow(permissions):
     form = get_form()
-    form.load_component(Workflow())
+    form.load_component(Workflow(permissions))
 
 #Load Progress Tracker Form
 def go_Tracker():
@@ -66,9 +66,9 @@ def go_Inventory(permissions):
     
   
 #Load Report Form
-def go_Report():
+def go_Report(permissions):
     form = get_form()
-    form.load_component(Report())
+    form.load_component(Report(permissions))
 
 #Load Settings Form
 def go_Settings(permissions):

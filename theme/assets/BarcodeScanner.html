@@ -1,0 +1,66 @@
+<html>
+    <head>
+        <script src="https://unpkg.com/quagga@0.12.1/dist/quagga.min.js"></script>
+        <style>
+            #scanner-container {
+            width: 100%;
+            max-width: 640px;
+            margin: auto;
+            }
+            #scanner-container video {
+            width: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="scanner-container">
+            <video autoplay="true" id="scanner-video"></video>
+        </div>
+        <script>
+            // JavaScript to handle barcode scanning
+            function startScanner(callback) {
+            Quagga.init({
+            inputStream: {
+            name: "Live",
+            type: "LiveStream",
+            target: document.querySelector('#scanner-video'),
+            constraints: {
+            facingMode: "environment" // Use rear camera on phones
+            }
+            },
+            decoder: {
+            readers: [
+            "code_128_reader",
+            "ean_reader",
+            "ean_8_reader",
+            "code_39_reader",
+            "upc_reader"
+            ]
+            }
+            }, function(err) {
+            if (err) {
+            console.error(err);
+            return;
+            }
+            Quagga.start();
+            });
+
+            Quagga.onDetected(function(data) {
+            var code = data.codeResult.code;
+            // Call the Anvil server function with the scanned code
+            anvil.call('display_result', code);
+            Quagga.stop(); // Stop scanning after detecting a barcode
+            });
+            }
+
+            // Function to stop the scanner
+            function stopScanner() {
+            Quagga.stop();
+            }
+
+            // Expose the startScanner function to Anvil
+            window.startScanner = startScanner;
+            window.stopScanner = stopScanner;
+        </script>
+    </body>
+</html>

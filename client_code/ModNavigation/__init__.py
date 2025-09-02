@@ -50,9 +50,9 @@ def go_Tracker():
         form.load_component(ProgressTracker())
 
 #Load Revision Form
-def go_Revision(buttonName):
+def go_Revision(permissions):
     form = get_form()
-    form.load_component(Revision(buttonName))
+    form.load_component(Revision(permissions))
     
 #Load Payment Form
 def go_Payment():

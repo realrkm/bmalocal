@@ -12,12 +12,44 @@ from ..BrandComparison import BrandComparison
 
 
 class Revision(RevisionTemplate):
-    def __init__(self, buttonName,**properties):
+    def __init__(self, permissions,**properties):
         # Set Form properties and Data Bindings.
         self.init_components(**properties)
 
         # Any code you write here will run before the form opens.
-        self.show_clicked_button(buttonName)
+        self.permissions = permissions
+
+        # Apply permissions to buttons and load the first available subform
+        self.apply_permissions()
+
+    def apply_permissions(self):
+        """Apply only REVISION-related permissions and load the first available subform."""
+        revision_perms = self.permissions.get("REVISION", {"main": False, "subs": {}})
+
+        first_visible = None  # track which subform to load first
+
+        for subsection, value in revision_perms["subs"].items():
+            if subsection == "CLIENTS":
+                self.btn_Client.visible = value
+                self.btn_Client.enabled = value
+                if value and first_visible is None:
+                    first_visible = "Client"
+
+            elif subsection == "TECHNICIANS":
+                self.btn_Technician.visible = value
+                self.btn_Technician.enabled = value
+                if value and first_visible is None:
+                    first_visible = "Technician"
+
+            elif subsection == "STAFF":
+                self.btn_Staff.visible = value
+                self.btn_Staff.enabled = value
+                if value and first_visible is None:
+                    first_visible = "Staff"
+
+        # Load the first visible subform automatically
+        if first_visible:
+            self.show_clicked_button(first_visible)
 
     #This function is called when Revision form loads or when Save And New button is clicked in the forms loaded in card_2 component
     def show_clicked_button(self, buttonName, **event_args):

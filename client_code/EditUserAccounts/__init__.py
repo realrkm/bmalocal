@@ -13,15 +13,30 @@ class EditUserAccounts(EditUserAccountsTemplate):
         self.init_components(**properties)
 
         # Any code you write here will run before the form opens.
-        alert(items)
+        self.drop_down_role.items  = anvil.server.call("get_account_roles")
+        
+        self.label_oldemail.text = items["email"]
         self.txt_email.text = items["email"]
-        self.drop_down_role.selected_value = items["role"]
+        self.drop_down_role.selected_value = anvil.server.call("get_role_id", items["role"])
         self.drop_down_active.selected_value = items["enabled"]
 
     def btn_Update_click(self, **event_args):
         """This method is called when the button is clicked"""
-        pass
-
+        oldemail = self.label_oldemail.text
+        email = self.txt_email.text
+        role = self.drop_down_role.selected_value
+        
+        if self.drop_down_active.selected_value == "Yes":
+            active = True
+        else:
+            active = False
+            
+        if email and role and active:
+            anvil.server.call_s("update_user", oldemail, email, role, active)
+            alert("Update is successfull", title="Success", large=False)
+            self.btn_Close_click()
+            get_open_form().btn_Settings_click()
+            
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.raise_event("x-close-alert", value=True)

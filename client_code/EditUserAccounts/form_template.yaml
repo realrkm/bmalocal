@@ -5,6 +5,10 @@ components:
       name: label_title
       properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', text: Edit User Account}
       type: Label
+    - layout_properties: {grid_position: 'FYXZCO,RBUNQU'}
+      name: label_oldemail
+      properties: {visible: false}
+      type: Label
     - layout_properties: {grid_position: 'CITTKQ,DFNHRU', row_background: 'theme:Black'}
       name: spacer_1_copy
       properties: {height: '10'}
@@ -30,7 +34,7 @@ components:
         items: ['Yes', 'No']
         placeholder: Select Active Status *
       type: DropDown
-    - layout_properties: {grid_position: 'LUUVIC,ZSOATV', row_background: 'theme:Black'}
+    - layout_properties: {grid_position: 'LUUVIC,ZSOATV', row_background: 'theme:White'}
       name: spacer_1
       properties: {height: '10'}
       type: Spacer
@@ -50,7 +54,7 @@ components:
       type: Spacer
     layout_properties: {grid_position: 'AUOYRF,SNSHNA', row_background: 'theme:Black'}
     name: card_2
-    properties: {role: card}
+    properties: {border: solid, role: card}
     type: ColumnPanel
   layout_properties: {full_width_row: true, grid_position: 'VNOANT,HQLRGY', row_background: 'theme:Black'}
   name: card_1

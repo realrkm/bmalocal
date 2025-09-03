@@ -17,4 +17,5 @@ class RowTemplate14(RowTemplate14Template):
 
     def btn_Edit_click(self, **event_args):
         """This method is called when the button is clicked"""
-        alert(content=EditUserAccounts(), buttons=[], dismissible=False, large=True)
+        items = list(self.parent.items)
+        alert(content=EditUserAccounts(items[list(self.parent.items).index(self.item)]), buttons=[], dismissible=False, large=True)

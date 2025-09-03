@@ -23,19 +23,34 @@ class EditUserAccounts(EditUserAccountsTemplate):
     def btn_Update_click(self, **event_args):
         """This method is called when the button is clicked"""
         oldemail = self.label_oldemail.text
-        email = self.txt_email.text
+        email = self.txt_email.text.strip()
         role = self.drop_down_role.selected_value
-        
-        if self.drop_down_active.selected_value == "Yes":
-            active = True
-        else:
-            active = False
-            
-        if email and role and active:
-            anvil.server.call_s("update_user", oldemail, email, role, active)
-            alert("Update is successfull", title="Success", large=False)
-            self.btn_Close_click()
-            get_open_form().btn_Settings_click()
+        active = True if self.drop_down_active.selected_value == "Yes" else False
+    
+        # Validate inputs
+        if not email:
+            alert("Email is required.", title="Error", large=False)
+            return
+        if not role:
+            alert("Role is required.", title="Error", large=False)
+            return
+        if active not in [True, False]:
+            alert("Active status is required.", title="Error", large=False)
+            return
+    
+        # Call server
+        anvil.server.call(
+            "update_user",
+            email=oldemail,
+            new_email=email,
+            enabled=active,
+            role_id=role
+        )
+    
+        alert("Update is successful", title="Success", large=False)
+        self.btn_Close_click()
+        get_open_form().btn_Settings_click()
+
             
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""

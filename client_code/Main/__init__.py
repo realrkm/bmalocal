@@ -160,6 +160,10 @@ class Main(MainTemplate):
         if result == "ok":
             self.timer_keepalive.interval = 300
 
+    def btn_ResetPassword_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        anvil.users.change_password_with_form()
+
     
         
 

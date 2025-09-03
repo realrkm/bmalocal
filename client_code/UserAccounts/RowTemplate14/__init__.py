@@ -19,3 +19,5 @@ class RowTemplate14(RowTemplate14Template):
         """This method is called when the button is clicked"""
         items = list(self.parent.items)
         alert(content=EditUserAccounts(items[list(self.parent.items).index(self.item)]), buttons=[], dismissible=False, large=True)
+
+    

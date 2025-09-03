@@ -1,3 +1,8 @@
-components: []
+components:
+- event_bindings: {click: btn_Edit_click}
+  layout_properties: {column: ZDSCHS}
+  name: btn_Edit
+  properties: {background: '#0056D6', foreground: 'theme:White', icon: 'fa:edit', text: ''}
+  type: Button
 container: {type: DataRowPanel}
 is_package: true

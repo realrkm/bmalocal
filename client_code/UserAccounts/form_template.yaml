@@ -16,6 +16,7 @@ components:
       - {data_key: signed_up, expand: true, id: OJLQEN, title: Created At}
       - {data_key: role, expand: true, id: WJMKUA, title: Role}
       - {data_key: enabled, expand: true, id: NBQTBW, title: Active}
+      - {data_key: '', id: ZDSCHS, title: '', width: '90'}
       foreground: theme:White
     type: DataGrid
   layout_properties: {full_width_row: true, grid_position: 'HBBMXX,VAVFQV', row_background: 'theme:Black'}

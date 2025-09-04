@@ -1,0 +1,26 @@
+components:
+- layout_properties: {grid_position: 'BXHRZO,WJSDVI'}
+  name: spacer_1
+  properties: {height: 32}
+  type: Spacer
+- event_bindings: {click: button_start_click}
+  layout_properties: {grid_position: 'AURHGS,KOBCOM'}
+  name: button_start
+  properties: {text: button_1}
+  type: Button
+- event_bindings: {click: button_stop_click}
+  layout_properties: {grid_position: 'AURHGS,MRXOEN'}
+  name: button_stop
+  properties: {text: button_2}
+  type: Button
+- components:
+  - layout_properties: {full_width_row: true, grid_position: 'BDPOXH,MIUYPY'}
+    name: form1_1
+    properties: {}
+    type: form:Form1
+  layout_properties: {grid_position: 'DIBYZD,THUZXD'}
+  name: card_1
+  properties: {border: solid, role: card}
+  type: ColumnPanel
+container: {type: ColumnPanel}
+is_package: true

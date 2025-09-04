@@ -1,10 +1,12 @@
-components: []
-container:
-  properties:
-    html: |-
-      <center style="font-style:italic; color:#888; margin: 3em;">
-        (Insert your custom HTML here)
-      </center>
-      <div anvil-slot="default"></div>
-  type: HtmlTemplate
+components:
+- layout_properties: {grid_position: 'KYZWPY,XCMIHL'}
+  name: label_title
+  properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', role: null, text: View Roles And Permissions}
+  type: Label
+- components: []
+  layout_properties: {grid_position: 'WUJIQX,FVHLGP'}
+  name: card_1
+  properties: {role: card}
+  type: ColumnPanel
+container: {type: ColumnPanel}
 is_package: true

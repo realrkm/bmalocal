@@ -19,7 +19,7 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
         self.chk_clients.tag = "Clients"
         self.chk_technicians.tag = "Technicians"
         self.chk_staffs.tag = "Staff"
-        self.chk_jobcard.tag = "JOB CARDS"
+        self.chk_jobcard.tag = "JOB CARD"
         self.chk_workflow.tag = "WORKFLOW"
         self.chk_checkedin.tag = "Checked In"
         self.chk_createquote.tag = "Create Quote"

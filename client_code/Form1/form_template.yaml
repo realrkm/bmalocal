@@ -1,5 +1,0 @@
-components: []
-container:
-  properties: {html: '@theme:BarcodeScanner.html'}
-  type: HtmlTemplate
-is_package: true

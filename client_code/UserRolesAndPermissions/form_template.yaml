@@ -19,6 +19,11 @@ components:
         name: btn_AddRole
         properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: Add Role}
         type: Button
+      - event_bindings: {click: btn_ViewRoles_click}
+        layout_properties: {grid_position: 'QQEUVJ,GHYNBG'}
+        name: btn_ViewRoles
+        properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: View Roles}
+        type: Button
       layout_properties: {grid_position: 'WJDBTT,OIFRYO', row_background: 'theme:Black'}
       name: card_3
       properties: {col_widths: '{"LNBDXI":40,"QCLXMD":20}', role: card}

@@ -144,6 +144,10 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
         # Reload Form
         get_open_form().btn_Settings_click()
 
+    def btn_ViewRoles_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        pass
+
    
 
     

@@ -1,384 +1,42 @@
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Barcode Scanner</title>
-        <style>
-            /* --- Base Styles & Layout --- */
-            :root {
-                --blue-600: #2563eb;
-                --blue-700: #1d4ed8;
-                --green-500: #22c55e;
-                --green-600: #16a34a;
-                --gray-100: #f3f4f6;
-                --gray-200: #e5e7eb;
-                --gray-500: #6b7280;
-                --gray-600: #4b5563;
-                --gray-700: #374151;
-                --gray-800: #1f2937;
-                --gray-900: #111827;
-                --red-100: #fee2e2;
-                --red-300: #fca5a5;
-                --red-700: #b91c1c;
-            }
+<div id="scanner-wrapper" style="text-align:center;">
 
-            * {
-                box-sizing: border-box;
-            }
+    <!-- Start Button -->
+    <button id="start-scan" style="margin:10px;">Start Scan</button>
 
-            body {
-                font-family: 'Inter', sans-serif;
-                background-color: var(--gray-100);
-                color: var(--gray-800);
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                min-height: 100vh;
-                margin: 0;
-                padding: 1rem;
-            }
+    <!-- Video Container -->
+    <div id="video-container" style="display:none; position:relative; width:100%; max-width:400px; margin:0 auto;">
+        <video id="video" style="width:100%; border:1px solid #ccc; border-radius:8px;" autoplay></video>
+        <div id="scan-line" style="
+            display:none;
+            position:absolute;
+            top:0;
+            left:0;
+            width:100%;
+            height:2px;
+            background:red;
+            animation: scan 2s linear infinite;"></div>
+    </div>
 
-            .scanner-container {
-                width: 100%;
-                max-width: 42rem;
-                margin: auto;
-                background-color: white;
-                border-radius: 0.75rem;
-                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-                padding: 1.5rem;
-                text-align: center;
-            }
+    <!-- Result Container -->
+    <div id="result-container" style="display:none; margin-top:15px;">
+        <p><strong>Scanned Result:</strong></p>
+        <p id="result" style="word-wrap:break-word; font-weight:bold;"></p>
+        <button id="copy-result" style="margin:5px;">Copy</button>
+        <button id="scan-again" style="margin:5px;">Scan Again</button>
+    </div>
 
-            @media (min-width: 768px) {
-                .scanner-container {
-                    padding: 2rem;
-                }
-            }
+    <!-- Message Box -->
+    <div id="message-box" class="info" style="display:none; margin-top:10px; color:blue;"></div>
+    
+    <script src="_/theme/scanner.js"></script>
+</div>
 
-            /* --- Typography --- */
-            h1 {
-                font-size: 1.875rem;
-                font-weight: 700;
-                color: var(--gray-800);
-                margin-top: 0;
-                margin-bottom: 0.5rem;
-            }
-
-            @media (min-width: 768px) {
-                h1 {
-                    font-size: 2.25rem;
-                }
-            }
-
-            .subtitle {
-                color: var(--gray-500);
-                margin-top: 0;
-                margin-bottom: 1.5rem;
-            }
-
-            /* --- Buttons --- */
-            .btn {
-                font-weight: 700;
-                border: none;
-                border-radius: 0.5rem;
-                cursor: pointer;
-                transition: all 0.2s ease-in-out;
-                padding: 0.75rem 1.5rem;
-            }
-            .btn:focus {
-                outline: none;
-            }
-
-            #start-scan {
-                width: 100%;
-                background-color: var(--blue-600);
-                color: white;
-                transition: all 0.3s ease-in-out;
-            }
-            #start-scan:hover {
-                background-color: var(--blue-700);
-                transform: scale(1.02);
-            }
-            #start-scan:focus {
-                box-shadow: 0 0 0 4px rgba(147, 197, 253, 0.5);
-            }
-
-            .result-buttons {
-                display: flex;
-                flex-direction: column;
-                gap: 0.75rem;
-                margin-top: 1rem;
-            }
-            @media (min-width: 640px) {
-                .result-buttons {
-                    flex-direction: row;
-                }
-            }
-            .result-buttons .btn {
-                flex: 1;
-                padding: 0.5rem 1rem;
-            }
-
-            #copy-result {
-                background-color: var(--green-500);
-                color: white;
-            }
-            #copy-result:hover {
-                background-color: var(--green-600);
-            }
-            #copy-result:focus {
-                box-shadow: 0 0 0 2px rgba(134, 239, 172, 0.5);
-            }
-
-            #scan-again {
-                background-color: var(--gray-600);
-                color: white;
-            }
-            #scan-again:hover {
-                background-color: var(--gray-700);
-            }
-            #scan-again:focus {
-                box-shadow: 0 0 0 2px rgba(156, 163, 175, 0.5);
-            }
-
-            /* --- Scanner & Result UI --- */
-            #video-container {
-                position: relative;
-                width: 100%;
-                aspect-ratio: 16 / 9;
-                border-radius: 0.5rem;
-                overflow: hidden;
-                box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05);
-                background-color: var(--gray-900);
-                margin-bottom: 1rem;
-                display: none;
-            }
-
-            #video {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-            }
-
-            #scan-line {
-                position: absolute;
-                left: 0;
-                width: 100%;
-                height: 3px;
-                background-color: rgba(239, 68, 68, 0.8);
-                box-shadow: 0 0 15px red;
-                display: none;
-                animation: scanning 2s infinite ease-in-out;
-            }
-
-            @keyframes scanning {
-                0% { top: 10%; }
-                50% { top: 90%; }
-                100% { top: 10%; }
-            }
-
-            #result-container {
-                margin-top: 1.5rem;
-                padding: 1rem;
-                background-color: #f9fafb;
-                border-radius: 0.5rem;
-                border: 1px solid var(--gray-200);
-                text-align: center;
-                display: none;
-            }
-            #result-container p {
-                color: var(--gray-600);
-                margin-top: 0;
-                margin-bottom: 0.5rem;
-            }
-            #result {
-                font-size: 1.5rem;
-                font-family: monospace;
-                color: var(--gray-800);
-                word-break: break-all;
-            }
-
-            /* --- Message Box --- */
-            .message-box {
-                margin-top: 1rem;
-                padding: 0.75rem;
-                border-radius: 0.5rem;
-                border: 1px solid transparent;
-                display: none;
-            }
-            .message-box.error {
-                background-color: var(--red-100);
-                color: var(--red-700);
-                border-color: var(--red-300);
-            }
-            .message-box.info {
-                background-color: #dbeafe;
-                color: #1d4ed8;
-                border-color: #93c5fd;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="scanner-container">
-            <h1>Barcode Scanner</h1>
-            <p class="subtitle">Position a barcode inside the frame to scan it.</p>
-
-            <!-- Main Start Button -->
-            <button id="start-scan" class="btn">Start Scan</button>
-
-            <!-- Video and Scanning UI -->
-            <div id="video-container">
-                <video id="video"></video>
-                <div id="scan-line"></div>
-            </div>
-
-            <!-- Result Display -->
-            <div id="result-container">
-                <p>Scanned Barcode:</p>
-                <strong id="result"></strong>
-                <div class="result-buttons">
-                    <button id="copy-result" class="btn">Copy</button>
-                    <button id="scan-again" class="btn">Scan Again</button>
-                </div>
-            </div>
-
-            <!-- Message Box for Errors/Info -->
-            <div id="message-box" class="message-box"></div>
-        </div>
-
-        <!-- ZXing Library -->
-        <script src="https://cdn.jsdelivr.net/npm/@zxing/library@latest/umd/index.min.js"></script>
-
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-            // DOM Element References
-            const startButton = document.getElementById('start-scan');
-            const videoContainer = document.getElementById('video-container');
-            const video = document.getElementById('video');
-            const scanLine = document.getElementById('scan-line');
-            const resultContainer = document.getElementById('result-container');
-            const resultElement = document.getElementById('result');
-            const copyButton = document.getElementById('copy-result');
-            const scanAgainButton = document.getElementById('scan-again');
-            const messageBox = document.getElementById('message-box');
-
-            // ZXing Code Reader instance
-            let codeReader = null;
-
-            // --- UI Helper Functions ---
-
-            function showMessage(msg, isError = false) {
-            messageBox.textContent = msg;
-            messageBox.classList.remove('error', 'info');
-            messageBox.classList.add(isError ? 'error' : 'info');
-            messageBox.style.display = 'block';
-            // Call Anvil server function to log errors
-            if (isError) {
-            anvil.call('show_error', msg);
-            }
-            }
-
-            function hideMessage() {
-            messageBox.style.display = 'none';
-            }
-
-            function resetUI() {
-            stopScanner();
-            resultContainer.style.display = 'none';
-            startButton.style.display = 'block';
-            videoContainer.style.display = 'none';
-            scanLine.style.display = 'none';
-            hideMessage();
-            }
-
-            // --- Scanner Logic ---
-
-            async function startScanner() {
-            hideMessage();
-            try {
-            codeReader = new ZXing.BrowserMultiFormatReader();
-
-            const videoInputDevices = await codeReader.listVideoInputDevices();
-            if (videoInputDevices.length < 1) {
-            showMessage("No camera found.", true);
-            return;
-            }
-
-            // Prefer the back camera
-            const selectedDeviceId = videoInputDevices.length > 1 
-            ? videoInputDevices.find(device => device.label.toLowerCase().includes('back'))?.deviceId || videoInputDevices[0].deviceId
-            : videoInputDevices[0].deviceId;
-
-            // Hide start button and show video feed
-            startButton.style.display = 'none';
-            videoContainer.style.display = 'block';
-            scanLine.style.display = 'block';
-            resultContainer.style.display = 'none';
-
-            // Start decoding
-            codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
-            if (result) {
-            resultElement.textContent = result.text;
-            resultContainer.style.display = 'block';
-            // Call Anvil server function to handle the result
-            anvil.call('display_result', result.text);
-            stopScanner();
-            }
-            if (err && !(err instanceof ZXing.NotFoundException)) {
-            console.error(err);
-            showMessage(`Scanning Error: ${err.message}`, true);
-            stopScanner();
-            }
-            });
-
-            } catch (error) {
-            console.error("Error initializing scanner:", error);
-            showMessage(`Initialization Error: ${error.message}`, true);
-            resetUI();
-            }
-            }
-
-            function stopScanner() {
-            if (codeReader) {
-            codeReader.reset();
-            }
-            videoContainer.style.display = 'none';
-            scanLine.style.display = 'none';
-            }
-
-            // --- Event Listeners ---
-
-            startButton.addEventListener('click', startScanner);
-
-            scanAgainButton.addEventListener('click', () => {
-            resultContainer.style.display = 'none';
-            startScanner();
-            });
-
-            copyButton.addEventListener('click', () => {
-            const textToCopy = resultElement.textContent;
-            const textArea = document.createElement('textarea');
-            textArea.value = textToCopy;
-            document.body.appendChild(textArea);
-            textArea.select();
-            try {
-            document.execCommand('copy');
-            copyButton.textContent = 'Copied!';
-            setTimeout(() => { copyButton.textContent = 'Copy'; }, 2000);
-            // Notify Anvil of the copy action
-            anvil.call('log_copy', textToCopy);
-            } catch (err) {
-            console.error('Failed to copy text: ', err);
-            showMessage('Failed to copy text.', true);
-            }
-            document.body.removeChild(textArea);
-            });
-
-            // Expose startScanner for Anvil to call (optional)
-            window.startScanner = startScanner;
-            window.stopScanner = stopScanner;
-            });
-        </script>
-    </body>
-</html>
+<!-- Scan Line Animation -->
+<style>
+    @keyframes scan {
+        0%   { top: 0; }
+        100% { top: 100%; }
+    }
+    #message-box.info { color: blue; }
+    #message-box.error { color: red; font-weight:bold; }
+</style>

@@ -17,7 +17,8 @@ components:
     name: spacer_1
     properties: {height: '10'}
     type: Spacer
-  - layout_properties: {grid_position: 'QDSGIF,XCNMEF'}
+  - event_bindings: {pressed_enter: btnSearch_click}
+    layout_properties: {grid_position: 'QDSGIF,XCNMEF'}
     name: txt_SearchRegNo
     properties: {border: solid, font: Mozilla Headline, font_size: 16, placeholder: Enter Reg No To Search *}
     type: TextBox
@@ -40,7 +41,7 @@ components:
       name: label_AssignParts
       properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: '', role: null, text: Assign Parts}
       type: Label
-    - event_bindings: {}
+    - event_bindings: {pressed_enter: btn_Search_click}
       layout_properties: {grid_position: ',undefined'}
       name: text_box_searchPartNo
       properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Part Name / Part No To Search *}

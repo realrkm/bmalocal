@@ -182,7 +182,8 @@ class RepairPriorities(RepairPrioritiesTemplate):
             
         alert("Priority saved successfully and download is initiated", title="Success")
         self.downloadPriorityPdf(regNo)
-        get_open_form().btn_Revision_click("REPAIR PRIORITIES")
+        # Clear form
+        self.clear_form_fields()
         
     def downloadPriorityPdf(self, regNo):
         media_object = anvil.server.call('downloadRevisionPdfForm', regNo, "Priority")
@@ -212,4 +213,24 @@ class RepairPriorities(RepairPrioritiesTemplate):
                 alert("Sorry, there's no priority list found for the Reg No", title="Missing Priority List", large=False)
                 self.drop_down_select.focus()
                 return
-       
+
+    def clear_form_fields(self):
+        """Reset all form fields and clear the repeating panel."""
+        self.txt_SearchRegNo.text = ""
+        self.drop_down_select.items = []
+        self.drop_down_select.selected_value = None
+        self.text_box_searchPartNo.text = ""
+        self.drop_down_selectPart.items = []
+        self.drop_down_selectPart.selected_value = None
+        self.lbl_ID.text = ""
+        self.lbl_PartNumber.text = ""
+        self.lbl_PartName.text = ""
+        self.txtQuantity.text = ""
+        self.txtSellingPrice.text = ""
+        self.drop_down_selectPriority.selected_value = None
+        self.txtServices.text = ""
+        self.txtAmount.text = ""
+        self.drop_down_selectPriorityService.selected_value = None
+        self.repeating_panel_assigned_parts.items = []
+
+        self.btn_Save.enabled = True

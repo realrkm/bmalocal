@@ -170,34 +170,41 @@ class InterimQuotation(InterimQuotationTemplate):
         self.txtAmount.text =""
 
     def btn_SaveAndDownload_click(self, **event_args):
+        self.btn_SaveAndDownload.enabled = False
         if not self.drop_down_CustomerDetails.selected_value:
             alert("Sorry, please search and select customer to proceed.", title="Blank Field(s) Found")
             self.txtCustomerName.focus()
+            self.btn_SaveAndDownload.enabled = True
             return
 
         if not self.txtMakeAndModel.text:
             alert("Sorry, please enter make and model to proceed.", title="Blank Field(s) Found")
             self.txtMakeAndModel.focus()
+            self.btn_SaveAndDownload.enabled = True
             return
 
         if not self.txtChassis.text:
             alert("Sorry, please enter chassis number to proceed.", title="Blank Field(s) Found")
             self.txtChassis.focus()
+            self.btn_SaveAndDownload.enabled = True
             return
 
         if not self.date_picker_1.date:
             alert("Sorry, please enter date to proceed.", title="Blank Field(s) Found")
             self.date_picker_1.focus()
+            self.btn_SaveAndDownload.enabled = True
             return
 
         if not self.drop_down_CheckInstaff.selected_value: # Required in tbl_jobcarddetails
             alert("Sorry, please select check-in staff to proceed.", title="Blank Field(s) Found", large=False)
             self.drop_down_CheckInstaff.focus()
+            self.btn_SaveAndDownload.enabled = True
             return
             
         rows = self.repeating_panel_assigned_parts.items or []
         if not rows:
             anvil.alert("Sorry, please assign parts or service to proceed.", title="Missing Assigned Parts or Service")
+            self.btn_SaveAndDownload.enabled = True
             return
 
         customerID = self.drop_down_CustomerDetails.selected_value
@@ -245,10 +252,6 @@ class InterimQuotation(InterimQuotationTemplate):
         
         # Clear form
         self.clear_form_fields()                     
-
-    def clear_form_fields(self):
-        """Helper function to clear all form fields after saving"""
-        get_open_form().btn_Revision_click("INTERIM QUOTATION")
         
     def downloadQuotationPdf(self, job_card_id):
         media_object = anvil.server.call('createQuotationInvoicePdf', job_card_id, "InterimQuotation")
@@ -257,4 +260,48 @@ class InterimQuotation(InterimQuotationTemplate):
 
     def deleteFile(self, jobCardID, docType):
         anvil.server.call("deleteFile", jobCardID, docType)
+
+    def clear_form_fields(self):
+        """Helper function to clear all form fields after saving"""
+
+        # Reset text fields
+        self.txtCustomerName.text = ""
+        self.txtMakeAndModel.text = ""
+        self.txtChassis.text = ""
+        self.txtRegNo.text = ""
+        self.txtEngineCode.text = ""
+        self.txtMileage.text = ""
+        self.txtServices.text = ""
+        self.txtAmount.text = ""
+        self.text_box_searchPartNo.text = ""
+        self.txtQuantity.text = ""
+        self.txtSellingPrice.text = ""
+    
+        # Reset labels
+        self.lbl_ID.text = ""
+        self.lbl_PartNumber.text = ""
+        self.lbl_PartName.text = ""
+    
+        # Reset dropdowns
+        self.drop_down_CustomerDetails.items = []
+        self.drop_down_CustomerDetails.selected_value = None
+        self.drop_down_selectPart.items = []
+        self.drop_down_selectPart.selected_value = None
+        self.drop_down_CheckInstaff.items = anvil.server.call('getInterimQuoteAndAmendedInvoiceStaff')
+        self.drop_down_CheckInstaff.selected_value = None
+    
+        # Reset date pickers
+        self.date_picker_1.date = None
+    
+        # Clear repeating panel
+        self.repeating_panel_assigned_parts.items = []
+    
+        # Refresh form display
+        self.refresh()
+    
+        # Restore focus
+        self.txtCustomerName.focus()
+
+        self.btn_SaveAndDownload.enabled = True
+
         

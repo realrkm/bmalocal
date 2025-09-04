@@ -148,6 +148,9 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
         """This method is called when the button is clicked"""
         alert(content=ViewRoles(), buttons=[], dismissible=False, large=True)
 
+    def refresh(self, **event_args):
+        self.set_event_handler("x-refresh", self.refresh)
+        
     def reset_form(self):
         """Called when resetting the form"""
         # Reload dropdown
@@ -160,6 +163,8 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
         for subs in self.sections.values():
             for chk in subs:
                 chk.checked = False
+
+        self.refresh()
 
     
 

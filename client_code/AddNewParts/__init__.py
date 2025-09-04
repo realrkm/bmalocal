@@ -18,6 +18,9 @@ class AddNewParts(AddNewPartsTemplate):
         # Any code you write here will run before the form opens.
         self.drop_down_location.items = anvil.server.call("getLocation")
         self.drop_down_supplier.items = anvil.server.call("getSupplier")
+
+    def refresh(self, **event_args):
+        self.set_event_handler("x-refresh", self.refresh)
         
     def btn_AddLocation_click(self, **event_args):
         """This method is called when the button is clicked"""
@@ -28,8 +31,10 @@ class AddNewParts(AddNewPartsTemplate):
         alert(content=AddSupplier(), buttons=[], dismissible=False, large=True)
 
 
-    def btn_SaveAndDownload_click(self, **event_args):
+    def btn_SaveAndNew_click(self, **event_args):
         """This method is called when the button is clicked"""
+        self.btn_SaveAndNew.enabled = False
+        
         purchaseDate = self.date_picker_purchase.date
         partName = self.txtPartName.text
         partNumber = self.txtPartNumber.text
@@ -44,46 +49,55 @@ class AddNewParts(AddNewPartsTemplate):
         if not purchaseDate:
             alert("Sorry, please enter purchase date", title="Blank Field(s) Found", large=False)
             self.date_picker_purchase.focus()
+            self.btn_SaveAndNew.enabled = True
             return
 
         if not partName:
             alert("Sorry, please enter car part name to proceed", title="Blank Field(s) Found", large=False)
             self.txtPartName.focus()
+            self.btn_SaveAndNew.enabled = True
             return
 
         if not partNumber:
             alert("Sorry, please enter car part number to proceed", title="Blank Field(s) Found", large=False)
             self.txtPartNumber.focus()
+            self.btn_SaveAndNew.enabled = True
             return
 
         if not locationID:
             alert("Sorry, please select storage location to proceed", title="Blank Field(s) Found", large=False)
             self.drop_down_location.focus()
+            self.btn_SaveAndNew.enabled = True
             return
             
         if not supplierID:
             alert("Sorry, please select supplier to proceed", title="Blank Field(s) Found", large=False)
             self.drop_down_supplier.focus()
+            self.btn_SaveAndNew.enabled = True
             return    
 
         if not units:
             alert("Sorry, please enter number of units to proceed", title="Blank Field(s) Found", large=False)
             self.txtNoOfUnits.focus()
+            self.btn_SaveAndNew.enabled = True
             return    
 
         if not buyingPrice:
             alert("Sorry, please enter buying price to proceed", title="Blank Field(s) Found", large=False)
             self.txtBuyingPrice.focus()
+            self.btn_SaveAndNew.enabled = True
             return    
 
         if not sellingPrice:
             alert("Sorry, please enter selling price to proceed", title="Blank Field(s) Found", large=False)
             self.txtSellingPrice.focus()
+            self.btn_SaveAndNew.enabled = True
             return    
 
         if not reorderLevel:
             alert("Sorry, please enter reorder level to proceed", title="Blank Field(s) Found", large=False)
             self.txtReorderLevel.focus()
+            self.btn_SaveAndNew.enabled = True
             return    
 
         #Avoid duplicate part number
@@ -92,12 +106,30 @@ class AddNewParts(AddNewPartsTemplate):
         if result:
             alert("This part number is already in use. Please enter a unique part number.", title="Duplicate Part Number Found", large=False)
             self.txtPartNumber.focus()
+            self.btn_SaveAndNew.enabled = True
             return
             
         anvil.server.call_s("addNewParts", purchaseDate, partName, partNumber, locationID, supplierID, units, buyingPrice, sellingPrice,discountPrice, reorderLevel)
         alert("Part Saved Successfully", title="Success", large=False)
-        get_open_form().btn_Inventory_click("AddNewParts")
+        # Clear form
+        self.clear_form_fields()       
 
     def btn_EditNewPart_click(self, **event_args):
         """This method is called when the button is clicked"""
         alert(content=EditAddNewParts(), buttons=[], dismissible=False, large=True)
+
+    def clear_form_fields(self):
+        """Reset all form fields to blank/initial values"""
+        self.date_picker_purchase.date = None
+        self.txtPartName.text = ""
+        self.txtPartNumber.text = ""
+        self.drop_down_location.selected_value = None
+        self.drop_down_supplier.selected_value = None
+        self.txtNoOfUnits.text = ""
+        self.txtBuyingPrice.text = ""
+        self.txtSellingPrice.text = ""
+        self.txtSellingDiscountedPrice.text = ""
+        self.txtReorderLevel.text = ""
+
+        self.refresh()
+        self.btn_SaveAndNew.enabled = True

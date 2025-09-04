@@ -91,9 +91,9 @@ components:
       name: spacer_3_copy_3
       properties: {height: 14}
       type: Spacer
-    - event_bindings: {click: btn_SaveAndDownload_click}
+    - event_bindings: {click: btn_SaveAndNew_click}
       layout_properties: {grid_position: 'FDIXOL,VKOQED'}
-      name: btn_Save
+      name: btn_SaveAndNew
       properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: primary-color, text: SAVE  AND NEW}
       type: Button
     - event_bindings: {click: btn_EditNewPart_click}

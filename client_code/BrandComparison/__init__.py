@@ -243,7 +243,9 @@ class BrandComparison(BrandComparisonTemplate):
 
         alert("Brand comparison saved successfully and download is initiated", title="Success")
         self.downloadBrandComparisonPdf(regNo)
-        get_open_form().btn_Revision_click("BRAND COMPARISON")
+
+        # Clear form
+        self.clear_form_fields()      
 
     def downloadBrandComparisonPdf(self, regNo):
         media_object = anvil.server.call("downloadRevisionPdfForm", regNo, "Brand")
@@ -283,3 +285,24 @@ class BrandComparison(BrandComparisonTemplate):
                 )
                 self.drop_down_select.focus()
                 return
+
+    def clear_form_fields(self):
+        """Reset all form fields and clear the repeating panel."""
+        self.txt_SearchRegNo.text = ""
+        self.drop_down_select.items = []
+        self.drop_down_select.selected_value = None
+        self.text_box_searchPartNo.text = ""
+        self.drop_down_selectPart.items = []
+        self.drop_down_selectPart.selected_value = None
+        self.lbl_ID.text = ""
+        self.lbl_PartNumber.text = ""
+        self.lbl_PartName.text = ""
+        self.txtQuantity.text = ""
+        self.txtSellingPrice.text = ""
+        self.txtGroupParts.text = ""
+        self.txtServices.text = ""
+        self.txtAmount.text = ""
+        self.txtGroupServices.text = ""
+        self.repeating_panel_assigned_parts.items = []
+
+        self.btn_Save.enabled = True

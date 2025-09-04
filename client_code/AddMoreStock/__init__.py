@@ -98,10 +98,6 @@ class AddMoreStock(AddMoreStockTemplate):
         # Clear form
         self.clear_form_fields()
 
-    def clear_form_fields(self):
-        """Helper function to clear all form fields after saving"""
-        get_open_form().btn_Inventory_click("AddMoreStock")
-
     def drop_down_selectPart_change(self, **event_args):
         """This method is called when an item is selected"""
         search_text = self.drop_down_selectPart.selected_value
@@ -113,5 +109,20 @@ class AddMoreStock(AddMoreStockTemplate):
             self.repeating_panel_1.items = result
         else:
             alert("No records found for the entered part detail.", title="Not Found")
+
+    def clear_form_fields(self):
+        """Reset all fields after saving"""
+        self.date_picker_1.date = None
+        self.text_box_searchPartNo.text = ""
+        self.drop_down_selectPart.items = []
+        self.drop_down_selectPart.selected_value = None
+        self.txt_NoOfUnits.text = ""
+        self.txt_UnitCost.text = ""
+
+        # Put cursor back on search box for next entry
+        self.text_box_searchPartNo.focus()
+        
+        self.refresh()
+        self.btn_SaveAndNew.enabled =True
 
     

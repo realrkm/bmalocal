@@ -242,17 +242,21 @@ class AmendedInvoice(AmendedInvoiceTemplate):
         self.txtPreviousAmount.text = ""
 
     def btn_SaveAndDownload_click(self, **event_args):
+        self.btn_SaveAndDownload.enabled = False
+        
         if not self.drop_down_JobCardRefDetails.selected_value:
             alert(
                 "Sorry, please search and select job card ref to proceed.",
                 title="Blank Field(s) Found",
             )
             self.txtJobCardRef.focus()
+            self.btn_SaveAndDownload.enabled = True
             return
         
         if not self.date_picker_1.date:
             alert("Sorry, please enter date to proceed.", title="Blank Field(s) Found")
             self.date_picker_1.focus()
+            self.btn_SaveAndDownload.enabled = True
             return
 
 
@@ -262,6 +266,7 @@ class AmendedInvoice(AmendedInvoiceTemplate):
                 "Sorry, please assign parts or service to proceed.",
                 title="Missing Assigned Parts or Service",
             )
+            self.btn_SaveAndDownload.enabled = True
             return
 
 
@@ -312,7 +317,45 @@ class AmendedInvoice(AmendedInvoiceTemplate):
 
     def clear_form_fields(self):
         """Helper function to clear all form fields after saving"""
-        get_open_form().btn_Revision_click("AMENDED INVOICE")
+
+        # Reset text boxes
+        self.txtJobCardRef.text = ""
+        self.text_box_searchPartNo.text = ""
+        self.txtQuantity.text = ""
+        self.txtSellingPrice.text = ""
+        self.txtServices.text = ""
+        self.txtAmount.text = ""
+        self.txtPreviousAmount.text = ""
+    
+        # Reset labels
+        self.label_MakeAndModel.text = ""
+        self.label_Chassis.text = ""
+        self.label_RegNo.text = ""
+        self.label_EngineCode.text = ""
+        self.label_Mileage.text = ""
+        self.lbl_ID.text = ""
+        self.lbl_PartNumber.text = ""
+        self.lbl_PartName.text = ""
+    
+        # Reset dropdowns
+        self.drop_down_JobCardRefDetails.items = []
+        self.drop_down_JobCardRefDetails.selected_value = None
+        self.drop_down_selectPart.items = []
+        self.drop_down_selectPart.selected_value = None
+    
+        # Reset date picker
+        self.date_picker_1.date = None
+    
+        # Clear repeating panel
+        self.repeating_panel_assigned_parts.items = []
+    
+        # Refresh form
+        self.refresh()
+    
+        # Restore focus for convenience
+        self.txtJobCardRef.focus()
+
+        self.btn_SaveAndDownload.enabled = True
 
     
 

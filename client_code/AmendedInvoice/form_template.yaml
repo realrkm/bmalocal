@@ -1,7 +1,7 @@
 components:
 - event_bindings: {click: btn_SaveAndDownload_click}
   layout_properties: {grid_position: 'SBXHEZ,HMQJEB'}
-  name: button_1
+  name: btn_SaveAndDownload
   properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: primary-color, text: UPDATE AND DOWNLOAD INVOICE}
   type: Button
 - components:

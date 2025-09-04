@@ -4,7 +4,21 @@ components:
     name: spacer_1
     properties: {height: 32}
     type: Spacer
-  - layout_properties: {full_width_row: true, grid_position: 'VPNRXN,LFYWTX', row_background: 'theme:Black'}
+  - event_bindings: {click: button_start_click}
+    layout_properties: {grid_position: 'LORZWD,XHNUQM'}
+    name: button_start
+    properties: {text: button_1}
+    type: Button
+  - event_bindings: {click: button_stop_click}
+    layout_properties: {grid_position: 'LORZWD,GLDEEC'}
+    name: button_stop
+    properties: {text: button_2}
+    type: Button
+  - layout_properties: {grid_position: 'ROYZGN,WAPPHE'}
+    name: label_result
+    properties: {border: solid, foreground: 'theme:Black'}
+    type: Label
+  - layout_properties: {full_width_row: true, grid_position: 'VPNRXN,LFYWTX', row_background: 'theme:White'}
     name: form1_1
     properties: {}
     type: form:Form1

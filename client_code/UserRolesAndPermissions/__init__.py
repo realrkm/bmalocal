@@ -142,12 +142,25 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
         alert("Permissions saved successfully", title="Success")
 
         # Reload Form
-        get_open_form().btn_Settings_click()
+        self.reset_form()
 
     def btn_ViewRoles_click(self, **event_args):
         """This method is called when the button is clicked"""
         alert(content=ViewRoles(), buttons=[], dismissible=False, large=True)
 
-   
+    def reset_form(self):
+        """Called when resetting the form"""
+        # Reload dropdown
+        self.drop_down_selectrole.items = anvil.server.call("getRoles")
+        self.drop_down_selectrole.selected_value = None
+
+        # Clear all main + sub checkboxes
+        for chk in self.main_checkboxes.values():
+            chk.checked = False
+        for subs in self.sections.values():
+            for chk in subs:
+                chk.checked = False
+
+    
 
     

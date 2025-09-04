@@ -92,8 +92,18 @@ class Client(ClientTemplate):
 
     def clear_form_fields(self):
         """Helper function to clear all form fields after saving"""
-        get_open_form().btn_Contact_click("Client")
+        self.txt_name.text = ""
+        self.txt_phone.text = ""
+        self.txt_address.text = ""
+        self.txt_email.text = ""
+        self.txt_narration.text = ""
+    
+        # Reset focus to the first field
+        self.txt_name.focus()
 
+        # Re-enable Save button in case it was disabled
+        self.btn_SaveAndNew.enabled = True
+    
     def btn_EditClient_click(self, **event_args):
         """This method is called when the button is clicked"""
         alert(content=EditClient(), buttons=[], dismissible=False,large=True)

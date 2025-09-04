@@ -95,7 +95,16 @@ class Tehnicians(TehniciansTemplate):
 
     def clear_form_fields(self):
         """Helper function to clear all form fields after saving"""
-        get_open_form().btn_Contact_click("Technician")
+        self.txt_name.text = ""
+        self.txt_phone.text = ""
+        self.dropdown_toolkits.items = [(r["ToolkitName"], r) for r in anvil.server.call('get_toolkits', None)]
+        self.dropdown_toolkits.selected_value = None
+
+        # Reset focus to the first field
+        self.txt_name.focus()
+
+        # Re-enable Save button
+        self.btn_SaveAndNew.enabled = True
             
     def btn_EditTechnician_click(self, **event_args):
         """This method is called when the button is clicked"""

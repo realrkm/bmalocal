@@ -120,6 +120,20 @@ def fe_keepalive():
     else:
         return "stop"
         
-@anvil.server.callable()
-def onBarcodeDetected(barcode):
-    print(f"Scanned: {barcode}")
+@anvil.server.callable
+def display_result(code):
+    # Handle the scanned barcode (e.g., store it, display it, etc.)
+    print(f"Scanned barcode: {code}")
+    return code
+
+@anvil.server.callable
+def show_error(message):
+    # Display error messages to the user
+    print(f"Error: {message}")
+    anvil.js.window.alert(f"Error: {message}")
+
+@anvil.server.callable
+def log_copy(text):
+    # Log when the user copies the barcode
+    print(f"Copied text: {text}")
+    return True

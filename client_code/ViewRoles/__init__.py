@@ -13,3 +13,4 @@ class ViewRoles(ViewRolesTemplate):
         self.init_components(**properties)
 
         # Any code you write here will run before the form opens.
+        self.html = anvil.server.call("get_roles_permissions_html")

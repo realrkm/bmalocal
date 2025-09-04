@@ -16,3 +16,7 @@ class ViewRoles(ViewRolesTemplate):
         # Any code you write here will run before the form opens.
         self.card_1.clear()
         self.card_1.add_component(DisplayRolesAndPermissions())
+
+    def btn_Close_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        self.raise_event('x-close-alert', value = True)

@@ -1,41 +1,11 @@
-<div id="scanner-wrapper" style="text-align:center;">
-
-    <!-- Start Button -->
-    <button id="start-scan" style="margin:10px;">Start Scan</button>
-
-    <!-- Video Container -->
-    <div id="video-container" style="display:none; position:relative; width:100%; max-width:400px; margin:0 auto;">
-        <video id="video" style="width:100%; border:1px solid #ccc; border-radius:8px;" autoplay></video>
-        <div id="scan-line" style="
-            display:none;
-            position:absolute;
-            top:0;
-            left:0;
-            width:100%;
-            height:2px;
-            background:red;
-            animation: scan 2s linear infinite;"></div>
-    </div>
-
-    <!-- Result Container -->
-    <div id="result-container" style="display:none; margin-top:15px;">
-        <p><strong>Scanned Result:</strong></p>
-        <p id="result" style="word-wrap:break-word; font-weight:bold;"></p>
-        <button id="copy-result" style="margin:5px;">Copy</button>
-        <button id="scan-again" style="margin:5px;">Scan Again</button>
-    </div>
-
-    <!-- Message Box -->
-    <div id="message-box" class="info" style="display:none; margin-top:10px; color:blue;"></div>
+<video id="video" style="width:100%;max-height:300px;" autoplay></video>
+<div id="scan-line" style="display:none;height:2px;background:red;animation:scan 2s infinite;">
     <script src="_/theme/barcode.js"></script>
 </div>
-
-<!-- Scan Line Animation -->
 <style>
     @keyframes scan {
-        0%   { top: 0; }
-        100% { top: 100%; }
+        0%   { transform: translateY(0); }
+        100% { transform: translateY(300px); }
     }
-    #message-box.info { color: blue; }
-    #message-box.error { color: red; font-weight:bold; }
 </style>
+    

@@ -1,0 +1,5 @@
+components: []
+container:
+  properties: {background: 'theme:Primary 700'}
+  type: ColumnPanel
+is_package: true

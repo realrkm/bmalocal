@@ -6,7 +6,7 @@ import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
 from ..Roles import Roles
-
+from ..ViewRoles import ViewRoles
 
 class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
     def __init__(self, **properties):
@@ -146,7 +146,7 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
 
     def btn_ViewRoles_click(self, **event_args):
         """This method is called when the button is clicked"""
-        pass
+        alert(content=ViewRoles(), buttons=[], dismissible=False, large=True)
 
    
 

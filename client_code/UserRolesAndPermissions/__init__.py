@@ -107,6 +107,8 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
 
     def btn_AddRole_click(self, **event_args):
         alert(content=Roles(), buttons=[], dismissible=False, large=True)
+        #Update dropdown component
+        self.drop_down_selectrole.items = anvil.server.call_s("getRoles")
 
     def btn_UpdateRoleAndPermissions_click(self, **event_args):
         role_id = self.drop_down_selectrole.selected_value

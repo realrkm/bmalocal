@@ -46,12 +46,26 @@
                 }
 
                 // Prefer back camera if available
-                const selectedDeviceId =
-                    videoInputDevices.length > 1
-                    ? videoInputDevices.find((d) =>
-                        d.label.toLowerCase().includes("back")
+                const selectedDeviceId = videoInputDevices.length > 1
+                    ? videoInputDevices.find((d) => 
+                        d.label.toLowerCase().includes("back") || 
+                        d.label.toLowerCase().includes("rear") ||
+                        d.label.toLowerCase().includes("environment")
                                             )?.deviceId || videoInputDevices[0].deviceId
                     : videoInputDevices[0].deviceId;
+
+                // Enhanced video constraints for better quality
+                const constraints = {
+                    video: {
+                        deviceId: selectedDeviceId,
+                        width: { ideal: 1920, min: 640 },
+                        height: { ideal: 1080, min: 480 },
+                        facingMode: { ideal: "environment" },
+                        focusMode: { ideal: "continuous" },
+                        // Enable autofocus if supported
+                        advanced: [{ focusMode: "continuous" }]
+                    }
+                };
 
                 videoContainer.style.display = "block";
                 scanLine.style.display = "block";

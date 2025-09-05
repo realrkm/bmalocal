@@ -1,65 +1,98 @@
-// ZXing library
-import "https://unpkg.com/@zxing/library@latest";
-
+// ZXing Scanner for Anvil Works
 (() => {
-    let codeReader = null;
-    let videoElement = null;
-    let scanLine = null;
+    const script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/npm/@zxing/library@latest/umd/index.min.js";
+    script.onload = () => {
+        console.log("ZXing loaded");
 
-    window.startScanner = async function() {
-        console.log("startScanner called");  // debug
-        try {
-            videoElement = document.getElementById("video");
-            scanLine = document.getElementById("scan-line");
-            const resultContainer = document.getElementById("result-container");
-            const resultElement = document.getElementById("result");
+        let codeReader = null;
+        const videoContainer = document.getElementById("video-container");
+        const scanLine = document.getElementById("scan-line");
+        const messageBox = document.getElementById("message-box");
 
-            if (!videoElement) {
-                alert("Video element not found");
-                return;
+        // --- UI Helpers ---
+        function showMessage(msg, isError = false) {
+            if (!messageBox) return;
+            messageBox.textContent = msg;
+            messageBox.classList.remove("error", "info");
+            messageBox.classList.add(isError ? "error" : "info");
+            messageBox.style.display = "block";
+        }
+
+        function hideMessage() {
+            if (messageBox) messageBox.style.display = "none";
+        }
+
+        // --- Play beep sound ---
+        function playBeep() {
+            try {
+                const audio = new Audio("_/theme/scanner-beep.mp3");
+                audio.play().catch(err => console.warn("Audio play blocked:", err));
+            } catch (e) {
+                console.error("Error playing beep:", e);
             }
+        }
 
-            if (!codeReader) {
+        // --- Scanner Logic ---
+        async function startScanner() {
+            hideMessage();
+            try {
                 codeReader = new ZXing.BrowserMultiFormatReader();
-            }
 
-            if (resultContainer) resultContainer.style.display = "none";
-            if (resultElement) resultElement.textContent = "";
-            videoElement.style.display = "block";
-            if (scanLine) scanLine.style.display = "block";
-
-            const devices = await codeReader.listVideoInputDevices();
-            if (devices.length < 1) {
-                alert("No camera found");
-                return;
-            }
-            const selectedDeviceId = devices[0].deviceId;
-
-            codeReader.decodeFromVideoDevice(selectedDeviceId, videoElement, (result, err) => {
-                if (result) {
-                    if (resultElement) resultElement.textContent = result.text;
-                    if (resultContainer) resultContainer.style.display = "block";
-                    if (window.display_result) window.display_result(result.text);
-                    window.stopScanner();
+                const videoInputDevices = await codeReader.listVideoInputDevices();
+                if (videoInputDevices.length < 1) {
+                    showMessage("No camera found.", true);
+                    return;
                 }
-                if (err && !(err instanceof ZXing.NotFoundException)) {
-                    console.error("Scanning error:", err);
-                }
-            });
-        } catch (err) {
-            console.error("Error starting scanner:", err);
-            alert("Error starting scanner. See console.");
-        }
-    };
 
-    window.stopScanner = function() {
-        console.log("stopScanner called");  // debug
-        try {
-            if (codeReader) codeReader.reset();
-            if (scanLine) scanLine.style.display = "none";
-            if (videoElement) videoElement.style.display = "none";
-        } catch (err) {
-            console.error("Error stopping scanner:", err);
+                // Prefer back camera if available
+                const selectedDeviceId =
+                    videoInputDevices.length > 1
+                    ? videoInputDevices.find((d) =>
+                        d.label.toLowerCase().includes("back")
+                                            )?.deviceId || videoInputDevices[0].deviceId
+                    : videoInputDevices[0].deviceId;
+
+                videoContainer.style.display = "block";
+                scanLine.style.display = "block";
+
+                codeReader.decodeFromVideoDevice(selectedDeviceId, "video", (result, err) => {
+                    if (result) {
+                        console.log("Scan result:", result.text);
+
+                        // Play beep sound
+                        playBeep();
+
+                        // Call into Python (Form2 sets window.display_result)
+                        if (window.display_result) {
+                            window.display_result(result.text);
+                        }
+                        stopScanner();
+                    }
+                    if (err && !(err instanceof ZXing.NotFoundException)) {
+                        console.error(err);
+                        showMessage(`Scanning Error: ${err.message}`, true);
+                        stopScanner();
+                    }
+                });
+            } catch (error) {
+                console.error("Error initializing scanner:", error);
+                showMessage(`Initialization Error: ${error.message}`, true);
+                stopScanner();
+            }
         }
+
+        function stopScanner() {
+            if (codeReader) {
+                codeReader.reset();
+            }
+            videoContainer.style.display = "none";
+            scanLine.style.display = "none";
+        }
+
+        // Expose for Anvil
+        window.startScanner = startScanner;
+        window.stopScanner = stopScanner;
     };
+    document.head.appendChild(script);
 })();

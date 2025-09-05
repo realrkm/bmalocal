@@ -8,7 +8,8 @@ components:
     name: spacer_1_copy_copy_copy
     properties: {height: 7}
     type: Spacer
-  - layout_properties: {grid_position: 'QXTLGH,NAGFFN'}
+  - event_bindings: {pressed_enter: btn_Search_click}
+    layout_properties: {grid_position: 'QXTLGH,NAGFFN'}
     name: text_box_search
     properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Part Name / Part No *}
     type: TextBox

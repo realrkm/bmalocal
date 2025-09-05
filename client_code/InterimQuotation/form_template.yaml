@@ -26,7 +26,8 @@ components:
     properties: {height: 7}
     type: Spacer
   - components:
-    - layout_properties: {grid_position: 'XLROLO,DSBIZG'}
+    - event_bindings: {pressed_enter: btn_SearchCustomer_click}
+      layout_properties: {grid_position: 'XLROLO,DSBIZG'}
       name: txtCustomerName
       properties: {align: left, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Gray 900', placeholder: Search Customer's Name *}
       type: TextBox

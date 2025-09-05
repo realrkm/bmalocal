@@ -8,7 +8,8 @@ components:
     name: label_title
     properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: full-screen-form, text: Technician Details}
     type: Label
-  - layout_properties: {grid_position: 'GFQQBF,PPXFSJ'}
+  - event_bindings: {pressed_enter: btn_Search_click}
+    layout_properties: {grid_position: 'GFQQBF,PPXFSJ'}
     name: txt_Search
     properties: {border: solid, font: Mozilla Headline, font_size: 16, placeholder: Enter Technician's Name To Search *}
     type: TextBox

@@ -77,7 +77,7 @@
                         // Play beep sound
                         playBeep();
 
-                        // Call into Python (Form2 sets window.display_result)
+                        // Call into Python (StockTake sets window.display_result)
                         if (window.display_result) {
                             window.display_result(result.text);
                         }

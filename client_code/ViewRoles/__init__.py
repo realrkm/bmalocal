@@ -6,7 +6,7 @@ import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
 from ..DisplayRolesAndPermissions import DisplayRolesAndPermissions
-
+import anvil.js
 
 class ViewRoles(ViewRolesTemplate):
     def __init__(self, **properties):
@@ -14,6 +14,9 @@ class ViewRoles(ViewRolesTemplate):
         self.init_components(**properties)
 
         # Any code you write here will run before the form opens.
+        anvil.js.call('replaceBanner')
+        while anvil.users.get_user() is None:
+            anvil.users.login_with_form()
         self.card_1.clear()
         self.card_1.add_component(DisplayRolesAndPermissions())
 

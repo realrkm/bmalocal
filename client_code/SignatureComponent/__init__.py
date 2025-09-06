@@ -5,6 +5,7 @@ import anvil.users
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
+import anvil.js
 
 class SignatureComponent(SignatureComponentTemplate):
     def __init__(self, **properties):
@@ -12,3 +13,5 @@ class SignatureComponent(SignatureComponentTemplate):
         self.init_components(**properties)
 
         # Any code you write here will run before the form opens.
+        anvil.js.call('replaceBanner')
+        

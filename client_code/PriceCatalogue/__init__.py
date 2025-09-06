@@ -9,7 +9,7 @@ from ..BuyingPrice import BuyingPrice
 from ..MissingBuyingPrice import MissingBuyingPrice
 from ..SellingPrice import SellingPrice
 from ..MissingSellingPrice import MissingSellingPrice
-
+import anvil.js
 
 class PriceCatalogue(PriceCatalogueTemplate):
     def __init__(self, **properties):
@@ -17,7 +17,10 @@ class PriceCatalogue(PriceCatalogueTemplate):
         self.init_components(**properties)
 
         # Any code you write here will run before the form opens.
-        #self.repeating_panel_1.items = anvil.server.call("get_filtered_parts")
+        anvil.js.call('replaceBanner')
+        while anvil.users.get_user() is None:
+            anvil.users.login_with_form()
+        self.repeating_panel_1.items = anvil.server.call("get_filtered_parts")
         
     def btn_Search_click(self, **event_args):
         """This method is called when the button is clicked"""

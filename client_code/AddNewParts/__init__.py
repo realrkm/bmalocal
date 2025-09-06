@@ -8,13 +8,16 @@ from anvil.tables import app_tables
 from ..AddLocation import AddLocation
 from ..AddSupplier import AddSupplier
 from ..EditAddNewParts import EditAddNewParts
-
+import anvil.js
 
 class AddNewParts(AddNewPartsTemplate):
     def __init__(self, **properties):
         # Set Form properties and Data Bindings.
         self.init_components(**properties)
-
+        anvil.js.call('replaceBanner')
+        while anvil.users.get_user() is None:
+            anvil.users.login_with_form()
+            
         # Any code you write here will run before the form opens.
         self.drop_down_location.items = anvil.server.call("getLocation")
         self.drop_down_supplier.items = anvil.server.call("getSupplier")

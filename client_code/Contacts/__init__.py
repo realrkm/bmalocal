@@ -8,13 +8,16 @@ from anvil.tables import app_tables
 from ..Client import Client
 from ..Tehnicians import Tehnicians
 from ..Staffs import Staffs
-
+import anvil.js
 
 class Contacts(ContactsTemplate):
     def __init__(self, permissions, **properties):
         """Initialize Contacts form with permissions and optionally load a subform."""
         # Set Form properties and Data Bindings
         self.init_components(**properties)
+        anvil.js.call('replaceBanner')
+        while anvil.users.get_user() is None:
+            anvil.users.login_with_form()
 
         # Store permissions
         self.permissions = permissions

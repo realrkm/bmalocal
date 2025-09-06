@@ -17,6 +17,8 @@ class VerifyTask(VerifyTaskTemplate):
     def __init__(self, valueID, **properties):
         self.init_components(**properties)
         anvil.js.call('replaceBanner')
+        while anvil.users.get_user() is None:
+            anvil.users.login_with_form()
         set_default_error_handling(self.handle_server_errors) #Set global server error handler
         
         self.cmbJobCardID.items =  ModGetData.getJobCardRef(valueID)

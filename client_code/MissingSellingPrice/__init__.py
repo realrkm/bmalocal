@@ -5,7 +5,7 @@ import anvil.users
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
-
+import anvil.js
 
 class MissingSellingPrice(MissingSellingPriceTemplate):
     def __init__(self, **properties):
@@ -13,6 +13,9 @@ class MissingSellingPrice(MissingSellingPriceTemplate):
         self.init_components(**properties)
 
         # Any code you write here will run before the form opens.
+        anvil.js.call('replaceBanner')
+        while anvil.users.get_user() is None:
+            anvil.users.login_with_form()
         self.repeating_panel_1.items = anvil.server.call("missing_selling_prices")
         self.repeating_panel_1.set_event_handler('x-close-alert', self.btn_Close_click)
         

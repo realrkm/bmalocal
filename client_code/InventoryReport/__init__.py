@@ -9,7 +9,7 @@ from ..PriceCatalogue import PriceCatalogue
 from ..StockLocation import StockLocation
 from ..StockBalance import StockBalance
 from ..CarPartsUsed import CarPartsUsed
-
+import anvil.js
 
 class InventoryReport(InventoryReportTemplate):
     def __init__(self, buttonName, **properties):
@@ -17,6 +17,9 @@ class InventoryReport(InventoryReportTemplate):
         self.init_components(**properties)
 
         # Any code you write here will run before the form opens.
+        anvil.js.call('replaceBanner')
+        while anvil.users.get_user() is None:
+            anvil.users.login_with_form()
         self.show_clicked_button(buttonName)
 
     # This function is called when Contact form loads or when Save And New button is clicked in the forms loaded in card_2 component

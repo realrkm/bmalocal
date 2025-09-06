@@ -5,7 +5,7 @@ import anvil.users
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
-
+import anvil.js
 
 class PeriodicQuoteVsInvoice(PeriodicQuoteVsInvoiceTemplate):
     def __init__(self, **properties):
@@ -13,6 +13,9 @@ class PeriodicQuoteVsInvoice(PeriodicQuoteVsInvoiceTemplate):
         self.init_components(**properties)
 
         # Any code you write here will run before the form opens.
+        anvil.js.call('replaceBanner')
+        while anvil.users.get_user() is None:
+            anvil.users.login_with_form()
         self.repeating_panel_1.items = anvil.server.call("get_jobcard_quote_invoice_totals")
 
     def btn_Search_click(self, **event_args):

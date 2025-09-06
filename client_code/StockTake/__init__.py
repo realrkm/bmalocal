@@ -5,6 +5,7 @@ from anvil.js import window, report_exceptions
 class StockTake(StockTakeTemplate):
     def __init__(self, **properties):
         self.init_components(**properties)
+        
 
         # Wrap callback so errors show in Anvil logs
         @report_exceptions

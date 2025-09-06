@@ -14,7 +14,9 @@ class EditLocation(EditLocationTemplate):
         self.init_components(**properties)
 
         # Any code you write here will run before the form opens.
-        anvil.js.call("replaceBanner")
+        anvil.js.call('replaceBanner')
+        while anvil.users.get_user() is None:
+            anvil.users.login_with_form()
         self.drop_down_select.items = anvil.server.call("getLocation")
 
         set_default_error_handling(

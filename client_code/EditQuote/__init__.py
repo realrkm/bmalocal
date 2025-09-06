@@ -14,6 +14,8 @@ class EditQuote(EditQuoteTemplate):
 
         # Any code you write here will run before the form opens.
         anvil.js.call('replaceBanner')
+        while anvil.users.get_user() is None:
+            anvil.users.login_with_form()
 
     def refresh(self, **event_args):
         self.set_event_handler("x-refresh", self.refresh)

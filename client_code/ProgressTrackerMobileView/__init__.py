@@ -12,14 +12,15 @@ from ..QuoteForm import QuoteForm
 from ..InvoiceForm import InvoiceForm
 from ..PaymentForm import PaymentForm
 
-
 class ProgressTrackerMobileView(ProgressTrackerMobileViewTemplate):
     def __init__(self, **properties):
         # Set Form properties and Data Bindings.
         self.init_components(**properties)
 
         # Any code you write here will run before the form opens.
-        anvil.js.call("replaceBanner")
+        anvil.js.call('replaceBanner')
+        while anvil.users.get_user() is None:
+            anvil.users.login_with_form()
         set_default_error_handling(
             self.handle_server_errors
         )  # Set global server error handler

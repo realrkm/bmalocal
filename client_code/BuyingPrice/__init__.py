@@ -5,6 +5,7 @@ import anvil.users
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
+import anvil.js
 
 
 class BuyingPrice(BuyingPriceTemplate):
@@ -13,6 +14,9 @@ class BuyingPrice(BuyingPriceTemplate):
         self.init_components(**properties)
 
         # Any code you write here will run before the form opens.
+        anvil.js.call('replaceBanner')
+        while anvil.users.get_user() is None:
+            anvil.users.login_with_form()
         self.repeating_panel_1.items = anvil.server.call("get_buying_prices")
 
     def btn_Search_click(self, **event_args):

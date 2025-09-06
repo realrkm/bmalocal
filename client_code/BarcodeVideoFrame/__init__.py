@@ -5,6 +5,7 @@ import anvil.users
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
+import anvil.js
 
 
 class BarcodeVideoFrame(BarcodeVideoFrameTemplate):
@@ -13,3 +14,5 @@ class BarcodeVideoFrame(BarcodeVideoFrameTemplate):
         self.init_components(**properties)
 
         # Any code you write here will run before the form opens.
+        anvil.js.call('replaceBanner')
+        

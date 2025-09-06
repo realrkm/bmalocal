@@ -7,7 +7,7 @@ import anvil.tables.query as q
 from anvil.tables import app_tables
 from .. import ModGetData
 from datetime import date
-
+import anvil.js
 
 class RepairPriorities(RepairPrioritiesTemplate):
     def __init__(self, **properties):
@@ -15,6 +15,9 @@ class RepairPriorities(RepairPrioritiesTemplate):
         self.init_components(**properties)
 
         # Any code you write here will run before the form opens.
+        anvil.js.call('replaceBanner')
+        while anvil.users.get_user() is None:
+            anvil.users.login_with_form()
 
     def refresh(self, **event_args):
         self.set_event_handler("x-refresh", self.refresh)

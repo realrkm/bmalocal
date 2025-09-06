@@ -9,7 +9,7 @@ from ..InterimQuotation import InterimQuotation
 from ..AmendedInvoice import AmendedInvoice
 from ..RepairPriorities import RepairPriorities
 from ..BrandComparison import BrandComparison
-
+import anvil.js
 
 class Revision(RevisionTemplate):
     def __init__(self, permissions,**properties):
@@ -17,6 +17,9 @@ class Revision(RevisionTemplate):
         self.init_components(**properties)
 
         # Any code you write here will run before the form opens.
+        anvil.js.call('replaceBanner')
+        while anvil.users.get_user() is None:
+            anvil.users.login_with_form()
         self.permissions = permissions
 
         # Apply permissions to buttons and load the first available subform

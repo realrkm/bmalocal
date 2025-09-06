@@ -5,6 +5,7 @@ import anvil.users
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
+import anvil.js 
 
 class SearchKeyword(SearchKeywordTemplate):
     """A search box that produces a list of hints to select from."""
@@ -14,6 +15,9 @@ class SearchKeyword(SearchKeywordTemplate):
         self.init_components(**properties)
 
         # The results panel is initially empty
+        anvil.js.call('replaceBanner')
+        while anvil.users.get_user() is None:
+            anvil.users.login_with_form()
         self.repeating_panel_results.items = []
 
         # Set up the result handling event

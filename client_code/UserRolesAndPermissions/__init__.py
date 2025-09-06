@@ -7,10 +7,14 @@ import anvil.tables.query as q
 from anvil.tables import app_tables
 from ..Roles import Roles
 from ..ViewRoles import ViewRoles
+import anvil.js
 
 class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
     def __init__(self, **properties):
         self.init_components(**properties)
+        anvil.js.call('replaceBanner')
+        while anvil.users.get_user() is None:
+            anvil.users.login_with_form()
 
         self.drop_down_selectrole.items = anvil.server.call("getRoles")
 

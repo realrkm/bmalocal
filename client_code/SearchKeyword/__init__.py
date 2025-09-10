@@ -16,8 +16,6 @@ class SearchKeyword(SearchKeywordTemplate):
 
         # The results panel is initially empty
         anvil.js.call('replaceBanner')
-        while anvil.users.get_user() is None:
-            anvil.users.login_with_form()
         self.repeating_panel_results.items = []
 
         # Set up the result handling event

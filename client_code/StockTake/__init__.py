@@ -6,12 +6,11 @@ class StockTake(StockTakeTemplate):
     def __init__(self, **properties):
         self.init_components(**properties)
         
-
         # Wrap callback so errors show in Anvil logs
         @report_exceptions
         def _display_result_from_js(result_text):
-            # Show result directly in label_result
-            self.label_result.text = result_text
+            # Show result directly in txt_barcode
+            self.txt_Barcode.text = result_text
 
             # Auto-stop scanner after first successful scan
             if hasattr(window, "stopScanner"):
@@ -31,7 +30,7 @@ class StockTake(StockTakeTemplate):
     def button_start_click(self, **event_args):
         """Start scanner when button is clicked"""
         # Clear previous result before scanning again
-        self.label_result.text = ""
+        self.txt_Barcode.text = ""
        
         if hasattr(window, "startScanner"):
             window.stopScanner()

@@ -1,0 +1,49 @@
+components:
+- components:
+  - components:
+    - layout_properties: {grid_position: 'TYHZOA,DWZPRT'}
+      name: label_title
+      properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', text: Map Barcode To PartNo}
+      type: Label
+    - layout_properties: {grid_position: 'NAFWTG,UNUDKL'}
+      name: spacer_2
+      properties: {height: 32}
+      type: Spacer
+    - layout_properties: {grid_position: 'PFGEHS,CWWDDA'}
+      name: txt_BarCode
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter barcode here *, role: null}
+      type: TextBox
+    - layout_properties: {grid_position: 'YYOPYU,WKQFPO'}
+      name: txt_PartNo
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter PartNo here *, role: null}
+      type: TextBox
+    - layout_properties: {grid_position: 'YYOPYU,KOXHHL'}
+      name: btn_Search
+      properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: SEARCH}
+      type: Button
+    - layout_properties: {grid_position: 'FHYJNC,WYPJUH'}
+      name: drop_down_selectpart
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select PartNo Here}
+      type: DropDown
+    - layout_properties: {grid_position: 'PFWYTA,YAGVNE'}
+      name: spacer_1
+      properties: {height: '10'}
+      type: Spacer
+    - layout_properties: {grid_position: 'YQLRGX,RWVGPL'}
+      name: btn_SaveAdndClose
+      properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: SAVE AND CLOSE}
+      type: Button
+    - layout_properties: {grid_position: 'HXAIFO,AKWYRT'}
+      name: spacer_3
+      properties: {height: '10'}
+      type: Spacer
+    layout_properties: {grid_position: 'VHLTAB,MZGTEY', row_background: 'theme:Black'}
+    name: card_2
+    properties: {border: solid, col_widths: '{"WKQFPO":45,"KOXHHL":15}', role: card}
+    type: ColumnPanel
+  layout_properties: {full_width_row: true, grid_position: 'XRBFZR,OVVGEX', row_background: 'theme:Black'}
+  name: card_1
+  properties: {role: card}
+  type: ColumnPanel
+container: {type: ColumnPanel}
+is_package: true

@@ -1,6 +1,13 @@
 from ._anvil_designer import StockTakeTemplate
 from anvil import *
+import anvil.server
+import anvil.users
+import anvil.tables as tables
+import anvil.tables.query as q
+from anvil.tables import app_tables
 from anvil.js import window, report_exceptions
+
+from ..MapBarCodePartNo import MapBarCodePartNo
 
 class StockTake(StockTakeTemplate):
     def __init__(self, **properties):
@@ -48,35 +55,39 @@ class StockTake(StockTakeTemplate):
             alert("Stop scanner not available.")
 
     def add_part(self, barcode_or_partno):
-        # Convert to string for uniformity
         value = str(barcode_or_partno).strip()
         if not value:
             return
-
+    
         items = list(self.repeating_panel_1.items or [])
-
-        # Check if the value already exists (by PartNo)
-        found = False
+    
+        # 1. Check if already in repeating panel
         for item in items:
             if item["PartNo"] == value:
                 item["Quantity"] += 1
-                found = True
-                break
-
-        if not found:
-            # Add as a new row
+                self.repeating_panel_1.items = items
+                return
+    
+        # 2. Ask server to resolve
+        part_info = anvil.server.call("resolve_part", value)
+    
+        if part_info:
             items.append({
                 "No": len(items) + 1,
-                "Item": "Part Description",  # you can fetch description if needed
-                "PartNo": value,
+                "Item": part_info["Name"],
+                "PartNo": part_info["PartNo"],
                 "Quantity": 1
             })
-
-        # Re-number items
+        else:
+            # 3. Not found → open MapBarCodePartNo popup
+            alert(MapBarCodePartNo(barcode_or_partno=value), large=True)
+    
+        # Re-number
         for i, item in enumerate(items, start=1):
             item["No"] = i
-
+    
         self.repeating_panel_1.items = items
+
 
     def btn_AddPart_click(self, **event_args):
     # Triggered when "ADD PART" button is clicked

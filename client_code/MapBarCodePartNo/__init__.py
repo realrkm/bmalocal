@@ -8,8 +8,9 @@ from anvil.tables import app_tables
 
 
 class MapBarCodePartNo(MapBarCodePartNoTemplate):
-    def __init__(self, **properties):
+    def __init__(self, barcode_or_partno, **properties):
         # Set Form properties and Data Bindings.
         self.init_components(**properties)
-
+    
         # Any code you write here will run before the form opens.
+        self.txt_BarCode.text = barcode_or_partno

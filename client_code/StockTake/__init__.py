@@ -80,7 +80,7 @@ class StockTake(StockTakeTemplate):
             })
         else:
             # 3. Not found → open MapBarCodePartNo popup
-            alert(MapBarCodePartNo(barcode_or_partno=value), large=True)
+            alert(MapBarCodePartNo(barcode_or_partno=value),buttons=[], dismissible=False, large=True)
     
         # Re-number
         for i, item in enumerate(items, start=1):

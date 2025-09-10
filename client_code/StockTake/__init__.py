@@ -55,10 +55,10 @@ class StockTake(StockTakeTemplate):
 
         items = list(self.repeating_panel_1.items or [])
 
-        # Check if the value already exists (by PartNo or Barcode)
+        # Check if the value already exists (by PartNo)
         found = False
         for item in items:
-            if item["PartNo"] == value or item["Barcode"] == value:
+            if item["PartNo"] == value:
                 item["Quantity"] += 1
                 found = True
                 break
@@ -69,7 +69,6 @@ class StockTake(StockTakeTemplate):
                 "No": len(items) + 1,
                 "Item": "Part Description",  # you can fetch description if needed
                 "PartNo": value,
-                "Barcode": value,
                 "Quantity": 1
             })
 

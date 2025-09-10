@@ -59,7 +59,6 @@ components:
         - {data_key: 'No', id: YBBYDJ, title: 'No', width: '90'}
         - {data_key: Item, expand: true, id: JKSDUP, title: Item}
         - {data_key: PartNo, expand: true, id: VJQQOR, title: PartNo}
-        - {data_key: Barcode, expand: true, id: LZCYNT, title: Barcode}
         - {data_key: Quantity, expand: true, id: OJLQEN, title: Quantity}
         foreground: theme:White
       type: DataGrid

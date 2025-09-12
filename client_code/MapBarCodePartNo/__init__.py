@@ -50,7 +50,6 @@ class MapBarCodePartNo(MapBarCodePartNoTemplate):
         """This method is called when an item is selected"""
         result = anvil.server.call_s("getCarPartNumberWithID", self.drop_down_selectPart.selected_value)
         self.lbl_PartNumber.text = result[0]["PartNo"]
-        self.btn_Save.enabled = True
         self.refresh()
         
     def btn_Save_click(self, **event_args):

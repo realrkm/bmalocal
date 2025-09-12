@@ -18,6 +18,7 @@ components:
       - {data_key: enabled, expand: true, id: NBQTBW, title: Active}
       - {data_key: '', id: ZDSCHS, title: '', width: '90'}
       foreground: theme:White
+      wrap_on: mobile
     type: DataGrid
   layout_properties: {full_width_row: true, grid_position: 'HBBMXX,VAVFQV', row_background: 'theme:Black'}
   name: card_1

@@ -72,6 +72,7 @@ components:
       - {data_key: PartNo, expand: true, id: LDPTDK, title: Part Number}
       - {data_key: Quantity, expand: true, id: MARFMP, title: Quantity}
       foreground: theme:White
+      wrap_on: mobile
     type: DataGrid
   layout_properties: {full_width_row: true, grid_position: 'KTTLML,INFDAD', row_background: 'theme:Black'}
   name: card_1

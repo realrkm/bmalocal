@@ -97,6 +97,7 @@ components:
       - {data_key: Discount, expand: true, id: LHIADB, title: Discounted Price (Kshs)}
       foreground: theme:White
       role: null
+      wrap_on: mobile
     type: DataGrid
   layout_properties: {full_width_row: true, grid_position: 'AWGLFW,UVUHMI', row_background: 'theme:Black'}
   name: card_1

@@ -30,7 +30,7 @@ components:
       type: DropDown
     - layout_properties: {grid_position: 'GQRBRY,KVWZRU'}
       name: lbl_PartNumber
-      properties: {visible: true}
+      properties: {visible: false}
       type: Label
     - layout_properties: {grid_position: 'PFWYTA,YAGVNE', row_background: ''}
       name: spacer_1
@@ -39,7 +39,7 @@ components:
     - event_bindings: {click: btn_Save_click}
       layout_properties: {grid_position: 'YQLRGX,RWVGPL'}
       name: btn_Save
-      properties: {align: full, background: '#0056D6', enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: SAVE}
+      properties: {align: full, background: '#0056D6', enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: SAVE}
       type: Button
     - event_bindings: {click: btn_Close_click}
       layout_properties: {grid_position: 'YQLRGX,VRHBVK'}

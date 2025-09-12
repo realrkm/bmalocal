@@ -66,6 +66,7 @@ class StockTake(StockTakeTemplate):
             # If not found in database → open mapping form
             alert(MapBarCodePartNo(barcode_or_partno=value), buttons=[], dismissible=False, large=True)
             self.btn_AddPart_click() #Display the added barcode item in the repating panel
+            return
             
         # If repeating panel is empty → just add the item
         if not items:

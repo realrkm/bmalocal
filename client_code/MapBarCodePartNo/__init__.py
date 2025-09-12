@@ -53,6 +53,20 @@ class MapBarCodePartNo(MapBarCodePartNoTemplate):
         barcode = self.txt_BarCode.text.strip()
         partNo = self.lbl_PartNumber.text.strip()
 
+        if not barcode:
+            alert("Sorry, please enter barcode / partno details", large=False)
+            self.txt_BarCode.focus()
+            return
+
+        if not partNo:
+            alert("Sorry, please select partno details", large=False)
+            self.text_box_searchPartNo.focus()
+            return
+
+        result = anvil.server.call("saveBarcodePartNo", barcode,partNo)
+        alert(result, large=False)
+        self.btn_Close_click()
+
         
 
 

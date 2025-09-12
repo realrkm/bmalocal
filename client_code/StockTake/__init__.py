@@ -70,17 +70,18 @@ class StockTake(StockTakeTemplate):
     
         # 2. Ask server to resolve
         part_info = anvil.server.call("resolve_part", value)
-    
+       
         if part_info:
             items.append({
-                "No": len(items) + 1,
-                "Item": part_info["Name"],
-                "PartNo": part_info["PartNo"],
-                "Quantity": 1
-            })
+                        "No": len(items) + 1,
+                        "Item": part_info["Name"],
+                        "PartNo": part_info["PartNo"],
+                        "Quantity": 1
+                        })
         else:
             # 3. Not found → open MapBarCodePartNo popup
             alert(MapBarCodePartNo(barcode_or_partno=value),buttons=[], dismissible=False, large=True)
+            self.btn_AddPart_click() #Update repeating panel with the new mapped part
     
         # Re-number
         for i, item in enumerate(items, start=1):

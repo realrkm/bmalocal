@@ -13,7 +13,7 @@ components:
     - event_bindings: {click: button_stop_click}
       layout_properties: {grid_position: 'USDFRI,VSLKVU'}
       name: button_stop
-      properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: STOP}
+      properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: STOP SCAN}
       type: Button
     - layout_properties: {grid_position: 'SZFUKQ,QXMERO'}
       name: spacer_2

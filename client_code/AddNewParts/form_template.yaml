@@ -101,6 +101,11 @@ components:
       name: btn_EditNewPart
       properties: {align: full, background: '#0056D6', border: '', enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: primary-color, text: EDIT  NEW PART, visible: true}
       type: Button
+    - event_bindings: {click: btn_Close_click}
+      layout_properties: {grid_position: 'TVJJIF,XYMLUK'}
+      name: btn_Close
+      properties: {align: full, background: '#0056D6', border: '', enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: primary-color, text: CLOSE, visible: true}
+      type: Button
     - layout_properties: {grid_position: 'GNSIRN,GWRESC'}
       name: spacer_3_copy_copy
       properties: {height: 14}

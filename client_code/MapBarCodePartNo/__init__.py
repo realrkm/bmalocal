@@ -22,6 +22,5 @@ class MapBarCodePartNo(MapBarCodePartNoTemplate):
 
     def btn_AddNewPart_click(self, **event_args):
         """This method is called when the button is clicked"""
-        self.btn_Close_click()
-        alert(content=AddNewParts(),buttons=[], dismissible=True, large=True)
+        alert(content=AddNewParts(isPopup=True),buttons=[], dismissible=True, large=True)
 

@@ -11,7 +11,10 @@ from ..EditAddNewParts import EditAddNewParts
 import anvil.js
 
 class AddNewParts(AddNewPartsTemplate):
-    def __init__(self, **properties):
+    def __init__(self, isPopup= False, **properties):
+
+        self.isPopup = isPopup #Instance variable, hence available in other methods
+        
         # Set Form properties and Data Bindings.
         self.init_components(**properties)
         anvil.js.call('replaceBanner')
@@ -22,6 +25,18 @@ class AddNewParts(AddNewPartsTemplate):
         self.drop_down_location.items = anvil.server.call("getLocation")
         self.drop_down_supplier.items = anvil.server.call("getSupplier")
 
+        # Disable Close button when form appears under Inventory
+        if self.isPopup is False:
+            self.btn_Close.visible = False
+            self.btn_Close.enabled=False
+            self.btn_EditNewPart.visible=True
+            self.btn_EditNewPart.enabled = True
+        else: #Display Close button and hide Edit button when form is called in MapBarcodePartNo as a popup 
+            self.btn_EditNewPart.visible=False
+            self.btn_EditNewPart.enabled = False
+            self.btn_Close.visible = True
+            self.btn_Close.enabled= True
+            
     def refresh(self, **event_args):
         self.set_event_handler("x-refresh", self.refresh)
         
@@ -32,7 +47,6 @@ class AddNewParts(AddNewPartsTemplate):
     def btn_AddSupplier_click(self, **event_args):
         """This method is called when the button is clicked"""
         alert(content=AddSupplier(), buttons=[], dismissible=False, large=True)
-
 
     def btn_SaveAndNew_click(self, **event_args):
         """This method is called when the button is clicked"""
@@ -114,8 +128,12 @@ class AddNewParts(AddNewPartsTemplate):
             
         anvil.server.call_s("addNewParts", purchaseDate, partName, partNumber, locationID, supplierID, units, buyingPrice, sellingPrice,discountPrice, reorderLevel)
         alert("Part Saved Successfully", title="Success", large=False)
-        # Clear form
-        self.clear_form_fields()       
+
+        if self.isPopup is True:
+            self.btn_Close_click()
+        else:
+            # Clear form
+            self.clear_form_fields()       
 
     def btn_EditNewPart_click(self, **event_args):
         """This method is called when the button is clicked"""
@@ -136,3 +154,7 @@ class AddNewParts(AddNewPartsTemplate):
 
         self.refresh()
         self.btn_SaveAndNew.enabled = True
+
+    def btn_Close_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        self.raise_event('x-close-alert', value = True)

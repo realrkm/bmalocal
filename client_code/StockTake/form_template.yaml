@@ -22,7 +22,7 @@ components:
     - event_bindings: {pressed_enter: btn_AddPart_click}
       layout_properties: {grid_position: 'NWMQGY,UKZLMH'}
       name: txt_BarcodePartNo
-      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 15, foreground: 'theme:Black', placeholder: 'Enter Barcode / PartNo Here * '}
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 15, foreground: 'theme:Black', placeholder: 'Enter Barcode / Entire PartNo Here * '}
       type: TextBox
     - event_bindings: {click: btn_AddPart_click}
       layout_properties: {grid_position: 'NWMQGY,SSQVXN'}
@@ -58,8 +58,9 @@ components:
         columns:
         - {data_key: 'No', id: YBBYDJ, title: 'No', width: '90'}
         - {data_key: Item, expand: true, id: JKSDUP, title: Item}
+        - {data_key: '', id: UMQGZM, title: '', width: '40'}
         - {data_key: PartNo, expand: true, id: VJQQOR, title: PartNo}
-        - {data_key: '', id: BLVRUR, title: '', width: '90'}
+        - {data_key: '', expand: false, id: BLVRUR, title: '', width: '40'}
         - {data_key: Quantity, expand: false, id: OJLQEN, title: Quantity, width: 172.5}
         - {data_key: '', id: HALCHC, title: '', width: '90'}
         foreground: theme:White

@@ -1,0 +1,65 @@
+components:
+- components:
+  - layout_properties: {grid_position: 'RBAERL,VHDHZU'}
+    name: spacer_1_copy_copy
+    properties: {height: '10'}
+    type: Spacer
+  - layout_properties: {grid_position: 'ZLKOCD,NFFSZZ'}
+    name: label_1
+    properties: {align: center, background: '#0056D6', bold: false, border: solid, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', role: null, text: Cycle Counting Procedure}
+    type: Label
+  - layout_properties: {grid_position: 'FZUQTT,BWRVBW'}
+    name: rich_text_1
+    properties:
+      background: theme:Black
+      border: solid
+      content: |-
+        Before the count:
+        First of all, decide on a date and time for your count.
+        Next, minimize or completely do away with stock moving in and out of store, in order to avoid miscalculated figures. You can either close operations down for a day or conduct it after working hours.
+      font: Mozilla Headline
+      font_size: 16
+      foreground: theme:White
+      format: plain_text
+    type: RichText
+  - layout_properties: {grid_position: 'DJFAAU,ZHSHXX'}
+    name: rich_text_1_copy
+    properties:
+      background: '#0056D6'
+      border: solid
+      content: |-
+        1). Complete data entry of all inventory transactions, so the inventory database is fully updated. Regular system update is key.
+
+        2). Print a cycle counting report, which states the locations that are to be counted, and assign it to the cycle counters(staff doing actual counting).
+
+        3). The cycle counters compare the locations, descriptions, and quantities stated on the report to what they see on the shelf. They also trace what they see on the shelf back to the report, in case some items have not been recorded within the database at all.
+
+        4). Investigate all differences found and discuss them with the store manager, and determine whether there is a pattern of errors that may require further action.
+
+        5). If further action is required, alter procedures, training, staffing, or whatever else is needed to eliminate the error.
+
+        6). Adjust the inventory record database to remove the error found by the cycle counter.
+      font: Mozilla Headline
+      font_size: 16
+      foreground: theme:White
+      format: plain_text
+    type: RichText
+  - layout_properties: {grid_position: 'BMEMYZ,XLZDZE'}
+    name: spacer_1
+    properties: {height: '10'}
+    type: Spacer
+  - layout_properties: {grid_position: 'DLDMSZ,UHXBBJ'}
+    name: spacer_1_copy
+    properties: {height: '10'}
+    type: Spacer
+  - event_bindings: {click: btn_Close_click}
+    layout_properties: {grid_position: 'YLYXCA,GBQREE'}
+    name: btn_Close
+    properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: CLOSE}
+    type: Button
+  layout_properties: {grid_position: 'AQZBJD,ZPPZFQ', row_background: 'theme:Black'}
+  name: card_1
+  properties: {role: card}
+  type: ColumnPanel
+container: {type: ColumnPanel}
+is_package: true

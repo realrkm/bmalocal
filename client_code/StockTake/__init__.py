@@ -6,12 +6,13 @@ import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
 from anvil.js import window, report_exceptions
-
+from ..StockTakingTip import StockTakingTip 
 from ..MapBarCodePartNo import MapBarCodePartNo
 
 class StockTake(StockTakeTemplate):
     def __init__(self, **properties):
         self.init_components(**properties)
+        alert(content=StockTakingTip(), buttons=[], dismissible=False, large=True)
         self.repeating_panel_1.items = []   # start with empty list
         
         # Wrap callback so errors show in Anvil logs

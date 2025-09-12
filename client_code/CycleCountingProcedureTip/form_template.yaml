@@ -27,18 +27,7 @@ components:
     properties:
       background: '#0056D6'
       border: solid
-      content: |-
-        1). Complete data entry of all inventory transactions, so the inventory database is fully updated. Regular system update is key.
-
-        2). Print a cycle counting report, which states the locations that are to be counted, and assign it to the cycle counters(staff doing actual counting).
-
-        3). The cycle counters compare the locations, descriptions, and quantities stated on the report to what they see on the shelf. They also trace what they see on the shelf back to the report, in case some items have not been recorded within the database at all.
-
-        4). Investigate all differences found and discuss them with the store manager, and determine whether there is a pattern of errors that may require further action.
-
-        5). If further action is required, alter procedures, training, staffing, or whatever else is needed to eliminate the error.
-
-        6). Adjust the inventory record database to remove the error found by the cycle counter.
+      content: "1). Complete all data entry of inventory transactions so the inventory database is fully updated. A regular system update is key.\n\n2). Scan items on the shelf using the barcode scanner (or enter the part number if the barcode is missing/unreadable). The system will automatically display the part name, part number, and quantity of parts under inspection. \n\nNB: If a part exists physically but is not yet in the system, the user can add the missing part record into the database immediately so it can be included in the count.\n\n3). Investigate all differences found. The system will highlight mismatches, and these should be discussed with the store manager to determine whether there is a recurring error pattern that requires corrective action.\n\n4). Update procedures and training if required. If systemic issues are identified, update processes, staff training, or controls to reduce future discrepancies."
       font: Mozilla Headline
       font_size: 16
       foreground: theme:White

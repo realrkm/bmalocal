@@ -13,7 +13,7 @@ components:
     properties:
       background: theme:Black
       border: solid
-      content: "Inventory reconciliation is not as simple as adjusting the system balance to match the physical count. \n\nThere may be other reasons why there is a difference between the two numbers that cannot be corrected with such an adjustment. In particular, you should consider following any or all of these steps:"
+      content: "Inventory reconciliation is not as simple as adjusting the system balance to match the physical count. \n\nThere may be other reasons why there is a difference between the two numbers. The following steps should be considered:"
       font: Mozilla Headline
       font_size: 16
       foreground: theme:White
@@ -24,7 +24,7 @@ components:
     properties:
       background: '#0056D6'
       border: solid
-      content: "1). Recount the inventory. \nSomeone may have incorrectly counted the inventory.\n\n2). Verify the part number. \nIt is possible that you are misreading the part number of the item on the shelf, or guessing at its identification because there is no part number at all. In other instances, the stock might be incorrectly labelled.\n\n3). Look for missing paperwork. \nThe unit count in the inventory records may be incorrect because a transaction has occurred, but no one has yet logged it. Enter all invoice details and parts issued on job cards.\n\n4). Investigate possible customer ownership. \nConfirm if the product is owed by a customer and was entered in the system.\n\n5). Investigate possible supplier ownership. \nIt is possible that you may have items from a supplier, not yet returned.\n\n6). Mixed products\nMaybe one product has been mixed with others in a different location.\n\n7). Investigate possible theft of stock\nStock loss due to theft should be rooted out from the work place.\n\n8). System bug\nThe system may generate wrong reports on entries made, and necessary updates will be required. Ensure you have sample data in place, in order to show this scenario."
+      content: "1). Recount the inventory.\nRescan the item using the barcode (or enter the part number) to confirm the count. Someone may have miscounted.\n\n2). Verify the part number.\nThe barcode ensures accuracy, but if a part is not barcoded or incorrectly labelled, confirm its correct identification by entering the part number manually before reconciliation.\n\n3). Look for missing transactions.\nThe system quantity may be incorrect because a transaction was not yet entered. Ensure all job cards and invoices are recorded.\n\n4). Investigate possible customer ownership.\nSome parts may belong to customers but are stored on-site. Confirm before reconciling.\n\n5). Investigate possible supplier ownership.\nThere may be supplier-owned items (on consignment or pending return) that should not be included in your stock.\n\n6). Check for mixed products.\nItems may have been stored in the wrong location or mixed with other similar parts. \n\n7). Investigate possible theft.\nStock loss due to theft must be ruled out. \n\n8). Check for system bugs.\nIf scanned quantities and recorded transactions do not tally, the system may have reporting or posting errors. Ensure thorough testing with sample data and escalate system issues promptly."
       font: Mozilla Headline
       font_size: 16
       foreground: theme:White

@@ -13,7 +13,8 @@ components:
       name: txt_BarCode
       properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter barcode here *, role: null}
       type: TextBox
-    - layout_properties: {grid_position: 'YYOPYU,WKQFPO'}
+    - event_bindings: {pressed_enter: btn_Search_click}
+      layout_properties: {grid_position: 'YYOPYU,WKQFPO'}
       name: text_box_searchPartNo
       properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter PartNo here *, role: null}
       type: TextBox

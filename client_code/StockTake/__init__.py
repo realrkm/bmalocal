@@ -56,39 +56,48 @@ class StockTake(StockTakeTemplate):
 
     def add_part(self, barcode_or_partno):
         value = str(barcode_or_partno).strip()
-        if not value:
-            return
-    
+            
         items = list(self.repeating_panel_1.items or [])
     
-        # 1. Check if already in repeating panel
-        for item in items:
-            if item["PartNo"] == value:
-                item["Quantity"] += 1
-                self.repeating_panel_1.items = items
-                return
-    
-        # 2. Ask server to resolve
+        # Call server to resolve the part (or None if not found)
         part_info = anvil.server.call("resolve_part", value)
-       
-        if part_info:
-            items.append({
-                        "No": len(items) + 1,
-                        "Item": part_info["Name"],
-                        "PartNo": part_info["PartNo"],
-                        "Quantity": 1
-                        })
-        else:
-            # 3. Not found → open MapBarCodePartNo popup
-            alert(MapBarCodePartNo(barcode_or_partno=value),buttons=[], dismissible=False, large=True)
-            self.btn_AddPart_click() #Update repeating panel with the new mapped part
     
-        # Re-number
+        if not part_info:
+            # If not found in database → open mapping form
+            alert(MapBarCodePartNo(barcode_or_partno=value), buttons=[], dismissible=False, large=True)
+            self.btn_AddPart_click() #Display the added barcode item in the repating panel
+            
+        # If repeating panel is empty → just add the item
+        if not items:
+            items.append({
+                "No": 1,
+                "Item": part_info["Name"],
+                "PartNo": part_info["PartNo"],
+                "Quantity": 1
+            })
+        else:
+            # Check if the resolved part already exists in the repeating panel
+            found = False
+            for item in items:
+                if item["PartNo"] == part_info["PartNo"]:
+                    item["Quantity"] += 1
+                    found = True
+                    break
+    
+            # If not found → add as new item
+            if not found:
+                items.append({
+                    "No": len(items) + 1,
+                    "Item": part_info["Name"],
+                    "PartNo": part_info["PartNo"],
+                    "Quantity": 1
+                })
+    
+        # Re-number items
         for i, item in enumerate(items, start=1):
             item["No"] = i
     
         self.repeating_panel_1.items = items
-
 
     def btn_AddPart_click(self, **event_args):
     # Triggered when "ADD PART" button is clicked

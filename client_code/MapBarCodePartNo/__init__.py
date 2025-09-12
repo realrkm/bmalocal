@@ -15,7 +15,10 @@ class MapBarCodePartNo(MapBarCodePartNoTemplate):
     
         # Any code you write here will run before the form opens.
         self.txt_BarCode.text = barcode_or_partno
-
+    
+    def refresh(self, **event_args):
+        self.set_event_handler("x-refresh", self.refresh)
+        
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.raise_event('x-close-alert', value = True)
@@ -47,7 +50,9 @@ class MapBarCodePartNo(MapBarCodePartNoTemplate):
         """This method is called when an item is selected"""
         result = anvil.server.call_s("getCarPartNumberWithID", self.drop_down_selectPart.selected_value)
         self.lbl_PartNumber.text = result[0]["PartNo"]
-
+        self.btn_Save.enabled = True
+        self.refresh()
+        
     def btn_Save_click(self, **event_args):
         """This method is called when the button is clicked"""
         barcode = self.txt_BarCode.text.strip()
@@ -64,7 +69,7 @@ class MapBarCodePartNo(MapBarCodePartNoTemplate):
             return
 
         result = anvil.server.call("saveBarcodePartNo", barcode,partNo)
-        alert(result, large=False)
+        alert(f"{result}",title="Success", large=False)
         self.btn_Close_click()
 
         

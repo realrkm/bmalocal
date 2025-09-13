@@ -943,4 +943,20 @@ textarea.anvil-component[disabled] {
 https://stackoverflow.com/questions/30533055/calculating-shadow-values-for-all-material-design-elevations
 */
 
+/* Loading Spinner */
+.anvil-role-spinner {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-top-color: %color:Primary 500%;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: auto;
+}
 
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

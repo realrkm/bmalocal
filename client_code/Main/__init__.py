@@ -42,6 +42,7 @@ class Main(MainTemplate):
             "INVENTORY": self.btn_Inventory,
             "REPORTS": self.btn_Report,
             "SETTINGS": self.btn_Settings,
+            "RESET": self.btn_ResetPassword,
         }
     
         for section, button in section_map.items():

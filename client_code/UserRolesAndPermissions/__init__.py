@@ -54,6 +54,7 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
         self.chk_settings.tag = "SETTINGS"
         self.chk_useraccounts.tag = "User Accounts"
         self.chk_roleasandpermissions.tag = "Roles And Permissions"
+        self.chk_reset.tag = "RESET"
 
         # Define sections with their subsections
         self.sections = {
@@ -75,6 +76,7 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
                 self.chk_staffreports, self.chk_inventoryreport, self.chk_quoteinvoicereport, self.chk_paymentreport
             ],
             "SETTINGS": [self.chk_useraccounts, self.chk_roleasandpermissions],
+            "RESET": [],
         }
 
         # Map main checkboxes
@@ -88,6 +90,7 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
             "INVENTORY": self.chk_inventory,
             "REPORTS": self.chk_report,
             "SETTINGS": self.chk_settings,
+            "RESET": self.chk_reset,
         }
 
         # Attach handlers only for main checkboxes

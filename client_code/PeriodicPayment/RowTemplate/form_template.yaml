@@ -1,3 +1,5 @@
 components: []
-container: {type: DataRowPanel}
+container:
+  properties: {border: solid}
+  type: DataRowPanel
 is_package: true

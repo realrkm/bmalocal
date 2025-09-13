@@ -4,5 +4,7 @@ components:
   name: btn_DeleteRow
   properties: {background: '#0056D6', foreground: 'theme:White', icon: 'fa:trash-o', icon_align: right, text: '', tooltip: Delete Row}
   type: Button
-container: {type: DataRowPanel}
+container:
+  properties: {border: solid}
+  type: DataRowPanel
 is_package: true

@@ -38,7 +38,7 @@ components:
       - {data_key: PartNo, expand: true, id: GOXAZB, title: PartNo, width: ''}
       - {data_key: '', id: AUCVDZ, title: '', width: '10'}
       - {data_key: OrderLevel, expand: false, id: HGFISP, title: Reorder Level, width: 110}
-      - {data_key: LatestStockTake, expand: true, id: GYUEKP, title: Latest Stock Take}
+      - {data_key: LatestStockTake, expand: true, id: GYUEKP, title: Latest Stock Taking Value}
       - {data_key: TotalStock, expand: true, id: BUEABL, title: Total Stock}
       - {data_key: TotalIssued, expand: true, id: LHIADB, title: Total Issued}
       - {data_key: StockBalance, expand: true, id: KMKAMJ, title: Stock Balance}

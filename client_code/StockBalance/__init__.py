@@ -5,11 +5,13 @@ import anvil.users
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
+import anvil.js
 from ..BuyingPrice import BuyingPrice
 from ..MissingBuyingPrice import MissingBuyingPrice
 from ..SellingPrice import SellingPrice
 from ..MissingSellingPrice import MissingSellingPrice
-import anvil.js
+from ..StocktakeAnalysis import StocktakeAnalysis
+from ..DisplayStocktakeAnalysis import DisplayStocktakeAnalysis
 
 class StockBalance(StockBalanceTemplate):
     def __init__(self, **properties):
@@ -43,4 +45,8 @@ class StockBalance(StockBalanceTemplate):
             self.repeating_panel_1.items = result
         else:
             alert("No records found for the entered part detail.", title="Not Found")
+
+    def btn_ViewStocktakeAnalysis_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        alert(content=StocktakeAnalysis(), buttons=[], dismissible=False,large=True)
 

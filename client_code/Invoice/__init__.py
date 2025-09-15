@@ -212,7 +212,7 @@ class Invoice(InvoiceTemplate):
                 "number":number,
                 "quantity": quantity,
                 "amount": amount,
-                "CarPartID": CarPartID
+                "CarPartID": CarPartID["ID"]
             })
         
         anvil.server.call_s('saveInvoice', assignedDate, jobCardID,  items)

@@ -206,14 +206,15 @@ class Invoice(InvoiceTemplate):
             number = row.get('Number', "")
             quantity = None if row.get('Quantity') is None else float(row['Quantity'])
             amount = float(row["Amount"].replace(",", "")) if "," in row["Amount"] else float(row["Amount"])
+            CarPartID = anvil.server.call_s("getCarPartIDWithNumber", number)
             items.append({
                 "name": item_name,
                 "number":number,
                 "quantity": quantity,
                 "amount": amount,
-                "CarPartID": row.get("CarPartID")
+                "CarPartID": CarPartID
             })
-
+        
         anvil.server.call_s('saveInvoice', assignedDate, jobCardID,  items)
         anvil.server.call_s('updateJobCardStatus', jobCardID, status)
 

@@ -17,4 +17,4 @@ class DisplayStocktakeAnalysis(DisplayStocktakeAnalysisTemplate):
         anvil.js.call("replaceBanner")
         while anvil.users.get_user() is None:
             anvil.users.login_with_form()
-        self.html = anvil.server.call("get_stock_analysis_report",start_date=None, end_date=None, partnumber=None)
+        self.html = anvil.server.call("get_stock_analysis_report",start_date=start_date, end_date=end_date, partnumber=partnumber)

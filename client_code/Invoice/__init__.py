@@ -206,16 +206,22 @@ class Invoice(InvoiceTemplate):
             number = row.get('Number', "")
             quantity = None if row.get('Quantity') is None else float(row['Quantity'])
             amount = float(row["Amount"].replace(",", "")) if "," in row["Amount"] else float(row["Amount"])
-            CarPartID = anvil.server.call_s("getCarPartIDWithNumber", number)
+            CarPartID_result = None # Initialize to None
+            if number:
+                # The server call might return a list [123] or None
+                CarPartID_result = anvil.server.call("getCarPartIDWithNumber", number)
+            # Check the result before trying to get an index
+            final_id = CarPartID_result[0] if CarPartID_result else None
+        
             items.append({
                 "name": item_name,
-                "number":number,
+                "number": number,
                 "quantity": quantity,
                 "amount": amount,
-                "CarPartID": CarPartID
+                "CarPartID": final_id # Use the variable that safely handles the None case
             })
         
-        anvil.server.call_s('saveInvoice', assignedDate, jobCardID,  items)
+        anvil.server.call('saveInvoice', assignedDate, jobCardID,  items)
         anvil.server.call_s('updateJobCardStatus', jobCardID, status)
 
         alert("Invoice saved successfully and download is initiated.", title="Success")

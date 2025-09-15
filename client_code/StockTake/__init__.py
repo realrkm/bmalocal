@@ -116,7 +116,8 @@ class StockTake(StockTakeTemplate):
         data = [item for item in self.repeating_panel_1.items]
         anvil.server.call("save_stocktake", data)
         alert("Stocktake saved successfully")
-        self.repeating_panel_1.items = []   # clears everything
+        self.repeating_panel_1.items = []   # clears repeating panel
+        self.txt_BarcodePartNo.text = ""
 
 
    

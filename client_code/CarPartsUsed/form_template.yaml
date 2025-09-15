@@ -70,6 +70,7 @@ components:
       - {data_key: JobCardRef, expand: true, id: VJQQOR, title: Job Card Ref}
       - {data_key: PartName, expand: true, id: OJLQEN, title: Part Name}
       - {data_key: PartNo, expand: true, id: LDPTDK, title: Part Number}
+      - {data_key: '', id: PVJNMG, title: '', width: '20'}
       - {data_key: Quantity, expand: true, id: MARFMP, title: Quantity}
       foreground: theme:White
       wrap_on: mobile

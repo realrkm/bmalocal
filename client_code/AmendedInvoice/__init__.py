@@ -286,15 +286,21 @@ class AmendedInvoice(AmendedInvoiceTemplate):
                 )
             else:
                 amount = float(row["Amount"])
-            items.append(
-                {
-                    "Item": item_name,
-                    "Part_No": part_no,
-                    "QuantityIssued": quantity,
-                    "Amount": amount,
-                    "CarPartID": row.get("CarPartID")
-                }
-            )
+
+            CarPartID_result = None # Initialize to None
+            if part_no:
+                # The server call might return a list [123] or None
+                CarPartID_result = anvil.server.call("getCarPartIDWithNumber", part_no)
+            # Check the result before trying to get an index
+            final_id = CarPartID_result[0] if CarPartID_result else None
+
+            items.append({
+                "name": item_name,
+                "number": part_no,
+                "quantity": quantity,
+                "amount": amount,
+                "CarPartID": final_id # Use the variable that safely handles the None case
+            })
 
         invoicedate = self.date_picker_1.date
         job_card_id = self.drop_down_JobCardRefDetails.selected_value

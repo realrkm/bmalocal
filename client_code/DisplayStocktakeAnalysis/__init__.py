@@ -9,7 +9,7 @@ import anvil.js
 
 
 class DisplayStocktakeAnalysis(DisplayStocktakeAnalysisTemplate):
-    def __init__(self, **properties):
+    def __init__(self, start_date=None, end_date=None, partnumber=None,**properties):
         # Set Form properties and Data Bindings.
         self.init_components(**properties)
 
@@ -17,4 +17,4 @@ class DisplayStocktakeAnalysis(DisplayStocktakeAnalysisTemplate):
         anvil.js.call("replaceBanner")
         while anvil.users.get_user() is None:
             anvil.users.login_with_form()
-        self.html = anvil.server.call("get_stock_analysis_report")
+        self.html = anvil.server.call("get_stock_analysis_report",start_date=None, end_date=None, partnumber=None)

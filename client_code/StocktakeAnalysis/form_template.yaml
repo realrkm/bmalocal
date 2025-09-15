@@ -39,7 +39,7 @@ components:
   properties: {height: 10}
   type: Spacer
 - components: []
-  layout_properties: {full_width_row: true, grid_position: 'WUJIQX,FVHLGP'}
+  layout_properties: {full_width_row: false, grid_position: 'WUJIQX,FVHLGP'}
   name: card_1
   properties: {border: solid, role: card}
   type: ColumnPanel

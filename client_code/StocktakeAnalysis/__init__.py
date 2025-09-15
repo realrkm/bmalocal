@@ -21,6 +21,53 @@ class StocktakeAnalysis(StocktakeAnalysisTemplate):
         self.card_1.clear()
         self.card_1.add_component(DisplayStocktakeAnalysis())
 
-    def btn_Close_click(self, **event_args):
+    def btn_Search_click(self, **event_args):
         """This method is called when the button is clicked"""
-        self.raise_event("x-close-alert", value=True)
+        self.btn_Search.enabled = False   # disable button while searching
+        try:
+            startDate = self.date_picker_start.date
+            endDate = self.date_picker_end.date
+            partNo = self.txt_PartNo.text   
+
+            # 1. No filters selected
+            if not startDate and not endDate and not jobCardRef:
+                alert("Sorry, please select a date range, job card ref or both to proceed.", 
+                      title="Blank Field(s) Found", large=False)
+                return
+
+            # 2. Only one date selected
+            if (startDate and not endDate) or (endDate and not startDate):
+                alert("Please select both start and end dates to proceed.", 
+                      title="Missing Date", large=False)
+                return
+
+            # 3. Both dates provided but startDate > endDate
+            if startDate and endDate and startDate > endDate:
+                alert("Sorry, end date should be greater or equal to start date.", 
+                      title="Date Mismatch", large=False)
+                return
+
+            # 4. Fetch based on provided filters
+            if startDate and endDate and not partNo:
+                jobs = anvil.server.call("get_jobcard_quote_invoice_totals", None, startDate, endDate)
+            elif not startDate and not endDate and partNo:
+                jobs = anvil.server.call("get_jobcard_quote_invoice_totals", jobcard_ref = self.txt_JobCardRef.text)
+            elif startDate and endDate and partNo:
+                jobs = anvil.server.call("get_jobcard_quote_invoice_totals", partNo,  startDate, endDate)
+            else:
+                jobs = []
+
+            # 5. Handle empty results
+            if not jobs:
+                alert("No job cards found for the selected filters.", 
+                      title="No Results", large=False)
+                self.repeating_panel_1.items = []
+                return
+
+            # 6. If jobs found, update panel and totals
+            self.repeating_panel_1.items = jobs
+
+        finally:
+            self.btn_Search.enabled = True   # re-enable button after processing
+
+   

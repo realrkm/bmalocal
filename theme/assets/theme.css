@@ -978,3 +978,14 @@ https://stackoverflow.com/questions/30533055/calculating-shadow-values-for-all-m
 }
 
 /* End Spinner */
+
+/* Full screen alert popup */
+.anvil-role-full-screen-alert .modal-dialog {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    max-width: none;
+}
+.anvil-role-full-screen-alert .modal-content {
+    height: 100%;
+}

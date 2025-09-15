@@ -9,6 +9,7 @@ from ..PriceCatalogue import PriceCatalogue
 from ..StockLocation import StockLocation
 from ..StockBalance import StockBalance
 from ..CarPartsUsed import CarPartsUsed
+from ..StocktakeAnalysis import StocktakeAnalysis
 import anvil.js
 
 class InventoryReport(InventoryReportTemplate):
@@ -65,9 +66,18 @@ class InventoryReport(InventoryReportTemplate):
         self.card_2.add_component(StockBalance())
         self.btn_StockBalance.background = "#000000"
 
+    def btn_StocktakeAnalysis_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        self.highlight_active_button("STOCK ANALYSIS")
+        self.card_2.clear()
+        self.card_2.add_component(StocktakeAnalysis())
+        self.btn_StocktakeAnalysis.background = "#000000"
+
     def btn_CarPartsUsed_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.highlight_active_button("CAR PARTS USED")
         self.card_2.clear()
         self.card_2.add_component(CarPartsUsed())
         self.btn_CarPartsUsed.background = "#000000"
+
+    

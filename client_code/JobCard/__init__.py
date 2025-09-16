@@ -27,9 +27,6 @@ class JobCard(JobCardTemplate):
         self.search_keyword_1.set_event_handler('x-get-search-keys', self.getTechnicianName)
         self.search_keyword_1.text_box_search.placeholder = "Search Technician's Name *"
 
-        # Attach the event that fetches car registrations
-        self.search_keyword_2.set_event_handler('x-get-search-keys', self.getCarRegistrationNumbers)
-        self.search_keyword_2.text_box_search.placeholder = "Search RegNo"
 
         # Attach the event that fetches customer details
         self.search_keyword_3.set_event_handler('x-get-search-keys', self.getCustomerDetails)
@@ -40,7 +37,7 @@ class JobCard(JobCardTemplate):
         self.search_keyword_4.text_box_search.placeholder = "Checked In By *"
 
         # Handle what happens when a user selects a result
-        self.search_keyword_2.set_event_handler('x-search-hints-result', self.populateClientAndCarDetails)
+        
         self.search_keyword_3.set_event_handler('x-search-hints-result', self.getClientDetailsWithoutCarDetails)
 
     def handle_server_errors(self, exc):
@@ -59,10 +56,6 @@ class JobCard(JobCardTemplate):
         results = anvil.server.call("getTechnicians")
         return [{'entry': r['Fullname'], 'ID': r['ID']} for r in results]
 
-    def getCarRegistrationNumbers(self,  **event_args):
-        """Return full registration records to SearchKeyword."""
-        results = anvil.server.call('getCarRegistration')
-        return [{'entry': r['RegNo'], 'ID': r['ID']} for r in results]
 
     def getCustomerDetails(self,  **event_args):
         """Return customer records to SearchKeyword."""
@@ -389,6 +382,37 @@ class JobCard(JobCardTemplate):
         """Helper function to clear all form fields after saving"""
         get_open_form().btn_JobCard_click()
 
+    def btn_SearchRegNo_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        valueReg = self.txt_RegNo.text
+        if valueReg is None:
+            alert("Enter RegNo to proceed", title="Blank Field Found")
+            return
+        else:
+            self.drop_down_selectRegNo.items = anvil.server.call("getCarRegistrationWithPartlyDetails", valueReg)
+
+    def drop_down_selectRegNo_change(self, **event_args):
+        """This method is called when an item is selected"""
+        jobcardID = self.drop_down_selectRegNo.selected_value
+        jobCardDetails = anvil.server.call_s('getJobCardRow', jobcardID)
+        clientDetails = ModGetData.getClientNameWithID(jobCardDetails['ClientDetails'])
+
+        #Populate client details
+        self.search_keyword_3.set_result({'entry': clientDetails['Fullname'], 'ID': clientDetails['ID']})
+        self.populateClientDetails(clientDetails)
+
+        #Populate car details
+        self.chkComp.checked = jobCardDetails['Comprehensive']
+        self.chkTPO.checked = jobCardDetails['ThirdParty']
+        self.txtRegNo.text = jobCardDetails['RegNo']
+        self.txtMakeAndModel.text= jobCardDetails['MakeAndModel']
+        self.txtChassisNo.text= jobCardDetails['ChassisNo']
+        self.txtEngineCC.text= jobCardDetails['EngineCC']
+        self.txtEngineNo.text= jobCardDetails['EngineNo']
+        self.txtEngineCode.text= jobCardDetails['EngineCode']
+        self.txtPaintCode.text= jobCardDetails['PaintCode']
+        self.chkAuto.checked = jobCardDetails['Auto']
+        self.chkManual.checked = jobCardDetails['Manual']
 
 
 

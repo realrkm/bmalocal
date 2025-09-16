@@ -12,13 +12,23 @@ components:
     name: search_keyword_1
     properties: {}
     type: form:SearchKeyword
-  - layout_properties: {grid_position: 'ROWCNJ,DSKJTZ', row_background: ''}
-    name: search_keyword_2
-    properties: {}
-    type: form:SearchKeyword
+  - layout_properties: {grid_position: 'ASVDQW,GPWLOO'}
+    name: txt_RegNo
+    properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 14, foreground: 'theme:Black', placeholder: Enter RegNo Here}
+    type: TextBox
+  - event_bindings: {click: btn_SearchRegNo_click}
+    layout_properties: {grid_position: 'ASVDQW,MNQEYD'}
+    name: btn_SearchRegNo
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: SEARCH}
+    type: Button
+  - event_bindings: {change: drop_down_selectRegNo_change}
+    layout_properties: {grid_position: 'CEASMW,YGPBLQ'}
+    name: drop_down_selectRegNo
+    properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select RegNo *}
+    type: DropDown
   layout_properties: {grid_position: 'XVKHJI,SEEHRE', row_background: 'theme:Black'}
   name: card_1
-  properties: {border: solid, role: card}
+  properties: {border: solid, col_widths: '{"GPWLOO":40,"MNQEYD":20}', role: card}
   type: ColumnPanel
 - components:
   - layout_properties: {grid_position: 'BNFTYV,MEDNKT'}

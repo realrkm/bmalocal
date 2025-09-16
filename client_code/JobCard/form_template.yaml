@@ -12,7 +12,8 @@ components:
     name: search_keyword_1
     properties: {}
     type: form:SearchKeyword
-  - layout_properties: {grid_position: 'ASVDQW,GPWLOO'}
+  - event_bindings: {pressed_enter: btn_SearchRegNo_click}
+    layout_properties: {grid_position: 'ASVDQW,GPWLOO'}
     name: txt_RegNo
     properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 14, foreground: 'theme:Black', placeholder: Enter RegNo Here}
     type: TextBox

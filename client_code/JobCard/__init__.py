@@ -415,6 +415,10 @@ class JobCard(JobCardTemplate):
         self.chkAuto.checked = jobCardDetails['Auto']
         self.chkManual.checked = jobCardDetails['Manual']
 
+    def btn_SignJobCard_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        alert(content=DownloadSignedJobCard(), buttons=[], dismissible=False, large=True)
+
 
 
 

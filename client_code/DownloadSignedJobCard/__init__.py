@@ -27,3 +27,7 @@ class DownloadSignedJobCard(DownloadSignedJobCardTemplate):
             anvil.alert("Please connect to the internet to proceed.", title="No Internet", large=False)   
         else:
             anvil.alert(f"Unexpected error: {exc}", title="Error", large=False)
+
+    def btn_Close_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        self.raise_event('x-close-alert', value = True)

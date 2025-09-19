@@ -90,7 +90,7 @@
 
     document.getElementById("saveButton").addEventListener("click", () => {
         if (!signatureData || isCanvasBlank()) {
-            showMessage("Please sign before saving.");
+            showMessage("Please sign before preview.");
             return;
         }
 

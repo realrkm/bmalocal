@@ -3,7 +3,11 @@ components:
   - components:
     - layout_properties: {grid_position: 'YGSUGG,ZHDGQC'}
       name: label_title
-      properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', text: Sign Job Card}
+      properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', text: Sign JobCard}
+      type: Label
+    - layout_properties: {grid_position: ''}
+      name: label_3
+      properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, foreground: '#dc1818', text: Only JobCards Under Checked -In Can Be Signed}
       type: Label
     - components:
       - layout_properties: {grid_position: 'RFHQPV,FTGPVR'}
@@ -13,7 +17,7 @@ components:
       - event_bindings: {pressed_enter: btn_SearchRegNo_click}
         layout_properties: {grid_position: 'YVOMMX,ZHVJMR'}
         name: txt_RegNo
-        properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 14, foreground: 'theme:Black', placeholder: Enter Job Card Ref Here *}
+        properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 14, foreground: 'theme:Black', placeholder: Enter JobCard Ref Here *}
         type: TextBox
       - event_bindings: {click: btn_SearchRegNo_click}
         layout_properties: {grid_position: 'YVOMMX,BREWUZ'}
@@ -25,6 +29,10 @@ components:
         name: drop_down_selectRegNo
         properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select JobCard Ref *}
         type: DropDown
+      - layout_properties: {grid_position: 'QZHXNO,YUMKFW'}
+        name: spacer_6
+        properties: {height: '10'}
+        type: Spacer
       - layout_properties: {grid_position: 'FNRTPW,JDKWYP', row_background: 'theme:Black'}
         name: spacer_2
         properties: {height: '10'}
@@ -50,12 +58,16 @@ components:
         name: spacer_3
         properties: {height: '10'}
         type: Spacer
-      - event_bindings: {click: btn_SearchRegNo_click}
+      - layout_properties: {grid_position: 'GNKMET,LHXGIS'}
+        name: spacer_5
+        properties: {height: '10'}
+        type: Spacer
+      - event_bindings: {}
         layout_properties: {grid_position: 'WOKDTY,LQMQWI'}
         name: btn_DownloadJobCard
         properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: DOWNLOAD JOBCARD}
         type: Button
-      - event_bindings: {click: btn_SearchRegNo_click}
+      - event_bindings: {click: btn_Close_click}
         layout_properties: {grid_position: 'WOKDTY,MXSFCR'}
         name: btn_Close
         properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: CLOSE}
@@ -64,7 +76,7 @@ components:
         name: spacer_4
         properties: {height: '10'}
         type: Spacer
-      layout_properties: {grid_position: 'UNTBOX,QXCQWC'}
+      layout_properties: {grid_position: 'ILOTUD,YGDRHM'}
       name: card_3
       properties: {border: solid, col_widths: '{"ZHVJMR":40,"BREWUZ":20}', role: card}
       type: ColumnPanel

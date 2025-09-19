@@ -3,11 +3,11 @@ components:
   - components:
     - layout_properties: {grid_position: 'YGSUGG,ZHDGQC'}
       name: label_title
-      properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', text: Sign JobCard}
+      properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', text: Sign Jobcard}
       type: Label
     - layout_properties: {grid_position: ''}
       name: label_3
-      properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, foreground: '#dc1818', text: Only JobCards Under Checked -In Can Be Signed}
+      properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, foreground: '#dc1818', text: Only Jobcards Under Checked-In Can be Signed}
       type: Label
     - components:
       - layout_properties: {grid_position: 'RFHQPV,FTGPVR'}
@@ -17,7 +17,7 @@ components:
       - event_bindings: {pressed_enter: btn_SearchRegNo_click}
         layout_properties: {grid_position: 'YVOMMX,ZHVJMR'}
         name: txt_RegNo
-        properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 14, foreground: 'theme:Black', placeholder: Enter JobCard Ref Here *}
+        properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 14, foreground: 'theme:Black', placeholder: Enter Jobcard Ref Here *}
         type: TextBox
       - event_bindings: {click: btn_SearchRegNo_click}
         layout_properties: {grid_position: 'YVOMMX,BREWUZ'}
@@ -27,7 +27,7 @@ components:
       - event_bindings: {change: drop_down_selectRegNo_change}
         layout_properties: {grid_position: 'IMCMHI,MTXJWR'}
         name: drop_down_selectRegNo
-        properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select JobCard Ref *}
+        properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Jobcard Ref *}
         type: DropDown
       - layout_properties: {grid_position: 'QZHXNO,YUMKFW'}
         name: spacer_6

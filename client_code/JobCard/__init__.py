@@ -8,6 +8,7 @@ from anvil.tables import app_tables
 from .. import ModGetData
 import datetime
 import anvil.js
+from ..DownloadSignedJobCard import DownloadSignedJobCard
 
 class JobCard(JobCardTemplate):
     def __init__(self, **properties):

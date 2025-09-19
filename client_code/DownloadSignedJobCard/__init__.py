@@ -92,7 +92,6 @@ class DownloadSignedJobCard(DownloadSignedJobCardTemplate):
 
         # Close Form
         self.btn_Close_click()
-        self.refresh()
 
     def downloadJobcardPdf(self, jobCardID):
         media_object = anvil.server.call('createSignedJobcardPdf', jobCardID)

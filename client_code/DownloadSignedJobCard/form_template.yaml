@@ -26,7 +26,7 @@ components:
         type: Button
       - event_bindings: {change: drop_down_selectRegNo_change}
         layout_properties: {grid_position: 'IMCMHI,MTXJWR'}
-        name: drop_down_selectRegNo
+        name: cmbJobCardID
         properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Jobcard Ref *}
         type: DropDown
       - layout_properties: {grid_position: 'QZHXNO,YUMKFW'}

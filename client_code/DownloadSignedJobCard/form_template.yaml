@@ -62,7 +62,7 @@ components:
         name: spacer_5
         properties: {height: '10'}
         type: Spacer
-      - event_bindings: {}
+      - event_bindings: {click: btn_DownloadJobCard_click}
         layout_properties: {grid_position: 'WOKDTY,LQMQWI'}
         name: btn_DownloadJobCard
         properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: DOWNLOAD JOBCARD}

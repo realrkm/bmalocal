@@ -5,8 +5,12 @@ import anvil.users
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
+from anvil.js.window import window
 import anvil.js
-import base
+import base64
+import time
+from datetime import datetime
+
 
 class DownloadSignedJobCard(DownloadSignedJobCardTemplate):
     def __init__(self, **properties):
@@ -54,49 +58,33 @@ class DownloadSignedJobCard(DownloadSignedJobCardTemplate):
         # Create an Anvil Media object
         media = BlobMedia("image/png", binary_data, name="signature.png")
 
-        # Optionally display it on the form (if you have an Image component)
-        #self.signature_preview.source = media
-
         # Return or store the media for further use
         return media
 
-    def Save_click(self, **event_args):
-        """Triggered when user clicks 'Save' button in Anvil UI"""
-        self.Save.enabled = False #Prevent multiple clicks 
+    def btn_DownloadJobCard_click(self, **event_args):
+        """Triggered when user clicks 'Download JobCcard' button in Anvil UI"""
+        self.btn_DownloadJobCard.enabled = False #Prevent multiple clicks 
 
         if not self.cmbJobCardID.selected_value['ID']:
             alert("Sorry, please select job card ref to proceed.", title="Blank Field(s) Found", large=False)
             self.cmbJobCardID.focus()
-            self.Save.enabled = True
+            self.btn_DownloadJobCard.enabled = True
             return
 
-        if not self.txtRemarks.text:
-            alert("Sorry, please enter remarks to proceed.", title="Blank Field(s) Found", large=False)
-            self.txtRemarks.focus()
-            self.Save.enabled = True
-            return
 
         if not self.get_signature_image():
             alert("Sorry, please enter signature to proceed.", title="Blank Field(s) Found", large=False)
             self.get_signature_image()
-            self.Save.enabled = True
-            return
-
-        if not self.cmbWorkflow.selected_value:
-            alert("Sorry, please select workflow status to proceed.", title="Blank Field(s) Found", large=False)
-            self.cmbWorkflow.focus()
-            self.Save.enabled = True
+            self.btn_DownloadJobCard.enabled = True
             return
 
         jobCardID = self.cmbJobCardID.selected_value['ID']
-        remarks = self.txtRemarks.text
         signature = self.get_signature_image()
         createdAt = datetime.now()
-        status = self.cmbWorkflow.selected_value
-
-        anvil.server.call('saveConfirmationDetails', jobCardID, remarks, signature, createdAt) #Save confirmation details and Update job card to completed
-        anvil.server.call_s('updateJobCardStatus', jobCardID, status)
-        alert("Verification saved successfully")
+        
+        anvil.server.call('saveSignedJobCardDetails', jobCardID, signature, createdAt) 
+        anvil.server.call_s('fillJobCardReport',jobCardID)
+        alert("Download is successfully")
 
         # Close Form
         self.btn_Close_click()

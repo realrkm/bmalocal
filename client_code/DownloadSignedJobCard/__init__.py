@@ -33,6 +33,12 @@ class DownloadSignedJobCard(DownloadSignedJobCardTemplate):
         else:
             anvil.alert(f"Unexpected error: {exc}", title="Error", large=False)
 
+    def btn_SearchRegNo_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        jobCardRef = self.txt_JobcardRef.text
+        items = anvil.server.call("getCheckedInJobcards", jobCardRef)
+        self.cmbJobCardID.items = items
+
 
     def get_signature_image(self):
         # Wait a short time to ensure JS function is available
@@ -65,30 +71,39 @@ class DownloadSignedJobCard(DownloadSignedJobCardTemplate):
         """Triggered when user clicks 'Download JobCcard' button in Anvil UI"""
         self.btn_DownloadJobCard.enabled = False #Prevent multiple clicks 
 
-        if not self.cmbJobCardID.selected_value['ID']:
+        if not self.cmbJobCardID.selected_value:
             alert("Sorry, please select job card ref to proceed.", title="Blank Field(s) Found", large=False)
             self.cmbJobCardID.focus()
             self.btn_DownloadJobCard.enabled = True
             return
 
-
         if not self.get_signature_image():
-            alert("Sorry, please enter signature to proceed.", title="Blank Field(s) Found", large=False)
-            self.get_signature_image()
             self.btn_DownloadJobCard.enabled = True
             return
 
-        jobCardID = self.cmbJobCardID.selected_value['ID']
+        jobCardID = self.cmbJobCardID.selected_value
         signature = self.get_signature_image()
         createdAt = datetime.now()
         
         anvil.server.call('saveSignedJobCardDetails', jobCardID, signature, createdAt) 
         anvil.server.call_s('fillJobCardReport',jobCardID)
-        alert("Download is successfully")
+        alert("Signed jobcard saved successfully and download is initiated.", title="Success")
+        self.downloadJobcardPdf(jobCardID)
 
         # Close Form
         self.btn_Close_click()
+        self.refresh()
+
+    def downloadJobcardPdf(self, jobCardID):
+        media_object = anvil.server.call('createSignedJobcardPdf', jobCardID)
+        anvil.media.download(media_object)
+        self.deleteFile(jobCardID, "Jobcard")
+
+    def deleteFile(self, jobCardID, docType):
+        anvil.server.call("deleteFile", jobCardID, docType)
 
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.raise_event('x-close-alert', value = True)
+
+    

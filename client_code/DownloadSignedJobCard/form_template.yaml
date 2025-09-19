@@ -16,7 +16,7 @@ components:
         type: Spacer
       - event_bindings: {pressed_enter: btn_SearchRegNo_click}
         layout_properties: {grid_position: 'YVOMMX,ZHVJMR'}
-        name: txt_RegNo
+        name: txt_JobcardRef
         properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 14, foreground: 'theme:Black', placeholder: Enter Jobcard Ref Here *}
         type: TextBox
       - event_bindings: {click: btn_SearchRegNo_click}
@@ -24,7 +24,7 @@ components:
         name: btn_SearchRegNo
         properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: SEARCH}
         type: Button
-      - event_bindings: {change: drop_down_selectRegNo_change}
+      - event_bindings: {}
         layout_properties: {grid_position: 'IMCMHI,MTXJWR'}
         name: cmbJobCardID
         properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Jobcard Ref *}

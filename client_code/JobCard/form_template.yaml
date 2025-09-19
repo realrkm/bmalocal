@@ -21,6 +21,10 @@ components:
     name: spacer_5
     properties: {height: '10'}
     type: Spacer
+  - layout_properties: {grid_position: 'GWDVGV,NRGFQU', row_background: 'theme:Black'}
+    name: spacer_2_copy
+    properties: {height: '10'}
+    type: Spacer
   - layout_properties: {grid_position: 'ROWCNJ,PSJAVU'}
     name: search_keyword_1
     properties: {}

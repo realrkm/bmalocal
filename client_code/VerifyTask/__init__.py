@@ -85,7 +85,6 @@ class VerifyTask(VerifyTaskTemplate):
             return
                    
         if not self.get_signature_image():
-            alert("Sorry, please enter signature to proceed.", title="Blank Field(s) Found", large=False)
             self.get_signature_image()
             self.Save.enabled = True
             return

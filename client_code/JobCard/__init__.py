@@ -421,7 +421,7 @@ class JobCard(JobCardTemplate):
 
     def btn_SendWhatsApp_click(self, **event_args):
         """This method is called when the button is clicked"""
-        anvil.server.call("sendWhatsAppPdf")
+        anvil.server.call("sendWhatsAppPdf", 11433)
 
 
 

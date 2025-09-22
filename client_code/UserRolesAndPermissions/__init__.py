@@ -52,8 +52,7 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
         self.chk_quoteinvoicereport.tag = "Quote And Invoice Report"
         self.chk_paymentreport.tag = "Payment Report"
         self.chk_online.tag = "ONLINE"
-        self.chk_whatsapp.tag = "WhatsApp"
-        self.chk_partscatalog.tag = "Part Catalog"
+        self.chk_partscatalog.tag = "Parts Catalog"
         self.chk_settings.tag = "SETTINGS"
         self.chk_useraccounts.tag = "User Accounts"
         self.chk_roleasandpermissions.tag = "Roles And Permissions"
@@ -78,7 +77,7 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
                 self.chk_clientreport, self.chk_cardetailsreport, self.chk_techniciansreport,
                 self.chk_staffreports, self.chk_inventoryreport, self.chk_quoteinvoicereport, self.chk_paymentreport
             ],
-            "ONLINE": [self.chk_whatsapp, self.chk_partscatalog],
+            "ONLINE": [self.chk_partscatalog],
             "SETTINGS": [self.chk_useraccounts, self.chk_roleasandpermissions],
             "RESET": [],
         }

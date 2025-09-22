@@ -1,10 +1,5 @@
 components:
 - components:
-  - event_bindings: {click: btn_WhatsApp_click}
-    layout_properties: {full_width_row: true, grid_position: 'ICYPZW,QXSSLB'}
-    name: btn_WhatsApp
-    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, role: primary-color, text: WHATSAPP}
-    type: Button
   - event_bindings: {click: btn_PartsCatalog_click}
     layout_properties: {full_width_row: true, grid_position: 'ICYPZW,KZTHLI'}
     name: btn_PartsCatalog

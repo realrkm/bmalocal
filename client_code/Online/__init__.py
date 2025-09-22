@@ -5,7 +5,6 @@ import anvil.users
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
-from ..WhatsApp import WhatsApp
 from ..PartsCatalog import PartsCatalog
 import anvil.js
 
@@ -32,13 +31,7 @@ class Online(OnlineTemplate):
         first_visible = None  # track which subform to load first
 
         for subsection, value in online_perms["subs"].items():
-            if subsection == "WhatsApp":
-                self.btn_WhatsApp.visible = value
-                self.btn_WhatsApp.enabled = value
-                if value and first_visible is None:
-                    first_visible = "WhatsApp"
-
-            elif subsection == "Parts Catalog":
+           if subsection == "Parts Catalog":
                 self.btn_PartsCatalog.visible = value
                 self.btn_PartsCatalog.enabled = value
                 if value and first_visible is None:
@@ -52,9 +45,7 @@ class Online(OnlineTemplate):
         """
         Called when Online form loads in card_2.
         """
-        if buttonName == "WhatsApp":
-            self.btn_WhatsApp_click()
-        elif buttonName == "Parts Catalog":
+        if buttonName == "Parts Catalog":
             self.btn_PartsCatalog_click()
        
     def highlight_active_button(self, selected_text):
@@ -69,12 +60,6 @@ class Online(OnlineTemplate):
                     comp.foreground = "white"
 
     # --- Button click handlers ---
-    def btn_WhatsApp_click(self, **event_args):
-        """Load Clients subform."""
-        self.highlight_active_button("WHATSAPP")
-        self.card_2.clear()
-        self.card_2.add_component(WhatsApp())
-
     def btn_PartsCatalog_click(self, **event_args):
         """Load Technicians subform."""
         self.highlight_active_button("PARTS CATALOG")

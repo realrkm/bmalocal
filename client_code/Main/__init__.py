@@ -137,7 +137,7 @@ class Main(MainTemplate):
         self.call_js('hideSidebarIfModal') 
 
     def btn_Online_click(self, **event_args):
-        self.highlight_active_button("REPORTS")
+        self.highlight_active_button("ONLINE")
         ModNavigation.go_Online(self.permissions)
         #Now hide sidebar after clicking link. 
         #Additional function in standard-page.html

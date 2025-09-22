@@ -1,3 +1,51 @@
-components: []
+components:
+- components:
+  - components:
+    - layout_properties: {grid_position: 'UCZNGL,VDBXBM'}
+      name: label_title
+      properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', text: Send Docs Via WhatsApp}
+      type: Label
+    - layout_properties: {grid_position: 'IZLMGY,XUDFBF'}
+      name: spacer_2
+      properties: {height: 32}
+      type: Spacer
+    - layout_properties: {grid_position: 'VPZQBL,UCWVQJ'}
+      name: txt_Client
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Client Name *}
+      type: TextBox
+    - event_bindings: {click: btn_Search_click}
+      layout_properties: {grid_position: 'VPZQBL,IOZKRL'}
+      name: btn_Search
+      properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: SEARCH}
+      type: Button
+    - event_bindings: {change: drop_down_selectClient_change}
+      layout_properties: {grid_position: 'TBAGTM,AMDEJQ'}
+      name: drop_down_selectClient
+      properties:
+        background: theme:White
+        border: solid
+        foreground: theme:Black
+        items: [Select Client Details *]
+      type: DropDown
+    - layout_properties: {grid_position: 'APLJHU,LWUEDB'}
+      name: spacer_1
+      properties: {height: '10'}
+      type: Spacer
+    - layout_properties: {grid_position: 'BWXJDP,YMLNXL'}
+      name: column_panel
+      properties: {border: solid, visible: false}
+      type: ColumnPanel
+    - layout_properties: {grid_position: 'KWYXJQ,ISJZWL'}
+      name: spacer_3
+      properties: {height: '10'}
+      type: Spacer
+    layout_properties: {grid_position: 'UHBFBV,ABOADL'}
+    name: card_2
+    properties: {border: solid, col_widths: '{"UCWVQJ":40,"IOZKRL":20}', role: card}
+    type: ColumnPanel
+  layout_properties: {full_width_row: true, grid_position: 'XLGKCE,UUMSWI', row_background: 'theme:Black'}
+  name: card_1
+  properties: {role: card}
+  type: ColumnPanel
 container: {type: ColumnPanel}
 is_package: true

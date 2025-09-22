@@ -26,29 +26,23 @@ class Online(OnlineTemplate):
         self.apply_permissions()
 
     def apply_permissions(self):
-        """Apply only CONTACT-related permissions and load the first available subform."""
-        contact_perms = self.permissions.get("CONTACT", {"main": False, "subs": {}})
+        """Apply only ONLINE-related permissions and load the first available subform."""
+        online_perms = self.permissions.get("ONLINE", {"main": False, "subs": {}})
 
         first_visible = None  # track which subform to load first
 
-        for subsection, value in contact_perms["subs"].items():
-            if subsection == "Clients":
-                self.btn_Client.visible = value
-                self.btn_Client.enabled = value
+        for subsection, value in online_perms["subs"].items():
+            if subsection == "WhatsApp":
+                self.btn_WhatsApp.visible = value
+                self.btn_WhatsApp.enabled = value
                 if value and first_visible is None:
-                    first_visible = "Client"
+                    first_visible = "WhatsApp"
 
-            elif subsection == "Technicians":
-                self.btn_Technician.visible = value
-                self.btn_Technician.enabled = value
+            elif subsection == "Parts Catalog":
+                self.btn_PartsCatalog.visible = value
+                self.btn_PartsCatalog.enabled = value
                 if value and first_visible is None:
-                    first_visible = "Technician"
-
-            elif subsection == "Staff":
-                self.btn_Staff.visible = value
-                self.btn_Staff.enabled = value
-                if value and first_visible is None:
-                    first_visible = "Staff"
+                    first_visible = "Parts Catalog"
 
         # Load the first visible subform automatically
         if first_visible:
@@ -56,16 +50,13 @@ class Online(OnlineTemplate):
 
     def show_clicked_button(self, buttonName, **event_args):
         """
-        Called when Contact form loads or when 'Save And New' button
-        is clicked in the forms loaded in card_2.
+        Called when Online form loads in card_2.
         """
-        if buttonName == "Client":
-            self.btn_Client_click()
-        elif buttonName == "Technician":
-            self.btn_Technician_click()
-        elif buttonName == "Staff":
-            self.btn_Staff_click()
-
+        if buttonName == "WhatsApp":
+            self.btn_WhatsApp_click()
+        elif buttonName == "Parts Catalog":
+            self.btn_PartsCatalog_click()
+       
     def highlight_active_button(self, selected_text):
         """Highlight the currently active subsection button."""
         for comp in self.card_1.get_components():

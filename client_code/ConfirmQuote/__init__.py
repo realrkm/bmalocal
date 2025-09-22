@@ -37,7 +37,13 @@ class ConfirmQuote(ConfirmQuoteTemplate):
         self.txtDefectsList.text = ModGetData.getJobCardDefects(self.cmbJobCardRef.selected_value['ID'])
         self.txtRequestedParts.text = ModGetData.getRequestedParts(self.cmbJobCardRef.selected_value['ID'])
         self.txtQuoteConfirmationFeedback.focus()
-        self.repeating_panel_assigned_parts.items = anvil.server.call("populate_confirmation_from_quote", self.cmbJobCardRef.selected_value['ID'])
+
+        #If JobCardId exists in tbl_quotationpartsandservicesfeedback, then this is multiple confirmation taking place between client and internal user
+        result = anvil.server.call("getQuotationConfirmationFeedback", self.cmbJobCardRef.selected_value['ID'])
+        if result:
+            self.repeating_panel_assigned_parts.items = result
+        else:
+            self.repeating_panel_assigned_parts.items = anvil.server.call("populate_confirmation_from_quote", self.cmbJobCardRef.selected_value['ID'])
 
 
     def btn_Search_click(self, **event_args):
@@ -202,8 +208,19 @@ class ConfirmQuote(ConfirmQuoteTemplate):
         except Exception as e:
             alert(f"An error occurred: {str(e)}", title="Error")
     
+        self.downloadQuotationPdf(jobCardID)
+
         # Close Form
         self.btn_Close_click()
+        self.refresh()
+
+    def downloadQuotationPdf(self, jobCardID):
+        media_object = anvil.server.call('createQuotationInvoicePdf', jobCardID, "Confirm Quotation")
+        anvil.media.download(media_object)
+        self.deleteFile(jobCardID, "Quotation")
+
+    def deleteFile(self, jobCardID, docType):
+        anvil.server.call("deleteFile", jobCardID, docType)
         
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""

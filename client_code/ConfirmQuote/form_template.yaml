@@ -194,7 +194,7 @@ components:
       font: Roboto
       foreground: theme:Black
       include_placeholder: true
-      items: [In Service]
+      items: [Confirm Quote, In Service]
       placeholder: 'Select Next Workflow Status * '
       role: null
     type: DropDown

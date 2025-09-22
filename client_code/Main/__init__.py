@@ -41,6 +41,7 @@ class Main(MainTemplate):
             "PAYMENT": self.btn_Payment,
             "INVENTORY": self.btn_Inventory,
             "REPORTS": self.btn_Report,
+            "ONLINE": self.btn_Report,
             "SETTINGS": self.btn_Settings,
             "RESET": self.btn_ResetPassword,
         }
@@ -131,6 +132,13 @@ class Main(MainTemplate):
     def btn_Report_click(self, **event_args):
         self.highlight_active_button("REPORTS")
         ModNavigation.go_Report(self.permissions)
+        #Now hide sidebar after clicking link. 
+        #Additional function in standard-page.html
+        self.call_js('hideSidebarIfModal') 
+
+    def btn_Online_click(self, **event_args):
+        self.highlight_active_button("REPORTS")
+        ModNavigation.go_Online(self.permissions)
         #Now hide sidebar after clicking link. 
         #Additional function in standard-page.html
         self.call_js('hideSidebarIfModal') 

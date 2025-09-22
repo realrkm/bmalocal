@@ -14,6 +14,7 @@ from ..Revision import Revision
 from ..ProgressTracker import ProgressTracker
 from ..ProgressTrackerMobileView import ProgressTrackerMobileView
 from ..Inventory import Inventory
+from ..Online import Online
 
 home_form = None
 
@@ -69,6 +70,11 @@ def go_Inventory(permissions):
 def go_Report(permissions):
     form = get_form()
     form.load_component(Report(permissions))
+
+#Load Online Form
+def go_Online(permissions):
+    form = get_form()
+    form.load_component(Online(permissions))
 
 #Load Settings Form
 def go_Settings(permissions):

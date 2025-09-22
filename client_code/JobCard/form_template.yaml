@@ -17,11 +17,6 @@ components:
     name: btn_SignJobCard
     properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: SIGN JobCARD, visible: true}
     type: Button
-  - event_bindings: {click: btn_SendWhatsApp_click}
-    layout_properties: {grid_position: 'LFAILL,NHLCMA'}
-    name: btn_SendWhatsApp
-    properties: {text: Send WhatsaPP}
-    type: Button
   - layout_properties: {grid_position: 'KOEZSE,KDRRYN'}
     name: spacer_5
     properties: {height: '10'}

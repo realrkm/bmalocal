@@ -41,7 +41,7 @@ class Main(MainTemplate):
             "PAYMENT": self.btn_Payment,
             "INVENTORY": self.btn_Inventory,
             "REPORTS": self.btn_Report,
-            "ONLINE": self.btn_Report,
+            "ONLINE": self.btn_Online,
             "SETTINGS": self.btn_Settings,
             "RESET": self.btn_ResetPassword,
         }

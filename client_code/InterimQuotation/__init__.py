@@ -19,7 +19,11 @@ class InterimQuotation(InterimQuotationTemplate):
             anvil.users.login_with_form()
         set_default_error_handling(self.handle_server_errors) #Set global server error handler
         self.drop_down_CheckInstaff.items = anvil.server.call('getInterimQuoteAndAmendedInvoiceStaff')
-
+        
+        #Call function after component has lost focus
+        self.txtMakeAndModel.set_event_handler('lost_focus', lambda sender, **event_args: self.getPreviousInterimQuoteDetails())
+        self.txtChassis.set_event_handler('lost_focus', lambda sender, **event_args: self.getPreviousInterimQuoteDetails())
+        
 
     def handle_server_errors(self, exc):
         if isinstance(exc, anvil.server.UplinkDisconnectedError):
@@ -226,6 +230,7 @@ class InterimQuotation(InterimQuotationTemplate):
         duedate = self.date_picker_1.date
         mileage = self.txtMileage.text
         checkinstaff = self.drop_down_CheckInstaff.selected_value
+        oldJobCardId = self.txt_OldJobCardID.text
 
         if (not regno or regno.strip() == "") and chassis and chassis.strip() != "":
             unique_identifier = chassis
@@ -255,7 +260,7 @@ class InterimQuotation(InterimQuotationTemplate):
                 "amount": amount
             })
         
-        job_card_id = anvil.server.call_s('saveJobCardDetailsFromInterimQuotation', customerID, jobcardref, receiveddate, duedate, checkinstaff, regno, makeandmodel, chassis,  enginecode, mileage)
+        job_card_id = anvil.server.call_s('saveJobCardDetailsFromInterimQuotation', customerID, jobcardref, receiveddate, duedate, checkinstaff, regno, makeandmodel, chassis,  enginecode, mileage, oldJobCardId)
         anvil.server.call("saveInterimQuotationPartsAndServices",receiveddate, job_card_id, items)
         alert("Interim Quotation Saved Successfully.", title="Success", large=False)
         self.downloadQuotationPdf(job_card_id)
@@ -321,5 +326,21 @@ class InterimQuotation(InterimQuotationTemplate):
         receivedDate= self.date_Received.date
 
         if customerID and makeAndModel and chassis and receivedDate:
-            self.repeating_panel_assigned_parts.items = anvil.server.call_s("getPreviousInterimQuoteDetails", customerID, makeAndModel, chassis, receivedDate)
+            result = anvil.server.call_s("getPreviousInterimQuoteDetails", customerID, makeAndModel, chassis, receivedDate)
+            self.txt_OldJobCardID.text = result["JobCardID"]
+            self.repeating_panel_assigned_parts.items = result
             alert("Previous details loaded successfully", title="Success")
+
+    def date_picker_1_change(self, **event_args):
+        """This method is called when the selected date changes"""
+        self.getPreviousInterimQuoteDetails()
+
+    def txtMakeAndModel_lost_focus(self, **event_args):
+        """This method is called when the TextBox loses focus"""
+        self.getPreviousInterimQuoteDetails()
+
+    def txtChassis_lost_focus(self, **event_args):
+        """This method is called when the TextBox loses focus"""
+        self.getPreviousInterimQuoteDetails()
+
+    

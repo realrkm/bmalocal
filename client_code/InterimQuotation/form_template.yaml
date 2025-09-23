@@ -49,12 +49,12 @@ components:
       name: label_3
       properties: {align: left, bold: true, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Gray 900', text: Chassis *}
       type: Label
-    - event_bindings: {lost_focus: getPreviousInterimQuoteDetails}
+    - event_bindings: {lost_focus: txtMakeAndModel_lost_focus}
       layout_properties: {grid_position: 'DCPRJV,ENPMGU'}
       name: txtMakeAndModel
       properties: {align: left, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Make And Model Here *}
       type: TextBox
-    - event_bindings: {lost_focus: getPreviousInterimQuoteDetails}
+    - event_bindings: {lost_focus: txtChassis_lost_focus}
       layout_properties: {grid_position: 'DCPRJV,GBQWLA'}
       name: txtChassis
       properties: {align: left, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Chassis Here *}
@@ -84,7 +84,7 @@ components:
       properties: {align: left, bold: true, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Gray 900', text: 'Mileage '}
       type: Label
     - data_bindings: []
-      event_bindings: {change: getPreviousInterimQuoteDetails}
+      event_bindings: {change: date_picker_1_change}
       layout_properties: {grid_position: 'TECUJL,VSWFOS'}
       name: date_picker_1
       properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Date Here *}
@@ -95,20 +95,24 @@ components:
       type: TextBox
     - layout_properties: {grid_position: 'ZDPUGX,KKQABZ'}
       name: txt_CustomerID
-      properties: {}
+      properties: {visible: true}
       type: TextBox
     - layout_properties: {grid_position: 'ZDPUGX,IMEOPC'}
       name: txt_MakeAndModel
-      properties: {}
+      properties: {visible: true}
       type: TextBox
     - layout_properties: {grid_position: 'ZDPUGX,XKJIRW'}
       name: txt_Chassis
-      properties: {}
+      properties: {visible: true}
       type: TextBox
     - layout_properties: {grid_position: 'ZDPUGX,TAKVFW'}
       name: date_Received
-      properties: {}
+      properties: {visible: true}
       type: DatePicker
+    - layout_properties: {grid_position: 'ZDPUGX,EXXQLM'}
+      name: txt_OldJobCardID
+      properties: {visible: true}
+      type: TextBox
     - layout_properties: {grid_position: 'ZGNCMU,CFXNCD', row_background: 'theme:Black'}
       name: spacer_3
       properties: {height: '11.7'}

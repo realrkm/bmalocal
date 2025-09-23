@@ -62,15 +62,15 @@ class ConfirmQuote(ConfirmQuoteTemplate):
 
         if result:
             self.drop_down_selectPart.items = result
-            self.lbl_ID.text = result[0][1]
-            result2 =  anvil.server.call_s("getCarPartNumberWithID", self.lbl_ID.text)
-            self.lbl_PartNumber.text = result2[0]["PartNo"]
         else:
             alert("No records found for the entered part detail.", title="Not Found")
 
 
     def drop_down_selectPart_change(self, **event_args):
         """This method is called when an item is selected"""
+        self.lbl_ID.text = self.drop_down_selectPart.selected_value
+        result2 =  anvil.server.call_s("getCarPartNumberWithID", self.lbl_ID.text)
+        self.lbl_PartNumber.text = result2[0]["PartNo"]
         partname = anvil.server.call_s("getCarPartNamesWithId", self.drop_down_selectPart.selected_value)
         self.lbl_PartName.text = partname[0]["Name"]
         self.txtSellingPrice.text = ModGetData.getSellingPrice(self.lbl_ID.text)
@@ -194,7 +194,7 @@ class ConfirmQuote(ConfirmQuoteTemplate):
             })
     
         try:
-         
+            
             anvil.server.call_s('saveFullQuotationPartsAndServicesFeedback', assignedDate, jobCardID, remarks, items)
             anvil.server.call_s('updateJobCardStatus', jobCardID, status)
             
@@ -217,7 +217,7 @@ class ConfirmQuote(ConfirmQuoteTemplate):
     def downloadQuotationPdf(self, jobCardID):
         media_object = anvil.server.call('createQuotationInvoicePdf', jobCardID, "Confirm Quotation")
         anvil.media.download(media_object)
-        self.deleteFile(jobCardID, "Quotation")
+        self.deleteFile(jobCardID, "Confirm Quotation")
 
     def deleteFile(self, jobCardID, docType):
         anvil.server.call("deleteFile", jobCardID, docType)

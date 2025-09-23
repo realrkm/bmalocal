@@ -306,7 +306,14 @@ class InterimQuotation(InterimQuotationTemplate):
     
         # Clear repeating panel
         self.repeating_panel_assigned_parts.items = []
-    
+
+        #Clear hidden components
+        self.txt_CustomerID.text = ""
+        self.txt_MakeAndModel.text = ""
+        self.txt_Chassis.text = ""
+        self.date_Received.date = None
+        self.txt_OldJobCardID.text = ""
+
         # Refresh form display
         self.refresh()
     

@@ -93,15 +93,15 @@ class InterimQuotation(InterimQuotationTemplate):
 
         if result:
             self.drop_down_selectPart.items = result
-            self.lbl_ID.text = result[0][1]
-            result2 =  anvil.server.call_s("getCarPartNumberWithID", self.lbl_ID.text)
-            self.lbl_PartNumber.text = result2[0]["PartNo"]
         else:
             alert("No records found for the entered part detail.", title="Not Found")
 
 
     def drop_down_selectPart_change(self, **event_args):
         """This method is called when an item is selected"""
+        self.lbl_ID.text = self.drop_down_selectPart.selected_value
+        result2 =  anvil.server.call_s("getCarPartNumberWithID", self.lbl_ID.text)
+        self.lbl_PartNumber.text = result2[0]["PartNo"]
         partname = anvil.server.call_s("getCarPartNamesWithId", self.drop_down_selectPart.selected_value)
         self.lbl_PartName.text = partname[0]["Name"]
         self.txtSellingPrice.text = ModGetData.getSellingPrice(self.lbl_ID.text)
@@ -336,11 +336,10 @@ class InterimQuotation(InterimQuotationTemplate):
 
         if customerID and makeAndModel and chassis and receivedDate:
             result = anvil.server.call("getPreviousInterimQuoteDetails", customerID, makeAndModel, chassis, receivedDate)
-            self.txt_OldJobCardID.text = result["job_details"]["JobCardID"]
+            if result:
+                self.txt_OldJobCardID.text = result["job_details"]["JobCardID"]
+                # Set parts to repeating panel
+                self.repeating_panel_assigned_parts.items = result["parts"]
+            
+                alert("Previous details loaded successfully", title="Success")
         
-            # Set parts to repeating panel
-            self.repeating_panel_assigned_parts.items = result["parts"]
-        
-            alert("Previous details loaded successfully", title="Success")
-        else:
-            alert("No previous details found", title="Info")

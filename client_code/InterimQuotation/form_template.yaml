@@ -21,6 +21,10 @@ components:
     name: label_3_copy
     properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, foreground: '#dc1818', text: 'To facilitate easier searching, Interim Quotations will have ''IQ'' as a suffix in their Job Card reference.'}
     type: Label
+  - layout_properties: {grid_position: 'HYJAMN,EERWAP'}
+    name: label_3_copy_copy
+    properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, foreground: '#dc1818', text: All key details (marked * below) must match the original Interim Quotation to allow edits.}
+    type: Label
   - layout_properties: {grid_position: 'OLBBEB,LXCUUB'}
     name: spacer_1_copy_copy
     properties: {height: 7}
@@ -95,23 +99,23 @@ components:
       type: TextBox
     - layout_properties: {grid_position: 'ZDPUGX,KKQABZ'}
       name: txt_CustomerID
-      properties: {visible: true}
+      properties: {visible: false}
       type: TextBox
     - layout_properties: {grid_position: 'ZDPUGX,IMEOPC'}
       name: txt_MakeAndModel
-      properties: {visible: true}
+      properties: {visible: false}
       type: TextBox
     - layout_properties: {grid_position: 'ZDPUGX,XKJIRW'}
       name: txt_Chassis
-      properties: {visible: true}
+      properties: {visible: false}
       type: TextBox
     - layout_properties: {grid_position: 'ZDPUGX,TAKVFW'}
       name: date_Received
-      properties: {visible: true}
+      properties: {visible: false}
       type: DatePicker
     - layout_properties: {grid_position: 'ZDPUGX,EXXQLM'}
       name: txt_OldJobCardID
-      properties: {visible: true}
+      properties: {visible: false}
       type: TextBox
     - layout_properties: {grid_position: 'ZGNCMU,CFXNCD', row_background: 'theme:Black'}
       name: spacer_3

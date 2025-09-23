@@ -61,6 +61,14 @@ class InterimQuotation(InterimQuotationTemplate):
                 self.txtChassis.text = existing_jobcard_details["ChassisNo"]
                 self.txtRegNo.text = existing_jobcard_details["RegNo"]
                 self.txtEngineCode.text = existing_jobcard_details["EngineCode"]
+
+                #Update textboxes in order to search for matching previous Interim Quotations
+                self.txt_CustomerID.text = self.drop_down_CustomerDetails.selected_value
+                self.txt_MakeAndModel.text = self.txtMakeAndModel.text
+                self.txt_Chassis.text = self.txtChassis.text
+
+                #Call function to search previous Interim Quotation
+                self.getPreviousInterimQuoteDetails()
                 
         elif self.drop_down_CustomerDetails.selected_value is None:
             self.txtMakeAndModel.text = ""
@@ -306,4 +314,12 @@ class InterimQuotation(InterimQuotationTemplate):
 
         self.btn_SaveAndDownload.enabled = True
 
-        
+    def getPreviousInterimQuoteDetails(self):
+        customerID = self.txt_CustomerID.text
+        makeAndModel = self.txt_MakeAndModel.text
+        chassis = self.txt_Chassis.text
+        receivedDate= self.date_Received.date
+
+        if customerID and makeAndModel and chassis and receivedDate:
+            self.repeating_panel_assigned_parts.items = anvil.server.call_s("getPreviousInterimQuoteDetails", customerID, makeAndModel, chassis, receivedDate)
+            alert("Previous details loaded successfully", title="Success")

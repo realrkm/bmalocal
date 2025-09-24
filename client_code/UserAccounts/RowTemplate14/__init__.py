@@ -6,6 +6,7 @@ import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
 from ...EditUserAccounts import EditUserAccounts
+from ...ResetForgotPassword import ResetForgotPassword
 
 
 class RowTemplate14(RowTemplate14Template):
@@ -19,5 +20,10 @@ class RowTemplate14(RowTemplate14Template):
         """This method is called when the button is clicked"""
         items = list(self.parent.items)
         alert(content=EditUserAccounts(items[list(self.parent.items).index(self.item)]), buttons=[], dismissible=False, large=True)
+
+    def btn_ResetForgotPassword_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        items = list(self.parent.items)
+        alert(content=ResetForgotPassword(items[list(self.parent.items).index(self.item)]), buttons=[], dismissible=False, large=True)
 
     

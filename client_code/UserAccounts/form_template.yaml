@@ -11,12 +11,14 @@ components:
       background: theme:Black
       columns:
       - {data_key: 'No', expand: false, id: QCDZOW, title: 'No', width: 60}
-      - {data_key: email, expand: true, id: JKSDUP, title: Account}
+      - {data_key: email, expand: false, id: JKSDUP, title: Account, width: 170.5}
+      - {data_key: '', expand: false, id: MYUHOR, title: '', width: 40}
       - {data_key: last_login, expand: true, id: VJQQOR, title: Last Login}
       - {data_key: signed_up, expand: true, id: OJLQEN, title: Created At}
       - {data_key: role, expand: true, id: WJMKUA, title: Role}
       - {data_key: enabled, expand: true, id: NBQTBW, title: Active}
       - {data_key: '', id: ZDSCHS, title: '', width: '90'}
+      - {data_key: '', id: GRYODO, title: '', width: '90'}
       foreground: theme:White
       wrap_on: mobile
     type: DataGrid

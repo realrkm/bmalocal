@@ -171,7 +171,7 @@ class ProgressTracker(ProgressTrackerTemplate):
         job_id = self.drop_down_JobCardRefDetails.selected_value
 
         # Call the server first to check for data
-        quote_data = anvil.server.call("get_quote_details_by_job_id", job_id)
+        quote_data = anvil.server.call("get_quote_confirmation_details_by_job_id", job_id)
 
         if not quote_data:
             alert("No data found for the selected Job ID.", title='Missing Quotation Data', large=False)

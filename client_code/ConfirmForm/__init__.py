@@ -17,14 +17,7 @@ class ConfirmForm(ConfirmFormTemplate):
             anvil.users.login_with_form()
         self.label_JobCardID.text = job_id
         set_default_error_handling(self.handle_server_errors)
-        jobcardref = anvil.server.call_s("getJobCardRef", job_id)
-
-        if jobcardref[0]["JobCardRef"].split("-")[-1] == "IQ":
-            self.label_2.text = "INTERIM QUOTATION"
-            is_interim = True
-        else:
-            is_interim = False
-
+        
         if quote_data:
             # Set form fields using the first row (all other rows are assumed to have same metadata)
             first_row = quote_data[0]
@@ -41,20 +34,8 @@ class ConfirmForm(ConfirmFormTemplate):
                 {
                     "Item": row["Item"],
                     "Quantity": row["QuantityIssued"],
-                    "Amount": (
-                        "TO BE CONFIRMED"
-                        if is_interim
-                        and float(str(row["Amount"]).replace(",", "").strip() or "0")
-                        == 0
-                        else f"{float(str(row['Amount']).replace(',', '').strip()):,.2f}"
-                    ),
-                    "Total": (
-                        "TO BE CONFIRMED"
-                        if is_interim
-                        and float(str(row["Total"]).replace(",", "").strip() or "0")
-                        == 0
-                        else f"{float(str(row['Total']).replace(',', '').strip()):,.2f}"
-                    ),
+                    "Amount": f"{float(str(row['Amount']).replace(',', '').strip()):,.2f}",
+                    "Total": f"{float(str(row['Total']).replace(',', '').strip()):,.2f}",
                 }
                 for row in quote_data
             ]
@@ -95,21 +76,12 @@ class ConfirmForm(ConfirmFormTemplate):
         """This method is called when the button is clicked"""
         jobCardID = self.label_JobCardID.text
 
-        if self.label_2.text == "INTERIM QUOTATION":
-            media_object = anvil.server.call(
-                "createQuotationInvoicePdf", jobCardID, "InterimQuotation"
-            )
-        else:
-            media_object = anvil.server.call(
-                "createQuotationInvoicePdf", jobCardID, "Quotation"
+        media_object = anvil.server.call(
+                "createQuotationInvoicePdf", jobCardID, "Confirm Quotation"
             )
 
         anvil.media.download(media_object)
-
-        if self.label_2.text == "INTERIM QUOTATION":
-            self.deleteFile(jobCardID, "InterimQuotation")
-        else:
-            self.deleteFile(jobCardID, "Quotation")
+        self.deleteFile(jobCardID, "Confirm Quotation")
         self.btn_Close_click()
 
     def deleteFile(self, jobCardID, docType):

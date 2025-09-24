@@ -175,7 +175,7 @@ components:
       - event_bindings: {click: btn_Confirmed_click}
         layout_properties: {grid_position: 'GOPPPW,VDMGJH'}
         name: btn_Confirmed
-        properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:chevron-circle-down', role: primary-color, text: CONFIRM}
+        properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:chevron-circle-right', role: primary-color, text: CONFIRM}
         type: Button
       - event_bindings: {click: btn_Invoice_click}
         layout_properties: {grid_position: 'GOPPPW,NDEYST'}

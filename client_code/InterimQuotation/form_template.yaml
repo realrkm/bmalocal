@@ -58,54 +58,54 @@ components:
         name: label_makeandmodel
         properties: {align: left, bold: true, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Make And Model *}
         type: Label
-      - event_bindings: {lost_focus: txtMakeAndModel_lost_focus}
-        layout_properties: {grid_position: 'PONMQB,YQVQRM'}
-        name: txtMakeAndModel
-        properties: {align: left, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Make And Model Here *}
-        type: TextBox
-      - layout_properties: {grid_position: 'SFFKIV,WUDDVO'}
+      - layout_properties: {grid_position: 'DNMNVZ,MXXKVU'}
         name: label_3
         properties: {align: left, bold: true, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Gray 900', text: Chassis *}
         type: Label
-      - event_bindings: {lost_focus: txtChassis_lost_focus}
-        layout_properties: {grid_position: 'BZQULW,UPHSMZ'}
-        name: txtChassis
-        properties: {align: left, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Chassis Here *}
+      - event_bindings: {lost_focus: txtMakeAndModel_lost_focus}
+        layout_properties: {grid_position: 'PONMQB,YQVQRM EYRPTV,USUSQO'}
+        name: txtMakeAndModel
+        properties: {align: left, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Make And Model Here *}
         type: TextBox
-      - layout_properties: {grid_position: 'WCPARJ,GSIVMT'}
+      - layout_properties: {grid_position: 'PONMQB,YQVQRM PKQPUN,OXJDNN'}
         name: label_regno
         properties: {align: left, bold: true, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: 'Reg No '}
         type: Label
-      - layout_properties: {grid_position: 'GDVPVU,TASOLU'}
+      - layout_properties: {grid_position: 'PONMQB,YQVQRM FUCVRT,OWWJUR'}
         name: txtRegNo
         properties: {align: left, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: 'Enter Reg No Here '}
         type: TextBox
-      - layout_properties: {grid_position: 'RJTRSW,YHOWTR'}
-        name: label_engine
-        properties: {align: left, bold: true, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Gray 900', text: Engine Code}
-        type: Label
-      - layout_properties: {grid_position: 'ZUNENL,MMTXED'}
-        name: txtEngineCode
-        properties: {align: left, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Engine Code Here}
-        type: TextBox
-      - layout_properties: {grid_position: 'VFRGVP,WVHLVQ'}
-        name: label_mileage
-        properties: {align: left, bold: true, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Gray 900', text: 'Mileage '}
-        type: Label
-      - layout_properties: {grid_position: 'DJFQTU,BRXTOY'}
-        name: txtMileage
-        properties: {align: left, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: 'Enter Mileage Here ', type: number}
-        type: TextBox
-      - layout_properties: {grid_position: 'NVHEKA,ULGXCU'}
+      - layout_properties: {grid_position: 'PONMQB,YQVQRM PXJLKR,GAJFBL'}
         name: label_date
         properties: {align: left, bold: true, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Date *}
         type: Label
       - data_bindings: []
         event_bindings: {change: date_picker_1_change}
-        layout_properties: {grid_position: 'PJKMXN,VKALRT'}
+        layout_properties: {grid_position: 'PONMQB,YQVQRM TRXZQN,EXOBQH'}
         name: date_picker_1
         properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Date Here *}
         type: DatePicker
+      - event_bindings: {lost_focus: txtChassis_lost_focus}
+        layout_properties: {grid_position: 'PONMQB,RNLTKB ANENIX,ZTKSPL'}
+        name: txtChassis
+        properties: {align: left, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Chassis Here *}
+        type: TextBox
+      - layout_properties: {grid_position: 'PONMQB,RNLTKB NOHVFE,KQKGLN'}
+        name: label_engine
+        properties: {align: left, bold: true, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Gray 900', text: Engine Code}
+        type: Label
+      - layout_properties: {grid_position: 'PONMQB,RNLTKB YFSKLA,HVIBXY'}
+        name: txtEngineCode
+        properties: {align: left, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Engine Code Here}
+        type: TextBox
+      - layout_properties: {grid_position: 'PONMQB,RNLTKB DWLYLE,UNVABO'}
+        name: label_mileage
+        properties: {align: left, bold: true, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Gray 900', text: 'Mileage '}
+        type: Label
+      - layout_properties: {grid_position: 'PONMQB,RNLTKB GUOZSZ,QEQAJW'}
+        name: txtMileage
+        properties: {align: left, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: 'Enter Mileage Here ', type: number}
+        type: TextBox
       - layout_properties: {grid_position: 'FXMZTW,IJTABB'}
         name: spacer_1_copy_copy_copy_3
         properties: {height: 7}

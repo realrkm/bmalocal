@@ -20,11 +20,11 @@ components:
       type: Spacer
     layout_properties: {full_width_row: true, grid_position: 'CSTKFY,VFPDBF'}
     name: card_1
-    properties: {background: 'theme:White', border: solid, role: card}
+    properties: {background: 'theme:White', border: '', role: card}
     type: ColumnPanel
   layout_properties: {slot: default}
   name: column_panel_content
-  properties: {background: 'theme:White', spacing_above: large, spacing_below: large}
+  properties: {background: 'theme:White', border: '', spacing_above: large, spacing_below: large}
   type: ColumnPanel
 - components:
   - event_bindings: {click: link_1_click}
@@ -103,7 +103,7 @@ components:
     type: Button
   layout_properties: {slot: left-nav}
   name: column_panel_navigation
-  properties: {background: 'theme:White', border: so}
+  properties: {background: 'theme:White', border: ''}
   type: ColumnPanel
 container:
   properties: {html: '@theme:standard-page.html'}

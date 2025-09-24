@@ -9,6 +9,7 @@ import anvil.js
 from ..JobCardForm import JobCardForm
 from ..DefectsForm import DefectsForm
 from ..QuoteForm import QuoteForm
+from ..ConfirmForm import ConfirmForm
 from ..InvoiceForm import InvoiceForm
 from ..PaymentForm import PaymentForm
 
@@ -165,6 +166,20 @@ class ProgressTracker(ProgressTrackerTemplate):
         # If data exists, now show the form and pass the quote_data along
         alert(content=QuoteForm(job_id, quote_data=quote_data), buttons=[], dismissible=False, large=True)
     
+    def btn_Confirmed_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        job_id = self.drop_down_JobCardRefDetails.selected_value
+
+        # Call the server first to check for data
+        quote_data = anvil.server.call("get_quote_details_by_job_id", job_id)
+
+        if not quote_data:
+            alert("No data found for the selected Job ID.", title='Missing Quotation Data', large=False)
+            return
+
+        # If data exists, now show the form and pass the quote_data along
+        alert(content=ConfirmForm(job_id, quote_data=quote_data), buttons=[], dismissible=False, large=True)
+        
     def btn_Invoice_click(self, **event_args):
         """This method is called when the button is clicked"""
         job_id = self.drop_down_JobCardRefDetails.selected_value

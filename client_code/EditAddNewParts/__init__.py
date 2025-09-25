@@ -117,7 +117,7 @@ class EditAddNewParts(EditAddNewPartsTemplate):
             self.txtReorderLevel.focus()
             return
 
-
+        alert(self.lbl_ID.text)
         anvil.server.call_s(
             "updateNewParts",
             purchaseDate,

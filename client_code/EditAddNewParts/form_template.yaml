@@ -22,15 +22,15 @@ components:
       type: DropDown
     - layout_properties: {grid_position: 'LAXGBC,SBKCQH'}
       name: lbl_ID
-      properties: {visible: false}
+      properties: {visible: true}
       type: Label
     - layout_properties: {grid_position: 'LAXGBC,OHDRJQ'}
       name: lbl_PartName
-      properties: {visible: false}
+      properties: {visible: true}
       type: Label
     - layout_properties: {grid_position: 'LAXGBC,ZGEKZY'}
       name: lbl_PartNumber
-      properties: {visible: false}
+      properties: {visible: true}
       type: Label
     - layout_properties: {grid_position: 'LPPDZC,EPSALH'}
       name: spacer_3_copy_4

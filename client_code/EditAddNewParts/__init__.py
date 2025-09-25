@@ -23,6 +23,56 @@ class EditAddNewParts(EditAddNewPartsTemplate):
         self.drop_down_supplier.items = anvil.server.call("getSupplier")
 
 
+    def btn_Search_click(self, **event_args):
+        """This method is called when the text in this text box is edited"""
+        search_value = self.text_box_searchPartNo.text.strip()
+    
+        if not search_value:
+            alert("Please enter part name or part no. to proceed.", title="Blank Field(s) Found", large=False)
+            self.text_box_searchPartNo.focus()
+            return
+    
+        result = anvil.server.call('getCarPartNameAndNumber', search_value)
+    
+        #Clear drop down 
+        self.drop_down_selectPart.items = ""
+    
+        if result:
+            self.drop_down_selectPart.items = result
+        else:
+            alert("No records found for the entered part detail.", title="Not Found")
+
+    def drop_down_selectPart_change(self, **event_args):
+        """This method is called when an item is selected"""
+        self.lbl_ID.text = self.drop_down_selectPart.selected_value
+        result2 =  anvil.server.call_s("getCarPartNumberWithID", self.lbl_ID.text)
+        self.lbl_PartNumber.text = result2[0]["PartNo"]
+
+        stockParts = anvil.server.call("getPartsDetailsID", self.lbl_ID.text)
+        self.lbl_SupplierId.text = stockParts["CarPartsSupplierID"]
+        sellingDetails = anvil.server.call("getPartsSellingDetailsID", self.lbl_ID.text)
+
+        #Populate form
+        self.date_picker_purchase.date = stockParts["Date"]
+        self.txtPartName.text =  stockParts["Name"]
+        self.txtPartNumber.text =  stockParts["PartNo"]
+
+        self.drop_down_location.selected_value = stockParts["Location"]
+        self.drop_down_supplier.selected_value = stockParts["CarPartsSupplierID"]
+
+        self.txtNoOfUnits.text =   stockParts["NoOfUnits"]
+        self.txtBuyingPrice.text =  stockParts["UnitCost"]
+
+        if sellingDetails is not None:
+            self.txtSellingPrice.text = sellingDetails["Amount"]
+            self.txtSellingDiscountedPrice.text = sellingDetails["SaleDiscount"]
+        elif sellingDetails is None:
+            self.txtSellingPrice.text = 0
+            self.txtSellingDiscountedPrice.text = 0
+
+        self.txtReorderLevel.text = stockParts["OrderLevel"]
+
+    
     def btn_Update_click(self, **event_args):
         """This method is called when the button is clicked"""
         purchaseDate = self.date_picker_purchase.date
@@ -130,59 +180,11 @@ class EditAddNewParts(EditAddNewPartsTemplate):
             sellingPrice,
             discountPrice,
             reorderLevel,
-            self.lbl_ID.text
+            self.lbl_ID.text,
+            self.lbl_SupplierId
         )
         alert("Part Updated Successfully", title="Success", large=False)
         self.btn_Close_click()
-
-  
-    def btn_Search_click(self, **event_args):
-        """This method is called when the text in this text box is edited"""
-        search_value = self.text_box_searchPartNo.text.strip()
-
-        if not search_value:
-            alert("Please enter part name or part no. to proceed.", title="Blank Field(s) Found", large=False)
-            self.text_box_searchPartNo.focus()
-            return
-
-        result = anvil.server.call('getCarPartNameAndNumber', search_value)
-
-        #Clear drop down 
-        self.drop_down_selectPart.items = ""
-
-        if result:
-            self.drop_down_selectPart.items = result
-        else:
-            alert("No records found for the entered part detail.", title="Not Found")
-
-    def drop_down_selectPart_change(self, **event_args):
-        """This method is called when an item is selected"""
-        self.lbl_ID.text = self.drop_down_selectPart.selected_value
-        result2 =  anvil.server.call_s("getCarPartNumberWithID", self.lbl_ID.text)
-        self.lbl_PartNumber.text = result2[0]["PartNo"]
-       
-        stockParts = anvil.server.call("getPartsDetailsID", self.lbl_ID.text)
-        sellingDetails = anvil.server.call("getPartsSellingDetailsID", self.lbl_ID.text)
-      
-        #Populate form
-        self.date_picker_purchase.date = stockParts["Date"]
-        self.txtPartName.text =  stockParts["Name"]
-        self.txtPartNumber.text =  stockParts["PartNo"]
-        
-        self.drop_down_location.selected_value = stockParts["Location"]
-        self.drop_down_supplier.selected_value = stockParts["CarPartsSupplierID"]
-
-        self.txtNoOfUnits.text =   stockParts["NoOfUnits"]
-        self.txtBuyingPrice.text =  stockParts["UnitCost"]
-
-        if sellingDetails is not None:
-            self.txtSellingPrice.text = sellingDetails["Amount"]
-            self.txtSellingDiscountedPrice.text = sellingDetails["SaleDiscount"]
-        elif sellingDetails is None:
-            self.txtSellingPrice.text = 0
-            self.txtSellingDiscountedPrice.text = 0
-
-        self.txtReorderLevel.text = stockParts["OrderLevel"]
 
 
     def btn_Close_click(self, **event_args):

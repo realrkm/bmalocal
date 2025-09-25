@@ -24,12 +24,12 @@ components:
       name: lbl_ID
       properties: {visible: true}
       type: Label
-    - layout_properties: {grid_position: 'LAXGBC,OHDRJQ'}
-      name: lbl_PartName
+    - layout_properties: {grid_position: 'LAXGBC,PENNDH'}
+      name: lbl_PartNumber
       properties: {visible: true}
       type: Label
-    - layout_properties: {grid_position: 'LAXGBC,ZGEKZY'}
-      name: lbl_PartNumber
+    - layout_properties: {grid_position: 'LAXGBC,OHDRJQ'}
+      name: lbl_SupplierId
       properties: {visible: true}
       type: Label
     - layout_properties: {grid_position: 'LPPDZC,EPSALH'}

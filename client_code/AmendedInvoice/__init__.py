@@ -113,14 +113,14 @@ class AmendedInvoice(AmendedInvoiceTemplate):
 
         if result:
             self.drop_down_selectPart.items = result
-            self.lbl_ID.text = result[0][1]
-            result2 = anvil.server.call_s("getCarPartNumberWithID", self.lbl_ID.text)
-            self.lbl_PartNumber.text = result2[0]["PartNo"]
         else:
             alert("No records found for the entered part detail.", title="Not Found")
 
     def drop_down_selectPart_change(self, **event_args):
         """This method is called when an item is selected"""
+        self.lbl_ID.text = self.drop_down_selectPart.selected_value
+        result2 = anvil.server.call_s("getCarPartNumberWithID", self.lbl_ID.text)
+        self.lbl_PartNumber.text = result2[0]["PartNo"]
         partname = anvil.server.call_s(
             "getCarPartNamesWithId", self.drop_down_selectPart.selected_value
         )

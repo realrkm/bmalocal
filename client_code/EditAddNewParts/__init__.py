@@ -181,7 +181,7 @@ class EditAddNewParts(EditAddNewPartsTemplate):
             discountPrice,
             reorderLevel,
             self.lbl_ID.text,
-            self.lbl_SupplierId
+            self.lbl_SupplierId.text
         )
         alert("Part Updated Successfully", title="Success", large=False)
         self.btn_Close_click()

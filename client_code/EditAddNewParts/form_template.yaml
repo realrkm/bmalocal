@@ -5,6 +5,10 @@ components:
       name: label_title
       properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', text: Edit New Part}
       type: Label
+    - layout_properties: {grid_position: 'SBPZUA,TNXKKK'}
+      name: label_3
+      properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, foreground: '#dc1818', text: The most recently added part is the one being edited.}
+      type: Label
     - event_bindings: {pressed_enter: btn_Search_click}
       layout_properties: {grid_position: 'RLTSBT,UKADGC'}
       name: text_box_searchPartNo
@@ -22,15 +26,15 @@ components:
       type: DropDown
     - layout_properties: {grid_position: 'LAXGBC,SBKCQH'}
       name: lbl_ID
-      properties: {visible: true}
+      properties: {visible: false}
       type: Label
     - layout_properties: {grid_position: 'LAXGBC,PENNDH'}
       name: lbl_PartNumber
-      properties: {visible: true}
+      properties: {visible: false}
       type: Label
     - layout_properties: {grid_position: 'LAXGBC,OHDRJQ'}
       name: lbl_SupplierId
-      properties: {visible: true}
+      properties: {visible: false}
       type: Label
     - layout_properties: {grid_position: 'LPPDZC,EPSALH'}
       name: spacer_3_copy_4

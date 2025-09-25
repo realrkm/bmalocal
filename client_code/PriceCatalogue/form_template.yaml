@@ -87,7 +87,6 @@ components:
       border: solid
       columns:
       - {data_key: 'No', expand: false, id: JKSDUP, title: 'No', width: 42}
-      - {data_key: Supplier, expand: true, id: VJQQOR, title: Supplier, width: ''}
       - {data_key: Name, expand: true, id: OJLQEN, title: Name, width: ''}
       - {data_key: PartNo, expand: true, id: GOXAZB, title: PartNo, width: ''}
       - {data_key: '', id: ZYXDYB, title: '', width: '20'}

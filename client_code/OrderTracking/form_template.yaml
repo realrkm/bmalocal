@@ -1,3 +1,81 @@
-components: []
+components:
+- components:
+  - components:
+    - layout_properties: {grid_position: 'NTZEAK,GMOJPA'}
+      name: label_title
+      properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', role: null, text: Roles And Permissions}
+      type: Label
+    - components:
+      - event_bindings: {pressed_enter: btn_Search_click}
+        layout_properties: {grid_position: 'FFBFFG,TGRRSI'}
+        name: text_box_searchPartNo
+        properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: 'Enter Client Name / Phone To Search * '}
+        type: TextBox
+      - event_bindings: {click: btn_AddRole_click}
+        layout_properties: {grid_position: 'FFBFFG,KGMSAL'}
+        name: btn_SearchClient
+        properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: SEARCH}
+        type: Button
+      layout_properties: {grid_position: 'FEUGGA,ZCQAWM'}
+      name: card_3
+      properties: {border: solid, col_widths: '{"TGRRSI":40,"KGMSAL":20}', role: card}
+      type: ColumnPanel
+    - layout_properties: {grid_position: 'TFIDVW,MDGNOJ'}
+      name: drop_down_selectrole
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: 'Select Client * '}
+      type: DropDown
+    - layout_properties: {grid_position: 'AOYZZW,ZLAFHM'}
+      name: spacer_1
+      properties: {height: '10'}
+      type: Spacer
+    - layout_properties: {grid_position: 'DVROZK,JEPJAN'}
+      name: date_picker_1
+      properties: {background: 'theme:White', border: solid, foreground: 'theme:Black', placeholder: Select Date *}
+      type: DatePicker
+    - event_bindings: {pressed_enter: btn_Search_click}
+      layout_properties: {grid_position: 'HBQKZT,SLSVJL'}
+      name: text_box_searchPartNo_copy
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Part Name / Part No To Search *}
+      type: TextBox
+    - event_bindings: {click: btn_AddRole_click}
+      layout_properties: {grid_position: 'HBQKZT,FGAXFP'}
+      name: btn_SearchParts
+      properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: SEARCH}
+      type: Button
+    - event_bindings: {change: drop_down_selectPart_change}
+      layout_properties: {grid_position: 'HXRJWM,GXEXFD'}
+      name: drop_down_selectPart
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Part *}
+      type: DropDown
+    - event_bindings: {pressed_enter: btn_Search_click}
+      layout_properties: {grid_position: 'HXRJWM,LAHPQS'}
+      name: text_box_searchPartNo_copy_copy
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Quantity}
+      type: TextBox
+    - layout_properties: {grid_position: 'PIWLGW,MOHNDQ'}
+      name: spacer_2
+      properties: {height: '10'}
+      type: Spacer
+    - event_bindings: {click: btn_AddRole_click}
+      layout_properties: {grid_position: 'KMMJLY,AAZVIB'}
+      name: btn_AddOrder
+      properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: ADD ORDER}
+      type: Button
+    - layout_properties: {grid_position: 'ZZPYCK,NYAIGE'}
+      name: spacer_3
+      properties: {height: '10'}
+      type: Spacer
+    layout_properties: {grid_position: 'TOBBOG,LRRUZZ', row_background: 'theme:Black'}
+    name: card_2
+    properties: {border: solid, col_widths: '{"SLSVJL":40,"FGAXFP":20}', role: card}
+    type: ColumnPanel
+  - layout_properties: {grid_position: 'YOHEWD,UTYOVR', row_background: 'theme:Black'}
+    name: card_4
+    properties: {border: solid, role: card}
+    type: ColumnPanel
+  layout_properties: {full_width_row: true, grid_position: 'LKOSUU,IYPISS', row_background: 'theme:Black'}
+  name: card_1
+  properties: {role: card}
+  type: ColumnPanel
 container: {type: ColumnPanel}
 is_package: true

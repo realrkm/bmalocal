@@ -268,11 +268,11 @@ components:
         type: ColumnPanel
       - components:
         - layout_properties: {}
-          name: label_online
-          properties: {align: center, background: 'theme:Black', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: ONLINE}
+          name: label_PartsHub
+          properties: {align: center, background: 'theme:Black', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: PARTS HUB}
           type: Label
         - layout_properties: {}
-          name: chk_online
+          name: chk_partshub
           properties: {align: center, text: ''}
           type: CheckBox
         layout_properties: {grid_position: 'LJVSHG,YYFYFX'}
@@ -283,6 +283,10 @@ components:
         - layout_properties: {grid_position: 'KXOXYX,QTYUCW'}
           name: chk_partscatalog
           properties: {align: center, bold: true, font: Mozilla Headline, font_size: 16, text: PARTS CATALOG}
+          type: CheckBox
+        - layout_properties: {grid_position: 'KXOXYX,KHFXIT'}
+          name: chk_ordertracking
+          properties: {align: center, bold: true, font: Mozilla Headline, font_size: 16, text: ORDER TRACKING}
           type: CheckBox
         layout_properties: {grid_position: 'KSLXJI,OHHMUV'}
         name: column_panel_online

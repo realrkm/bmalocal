@@ -41,7 +41,7 @@ class Main(MainTemplate):
             "PAYMENT": self.btn_Payment,
             "INVENTORY": self.btn_Inventory,
             "REPORTS": self.btn_Report,
-            "ONLINE": self.btn_Online,
+            "PARTS HUB": self.btn_PartsHub,
             "SETTINGS": self.btn_Settings,
             "RESET": self.btn_ResetPassword,
         }
@@ -136,9 +136,9 @@ class Main(MainTemplate):
         #Additional function in standard-page.html
         self.call_js('hideSidebarIfModal') 
 
-    def btn_Online_click(self, **event_args):
-        self.highlight_active_button("ONLINE")
-        ModNavigation.go_Online(self.permissions)
+    def btn_PartsHub_click(self, **event_args):
+        self.highlight_active_button("PARTS HUB")
+        ModNavigation.go_PartsHub(self.permissions)
         #Now hide sidebar after clicking link. 
         #Additional function in standard-page.html
         self.call_js('hideSidebarIfModal') 

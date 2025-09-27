@@ -18,6 +18,8 @@ class StocktakeAnalysis(StocktakeAnalysisTemplate):
         anvil.js.call("replaceBanner")
         while anvil.users.get_user() is None:
             anvil.users.login_with_form()
+            
+        self.card_1.add_component(DisplayStocktakeAnalysis(None, None, None))
         
 
     def btn_Search_click(self, **event_args):

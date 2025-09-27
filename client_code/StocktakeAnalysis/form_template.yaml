@@ -23,13 +23,17 @@ components:
     type: TextBox
   - layout_properties: {grid_position: 'DEFHKO,FLEUIR'}
     name: spacer_1_copy_copy
-    properties: {height: '20'}
+    properties: {height: 50.5}
     type: Spacer
   - event_bindings: {click: btn_Search_click}
     layout_properties: {grid_position: 'FXIIDN,BIRMAG'}
     name: btn_Search
     properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: primary-color, text: Search}
     type: Button
+  - layout_properties: {grid_position: 'TNHFSV,HLBIGQ'}
+    name: spacer_1_copy_copy_copy
+    properties: {height: 50.5}
+    type: Spacer
   layout_properties: {grid_position: 'ZJTUYN,UULJOI'}
   name: card_2
   properties: {role: card}
@@ -37,6 +41,10 @@ components:
 - layout_properties: {grid_position: 'EZFPQU,WLFGEL'}
   name: spacer_1_copy
   properties: {height: 10}
+  type: Spacer
+- layout_properties: {grid_position: 'WGKCWX,HBAICJ'}
+  name: spacer_2
+  properties: {height: 59}
   type: Spacer
 - components: []
   layout_properties: {full_width_row: false, grid_position: 'WUJIQX,FVHLGP'}

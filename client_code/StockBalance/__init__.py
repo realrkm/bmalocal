@@ -41,4 +41,14 @@ class StockBalance(StockBalanceTemplate):
         else:
             alert("No records found for the entered part detail.", title="Not Found")
 
+    def btn_Export_click(self, **event_args):
+        rows = list(self.repeating_panel_1.items)
+
+        if not rows:
+            alert("No data to export.")
+            return
+
+        excel_file = anvil.server.call("export_stock_balance", rows)
+        anvil.media.download(excel_file)
+
    

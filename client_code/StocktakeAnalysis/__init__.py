@@ -52,17 +52,17 @@ class StocktakeAnalysis(StocktakeAnalysisTemplate):
 
             # 4. Fetch based on provided filters
             if startDate and endDate and not part_no:
-                alert(content=DisplayStocktakeAnalysis(start_date = startDate, end_date = endDate, partnumber = None),dismissible=True, large=True )
+                alert(content=DisplayStocktakeAnalysis(start_date = startDate, end_date = endDate, partnumber = None),dismissible=False, large=True )
                 #self.card_1.clear()
                 #self.card_1.add_component()
                
             elif not startDate and not endDate and part_no:
-                alert(content=DisplayStocktakeAnalysis(start_date = None, end_date = None, partnumber = part_no),dismissible=True, large=True) 
+                alert(content=DisplayStocktakeAnalysis(start_date = None, end_date = None, partnumber = part_no),dismissible=False, large=True) 
                 #self.card_1.clear()
                 #self.card_1.add_component(DisplayStocktakeAnalysis(start_date = None, end_date = None, partnumber = part_no))
                 
             elif startDate and endDate and part_no:
-                alert(content=DisplayStocktakeAnalysis(start_date =  startDate, end_date = endDate, partnumber = part_no),dismissible=True, large=True)
+                alert(content=DisplayStocktakeAnalysis(start_date =  startDate, end_date = endDate, partnumber = part_no),dismissible=False, large=True)
                # self.card_1.clear()
                # self.card_1.add_component(DisplayStocktakeAnalysis(start_date =  startDate, end_date = endDate, partnumber = part_no))
 

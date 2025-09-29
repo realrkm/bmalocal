@@ -142,18 +142,23 @@ class OrderTracking(OrderTrackingTemplate):
             anvil.server.call('saveImportOrderTracking', orderDate, clientID, name, number, quantity, status)
 
         alert("Import order saved successfully.", title="Success")
-        
+        self.clearForm()
         self.refresh()
+        self.btn_SaveAndNew.enabled = True
+
 
     def clearForm(self, **event_args):
         self.txt_ClientDetails.text = ""
-        self.drop_down_selectrole.items=None
+        self.drop_down_selectrole.items=[]
+        self.drop_down_selectrole.selected_value = None
         self.date_picker_1.date=None
         self.text_box_searchPartNo.text =""
-        self.drop_down_selectPart.items=None
+        self.drop_down_selectPart.items=[]
+        self.drop_down_selectPart.selected_value = None
         self.lbl_ID.text=""
         self.lbl_PartName.text=""
         self.lbl_PartNumber.text=""
         self.txt_Quantity.text=""
         self.repeating_panel_1.items=[]
+        
         

@@ -5,7 +5,6 @@ import anvil.users
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
-from .. import ModGetData
 
 
 class OrderTracking(OrderTrackingTemplate):
@@ -71,7 +70,7 @@ class OrderTracking(OrderTrackingTemplate):
         self.lbl_PartNumber.text = result2[0]["PartNo"]
         partname = anvil.server.call_s("getCarPartNamesWithId", self.drop_down_selectPart.selected_value)
         self.lbl_PartName.text = partname[0]["Name"]
-        self.txtSellingPrice.text = ModGetData.getSellingPrice(self.lbl_ID.text)
+        
 
     def btn_AddOrder_click(self, **event_args):
         """This method is called when the button is clicked"""
@@ -79,9 +78,9 @@ class OrderTracking(OrderTrackingTemplate):
             alert("Sorry, please select car part to proceed.", title="Blank Field(s) Found", large=False)
             self.drop_down_selectPart.focus()
             return
-        if not self.txtQuantity.text:
+        if not self.txt_Quantity.text:
             alert("Sorry, please enter quantity to proceed.", title="Blank Field(s) Found", large=False)
-            self.txtQuantity.focus()
+            self.txt_Quantity.focus()
             return
         
 
@@ -89,7 +88,7 @@ class OrderTracking(OrderTrackingTemplate):
         new_part = {
             "Name": self.lbl_PartName.text,
             "Part_No": self.lbl_PartNumber.text,
-            "Quantity": self.txtQuantity.text,
+            "Quantity": self.txt_Quantity.text,
             "Status": "Pending"
         }
 
@@ -104,8 +103,8 @@ class OrderTracking(OrderTrackingTemplate):
         #Clear selected items
         self.text_box_searchPartNo.text = ""
         self.drop_down_selectPart.items = []
-        self.txtQuantity.text =""
-        self.txtSellingPrice.text =""
+        self.txt_Quantity.text =""
+        
 
     def btn_SaveAndNew_click(self, **event_args):
         """This method is called when the button is clicked"""
@@ -123,7 +122,7 @@ class OrderTracking(OrderTrackingTemplate):
             self.btn_SaveAndNew.enabled = True
             return
 
-        rows = self.repeating_panel_assigned_parts.items or []
+        rows = self.repeating_panel_1.items or []
 
         if not rows:
             anvil.alert("Sorry, please assign parts to proceed.", title="Missing Assigned Parts", large=False)

@@ -5,6 +5,7 @@ import anvil.users
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
+from ..UpdateOrderTracking import UpdateOrderTracking
 
 
 class OrderTracking(OrderTrackingTemplate):
@@ -160,5 +161,9 @@ class OrderTracking(OrderTrackingTemplate):
         self.lbl_PartNumber.text=""
         self.txt_Quantity.text=""
         self.repeating_panel_1.items=[]
+
+    def btn_UpdateOrderTracking_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        alert(content=UpdateOrderTracking(), dismissible=False, large=True, buttons=[])
         
         

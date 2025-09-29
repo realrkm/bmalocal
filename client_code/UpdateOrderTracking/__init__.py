@@ -13,3 +13,11 @@ class UpdateOrderTracking(UpdateOrderTrackingTemplate):
         self.init_components(**properties)
 
         # Any code you write here will run before the form opens.
+
+    def btn_Update_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        pass
+
+    def btn_Close_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        self.raise_event('x-close-alert', value = True)

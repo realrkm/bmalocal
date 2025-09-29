@@ -3,7 +3,7 @@ components:
   - components:
     - layout_properties: {grid_position: 'BYCLFG,GGMUSL'}
       name: label_title
-      properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', role: null, text: VIEW IMPORT ORDERS}
+      properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', role: null, text: UPDATE  IMPORT ORDERS}
       type: Label
     - layout_properties: {grid_position: 'QFOITO,YMTKIV'}
       name: spacer_1
@@ -15,7 +15,7 @@ components:
         name: text_box_searchPartNo
         properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: 'Enter Client Name / Phone To Search * '}
         type: TextBox
-      - event_bindings: {click: btn_AddRole_click}
+      - event_bindings: {}
         layout_properties: {grid_position: 'FFBFFG,KGMSAL'}
         name: btn_SearchClient
         properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: SEARCH}
@@ -28,10 +28,10 @@ components:
       name: card_3_copy
       properties: {border: solid, col_widths: '{"TGRRSI":40,"KGMSAL":20}', role: card}
       type: ColumnPanel
-    - layout_properties: {grid_position: 'YBFGLI,UTPDDK'}
-      name: card_3
-      properties: {border: solid, role: card}
-      type: ColumnPanel
+    - layout_properties: {grid_position: 'NHOJYK,GBQTLH'}
+      name: spacer_2
+      properties: {height: 32}
+      type: Spacer
     - components:
       - components:
         - name: repeating_panel_1
@@ -47,6 +47,7 @@ components:
           - {data_key: Part_No, id: VJQQOR, title: Part No}
           - {data_key: Quantity, expand: true, id: OJLQEN, title: Quantity}
           - {data_key: Status, expand: true, id: PSOVFO, title: Status}
+          - {data_key: '', id: KAUWMV, title: '', width: '90'}
           - {data_key: '', id: IBXJHQ, title: '', width: '90'}
           foreground: theme:White
           role: null
@@ -56,6 +57,24 @@ components:
       name: card_4
       properties: {border: solid, role: card}
       type: ColumnPanel
+    - layout_properties: {grid_position: 'IGECCF,AIWFUA'}
+      name: spacer_3
+      properties: {height: 32}
+      type: Spacer
+    - event_bindings: {click: btn_Update_click}
+      layout_properties: {grid_position: 'BMBIJA,HIQVCV'}
+      name: btn_Update
+      properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: UPDATE}
+      type: Button
+    - event_bindings: {click: btn_Close_click}
+      layout_properties: {grid_position: 'BMBIJA,QEFPXX'}
+      name: btn_Close
+      properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: CLOSE}
+      type: Button
+    - layout_properties: {grid_position: 'DQVHDN,GOMOMU'}
+      name: spacer_4
+      properties: {height: 32}
+      type: Spacer
     layout_properties: {grid_position: 'MTGWJR,NNKOBM'}
     name: card_2
     properties: {border: solid, role: card}

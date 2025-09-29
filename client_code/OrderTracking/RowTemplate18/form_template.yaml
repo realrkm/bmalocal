@@ -4,6 +4,10 @@ components:
   name: btn_DeleteRow
   properties: {background: '#0056D6', foreground: 'theme:White', icon: 'fa:trash-o', icon_align: right, text: '', tooltip: Delete Row}
   type: Button
+- layout_properties: {column: KAUWMV}
+  name: button_1
+  properties: {background: '#0056D6', foreground: 'theme:White', icon: 'fa:edit', text: '', tooltip: 'Edit Order '}
+  type: Button
 container:
   properties: {background: 'theme:Black', border: solid, foreground: 'theme:White'}
   type: DataRowPanel

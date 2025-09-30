@@ -77,8 +77,8 @@ class UpdateOrderTracking(UpdateOrderTrackingTemplate):
                     "amount": amount,
                     "status": status
                 })
-        alert(val) 
-        anvil.server.call("updateImportOrderTracking", val["client_id"], val["order_date"], items)
+  
+        anvil.server.call("updateImportOrderTracking", val["order_date"], val["client_id"],  items)
         alert("Import order updated successfully", title="Success")
         self.btn_Close_click()
 

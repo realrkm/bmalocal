@@ -14,14 +14,6 @@ class UpdateOrderTracking(UpdateOrderTrackingTemplate):
 
         # Any code you write here will run before the form opens.
 
-    def btn_Update_click(self, **event_args):
-        """This method is called when the button is clicked"""
-        pass
-
-    def btn_Close_click(self, **event_args):
-        """This method is called when the button is clicked"""
-        self.raise_event('x-close-alert', value = True)
-
     def btn_SearchClient_click(self, **event_args):
         """This method is called when the button is clicked"""
         searchTerm = self.text_box_searchPartNo.text
@@ -49,3 +41,18 @@ class UpdateOrderTracking(UpdateOrderTrackingTemplate):
             val["order_date"]
         )
         self.repeating_panel_1.items = orders
+
+    def btn_Update_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        val = self.drop_down_selectDetails.selected_value
+        if not val:
+            alert("Sorry, please select client to proceed")
+            return
+        else:
+            rows = self.repeating_panel_1.items
+            items=[]
+            for row in rows:
+                items.a
+    def btn_Close_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        self.raise_event('x-close-alert', value = True)

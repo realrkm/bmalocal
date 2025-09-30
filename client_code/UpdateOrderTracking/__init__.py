@@ -38,4 +38,15 @@ class UpdateOrderTracking(UpdateOrderTrackingTemplate):
             self.text_box_searchPartNo.focus()
             return
         else:
-            self.drop_down_selectrole.items = result
+            self.drop_down_selectDetails.items = result
+
+    def drop_down_selectDetails_change(self, **event_args):
+        """This method is called when an item is selected"""
+        val = self.drop_down_selectDetails.selected_value  # {"client_id": ..., "order_date": ...}
+        orders = anvil.server.call(
+            'get_import_orders_for_selection',
+            val["client_id"],
+            val["order_date"]
+        )
+        alert(orders)
+        self.repeating_panel_1.items = orders

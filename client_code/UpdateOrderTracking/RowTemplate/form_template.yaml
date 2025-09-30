@@ -5,13 +5,13 @@ components:
   properties: {background: '#0056D6', foreground: 'theme:White', icon: 'fa:trash-o', icon_align: right, text: '', tooltip: Delete Row}
   type: Button
 - data_bindings:
-  - {code: 'self.item[''Amount'']', property: text, writeback: false}
+  - {code: 'self.item[''Amount'']', property: text, writeback: true}
   layout_properties: {column: LQWTXJ}
   name: txt_Amount
   properties: {align: center, background: 'theme:White', foreground: 'theme:Black', placeholder: 'Enter Amount ', type: number}
   type: TextBox
 - data_bindings:
-  - {code: 'self.item[''Status'']', property: selected_value, writeback: false}
+  - {code: 'self.item[''Status'']', property: selected_value, writeback: true}
   layout_properties: {column: PSOVFO}
   name: drop_down_status
   properties:

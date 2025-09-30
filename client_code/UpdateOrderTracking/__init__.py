@@ -44,15 +44,44 @@ class UpdateOrderTracking(UpdateOrderTrackingTemplate):
 
     def btn_Update_click(self, **event_args):
         """This method is called when the button is clicked"""
+        self.btn_Update.enabled = True
+    
         val = self.drop_down_selectDetails.selected_value
         if not val:
             alert("Sorry, please select client to proceed")
+            self.text_box_searchPartNo.focus()
+            self.btn_Update.enabled = True
             return
         else:
             rows = self.repeating_panel_1.items
-            items=[]
+            items = []
             for row in rows:
-                items.a
+                item_name = row.get('Name', '')
+                part_no = row.get('Part_No', "")
+                quantity = float(row["Quantity"]) if row.get("Quantity") not in (None, "") else None
+    
+                # --- Safe handling of Amount ---
+                raw_amount = row.get("Amount", None)
+                if raw_amount is None or raw_amount == "":
+                    amount = None
+                else:
+                    amount_str = str(raw_amount)
+                    amount = float(amount_str.replace(",", ""))
+    
+                status = row.get("Status", "")   # fixed row.get["Status"] -> row.get("Status")
+    
+                items.append({
+                    "name": item_name,
+                    "number": part_no,
+                    "quantity": quantity,
+                    "amount": amount,
+                    "status": status
+                })
+        alert(val) 
+        anvil.server.call("updateImportOrderTracking", val["client_id"], val["order_date"], items)
+        alert("Import order updated successfully", title="Success")
+        self.btn_Close_click()
+
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.raise_event('x-close-alert', value = True)

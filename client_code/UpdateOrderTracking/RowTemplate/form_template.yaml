@@ -8,7 +8,7 @@ components:
   - {code: 'self.item[''Amount'']', property: text, writeback: false}
   layout_properties: {column: LQWTXJ}
   name: txt_Amount
-  properties: {align: center, background: 'theme:White', foreground: 'theme:Black', type: number}
+  properties: {align: center, background: 'theme:White', foreground: 'theme:Black', placeholder: 'Enter Amount ', type: number}
   type: TextBox
 - data_bindings:
   - {code: 'self.item[''Status'']', property: selected_value, writeback: false}
@@ -20,6 +20,6 @@ components:
     items: [Arrived, Pending]
   type: DropDown
 container:
-  properties: {align: left, background: 'theme:Black', border: solid, foreground: 'theme:White'}
+  properties: {align: center, background: 'theme:Black', border: solid, foreground: 'theme:White'}
   type: DataRowPanel
 is_package: true

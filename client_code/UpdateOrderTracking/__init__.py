@@ -48,5 +48,4 @@ class UpdateOrderTracking(UpdateOrderTrackingTemplate):
             val["client_id"],
             val["order_date"]
         )
-        alert(orders)
         self.repeating_panel_1.items = orders

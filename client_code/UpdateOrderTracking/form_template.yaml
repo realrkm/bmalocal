@@ -35,8 +35,9 @@ components:
       type: Spacer
     - components:
       - components:
-        - name: repeating_panel_1
-          properties: {item_template: OrderTracking.RowTemplate18}
+        - layout_properties: {}
+          name: repeating_panel_1
+          properties: {item_template: UpdateOrderTracking.RowTemplate}
           type: RepeatingPanel
         layout_properties: {grid_position: 'INTVUQ,CWCXZO'}
         name: data_grid_1
@@ -47,6 +48,7 @@ components:
           - {data_key: Name, expand: true, id: JKSDUP, title: Name}
           - {data_key: Part_No, id: VJQQOR, title: Part No}
           - {data_key: Quantity, expand: true, id: OJLQEN, title: Quantity}
+          - {data_key: Amount, expand: true, id: LQWTXJ, title: Amount (Kshs)}
           - {data_key: Status, expand: true, id: PSOVFO, title: Status}
           - {data_key: '', id: IBXJHQ, title: '', width: '90'}
           foreground: theme:White

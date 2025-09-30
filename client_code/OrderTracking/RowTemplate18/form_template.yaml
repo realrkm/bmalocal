@@ -4,23 +4,7 @@ components:
   name: btn_DeleteRow
   properties: {background: '#0056D6', foreground: 'theme:White', icon: 'fa:trash-o', icon_align: right, text: '', tooltip: Delete Row}
   type: Button
-- data_bindings:
-  - {code: 'self.item[''Status'']', property: selected_value, writeback: false}
-  layout_properties: {column: PSOVFO}
-  name: drop_down_1
-  properties:
-    background: theme:Black
-    border: ''
-    foreground: theme:White
-    items: [Arrived, Pending]
-  type: DropDown
-- data_bindings:
-  - {code: 'self.item[''Amount'']', property: text, writeback: false}
-  layout_properties: {column: LRZQAS}
-  name: txt_Amount
-  properties: {background: 'theme:Gray 900', foreground: 'theme:White', role: dense, type: number}
-  type: TextBox
 container:
-  properties: {align: center, background: 'theme:Black', border: solid, foreground: 'theme:White'}
+  properties: {align: left, background: 'theme:Black', border: solid, foreground: 'theme:White'}
   type: DataRowPanel
 is_package: true

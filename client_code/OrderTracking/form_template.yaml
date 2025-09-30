@@ -123,12 +123,9 @@ components:
           border: solid
           columns:
           - {data_key: Name, expand: true, id: JKSDUP, title: Name}
-          - {data_key: '', id: RWCHOP, title: '', width: '30'}
           - {data_key: Part_No, id: VJQQOR, title: Part No}
-          - {data_key: '', id: QUWMGI, title: '', width: '30'}
           - {data_key: Quantity, expand: true, id: OJLQEN, title: Quantity}
           - {data_key: Status, expand: true, id: PSOVFO, title: Status}
-          - {data_key: Amount, expand: true, id: LRZQAS, title: Amount (KSHS)}
           - {data_key: '', id: IBXJHQ, title: '', width: '90'}
           foreground: theme:White
           role: null

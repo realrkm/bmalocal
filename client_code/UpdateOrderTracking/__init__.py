@@ -21,3 +21,21 @@ class UpdateOrderTracking(UpdateOrderTrackingTemplate):
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.raise_event('x-close-alert', value = True)
+
+    def btn_SearchClient_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        searchTerm = self.text_box_searchPartNo.text
+
+        if not searchTerm:
+            alert("Please enter search term to proceed")
+            self.text_box_searchPartNo.focus()
+            return
+        else:
+            result = anvil.server.call("search_client_import_orders", searchTerm)
+
+        if not result:
+            alert("Sorry, no record was found matching the search term")
+            self.text_box_searchPartNo.focus()
+            return
+        else:
+            self.drop_down_selectrole.items = result

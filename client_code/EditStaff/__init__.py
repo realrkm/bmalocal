@@ -26,7 +26,7 @@ class EditStaff(EditStaffTemplate):
         
 
         # Set focus to search client
-        self.search_keyword_1.text_box_search.focus()
+        self.txt_StaffName.focus()
 
         # Attach the event that fetches technicians
         self.search_keyword_1.set_event_handler(
@@ -60,11 +60,13 @@ class EditStaff(EditStaffTemplate):
     def refresh(self, **event_args):
         self.set_event_handler("x-refresh", self.refresh)
 
-    def getStaffName(self, **event_args):
+    def btn_Search_click(self, **event_args):
         """Return staff records to SearchKeyword."""
-        results = anvil.server.call("get_staff_details", None)
-        return [{"entry": r["Fullname"], "ID": r["ID"]} for r in results]
-
+        valueName = self.txt_StaffName.text
+        if valueName:
+            results = anvil.server.call("getStaffByName", None)
+        else:
+            alert("Sorry, please e")
     def populateClientDetails(self, result, **event_args):
         """This method is called when an item is selected"""
         x = anvil.server.call("get_staff_details", result["ID"])

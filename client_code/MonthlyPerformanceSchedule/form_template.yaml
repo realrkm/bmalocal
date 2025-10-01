@@ -14,7 +14,8 @@ components:
         name: date_picker_start
         properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Start Date *}
         type: DatePicker
-      - layout_properties: {grid_position: 'QIPYEX,KEKGQW'}
+      - event_bindings: {change: date_picker_end_change}
+        layout_properties: {grid_position: 'QIPYEX,KEKGQW'}
         name: date_picker_end
         properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter End Date *}
         type: DatePicker
@@ -22,15 +23,16 @@ components:
         name: spacer_1
         properties: {height: '10'}
         type: Spacer
-      - layout_properties: {grid_position: 'HUDAII,WVCRZW'}
-        name: drop_down_selectJobCard
-        properties: {background: 'theme:White', border: solid, foreground: 'theme:Black', include_placeholder: true, placeholder: Enter Jobcard Ref *}
-        type: DropDown
+      - layout_properties: {grid_position: 'XXMMNS,SGYVPZ'}
+        name: txt_JobCardRef
+        properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter JobCard Ref *}
+        type: TextBox
       - layout_properties: {grid_position: 'HAWZAB,JHADPJ'}
         name: spacer_6
         properties: {height: 32}
         type: Spacer
-      - layout_properties: {grid_position: 'JRBQVQ,BKCMML'}
+      - event_bindings: {click: btn_Search_click}
+        layout_properties: {grid_position: 'JRBQVQ,BKCMML'}
         name: btn_Search
         properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: SEARCH}
         type: Button
@@ -65,6 +67,7 @@ components:
         background: theme:Black
         border: solid
         columns:
+        - {data_key: 'No', id: JUWUQN, title: 'No', width: '40'}
         - {data_key: Date, expand: true, id: JKSDUP, title: Date}
         - {data_key: Item, expand: true, id: VJQQOR, title: Item}
         - {data_key: Part_No, expand: true, id: OJLQEN, title: Part_No}

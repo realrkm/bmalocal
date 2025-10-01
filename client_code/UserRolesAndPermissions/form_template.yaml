@@ -262,6 +262,10 @@ components:
           name: chk_paymentreport
           properties: {align: center, bold: true, font: Mozilla Headline, font_size: 16, text: Periodic Payment Details}
           type: CheckBox
+        - layout_properties: {grid_position: 'NGDMEE,FNRKTO'}
+          name: chk_MonthlySchedule
+          properties: {align: center, bold: true, font: Mozilla Headline, font_size: 16, text: Monthly Schedule}
+          type: CheckBox
         layout_properties: {grid_position: 'KDNHOM,FQFVXC'}
         name: column_panel_2_copy_copy
         properties: {background: '', border: solid}

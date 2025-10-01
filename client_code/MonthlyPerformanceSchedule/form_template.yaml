@@ -1,0 +1,75 @@
+components:
+- components:
+  - components:
+    - layout_properties: {grid_position: 'HKYWOW,YMXWJW'}
+      name: label_title
+      properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', role: null, text: Monthly Performance Schedule}
+      type: Label
+    - layout_properties: {grid_position: 'RUMJPU,URZWHC'}
+      name: spacer_3
+      properties: {height: '10'}
+      type: Spacer
+    - components:
+      - layout_properties: {grid_position: 'QIPYEX,GYABAL'}
+        name: date_picker_start
+        properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Start Date *}
+        type: DatePicker
+      - layout_properties: {grid_position: 'QIPYEX,KEKGQW'}
+        name: date_picker_end
+        properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter End Date *}
+        type: DatePicker
+      - layout_properties: {grid_position: 'LACFQY,NERPCM'}
+        name: spacer_1
+        properties: {height: '10'}
+        type: Spacer
+      - layout_properties: {grid_position: 'JRBQVQ,BKCMML'}
+        name: btn_Search
+        properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: SEARCH}
+        type: Button
+      - layout_properties: {grid_position: 'JRBQVQ,WTHAHS'}
+        name: btn_ViewSchedule
+        properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: VIEW SCHEDULE}
+        type: Button
+      - layout_properties: {grid_position: 'XKPHZO,QTINNU'}
+        name: spacer_2
+        properties: {height: '10'}
+        type: Spacer
+      layout_properties: {grid_position: 'DGUZZI,GEYWTI'}
+      name: card_3
+      properties: {border: solid, role: card}
+      type: ColumnPanel
+    layout_properties: {grid_position: 'CPEGMA,DJEWHZ', row_background: 'theme:Black'}
+    name: card_2
+    properties: {role: card}
+    type: ColumnPanel
+  - layout_properties: {grid_position: 'TQWGDS,MITEZB'}
+    name: spacer_4
+    properties: {height: '20'}
+    type: Spacer
+  - components:
+    - components:
+      - name: repeating_panel_1
+        properties: {item_template: MonthlyPerformanceSchedule.RowTemplate19}
+        type: RepeatingPanel
+      layout_properties: {grid_position: 'ZFKUFS,XNMDEY'}
+      name: data_grid_1
+      properties:
+        columns:
+        - {data_key: column_1, id: JKSDUP, title: Column 1}
+        - {data_key: column_2, id: VJQQOR, title: Column 2}
+        - {data_key: column_3, id: OJLQEN, title: Column 3}
+      type: DataGrid
+    layout_properties: {grid_position: 'AXFOJD,FGAVAN'}
+    name: card_4
+    properties: {border: solid, role: card}
+    type: ColumnPanel
+  - layout_properties: {grid_position: 'CEEIEO,ERZIEF', row_background: 'theme:Black'}
+    name: spacer_5
+    properties: {height: '10'}
+    type: Spacer
+  layout_properties: {full_width_row: true, grid_position: 'PDWSZI,BWPUAZ', row_background: 'theme:Black'}
+  name: card_1
+  properties: {role: card}
+  type: ColumnPanel
+container: {type: ColumnPanel}
+is_package: true

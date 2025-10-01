@@ -10,6 +10,7 @@ from ..TechnicianJobCardDetails import TechnicianJobCardDetails
 from ..InventoryReport import InventoryReport
 from ..PeriodicQuoteVsInvoice import PeriodicQuoteVsInvoice
 from ..PeriodicPayment import PeriodicPayment
+from ..MonthlyPerformanceSchedule import MonthlyPerformanceSchedule
 from .. import ModGetData
 
 class Report(ReportTemplate):
@@ -88,6 +89,12 @@ class Report(ReportTemplate):
                     self.add_item(first_visible)
                     first_visible = None
 
+            elif subsection == "Monthly Schedule":
+                if value and first_visible is None:
+                    first_visible = "Monthly Performance Schedule"
+                    self.add_item(first_visible)
+                    first_visible = None
+
 
     def add_item(self, new_item):
         items = list(self.cmbReport.items or [])
@@ -162,6 +169,13 @@ class Report(ReportTemplate):
             self.search_keyword_1.repeating_panel_results.visible = False
             self.card_panel.clear()
             self.card_panel.add_component(PeriodicPayment())
+            self.card_panel.visible = True
+
+        elif self.cmbReport.selected_value == "Monthly Performance Schedule":
+            self.search_keyword_1.text_box_search.visible = False
+            self.search_keyword_1.repeating_panel_results.visible = False
+            self.card_panel.clear()
+            self.card_panel.add_component(MonthlyPerformanceSchedule())
             self.card_panel.visible = True
 
 

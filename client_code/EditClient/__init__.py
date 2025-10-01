@@ -20,14 +20,7 @@ class EditClient(EditClientTemplate):
         set_default_error_handling(self.handle_server_errors) #Set global server error handler
         
         #Set focus to search client
-        self.search_keyword_1.text_box_search.focus()
-
-        # Attach the event that fetches technicians
-        self.search_keyword_1.set_event_handler('x-get-search-keys', self.getClientName)
-        self.search_keyword_1.text_box_search.placeholder = "Search Client's Name *"
-
-        # Handle what happens when a user selects a result
-        self.search_keyword_1.set_event_handler('x-search-hints-result', self.populateClientDetails)
+        self.txt_clientname.focus()
         
     def handle_server_errors(self, exc):
         if isinstance(exc, anvil.server.UplinkDisconnectedError):
@@ -39,14 +32,17 @@ class EditClient(EditClientTemplate):
         else:
             anvil.alert(f"Unexpected error: {exc}", title="Error", large=False)
             
-    def getClientName(self,  **event_args):
-        """Return client records to SearchKeyword."""
-        results = anvil.server.call('getClientFullname')
-        return [{'entry': r['Fullname'], 'ID': r['ID']} for r in results]
-
-    def populateClientDetails(self, result, **event_args):
+    def btn_Search_click(self,  **event_args):
+        """This function is called when the function is clicked"""
+        if self.txt_clientname.text:
+            self.drop_down_selectClient.items = anvil.server.call('getClientNameAndPhoneNumber', self.txt_clientname.text)
+        else:
+            alert("Sorry, please enter client name to proceed", title="Blank Field(s) Found)
+            return
+            
+    def drop_down_selectClient_change(self, **event_args):
         """This method is called when an item is selected"""
-        x = anvil.server.call('getClientNameWithID', result['ID'])
+        x = anvil.server.call('getClientNameWithID', self.drop_down_selectClient.selected_value)
         self.txt_name.text = x['Fullname']
         self.txt_phone.text = x['Phone']
         self.txt_address.text = x['Address']
@@ -58,13 +54,13 @@ class EditClient(EditClientTemplate):
         """This method is called when the button is clicked"""
         self.btn_Update.enabled = False #Disable button to prevent multiple clicks 
 
-        if self.search_keyword_1.selected_result is None:
+        if self.drop_down_selectClient.selected_value is None:
             alert("Please select client's name to proceed.", large=False)
-            self.search_keyword_1.text_box_search.focus()
+            self.drop_down_selectClient.focus()
             self.btn_Update.enabled =True
             return
         else:
-            client_id = self.search_keyword_1.selected_result["ID"]
+            client_id = self.drop_down_selectClient.selected_value
             
         name = self.txt_name.text.strip().upper()
         phone = self.txt_phone.text.strip()
@@ -112,3 +108,5 @@ class EditClient(EditClientTemplate):
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.raise_event('x-close-alert', value = True)
+
+    

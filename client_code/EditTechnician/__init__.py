@@ -23,15 +23,7 @@ class EditTechnician(EditTechnicianTemplate):
         self.dropdown_toolkits.items = [(r["ToolkitName"], r) for r in anvil.server.call('get_toolkits', None)]
         
         #Set focus to search client
-        self.search_keyword_1.text_box_search.focus()
-
-        # Attach the event that fetches technicians
-        self.search_keyword_1.set_event_handler('x-get-search-keys', self.getTechnicianName)
-        self.search_keyword_1.text_box_search.placeholder = "Search Technician's Name *"
-
-        # Handle what happens when a user selects a result
-        self.search_keyword_1.set_event_handler('x-search-hints-result', self.populateClientDetails)
-
+        self.txt_technicianName.focus()
 
     def handle_server_errors(self, exc):
         if isinstance(exc, anvil.server.UplinkDisconnectedError):
@@ -46,14 +38,18 @@ class EditTechnician(EditTechnicianTemplate):
     def refresh(self, **event_args):
         self.set_event_handler("x-refresh", self.refresh)
 
-    def getTechnicianName(self,  **event_args):
+    def btn_Search_click(self,  **event_args):
         """Return technician records to SearchKeyword."""
-        results = anvil.server.call('get_technician_details', None)
-        return [{'entry': r['Fullname'], 'ID': r['ID']} for r in results]
-
-    def populateClientDetails(self, result, **event_args):
+        valueName = self.txt_technicianName.text
+        if valueName:
+            self.drop_down_selectName.items = anvil.server.call('getTechnicianNameAndID', valueName)
+        else:
+            alert("Sorry, please enter technician name to proceed", title="Blank Field(s) Found")
+            return
+            
+    def drop_down_selectName_change(self,  **event_args):
         """This method is called when an item is selected"""
-        x = anvil.server.call('get_technician_details', result['ID'])
+        x = anvil.server.call('get_technician_details', self.drop_down_selectName.selected_value)
         self.txt_name.text = x[0]['Fullname']
         self.txt_phone.text = x[0]['Phone']
         tool = anvil.server.call_s('get_toolkits', x[0]["ToolkitID"])
@@ -65,13 +61,13 @@ class EditTechnician(EditTechnicianTemplate):
         """This method is called when the 'Save and New' button is clicked"""
         self.btn_Update.enabled = False #Disable button to prevent multiple clicks
         
-        if self.search_keyword_1.selected_result is None:
+        if self.drop_down_selectName.selected_value is None:
             alert("Please select technician's name to proceed.", large=False)
-            self.search_keyword_1.text_box_search.focus()
+            self.txt_technicianName.focus()
             self.btn_Update.enabled =True
             return
         else:
-            technician_id = self.search_keyword_1.selected_result["ID"]
+            technician_id = self.drop_down_selectName.selected_value
             
         name = self.txt_name.text.strip().upper()
         phone = self.txt_phone.text.strip()
@@ -127,3 +123,5 @@ class EditTechnician(EditTechnicianTemplate):
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.raise_event('x-close-alert', value = True)
+
+    

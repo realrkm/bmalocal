@@ -39,7 +39,7 @@ class EditTechnician(EditTechnicianTemplate):
         self.set_event_handler("x-refresh", self.refresh)
 
     def btn_Search_click(self,  **event_args):
-        """Return technician records to SearchKeyword."""
+        """Return technician records to drop down component."""
         valueName = self.txt_technicianName.text
         if valueName:
             self.drop_down_selectName.items = anvil.server.call('getTechnicianNameAndID', valueName)
@@ -63,7 +63,7 @@ class EditTechnician(EditTechnicianTemplate):
         
         if self.drop_down_selectName.selected_value is None:
             alert("Please select technician's name to proceed.", large=False)
-            self.txt_technicianName.focus()
+            self.drop_down_selectName.focus()
             self.btn_Update.enabled =True
             return
         else:

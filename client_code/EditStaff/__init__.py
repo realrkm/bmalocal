@@ -28,17 +28,7 @@ class EditStaff(EditStaffTemplate):
         # Set focus to search client
         self.txt_StaffName.focus()
 
-        # Attach the event that fetches technicians
-        self.search_keyword_1.set_event_handler(
-            "x-get-search-keys", self.getStaffName
-        )
-        self.search_keyword_1.text_box_search.placeholder = "Search Staff's Name *"
-
-        # Handle what happens when a user selects a result
-        self.search_keyword_1.set_event_handler(
-            "x-search-hints-result", self.populateClientDetails
-        )
-
+        
     def handle_server_errors(self, exc):
         if isinstance(exc, anvil.server.UplinkDisconnectedError):
             anvil.alert(
@@ -61,15 +51,17 @@ class EditStaff(EditStaffTemplate):
         self.set_event_handler("x-refresh", self.refresh)
 
     def btn_Search_click(self, **event_args):
-        """Return staff records to SearchKeyword."""
+        """Return staff records to drop down component."""
         valueName = self.txt_StaffName.text
         if valueName:
-            results = anvil.server.call("getStaffByName", None)
+            self.drop_down_selectName.items = anvil.server.call("getStaffByName", valueName)
         else:
-            alert("Sorry, please e")
-    def populateClientDetails(self, result, **event_args):
+            alert("Sorry, please enter staff name to procced", title="Blank Field(s) Found")
+            return
+            
+    def drop_down_selectName_change(self,  **event_args):
         """This method is called when an item is selected"""
-        x = anvil.server.call("get_staff_details", result["ID"])
+        x = anvil.server.call("get_staff_details", self.drop_down_selectName.selected_value)
         self.txt_name.text = x[0]["Fullname"]
         self.txt_phone.text = x[0]["Phone"]
         self.drop_down_archived.selected_value = x[0]["Active"]
@@ -80,13 +72,13 @@ class EditStaff(EditStaffTemplate):
         self.btn_Update.enabled = False  # Disable button to prevent multiple clicks
 
 
-        if self.search_keyword_1.selected_result is None:
+        if self.drop_down_selectName.selected_value is None:
             alert("Please select staff's name to proceed.", large=False)
-            self.search_keyword_1.text_box_search.focus()
+            self.drop_down_selectName.focus()
             self.btn_Update.enabled = True
             return
         else:
-            staff_id = self.search_keyword_1.selected_result["ID"]
+            staff_id = self.drop_down_selectName.selected_value
         
         name = self.txt_name.text.strip().upper()
         phone = self.txt_phone.text.strip()

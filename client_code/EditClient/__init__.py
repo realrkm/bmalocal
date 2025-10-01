@@ -37,7 +37,7 @@ class EditClient(EditClientTemplate):
         if self.txt_clientname.text:
             self.drop_down_selectClient.items = anvil.server.call('getClientNameAndPhoneNumber', self.txt_clientname.text)
         else:
-            alert("Sorry, please enter client name to proceed", title="Blank Field(s) Found)
+            alert("Sorry, please enter client name to proceed", title="Blank Field(s) Found")
             return
             
     def drop_down_selectClient_change(self, **event_args):

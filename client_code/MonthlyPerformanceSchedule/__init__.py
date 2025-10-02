@@ -14,7 +14,7 @@ class MonthlyPerformanceSchedule(MonthlyPerformanceScheduleTemplate):
 
         # Any code you write here will run before the form opens.
     
-    def btn_Search_click(self, **event_args):
+    def btn_SearchInvoiceDetails_click(self, **event_args):
         """This method is called when the button is clicked"""
         startDate = self.date_picker_start.date
         endDate = self.date_picker_end.date
@@ -32,3 +32,5 @@ class MonthlyPerformanceSchedule(MonthlyPerformanceScheduleTemplate):
             return
             
         self.repeating_panel_1.items = anvil.server.call("getPeriodicInvoices", startDate, endDate, searchTerm)
+
+   

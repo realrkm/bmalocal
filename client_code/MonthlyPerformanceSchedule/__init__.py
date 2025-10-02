@@ -14,23 +14,42 @@ class MonthlyPerformanceSchedule(MonthlyPerformanceScheduleTemplate):
 
         # Any code you write here will run before the form opens.
     
-    def btn_SearchInvoiceDetails_click(self, **event_args):
+    def searchInvoices(self, **event_args):
         """This method is called when the button is clicked"""
         startDate = self.date_picker_start.date
         endDate = self.date_picker_end.date
-        searchTerm = self.txt_JobCardRef.text
-
-        if not startDate or not endDate:
+        
+        if startDate and endDate is None:
+            pass #Do nothing
+        elif startDate is None and endDate is None:
             alert("Sorry, please enter date period to proceed", title="Blank Field(s) Found")
             return
-        if startDate > endDate:
+        elif startDate is None and endDate:
+            alert("Sorry, please enter start date to proceed", title="Blank Field(s) Found")
+            return
+        elif startDate > endDate:
             alert("Sorry, start date cannot be greater than end date", title="Mismatch Dates")
             return
-        if not searchTerm:
-            alert("Sorry, please enter job card ref to proceed", title="Blank Field(s) Match")
-            self.txt_JobCardRef.focus()
-            return
-            
-        self.repeating_panel_1.items = anvil.server.call("getPeriodicInvoices", startDate, endDate, searchTerm)
+        else:
+            self.drop_down_1.items = anvil.server.call("getMonthlyJobcardRef", startDate, endDate)
 
+    def drop_down_1_change(self, **event_args):
+        """This method is called when an item is selected"""
+        startDate = self.date_picker_start.date
+        endDate = self.date_picker_end.date
+        jobcardrefID = self.drop_down_1.selected_value
+        
+        if startDate is None and endDate is None:
+            alert("Sorry, please enter date period to proceed", title="Blank Field(s) Found")
+            return
+        elif startDate is None and endDate:
+            alert("Sorry, please enter start date to proceed", title="Blank Field(s) Found")
+            return
+        elif startDate > endDate:
+            alert("Sorry, start date cannot be greater than end date", title="Mismatch Dates")
+            return
+        else:
+            self.repeating_panel_1.items = anvil.server.call("getPeriodicInvoices", startDate, endDate, jobcardrefID)
+
+            
    

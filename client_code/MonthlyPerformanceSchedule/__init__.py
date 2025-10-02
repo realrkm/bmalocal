@@ -50,6 +50,6 @@ class MonthlyPerformanceSchedule(MonthlyPerformanceScheduleTemplate):
             return
         else:
             self.repeating_panel_1.items = anvil.server.call("getPeriodicInvoices", startDate, endDate, jobcardrefID)
-
+            
             
    

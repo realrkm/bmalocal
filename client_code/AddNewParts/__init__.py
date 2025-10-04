@@ -151,7 +151,8 @@ class AddNewParts(AddNewPartsTemplate):
         self.txtSellingPrice.text = ""
         self.txtSellingDiscountedPrice.text = ""
         self.txtReorderLevel.text = ""
-
+        self.drop_down_location.items = anvil.server.call("getLocation")
+        self.drop_down_supplier.items = anvil.server.call("getSupplier")
         self.refresh()
         self.btn_SaveAndNew.enabled = True
 

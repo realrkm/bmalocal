@@ -131,7 +131,7 @@ class AddMoreStock(AddMoreStockTemplate):
         self.txt_NoOfUnits.text = ""
         self.txt_UnitCost.text = ""
         self.repeating_panel_1.items = []
-
+        self.drop_down_selectSupplier.items = anvil.server.call("getSupplier")
         # Put cursor back on search box for next entry
         self.text_box_searchPartNo.focus()
         

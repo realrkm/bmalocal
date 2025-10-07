@@ -51,8 +51,12 @@ class MonthlyPerformanceSchedule(MonthlyPerformanceScheduleTemplate):
         else:
             self.repeating_panel_1.items = anvil.server.call("getPeriodicInvoices", startDate, endDate, jobcardrefID)
             result = anvil.server.call("getFullnameInvoiceAmountAndBalance", jobcardrefID)
-            alert(result)
-            self.lbl_ClientName.text=result[0]["Fullname"]
-            self.lbl_PaymentBalance.text=result[0]["Balance"]
-            self.lbl_TotalInvoiceAmount.text=result[0]["TotalPaid"]
+            
+            if result:
+                self.lbl_ClientName.text=result["Fullname"]
+                self.lbl_TotalInvoiceAmount.text = result["TotalInvoiceAmount"]
+                self.lbl_TotalAmountPaid.text=result["TotalAmountPaid"]
+                self.lbl_TotalDiscount.text=result["TotalDiscount"]
+                self.lbl_PaymentBalance.text=result["MaxBalance"]
+               
    

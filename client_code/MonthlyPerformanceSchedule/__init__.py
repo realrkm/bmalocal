@@ -61,22 +61,37 @@ class MonthlyPerformanceSchedule(MonthlyPerformanceScheduleTemplate):
 
     def btn_SaveAndNew_click(self, **event_args):
         """This method is called when the button is clicked"""
+        self.btn_SaveAndNew.enabled = False
         startDate = self.date_picker_start.date
         endDate = self.date_picker_end.date
         jobcardrefID = self.drop_down_1.selected_value
+        fullname = self.lbl_ClientName.text
+        invoiceTotal = self.lbl_TotalInvoiceAmount.text
+        totalPaid = self.lbl_TotalAmountPaid.text
+        totalDiscount=self.lbl_TotalDiscount.text
+        balance = self.lbl_PaymentBalance.text
+        rows = self.repeating_panel_1.items or []
 
         if startDate is None and endDate is None:
             alert("Sorry, please enter date period to proceed", title="Blank Field(s) Found")
+            self.btn_SaveAndNew.enabled = True
             return
         elif startDate is None and endDate:
             alert("Sorry, please enter start date to proceed", title="Blank Field(s) Found")
+            self.btn_SaveAndNew.enabled = True
             return
         elif startDate > endDate:
             alert("Sorry, start date cannot be greater than end date", title="Mismatch Dates")
+            self.btn_SaveAndNew.enabled = True
             return
         elif jobcardrefID is None:
             alert("Sorry, please select the jobcard ref to proceed", title="Blank Field(s) Found")
+            self.btn_SaveAndNew.enabled = True
             return
+        elif not rows:
+            alert("Sorry, ensure jobcard ref has parts or servies associated with it",title="Missing Assigned Parts or Service", large=False)
+            self.btn_SaveAndNew.enabled = True
+            return
+
         
-               
    

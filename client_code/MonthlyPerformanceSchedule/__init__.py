@@ -59,19 +59,22 @@ class MonthlyPerformanceSchedule(MonthlyPerformanceScheduleTemplate):
                 self.lbl_TotalDiscount.text=result["TotalDiscount"]
                 self.lbl_PaymentBalance.text=result["MaxBalance"]
 
+    
     def btn_SaveAndNew_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.btn_SaveAndNew.enabled = False
+    
         startDate = self.date_picker_start.date
         endDate = self.date_picker_end.date
         jobcardrefID = self.drop_down_1.selected_value
         fullname = self.lbl_ClientName.text
         invoiceTotal = self.lbl_TotalInvoiceAmount.text
         totalPaid = self.lbl_TotalAmountPaid.text
-        totalDiscount=self.lbl_TotalDiscount.text
+        totalDiscount = self.lbl_TotalDiscount.text
         balance = self.lbl_PaymentBalance.text
         rows = self.repeating_panel_1.items or []
-
+    
+        # --- Basic validation ---
         if startDate is None and endDate is None:
             alert("Sorry, please enter date period to proceed", title="Blank Field(s) Found")
             self.btn_SaveAndNew.enabled = True
@@ -89,27 +92,42 @@ class MonthlyPerformanceSchedule(MonthlyPerformanceScheduleTemplate):
             self.btn_SaveAndNew.enabled = True
             return
         elif not rows:
-            alert("Sorry, ensure jobcard ref has parts or servies associated with it",title="Missing Assigned Parts or Service", large=False)
+            alert("Sorry, ensure jobcard ref has parts or services associated with it",
+                title="Missing Assigned Parts or Service", large=False)
             self.btn_SaveAndNew.enabled = True
             return
-
+    
+        # --- Validate Categories before saving ---
+        for i, row in enumerate(rows, start=1):
+            category = row.get('Category', None)
+            if not category or str(category).strip() == "":
+                item_name = row.get('Item', 'Unknown Item')
+                alert(f"Missing category for item #{i}: {item_name}", title="Missing Category")
+                self.btn_SaveAndNew.enabled = True
+                return
+    
+        # --- Delete old monthly schedule to avoid duplicates ---
+        anvil.server.call("deleteMonthlySchedule", jobcardrefID)
+    
+        # --- Insert new records ---
         for row in rows:
-            invoiceDate = row['Date']
-            item = row['Item']
-            partNo = row['Part_No']
-            quantity = row['QuantityIssued']
-            amount=row['Amount']
-            category=row['Category']
+            invoiceDate = row.get('Date')
+            item = row.get('Item')
+            partNo = row.get('Part_No')
+            quantity = row.get('QuantityIssued')
+            amount = row.get('Amount')
+            category = row.get('Category')
+    
             anvil.server.call_s(
-                "saveMonthlySchedule", 
-                invoiceDate, jobcardrefID, fullname, 
-                invoiceTotal, totalPaid, totalDiscount, 
-                balance, item, partNo, 
-                quantity, amount, category)
-
-        
+                "saveMonthlySchedule",
+                invoiceDate, jobcardrefID, fullname,
+                invoiceTotal, totalPaid, totalDiscount,
+                balance, item, partNo,
+                quantity, amount, category
+            )
+    
         alert("Categorized invoice details saved successfully", title="Success")
-        self.btn_SaveAndNew.enabled=True
+        self.btn_SaveAndNew.enabled = True
         self.clearForm()
 
     def clearForm(self, **event_args):

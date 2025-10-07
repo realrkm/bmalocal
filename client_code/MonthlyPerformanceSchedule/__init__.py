@@ -58,5 +58,25 @@ class MonthlyPerformanceSchedule(MonthlyPerformanceScheduleTemplate):
                 self.lbl_TotalAmountPaid.text=result["TotalAmountPaid"]
                 self.lbl_TotalDiscount.text=result["TotalDiscount"]
                 self.lbl_PaymentBalance.text=result["MaxBalance"]
+
+    def btn_SaveAndNew_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        startDate = self.date_picker_start.date
+        endDate = self.date_picker_end.date
+        jobcardrefID = self.drop_down_1.selected_value
+
+        if startDate is None and endDate is None:
+            alert("Sorry, please enter date period to proceed", title="Blank Field(s) Found")
+            return
+        elif startDate is None and endDate:
+            alert("Sorry, please enter start date to proceed", title="Blank Field(s) Found")
+            return
+        elif startDate > endDate:
+            alert("Sorry, start date cannot be greater than end date", title="Mismatch Dates")
+            return
+        elif jobcardrefID is None:
+            alert("Sorry, please select the jobcard ref to proceed", title="Blank Field(s) Found")
+            return
+        
                
    

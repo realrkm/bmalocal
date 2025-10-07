@@ -93,5 +93,32 @@ class MonthlyPerformanceSchedule(MonthlyPerformanceScheduleTemplate):
             self.btn_SaveAndNew.enabled = True
             return
 
+        for row in rows:
+            invoiceDate = row['Date']
+            item = row['Item']
+            partNo = row['Part_No']
+            quantity = row['QuantityIssued']
+            amount=row['Amount']
+            category=row['Category']
+            anvil.server.call_s(
+                "saveMonthlySchedule", 
+                invoiceDate, jobcardrefID, fullname, 
+                invoiceTotal, totalPaid, totalDiscount, 
+                balance, item, partNo, 
+                quantity, amount, category)
+
         
-   
+        alert("Categorized invoice details saved successfully", title="Success")
+        self.btn_SaveAndNew.enabled=True
+        self.clearForm()
+
+    def clearForm(self, **event_args):
+        self.date_picker_start.date=None
+        self.date_picker_end.date = None
+        self.drop_down_1.items=[]
+        self.lbl_ClientName.text=""
+        self.lbl_TotalInvoiceAmount.text=""
+        self.lbl_TotalAmountPaid.text=""
+        self.lbl_TotalDiscount.text=""
+        self.lbl_PaymentBalance.text=""
+        self.repeating_panel_1.items=[]

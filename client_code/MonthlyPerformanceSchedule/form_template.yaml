@@ -47,23 +47,23 @@ components:
         type: DropDown
       - layout_properties: {grid_position: 'ELYZAA,OWDJAF'}
         name: lbl_ClientName
-        properties: {visible: true}
+        properties: {visible: false}
         type: Label
       - layout_properties: {grid_position: 'ELYZAA,TIFJWN'}
         name: lbl_TotalInvoiceAmount
-        properties: {visible: true}
+        properties: {visible: false}
         type: Label
       - layout_properties: {grid_position: 'ELYZAA,NKVEFS'}
         name: lbl_TotalAmountPaid
-        properties: {visible: true}
+        properties: {visible: false}
         type: Label
       - layout_properties: {grid_position: 'ELYZAA,OPWIKD'}
         name: lbl_TotalDiscount
-        properties: {visible: true}
+        properties: {visible: false}
         type: Label
       - layout_properties: {grid_position: 'ELYZAA,PENQHC'}
         name: lbl_PaymentBalance
-        properties: {visible: true}
+        properties: {visible: false}
         type: Label
       - layout_properties: {grid_position: 'NPHSTM,LPWSKV'}
         name: spacer_2

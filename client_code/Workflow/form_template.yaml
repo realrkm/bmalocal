@@ -106,6 +106,19 @@ components:
   name: flow_panel_1
   properties: {border: solid, role: null}
   type: FlowPanel
+- layout_properties: {grid_position: 'UYHWQQ,WNEGED'}
+  name: spacer_3
+  properties: {height: '10'}
+  type: Spacer
+- event_bindings: {click: btn_TransitionToComplete_click}
+  layout_properties: {grid_position: 'ROFYIA,MUFYXK'}
+  name: btn_TransitionToComplete
+  properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: TRANSITION READY FOR PICKUP TO COMPLETE, visible: true}
+  type: Button
+- layout_properties: {grid_position: 'SIYFYT,OKDISY'}
+  name: spacer_2
+  properties: {height: '10'}
+  type: Spacer
 - layout_properties: {full_width_row: true, grid_position: 'BQRPXV,PCVMZL', row_background: 'theme:Black'}
   name: vehicle_repeater
   properties: {border: solid, foreground: '', item_template: Workflow.ItemTemplate1, role: card, visible: false}

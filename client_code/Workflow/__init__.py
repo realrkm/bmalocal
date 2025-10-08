@@ -147,6 +147,11 @@ class Workflow(WorkflowTemplate):
         self.populateCards(self.cmbStatus.selected_value)
         self.refresh()
 
+    def btn_TransitionToComplete_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        anvil.server.call("transitionreadyforpickuptocomplete")
+        alert("All 'Ready for Pickup' jobcards have been updated to 'Complete'", title="Success")
+
    
     
         

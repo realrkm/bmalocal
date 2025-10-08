@@ -7,6 +7,7 @@ import anvil.tables.query as q
 from anvil.tables import app_tables
 import anvil.js
 from .. import ModGetData
+from ..TransitionInterimQuoteToInvoice import TransitionInterimQuoteToInvoice
 
 class InterimQuotation(InterimQuotationTemplate):
     def __init__(self, **properties):
@@ -349,4 +350,8 @@ class InterimQuotation(InterimQuotationTemplate):
                 self.repeating_panel_assigned_parts.items = result["parts"]
             
                 alert("Previous details loaded successfully", title="Success")
+
+    def btn_TransitionInterimQuoteToInvoice_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        pass
         

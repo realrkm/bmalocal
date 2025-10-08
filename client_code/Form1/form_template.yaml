@@ -36,7 +36,7 @@ components:
         background: theme:Black
         columns:
         - {data_key: Date, expand: true, id: JKSDUP, title: Date}
-        - {data_key: column_2, id: VJQQOR, title: Column 2}
+        - {data_key: Fulname, expand: true, id: VJQQOR, title: Name}
         - {data_key: column_3, id: OJLQEN, title: Column 3}
         - {data_key: column_4, id: ZDEAFB, title: Column 4}
         - {data_key: column_5, id: TCVESX, title: Column 5}

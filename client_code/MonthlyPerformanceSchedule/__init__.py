@@ -5,6 +5,7 @@ import anvil.users
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
+from ..ViewSchedule import ViewSchedule
 
 
 class MonthlyPerformanceSchedule(MonthlyPerformanceScheduleTemplate):
@@ -118,7 +119,7 @@ class MonthlyPerformanceSchedule(MonthlyPerformanceScheduleTemplate):
             amount = row.get('Amount')
             category = row.get('Category')
     
-            anvil.server.call_s(
+            anvil.server.call(
                 "saveMonthlySchedule",
                 invoiceDate, jobcardrefID, fullname,
                 invoiceTotal, totalPaid, totalDiscount,
@@ -140,3 +141,7 @@ class MonthlyPerformanceSchedule(MonthlyPerformanceScheduleTemplate):
         self.lbl_TotalDiscount.text=""
         self.lbl_PaymentBalance.text=""
         self.repeating_panel_1.items=[]
+
+    def btn_ViewSchedule_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        alert(content=ViewSchedule(), buttons=[], dismissible=False,large=True)

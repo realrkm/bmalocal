@@ -9,7 +9,8 @@ components:
       name: spacer_3
       properties: {height: '10'}
       type: Spacer
-    - layout_properties: {grid_position: 'CYKWQI,AMSVBP'}
+    - event_bindings: {click: btn_ViewSchedule_click}
+      layout_properties: {grid_position: 'CYKWQI,AMSVBP'}
       name: btn_ViewSchedule
       properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: VIEW SCHEDULE}
       type: Button

@@ -353,5 +353,5 @@ class InterimQuotation(InterimQuotationTemplate):
 
     def btn_TransitionInterimQuoteToInvoice_click(self, **event_args):
         """This method is called when the button is clicked"""
-        pass
+        alert(content=TransitionInterimQuoteToInvoice(), buttons=[],dismissible=False, large=True)
         

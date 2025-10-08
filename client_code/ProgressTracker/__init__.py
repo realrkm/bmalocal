@@ -88,6 +88,7 @@ class ProgressTracker(ProgressTrackerTemplate):
         "In Service": self.label_in_service,
         "Verify Task": self.label_verify_task,
         "Issue Invoice": self.label_issue_invoice,
+        "Cancel Jobcard": self.label_cancelled,
         "Pending": self.label_payment_due,
         "Paid": self.label_payment_done
     }
@@ -100,7 +101,13 @@ class ProgressTracker(ProgressTrackerTemplate):
             else:
                 label.background = "white"
                 label.foreground = "black"
-
+        
+        if active_state == "Cancel Jobcard":
+            self.text_area_1.text = anvil.server.call("getCancelledJobcardReason", self.drop_down_JobCardRefDetails.selected_value)
+            self.text_area_1.visible = True
+        else:
+            self.text_area_1.visible=False
+            
     def populatePaymentDetails(self, jobcardID, **event_args):
         invoice_status = anvil.server.call_s("getInvoiceStatus", jobcardID)  
         self.label_Due.text = anvil.server.call_s('get_invoice_total_by_job_id', jobcardID) 

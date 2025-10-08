@@ -64,6 +64,13 @@ class TechnicianDefectsAndRequestedParts(TechnicianDefectsAndRequestedPartsTempl
             self.btn_Save.enabled = True
             return
             
+        if self.cmbWorkflow.selected_value == "Cancel Jobcard" and not self.text_area_1.text:
+            alert("Sorry, please enter cancellation reason to proceed.", title="Blank Field Found")
+            self.text_area_1.focus()
+            self.btn_Save.enabled = True
+            return
+            
+            
         jobcardref = self.cmbJobCardRef.selected_value['ID']
         defects = self.txtDefectsList.text
         requestedParts = self.txtRequestedParts.text
@@ -71,6 +78,10 @@ class TechnicianDefectsAndRequestedParts(TechnicianDefectsAndRequestedPartsTempl
             
         anvil.server.call('saveTecnicianDefectsAndRequestedParts', jobcardref, defects, requestedParts)
         anvil.server.call_s('updateJobCardStatus', jobcardref, status)
+
+        if status == "Cancel Jobcard":
+            anvil.server.call("saveCancellationReason", jobcardref, self.text_area_1.text)
+        
         alert("Data saved successfully", title="Success")
             
         # Close Form 
@@ -80,6 +91,14 @@ class TechnicianDefectsAndRequestedParts(TechnicianDefectsAndRequestedPartsTempl
         """This method is called when the button is clicked"""
         self.raise_event('x-close-alert', value = True)
         get_open_form().btn_Workflow_click()
+
+    def cmbWorkflow_change(self, **event_args):
+        """This method is called when an item is selected"""
+        if self.cmbWorkflow.selected_value == "Cancel Jobcard":
+            self.text_area_1.visible=True
+        else:
+            self.text_area_1.visible = False
+        
 
  
 

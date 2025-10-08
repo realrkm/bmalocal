@@ -89,7 +89,8 @@ components:
     name: label_Workflow
     properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Workflow Status *}
     type: Label
-  - layout_properties: {grid_position: 'TWCCLX,UUSDQP'}
+  - event_bindings: {change: cmbWorkflow_change}
+    layout_properties: {grid_position: 'TWCCLX,UUSDQP'}
     name: cmbWorkflow
     properties:
       border: solid
@@ -97,10 +98,14 @@ components:
       font_size: 16
       foreground: theme:Black
       include_placeholder: true
-      items: [Create Quote]
+      items: [Create Quote, Cancel Jobcard]
       placeholder: 'Select Next Workflow Status * '
       role: null
     type: DropDown
+  - layout_properties: {grid_position: 'THZXLZ,NBPKYB'}
+    name: text_area_1
+    properties: {auto_expand: true, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Cancellation Reason Here *, visible: false}
+    type: TextArea
   - layout_properties: {grid_position: 'GTKRJE,JEXRYQ', row_background: 'theme:Black'}
     name: spacer_1
     properties: {height: 32}

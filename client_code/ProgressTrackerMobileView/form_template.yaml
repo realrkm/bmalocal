@@ -140,6 +140,14 @@ components:
           name: label_issue_invoice
           properties: {align: center, font: Mozilla Headline, font_size: 16, icon: 'fa:dollar', text: Issue Invoice}
           type: Label
+        - layout_properties: {grid_position: 'XTMJKH,BQLOLG'}
+          name: label_cancelled
+          properties: {align: center, font: Mozilla Headline, font_size: 16, icon: 'fa:times', text: Cancelled Jobcard}
+          type: Label
+        - layout_properties: {grid_position: 'SIORKJ,AXMCWC'}
+          name: text_area_1
+          properties: {auto_expand: true, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', visible: false}
+          type: TextArea
         - layout_properties: {full_width_row: true, grid_position: 'EZFTFK,FQAHWZ', row_background: 'theme:Black'}
           name: spacer_1
           properties: {height: '0.5'}

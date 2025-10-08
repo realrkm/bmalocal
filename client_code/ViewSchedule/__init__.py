@@ -36,3 +36,13 @@ class ViewSchedule(ViewScheduleTemplate):
         """This method is called when the button is clicked"""
         self.raise_event("x-close-alert", value=True)
 
+    def btn_Export_click(self, **event_args):
+        rows = list(self.repeating_panel_1.items)
+
+        if not rows:
+            alert("No data to export.")
+            return
+
+        excel_file = anvil.server.call("export_monthly_schedule", rows)
+        anvil.media.download(excel_file)
+

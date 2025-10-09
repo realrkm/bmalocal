@@ -145,7 +145,7 @@ class AmendedInvoice(AmendedInvoiceTemplate):
             )
             self.txtQuantity.focus()
             return
-        if not self.txtSellingPrice.text:
+        if self.txtSellingPrice.text =="":
             alert(
                 "Sorry, please enter selling price to proceed.",
                 title="Blank Field(s) Found",
@@ -188,7 +188,7 @@ class AmendedInvoice(AmendedInvoiceTemplate):
             self.txtServices.focus()
             return
 
-        if not self.txtAmount.text:
+        if self.txtAmount.text =="":
             alert(
                 "Sorry, please enter amount to proceed.",
                 title="Blank Field(s) Found",

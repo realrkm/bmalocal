@@ -70,7 +70,7 @@ components:
         - {data_key: Alignment, expand: true, id: UOLOAF, title: Align.}
         - {data_key: TransferGearboxOil, expand: true, id: NEAAFA, title: T/G Oil}
         - {data_key: Others, expand: true, id: ZWSIYF, title: Others}
-        - {data_key: PaymentBalance, expand: true, id: MUQQEF, title: Bal}
+        - {data_key: Balance, expand: true, id: MUQQEF, title: Bal}
         foreground: theme:White
         wrap_on: mobile
       type: DataGrid

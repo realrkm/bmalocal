@@ -100,27 +100,27 @@
                     }
                     if (err && !(err instanceof ZXing.NotFoundException)) {
                         console.error(err);
-            showMessage(`Scanning Error: ${err.message}`, true);
-            stopScanner();
-          }
-        });
-      } catch (error) {
-        console.error("Error initializing scanner:", error);
-        showMessage(`Initialization Error: ${error.message}`, true);
-        stopScanner();
-      }
-    }
+                        showMessage(`Scanning Error: ${err.message}`, true);
+                        stopScanner();
+                    }
+                });
+            } catch (error) {
+                console.error("Error initializing scanner:", error);
+                showMessage(`Initialization Error: ${error.message}`, true);
+                stopScanner();
+            }
+        }
 
-    function stopScanner() {
-      if (codeReader) {
-        codeReader.reset();
-      }
-      videoContainer.style.display = "none";
-      scanLine.style.display = "none";
-    }
+        function stopScanner() {
+            if (codeReader) {
+                codeReader.reset();
+            }
+            videoContainer.style.display = "none";
+            scanLine.style.display = "none";
+        }
 
-    window.startScanner = startScanner;
-    window.stopScanner = stopScanner;
-  };
-  document.head.appendChild(script);
+        window.startScanner = startScanner;
+        window.stopScanner = stopScanner;
+    };
+    document.head.appendChild(script);
 })();

@@ -42,3 +42,7 @@ class DefectsForm(DefectsFormTemplate):
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.raise_event("x-close-alert", value=True)
+
+    def btn_Update_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        pass

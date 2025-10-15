@@ -87,7 +87,7 @@ components:
     type: ColumnPanel
   layout_properties: {grid_position: 'WPWCTX,JDYOEV'}
   name: column_panel_2
-  properties: {background: 'theme:Gray 600'}
+  properties: {background: 'theme:White'}
   type: ColumnPanel
 - layout_properties: {full_width_row: true, grid_position: 'OYDUUP,VHWMUV', row_background: 'theme:Black'}
   name: spacer_1

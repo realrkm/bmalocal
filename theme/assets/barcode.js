@@ -1,4 +1,4 @@
-// ZXing Scanner for Anvil Works (All Supported Barcode Types)
+// ZXing Scanner for Anvil Works
 (() => {
     const script = document.createElement("script");
     script.src = "https://cdn.jsdelivr.net/npm/@zxing/library@latest/umd/index.min.js";
@@ -10,6 +10,7 @@
         const scanLine = document.getElementById("scan-line");
         const messageBox = document.getElementById("message-box");
 
+        // --- UI Helpers ---
         function showMessage(msg, isError = false) {
             if (!messageBox) return;
             messageBox.textContent = msg;
@@ -22,49 +23,21 @@
             if (messageBox) messageBox.style.display = "none";
         }
 
+        // --- Play beep sound ---
         function playBeep() {
             try {
                 const audio = new Audio("_/theme/scanner-beep.mp3");
-                audio.play().catch((err) => console.warn("Audio play blocked:", err));
+                audio.play().catch(err => console.warn("Audio play blocked:", err));
             } catch (e) {
                 console.error("Error playing beep:", e);
             }
         }
 
+        // --- Scanner Logic ---
         async function startScanner() {
             hideMessage();
             try {
-                const {
-                    BrowserMultiFormatReader,
-                    BarcodeFormat,
-                    DecodeHintType,
-                } = ZXing;
-
-                // Include *all supported barcode formats*
-                const formats = [
-                    BarcodeFormat.AZTEC,
-                    BarcodeFormat.CODABAR,
-                    BarcodeFormat.CODE_39,
-                    BarcodeFormat.CODE_93,
-                    BarcodeFormat.CODE_128,
-                    BarcodeFormat.DATA_MATRIX,
-                    BarcodeFormat.EAN_8,
-                    BarcodeFormat.EAN_13,
-                    BarcodeFormat.ITF,
-                    BarcodeFormat.MAXICODE,
-                    BarcodeFormat.PDF_417,
-                    BarcodeFormat.QR_CODE,
-                    BarcodeFormat.MICRO_QR_CODE,
-                    BarcodeFormat.UPC_A,
-                    BarcodeFormat.UPC_E,
-                    BarcodeFormat.RSS_14,
-                    BarcodeFormat.RSS_EXPANDED,
-                ];
-
-                const hints = new Map();
-                hints.set(DecodeHintType.POSSIBLE_FORMATS, formats);
-
-                codeReader = new BrowserMultiFormatReader(hints);
+                codeReader = new ZXing.BrowserMultiFormatReader();
 
                 const videoInputDevices = await codeReader.listVideoInputDevices();
                 if (videoInputDevices.length < 1) {
@@ -72,11 +45,16 @@
                     return;
                 }
 
-                const selectedDeviceId =
-                    videoInputDevices.find((d) =>
-                        /back|rear|environment/i.test(d.label)
-                                          )?.deviceId || videoInputDevices[0].deviceId;
+                // Prefer back camera if available
+                const selectedDeviceId = videoInputDevices.length > 1
+                    ? videoInputDevices.find((d) => 
+                        d.label.toLowerCase().includes("back") || 
+                        d.label.toLowerCase().includes("rear") ||
+                        d.label.toLowerCase().includes("environment")
+                                            )?.deviceId || videoInputDevices[0].deviceId
+                    : videoInputDevices[0].deviceId;
 
+                // Enhanced video constraints for better quality
                 const constraints = {
                     video: {
                         deviceId: selectedDeviceId,
@@ -84,8 +62,9 @@
                         height: { ideal: 1080, min: 480 },
                         facingMode: { ideal: "environment" },
                         focusMode: { ideal: "continuous" },
-                        advanced: [{ focusMode: "continuous" }],
-                    },
+                        // Enable autofocus if supported
+                        advanced: [{ focusMode: "continuous" }]
+                    }
                 };
 
                 videoContainer.style.display = "block";
@@ -93,9 +72,15 @@
 
                 codeReader.decodeFromVideoDevice(selectedDeviceId, "video", (result, err) => {
                     if (result) {
-                        console.log("Scan result:", result.text, "Format:", result.getBarcodeFormat?.());
+                        console.log("Scan result:", result.text);
+
+                        // Play beep sound
                         playBeep();
-                        if (window.display_result) window.display_result(result.text);
+
+                        // Call into Python (StockTake sets window.display_result)
+                        if (window.display_result) {
+                            window.display_result(result.text);
+                        }
                         stopScanner();
                     }
                     if (err && !(err instanceof ZXing.NotFoundException)) {
@@ -119,6 +104,7 @@
             scanLine.style.display = "none";
         }
 
+        // Expose for Anvil
         window.startScanner = startScanner;
         window.stopScanner = stopScanner;
     };

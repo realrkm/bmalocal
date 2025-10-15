@@ -21,6 +21,8 @@ class DefectsForm(DefectsFormTemplate):
         set_default_error_handling(self.handle_server_errors)  # Set global server error handler
 
         self.populateForm(defects_data)
+        # Store defects_data for later use
+        self.defects_data = defects_data
 
     def handle_server_errors(self, exc):
         if isinstance(exc, anvil.server.UplinkDisconnectedError):
@@ -43,6 +45,14 @@ class DefectsForm(DefectsFormTemplate):
         """This method is called when the button is clicked"""
         self.raise_event("x-close-alert", value=True)
 
-    def btn_Update_click(self, **event_args):
+    def btn_Update_click(self,  **event_args):
         """This method is called when the button is clicked"""
-        pass
+        jobcardID = self.defects_data[0]["ID"]
+        instructions= self.txtClientInstructions.text
+        notes = self.txtTechNotes.text
+        defects = self.txtDefectsList.text
+        parts=self.txtRequestedParts.text
+
+        anvil.server.call("updateDefectsList", jobcardID, instructions, notes,defects,parts)
+        alert("Update is successfull", title="Success")
+        self.btn_Close_click()

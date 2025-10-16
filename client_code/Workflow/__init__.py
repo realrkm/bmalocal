@@ -116,11 +116,11 @@ class Workflow(WorkflowTemplate):
 
         self.refresh()
         
-    def populateCards(self, status):
+    def populateCards(self, status, regNo):
         self.vehicle_repeater.items = []
         self.refresh()
-        
-        vehicle_data_source = ModGetData.getTechnicianJobCards(status)
+
+        vehicle_data_source = ModGetData.getTechnicianJobCards(status, regNo)
 
         # Set the total
         self.total_label.text = f"Total Vehicles: {len(vehicle_data_source)}"
@@ -143,14 +143,19 @@ class Workflow(WorkflowTemplate):
 
     def cmbStatus_change(self, **event_args):
         """This method is called when an item is selected"""
+        self.cmbRegNo.items = anvil.server.call("getRegNoUsingStatus", self.cmbStatus.selected_value)
         self.vehicle_repeater.visible = True
-        self.populateCards(self.cmbStatus.selected_value)
+        self.populateCards(self.cmbStatus.selected_value, None)
         self.refresh()
 
     def btn_TransitionToComplete_click(self, **event_args):
         """This method is called when the button is clicked"""
         anvil.server.call("transitionreadyforpickuptocomplete")
         alert("All 'Ready for Pickup' jobcards have been updated to 'Complete'", title="Success")
+
+    def cmbRegNo_change(self, **event_args):
+        """This method is called when an item is selected"""
+        self.populateCards(self.cmbStatus.selected_value, self.cmbRegNo.selected_value)
 
    
     

@@ -109,7 +109,20 @@ components:
         foreground: theme:Black
         include_placeholder: true
         items: []
-        placeholder: Select Workflow Status
+        placeholder: Select Workflow Status *
+      type: DropDown
+    - event_bindings: {change: cmbRegNo_change}
+      layout_properties: {grid_position: 'IVALPC,MKCDTX'}
+      name: cmbRegNo
+      properties:
+        border: ''
+        font: Mozilla Headline
+        font_size: 16
+        foreground: theme:Black
+        include_placeholder: true
+        items: []
+        placeholder: Select RegNo
+        visible: true
       type: DropDown
     layout_properties: {width: 967.2727355957031}
     name: column_panel_1

@@ -30,8 +30,8 @@ def getJobCardTechNotes(id):
     return anvil.server.call_s('getJobCardTechNotes', id)    
     
 #************************************************* Technician Section *******************************
-def getTechnicianJobCards(status):
-    return anvil.server.call_s('getTechnicianJobCards', status)
+def getTechnicianJobCards(status, regNo):
+    return anvil.server.call_s('getTechnicianJobCards', status, regNo)
      
 def getJobCardDefects(id):
     return anvil.server.call_s('getJobCardDefects', id)

@@ -28,6 +28,10 @@ components:
     name: label_plate
     properties: {font: Mozilla Headline, foreground: 'theme:White'}
     type: Label
+  - layout_properties: {grid_position: 'DMKZNJ,EFHMAI'}
+    name: label_chassis
+    properties: {font: Mozilla Headline, foreground: 'theme:White'}
+    type: Label
   - layout_properties: {grid_position: 'JXYAJC,ZESXBP'}
     name: label_instruction
     properties: {font: Mozilla Headline, foreground: 'theme:White'}
@@ -74,6 +78,10 @@ components:
     name: label_plate_1
     properties: {font: Mozilla Headline, foreground: 'theme:White'}
     type: Label
+  - layout_properties: {grid_position: 'VGFQRL,GCODEW'}
+    name: label_chassis_1
+    properties: {font: Mozilla Headline, foreground: 'theme:White'}
+    type: Label
   - layout_properties: {grid_position: 'KBMCFK,LUSHNO'}
     name: label_instruction_1
     properties: {font: Mozilla Headline, foreground: 'theme:White'}
@@ -118,6 +126,10 @@ components:
     type: Label
   - layout_properties: {grid_position: 'JDZRLN,AJLQFM'}
     name: label_plate_2
+    properties: {font: Mozilla Headline, foreground: 'theme:White'}
+    type: Label
+  - layout_properties: {grid_position: 'TZMZJW,JLUDGC'}
+    name: label_chassis_2
     properties: {font: Mozilla Headline, foreground: 'theme:White'}
     type: Label
   - layout_properties: {grid_position: 'KBMCFK,LUSHNO'}

@@ -16,6 +16,10 @@ components:
     name: spacer_3
     properties: {height: '11.7'}
     type: Spacer
+  - layout_properties: {grid_position: 'JYAMLS,GWJENI'}
+    name: button_1
+    properties: {text: button_1}
+    type: Button
   - layout_properties: {grid_position: 'ANFDGB,DNBISW'}
     name: spacer_2
     properties: {height: 6.18182373046875}
@@ -28,7 +32,7 @@ components:
   - event_bindings: {click: btn_Close_click}
     layout_properties: {grid_position: 'ZZHUZR,CIGQKH'}
     name: btn_Close
-    properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: null, text: Close}
+    properties: {align: full, background: '#0056D6', bold: true, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: null, text: Close}
     type: Button
   - layout_properties: {grid_position: 'UBAZQG,BHTDZU'}
     name: spacer_3_copy

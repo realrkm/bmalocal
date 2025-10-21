@@ -16,9 +16,14 @@ components:
     name: spacer_3
     properties: {height: '11.7'}
     type: Spacer
-  - layout_properties: {grid_position: 'JYAMLS,GWJENI'}
-    name: button_1
-    properties: {text: button_1}
+  - layout_properties: {grid_position: 'DBIUUD,CIWCUI'}
+    name: spacer_2_copy
+    properties: {height: 6.18182373046875}
+    type: Spacer
+  - event_bindings: {click: btn_DownloadDefectsList_click}
+    layout_properties: {full_width_row: false, grid_position: 'JYAMLS,GWJENI'}
+    name: btn_DownloadDefectsList
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: DOWNLOAD DEFECTS LIST}
     type: Button
   - layout_properties: {grid_position: 'ANFDGB,DNBISW'}
     name: spacer_2
@@ -32,7 +37,7 @@ components:
   - event_bindings: {click: btn_Close_click}
     layout_properties: {grid_position: 'ZZHUZR,CIGQKH'}
     name: btn_Close
-    properties: {align: full, background: '#0056D6', bold: true, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: null, text: Close}
+    properties: {align: full, background: '#0056D6', bold: false, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: null, text: Close}
     type: Button
   - layout_properties: {grid_position: 'UBAZQG,BHTDZU'}
     name: spacer_3_copy

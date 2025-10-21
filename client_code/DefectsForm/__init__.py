@@ -59,4 +59,13 @@ class DefectsForm(DefectsFormTemplate):
 
     def btn_DownloadDefectsList_click(self, **event_args):
         """This method is called when the button is clicked"""
-        pass
+        jobcardID = self.defects_data[0]["ID"]
+        self.downloadQuotationPdf(jobcardID)
+              
+    def downloadQuotationPdf(self, job_card_id):
+        media_object = anvil.server.call('createQuotationInvoicePdf', job_card_id, "DefectsList")
+        anvil.media.download(media_object)
+        self.deleteFile(job_card_id, "DefectsList")
+
+    def deleteFile(self, jobCardID, docType):
+        anvil.server.call("deleteFile", jobCardID, docType)

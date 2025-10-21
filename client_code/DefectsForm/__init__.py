@@ -63,7 +63,7 @@ class DefectsForm(DefectsFormTemplate):
         self.downloadQuotationPdf(jobcardID)
               
     def downloadQuotationPdf(self, job_card_id):
-        media_object = anvil.server.call('createQuotationInvoicePdf', job_card_id, "DefectsList")
+        media_object = anvil.server.call('downloadRevisionPdfForm', job_card_id, "DefectsList")
         anvil.media.download(media_object)
         self.deleteFile(job_card_id, "DefectsList")
 

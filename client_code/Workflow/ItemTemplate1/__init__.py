@@ -61,7 +61,7 @@ class ItemTemplate1(ItemTemplate1Template):
             self.label_make_1.text = f"Make: {middle['make']}"
             self.label_owner_1.text = f"Job Card Ref: {middle['jobcardref']}"
             self.label_plate_1.text = f"Plate: {middle['plate']}"
-            self.label_chassis_1.text = f"Chassis: {left['chassis']}"
+            self.label_chassis_1.text = f"Chassis: {middle['chassis']}"
             self.label_instruction_1.text = f"Instruction: {middle['instruction']}"
             self.label_date_1.text = f"Due Date: {middle['date'].strftime('%b %d, %Y')}"
             self.label_status_1.text = middle['status']
@@ -95,8 +95,8 @@ class ItemTemplate1(ItemTemplate1Template):
             self.label_make_2.text = f"Make: {right['make']}"
             self.label_owner_2.text = f"Job Card Ref: {right['jobcardref']}"
             self.label_plate_2.text = f"Plate: {right['plate']}"
-            self.label_chassis_2.text = f"Chassis: {left['chassis']}"
-            self.label_instruction_2.text = f"Instruction: {right['instruction']}"
+            self.label_chassis_2.text = f"Chassis: {right['chassis']}"
+            self.label_instruction_2.text = f"Instruction: {left['instruction']}"
             self.label_date_2.text = f"Due Date: {right['date'].strftime('%b %d, %Y')}"
             self.label_status_2.text = right['status']
             self.label_technician_2.text = right['technician']

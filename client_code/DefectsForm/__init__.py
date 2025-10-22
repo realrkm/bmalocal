@@ -24,6 +24,10 @@ class DefectsForm(DefectsFormTemplate):
         # Store defects_data for later use
         self.defects_data = defects_data
 
+        items = anvil.server.call_s("getStaff")
+        # Convert to a list of (display_text, value) tuples
+        self.drop_down_staff.items = [(s['Staff'], s['ID']) for s in items]
+
     def handle_server_errors(self, exc):
         if isinstance(exc, anvil.server.UplinkDisconnectedError):
             anvil.alert("Connection to server lost. Please check your internet or try again later.",title="Disconnected",large=False)

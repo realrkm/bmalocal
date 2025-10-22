@@ -27,6 +27,7 @@ class DefectsForm(DefectsFormTemplate):
         items = anvil.server.call_s("getStaff")
         # Convert to a list of (display_text, value) tuples
         self.drop_down_staff.items = [(s['Staff'], s['ID']) for s in items]
+        self.signature_component_1.visible = False
 
     def handle_server_errors(self, exc):
         if isinstance(exc, anvil.server.UplinkDisconnectedError):
@@ -44,6 +45,9 @@ class DefectsForm(DefectsFormTemplate):
         self.txtTechNotes.text = ModGetData.getJobCardTechNotes(defects_data[0]["ID"])
         self.txtDefectsList.text = anvil.server.call_s('getJobCardDefects',defects_data[0]["ID"])
         self.txtRequestedParts.text = anvil.server.call_s('getRequestedParts',defects_data[0]["ID"])
+        result = anvil.server.call("getDefectsStaffAndSignature",defects_data[0]["ID"])
+        self.drop_down_staff.selected_value = result[0]["PreparedByStaffID"]
+        self.image_1.source = result[0]["Signature"]
 
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""
@@ -73,3 +77,9 @@ class DefectsForm(DefectsFormTemplate):
 
     def deleteFile(self, jobCardID, docType):
         anvil.server.call("deleteFile", jobCardID, docType)
+
+    def btn_UpdateSignature_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        self.image_1.visible = False
+        self.signature_component_1.visible=True
+        self.btn_UpdateSignature.visible = False

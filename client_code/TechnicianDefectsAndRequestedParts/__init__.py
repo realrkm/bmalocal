@@ -26,7 +26,7 @@ class TechnicianDefectsAndRequestedParts(TechnicianDefectsAndRequestedPartsTempl
             self.cmbJobCardRef.selected_value = self.cmbJobCardRef.items[0][1]
             # ✅ Manually call the change handler
             self.cmbJobCardRef_change()
-
+        
     def handle_server_errors(self, exc):
         if isinstance(exc, anvil.server.UplinkDisconnectedError):
             anvil.alert("Connection to server lost. Please check your internet or try again later.", title="Disconnected", large=False)

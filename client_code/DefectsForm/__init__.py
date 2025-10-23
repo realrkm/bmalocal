@@ -31,7 +31,7 @@ class DefectsForm(DefectsFormTemplate):
         # Convert to a list of (display_text, value) tuples
         self.drop_down_staff.items = [(s['Staff'], s['ID']) for s in items]
     
-
+         
     def refresh(self, **event_args):
         self.set_event_handler("x-refresh", self.refresh)
         

@@ -101,7 +101,7 @@ class DefectsForm(DefectsFormTemplate):
             if not signature:
                 self.btn_Update.enabled = True
                 return   
-            
+
         anvil.server.call("updateDefectsList", jobcardID, instructions, notes,defects,parts, staffID, signature)
         alert("Update is successfull", title="Success")
         self.btn_Close_click()

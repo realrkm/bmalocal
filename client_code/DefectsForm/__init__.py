@@ -30,8 +30,11 @@ class DefectsForm(DefectsFormTemplate):
         items = anvil.server.call_s("getStaff")
         # Convert to a list of (display_text, value) tuples
         self.drop_down_staff.items = [(s['Staff'], s['ID']) for s in items]
-        self.signature_component_1.visible = False
+    
 
+    def refresh(self, **event_args):
+        self.set_event_handler("x-refresh", self.refresh)
+        
     def handle_server_errors(self, exc):
         if isinstance(exc, anvil.server.UplinkDisconnectedError):
             anvil.alert("Connection to server lost. Please check your internet or try again later.",title="Disconnected",large=False)
@@ -123,8 +126,8 @@ class DefectsForm(DefectsFormTemplate):
         """This method is called when the button is clicked"""
         self.label_signature.visible = False
         self.image_1.visible = False
-        self.signature_component_1.visible=True
         self.btn_UpdateSignature.visible = False
+        self.refresh()
 
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""

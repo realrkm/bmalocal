@@ -130,5 +130,6 @@ class DefectsForm(DefectsFormTemplate):
     def drop_down_staff_change(self, **event_args):
         """This method is called when an item is selected"""
         alert("Update Signature", title="Staff Name Changed")
+        alert(self.drop_down_staff.selected_value)
        
     

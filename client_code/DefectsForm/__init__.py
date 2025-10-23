@@ -32,7 +32,7 @@ class DefectsForm(DefectsFormTemplate):
         self.drop_down_staff.items = [(s['Staff'], s['ID']) for s in items]
 
         self.column_panel_update_signature.visible = False
-        self.signature_component_1.visible = True
+        
          
     def refresh(self, **event_args):
         self.set_event_handler("x-refresh", self.refresh)
@@ -130,6 +130,5 @@ class DefectsForm(DefectsFormTemplate):
     def drop_down_staff_change(self, **event_args):
         """This method is called when an item is selected"""
         alert("Update Signature", title="Staff Name Changed")
-        self.column_panel_update_signature.visible = True
-
+       
     

@@ -140,19 +140,22 @@ components:
       name: image_1
       properties: {border: ''}
       type: Image
-    - layout_properties: {grid_position: 'BYISFE,BNVTLZ IJCHGB,ENJNKM'}
-      name: spacer_1
-      properties: {height: 61}
-      type: Spacer
-    - event_bindings: {click: btn_UpdateSignature_click}
-      layout_properties: {grid_position: 'BYISFE,BNVTLZ ZGKGZQ,MLCYEJ'}
-      name: btn_UpdateSignature
-      properties: {align: full, background: '#0056D6', foreground: 'theme:White', text: Update Signature}
-      type: Button
     layout_properties: {grid_position: 'QXWRFT,QOBQSC'}
     name: column_panel_1
     properties: {}
     type: ColumnPanel
+  - layout_properties: {grid_position: 'BBYVPT,YBYTEU'}
+    name: label_signature_copy
+    properties:
+      align: center
+      background: theme:Gray 300
+      bold: false
+      font: Mozilla Headline
+      font_size: 22
+      foreground: theme:Gray 800
+      text: |
+        Update Signature
+    type: Label
   - layout_properties: {grid_position: ''}
     name: spacer_4
     properties: {height: 32}

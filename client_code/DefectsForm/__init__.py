@@ -92,18 +92,17 @@ class DefectsForm(DefectsFormTemplate):
         defects = self.txtDefectsList.text
         parts=self.txtRequestedParts.text
         staffID = self.drop_down_staff.selected_value
-        signature = None
+        
         if not staffID:
             alert("Sorry, please select staff to proceed", title="Blank Field Found")
             self.drop_down_staff.focus()
             self.btn_Update.enabled = True
             return
             
-        if not self.image_1.visible:
+        if self.get_signature_image():
             signature = self.get_signature_image()
-            if not signature:
-                self.btn_Update.enabled = True
-                return   
+        else:
+            signature = None
 
         anvil.server.call("updateDefectsList", jobcardID, instructions, notes,defects,parts, staffID, signature)
         alert("Update is successfull", title="Success")
@@ -121,13 +120,6 @@ class DefectsForm(DefectsFormTemplate):
 
     def deleteFile(self, jobCardID, docType):
         anvil.server.call("deleteFile", jobCardID, docType)
-
-    def btn_UpdateSignature_click(self, **event_args):
-        """This method is called when the button is clicked"""
-        self.label_signature.visible = False
-        self.image_1.visible = False
-        self.btn_UpdateSignature.visible = False
-        self.refresh()
 
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""

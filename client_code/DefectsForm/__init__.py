@@ -82,14 +82,27 @@ class DefectsForm(DefectsFormTemplate):
         
     def btn_Update_click(self,  **event_args):
         """This method is called when the button is clicked"""
+        self.btn_Update.enabled = False
         jobcardID = self.defects_data[0]["ID"]
         instructions= self.txtClientInstructions.text
         notes = self.txtTechNotes.text
         defects = self.txtDefectsList.text
         parts=self.txtRequestedParts.text
-        
-
-        anvil.server.call("updateDefectsList", jobcardID, instructions, notes,defects,parts)
+        staffID = self.drop_down_staff.selected_value
+        signature = None
+        if not staffID:
+            alert("Sorry, please select staff to proceed", title="Blank Field Found")
+            self.drop_down_staff.focus()
+            self.btn_Update.enabled = True
+            return
+            
+        if not self.image_1.visible:
+            signature = self.get_signature_image()
+            if not signature:
+                self.btn_Update.enabled = True
+                return   
+            
+        anvil.server.call("updateDefectsList", jobcardID, instructions, notes,defects,parts, staffID, signature)
         alert("Update is successfull", title="Success")
         self.btn_Close_click()
 

@@ -30,6 +30,7 @@ class DefectsForm(DefectsFormTemplate):
         items = anvil.server.call_s("getStaff")
         # Convert to a list of (display_text, value) tuples
         self.drop_down_staff.items = [(s['Staff'], s['ID']) for s in items]
+        self.column_panel_2.visible=False
     
          
     def refresh(self, **event_args):
@@ -92,6 +93,7 @@ class DefectsForm(DefectsFormTemplate):
         defects = self.txtDefectsList.text
         parts=self.txtRequestedParts.text
         staffID = self.drop_down_staff.selected_value
+        signature = None
         
         if not staffID:
             alert("Sorry, please select staff to proceed", title="Blank Field Found")
@@ -99,12 +101,12 @@ class DefectsForm(DefectsFormTemplate):
             self.btn_Update.enabled = True
             return
             
-        signature = self.get_signature_image()
-        if not signature:
-            signature = None
+        if self.column_panel_2.visible:
+            signature = self.get_signature_image()
+            return
 
         anvil.server.call("updateDefectsList", jobcardID, instructions, notes,defects,parts, staffID, signature)
-        alert("Update is successfull", title="Success")
+        alert("Update is successful", title="Success")
         self.btn_Close_click()
 
     def btn_DownloadDefectsList_click(self, **event_args):
@@ -123,3 +125,7 @@ class DefectsForm(DefectsFormTemplate):
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.raise_event("x-close-alert", value=True)
+
+    def button_1_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        self.column_panel_2.visible=True

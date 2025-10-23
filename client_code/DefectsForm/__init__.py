@@ -5,7 +5,10 @@ import anvil.users
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
+from anvil.js.window import window
 import anvil.js
+import base64
+import time
 from .. import ModGetData
 
 
@@ -49,10 +52,34 @@ class DefectsForm(DefectsFormTemplate):
         self.drop_down_staff.selected_value = result[0]["PreparedByStaffID"]
         self.image_1.source = result[0]["Signature"]
 
-    def btn_Close_click(self, **event_args):
-        """This method is called when the button is clicked"""
-        self.raise_event("x-close-alert", value=True)
+    
+    def get_signature_image(self):
+        # Wait a short time to ensure JS function is available
+        for _ in range(20):  # Retry for up to 1 seconds
+            if hasattr(window, "getSignatureData"):
+                break
+            time.sleep(0.5)
+        else:
+            alert("Signature pad is not ready. Please try again in a moment.")
+            return
 
+        # Call the JavaScript function
+        data_url = window.getSignatureData()
+
+        if not data_url:
+            alert("No signature was captured. Please draw a signature first.")
+            return
+
+        # Split data URL to get the base64 content
+        header, encoded = data_url.split(",", 1)
+        binary_data = base64.b64decode(encoded)
+
+        # Create an Anvil Media object
+        media = BlobMedia("image/png", binary_data, name="signature.png")
+
+        # Return or store the media for further use
+        return media
+        
     def btn_Update_click(self,  **event_args):
         """This method is called when the button is clicked"""
         jobcardID = self.defects_data[0]["ID"]
@@ -60,6 +87,7 @@ class DefectsForm(DefectsFormTemplate):
         notes = self.txtTechNotes.text
         defects = self.txtDefectsList.text
         parts=self.txtRequestedParts.text
+        
 
         anvil.server.call("updateDefectsList", jobcardID, instructions, notes,defects,parts)
         alert("Update is successfull", title="Success")
@@ -84,3 +112,7 @@ class DefectsForm(DefectsFormTemplate):
         self.image_1.visible = False
         self.signature_component_1.visible=True
         self.btn_UpdateSignature.visible = False
+
+    def btn_Close_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        self.raise_event("x-close-alert", value=True)

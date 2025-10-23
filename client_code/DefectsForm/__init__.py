@@ -30,9 +30,7 @@ class DefectsForm(DefectsFormTemplate):
         items = anvil.server.call_s("getStaff")
         # Convert to a list of (display_text, value) tuples
         self.drop_down_staff.items = [(s['Staff'], s['ID']) for s in items]
-
-        self.column_panel_update_signature.visible = False
-        
+       
          
     def refresh(self, **event_args):
         self.set_event_handler("x-refresh", self.refresh)
@@ -102,10 +100,12 @@ class DefectsForm(DefectsFormTemplate):
             self.btn_Update.enabled = True
             return
             
-        if self.column_panel_update_signature.visible:
+        if self.label_staffchanged.text == "Yes":
             signature = self.get_signature_image()
-            return
-
+            if not signature:
+                self.btn_Update.enabled = True
+                return
+            
         anvil.server.call("updateDefectsList", jobcardID, instructions, notes,defects,parts, staffID, signature)
         alert("Update is successful", title="Success")
         self.btn_Close_click()
@@ -129,7 +129,7 @@ class DefectsForm(DefectsFormTemplate):
 
     def drop_down_staff_change(self, **event_args):
         """This method is called when an item is selected"""
-        alert("Update Signature", title="Staff Name Changed")
-        alert(self.drop_down_staff.selected_value)
-       
-    
+        if self.drop_down_staff.selected_value > 0:
+            self.label_staffchanged.text = "Yes"
+            alert("Update Signature", title="Staff Name Changed")
+           

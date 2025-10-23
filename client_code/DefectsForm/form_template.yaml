@@ -124,7 +124,7 @@ components:
     properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Staff *}
     type: DropDown
   - layout_properties: {grid_position: 'PKFRQA,LRPFUS'}
-    name: label_title_2_copy_copy
+    name: label_signature
     properties:
       align: center
       background: theme:Gray 300

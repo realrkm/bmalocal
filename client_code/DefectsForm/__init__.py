@@ -80,6 +80,7 @@ class DefectsForm(DefectsFormTemplate):
 
     def btn_UpdateSignature_click(self, **event_args):
         """This method is called when the button is clicked"""
+        self.label_signature.visible = False
         self.image_1.visible = False
         self.signature_component_1.visible=True
         self.btn_UpdateSignature.visible = False

@@ -99,9 +99,8 @@ class DefectsForm(DefectsFormTemplate):
             self.btn_Update.enabled = True
             return
             
-        if self.get_signature_image():
-            signature = self.get_signature_image()
-        else:
+        signature = self.get_signature_image()
+        if not signature:
             signature = None
 
         anvil.server.call("updateDefectsList", jobcardID, instructions, notes,defects,parts, staffID, signature)

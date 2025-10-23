@@ -232,7 +232,9 @@ class Invoice(InvoiceTemplate):
         self.refresh()
 
     def downloadInvoicePdf(self, jobCardID):
-        media_object = anvil.server.call('createQuotationInvoicePdf', jobCardID, "Invoice")
+        result = anvil.server.call("getJobCardRow", jobCardID)
+        alert(result["RegNo"])
+        media_object = anvil.server.call('createQuotationInvoicePdf', result["RegNo"], "Invoice")
         anvil.media.download(media_object)
         self.deleteFile(jobCardID, "Invoice")
 

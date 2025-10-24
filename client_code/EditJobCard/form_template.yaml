@@ -228,7 +228,7 @@ components:
     type: Label
   - layout_properties: {full_width_row: false, grid_position: 'RMAJAL,OAQYMK'}
     name: txtInstructions
-    properties: {auto_expand: true, background: 'theme:White', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Client Instructions *}
+    properties: {auto_expand: true, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Client Instructions *}
     type: TextArea
   - layout_properties: {grid_position: 'HDGGAO,KFJDHY'}
     name: label_TechNotes
@@ -236,7 +236,15 @@ components:
     type: Label
   - layout_properties: {grid_position: 'TUWKTK,WCFYBV'}
     name: txtTechNotes
-    properties: {auto_expand: true, background: 'theme:White', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: 'Enter Tech Notes '}
+    properties: {auto_expand: true, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: 'Enter Tech Notes '}
+    type: TextArea
+  - layout_properties: {grid_position: 'PALVKO,MIYDXN'}
+    name: label_TechNotes_copy
+    properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Work Done}
+    type: Label
+  - layout_properties: {grid_position: 'TONJHZ,DHBEWT'}
+    name: text_area_work_done
+    properties: {auto_expand: true, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: ''}
     type: TextArea
   layout_properties: {grid_position: 'RISTBB,BXUBFN', row_background: 'theme:Black'}
   name: card_8

@@ -123,6 +123,8 @@ class EditJobCard(EditJobCardTemplate):
         self.txtInstructions.text=result["ClientInstruction"]
         self.txtTechNotes.text=result["Notes"]
 
+        self.text_area_work_done.text = anvil.server.call("getWorkDoneInJobCard", self.label_ID.text)
+        
     def btn_Search_click(self, **event_args):
         """This method is called when the text in this text box is edited"""
         t=self.text_box_1.text
@@ -496,14 +498,14 @@ class EditJobCard(EditJobCardTemplate):
         PaintCode = self.txtPaintCode.text
         ClientInstruction = self.txtInstructions.text
         Notes = self.txtTechNotes.text
-        
+        workDone = self.text_area_work_done.text
        
         
         # Call a server-side function to update the data
         # This function updates an existing row in 'tbl_jobcarddetails' and 'tbl_pendingassignedjobs' tables
         anvil.server.call("update_job_card_details",jobcardID, technicianDetails, ClientDetails, JobCardRef, ReceivedDate, DueDate, ExpDate,
                           CheckedInBy,Ins, Comp, TPO, Spare, Jack, Brace,MakeAndModel, EngineCC, Mileage, EngineNo, 
-                          EngineCode,Manual,Auto, Empty, Quarter, Half,ThreeQuarter, Full,PaintCode,ClientInstruction, Notes)
+                          EngineCode,Manual,Auto, Empty, Quarter, Half,ThreeQuarter, Full,PaintCode,ClientInstruction, Notes, workDone)
         
         alert("Job card details updated successfully", title="Success")
         

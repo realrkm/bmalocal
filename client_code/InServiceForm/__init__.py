@@ -68,7 +68,8 @@ class InServiceForm(InServiceFormTemplate):
         jobCardID = self.cmbJobCardRef.selected_value['ID']
         status = self.cmbWorkflow.selected_value  
         workDone = self.text_area_work_done.text
-        anvil.server.call_s('updateJobCardStatus', jobCardID, status, workDone)
+        anvil.server.call_s('updateJobCardStatus', jobCardID, status)
+        anvil.server.call("saveWorkDoneInJobCard", jobCardID, workDone)
         alert("Service saved successfully", title="Success")
         # Close Form
         self.btn_Close_click()

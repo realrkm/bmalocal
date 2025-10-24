@@ -88,6 +88,14 @@ components:
   properties: {border: solid, role: card}
   type: ColumnPanel
 - components:
+  - layout_properties: {grid_position: 'AKCRRX,BAUKLE'}
+    name: label_WorkDone
+    properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Work Done *}
+    type: Label
+  - layout_properties: {grid_position: 'GFVMVK,STLRFB'}
+    name: text_area_work_done
+    properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter the work done here *}
+    type: TextArea
   - layout_properties: {grid_position: 'USYJRA,EKAJVQ'}
     name: label_Workflow
     properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Workflow Status *}

@@ -52,13 +52,22 @@ class InServiceForm(InServiceFormTemplate):
     def btn_Save_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.btn_Save.enabled = False #Prevent multiple clicks
+        
         if not self.cmbWorkflow.selected_value:
             alert("Sorry, please select the next workflow status to proceed.", title="Blank Field(s) Found")
             self.cmbWorkflow.focus()
             self.btn_Save.enabled = True
             return
+            
+        if not self.text_area_work_done.text:
+            alert("Sorry, please enter the work done to proceed.", title="Blank Field(s) Found")
+            self.text_area_work_done.focus()
+            self.btn_Save.enabled = True
+            return
+            
         jobCardID = self.cmbJobCardRef.selected_value['ID']
-        status = self.cmbWorkflow.selected_value   
+        status = self.cmbWorkflow.selected_value  
+        workDone = self.text_area_work_done
         anvil.server.call_s('updateJobCardStatus', jobCardID, status)
         alert("Service saved successfully", title="Success")
         # Close Form

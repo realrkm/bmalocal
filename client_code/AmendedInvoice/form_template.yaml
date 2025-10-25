@@ -201,7 +201,7 @@ components:
         type: Button
       - layout_properties: {grid_position: 'UAFQJP,YKHDLS'}
         name: label_vat
-        properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: '', role: null, text: 'Add VAT (if 16%, indicate 16)'}
+        properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: '', role: null, text: Add VAT (e.g. 16)}
         type: Label
       - data_bindings: []
         layout_properties: {grid_position: 'WARVBX,BNVCUM'}

@@ -246,7 +246,8 @@ class AmendedInvoice(AmendedInvoiceTemplate):
 
     def btn_AddVAT_click(self, **event_args):
         """This method is called when the button is clicked"""
-
+    
+        # Ensure VAT field is filled
         if not self.txtVAT.text:
             alert(
                 "Sorry, please enter VAT amount (e.g 16) to proceed.",
@@ -255,31 +256,48 @@ class AmendedInvoice(AmendedInvoiceTemplate):
             )
             self.txtVAT.focus()
             return
-
-
-        # Append to the repeating panel's items
-        current_items4 = self.repeating_panel_assigned_parts.items
-        if not isinstance(current_items4, list):
-            current_items4 = []
-            alert("Sorry, please enter parts or services first, in order to calculate VAT", title="Missing Parts Or Services")
+    
+        # Convert VAT text to number safely
+        try:
+            vat_percent = float(str(self.txtVAT.text).replace("%", "").strip())
+        except ValueError:
+            alert("Invalid VAT value. Please enter a number like 16 or 16%.")
+            self.txtVAT.focus()
             return
-
-        # Compute total before adding VAT
-        total_amount = sum(float(item["Amount"]) for item in current_items4 if item.get("Amount"))
-        vat_amount = float((self.txtVAT.text / 100) * total_amount)
-
-        # Populate data grid with VAT amount
+    
+        # Get current parts or services list
+        current_items4 = self.repeating_panel_assigned_parts.items
+        if not isinstance(current_items4, list) or len(current_items4) == 0:
+            alert(
+                "Sorry, please enter parts or services first, in order to calculate VAT.",
+                title="Missing Parts Or Services",
+            )
+            return
+    
+        # Compute total before VAT (remove commas)
+        total_amount = sum(
+            float(str(item["Amount"]).replace(",", "")) 
+            for item in current_items4 
+            if item.get("Amount")
+        )
+    
+        # Calculate VAT
+        vat_amount = (vat_percent / 100) * total_amount
+    
+        # Add VAT as a new row
         new_VAT = {
-            "Item": f"{self.txtVAT.text}% VAT",
-            "Amount": vat_amount,
+            "Item": f"{int(vat_percent)}% VAT",
+            "Amount": f"{vat_amount:,.2f}",  # formatted nicely
         }
+    
+        # Update repeating panel
         updated_items4 = current_items4 + [new_VAT]
         self.repeating_panel_assigned_parts.items = updated_items4
         self.refresh()
-
-        # Clear selected items
+    
+        # Clear VAT input
         self.txtVAT.text = ""
-        
+
     def btn_SaveAndDownload_click(self, **event_args):
         self.btn_SaveAndDownload.enabled = False
         

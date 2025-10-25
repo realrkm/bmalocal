@@ -96,7 +96,7 @@ class ItemTemplate1(ItemTemplate1Template):
             self.label_owner_2.text = f"Job Card Ref: {right['jobcardref']}"
             self.label_plate_2.text = f"Plate: {right['plate']}"
             self.label_chassis_2.text = f"Chassis: {right['chassis']}"
-            self.label_instruction_2.text = f"Instruction: {left['instruction']}"
+            self.label_instruction_2.text = f"Instruction: {right['instruction']}"
             self.label_date_2.text = f"Due Date: {right['date'].strftime('%b %d, %Y')}"
             self.label_status_2.text = right['status']
             self.label_technician_2.text = right['technician']

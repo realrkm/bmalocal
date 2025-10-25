@@ -199,6 +199,30 @@ components:
           spacing_above: medium
           text: ADD PREVIOUS BALANCE
         type: Button
+      - layout_properties: {grid_position: 'UAFQJP,YKHDLS'}
+        name: label_vat
+        properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: '', role: null, text: 'Add VAT (if 16%, indicate 16)'}
+        type: Label
+      - data_bindings: []
+        layout_properties: {grid_position: 'WARVBX,BNVCUM'}
+        name: txtVAT
+        properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Amount, type: number}
+        type: TextBox
+      - event_bindings: {click: btn_AddVAT_click}
+        layout_properties: {grid_position: 'BGRDNK,PWDEOG'}
+        name: btn_AddVAT
+        properties:
+          align: full
+          background: '#0056D6'
+          border: ''
+          font: Mozilla Headline
+          font_size: 16
+          foreground: theme:White
+          spacing:
+            padding: [null, null, 8, null]
+          spacing_above: medium
+          text: ADD VAT
+        type: Button
       layout_properties: {grid_position: 'VEOYCL,IDSJYS', row_background: 'theme:Black'}
       name: card_2
       properties: {border: solid, col_widths: '{"CSVHRM":40,"EDBLMM":20}', role: card}

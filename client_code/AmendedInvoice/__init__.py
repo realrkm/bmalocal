@@ -244,6 +244,36 @@ class AmendedInvoice(AmendedInvoiceTemplate):
         # Clear selected items
         self.txtPreviousAmount.text = ""
 
+    def btn_AddVAT_click(self, **event_args):
+        """This method is called when the button is clicked"""
+
+        if not self.txtVAT.text:
+            alert(
+                "Sorry, please enter VAT amount (e.g 16) to proceed.",
+                title="Blank Field(s) Found",
+                large=False,
+            )
+            self.txtVAT.focus()
+            return
+
+            # Populate data grid with previous balance
+        new_VAT = {
+            "Item": f"{self.txtVAT.text}% VAT",
+            "Amount": self.txtVAT.text,
+        }
+
+        # Append to the repeating panel's items
+        current_items4 = self.repeating_panel_assigned_parts.items
+        if not isinstance(current_items4, list):
+            current_items4 = []
+            alert("Sorry, please enter parts or services first in order to include VAT", title=)
+        updated_items4 = current_items4 + [new_VAT]
+        self.repeating_panel_assigned_parts.items = updated_items4
+        self.refresh()
+
+        # Clear selected items
+        self.txtVAT.text = ""
+        
     def btn_SaveAndDownload_click(self, **event_args):
         self.btn_SaveAndDownload.enabled = False
         

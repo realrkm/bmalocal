@@ -256,17 +256,23 @@ class AmendedInvoice(AmendedInvoiceTemplate):
             self.txtVAT.focus()
             return
 
-            # Populate data grid with previous balance
-        new_VAT = {
-            "Item": f"{self.txtVAT.text}% VAT",
-            "Amount": self.txtVAT.text,
-        }
 
         # Append to the repeating panel's items
         current_items4 = self.repeating_panel_assigned_parts.items
         if not isinstance(current_items4, list):
             current_items4 = []
-            alert("Sorry, please enter parts or services first in order to include VAT", title=)
+            alert("Sorry, please enter parts or services first, in order to calculate VAT", title="Missing Parts Or Services")
+            return
+
+        # Compute total before adding VAT
+        total_amount = sum(float(item["Amount"]) for item in current_items4 if item.get("Amount"))
+        vat_amount = float((self.txtVAT.text / 100) * total_amount)
+
+        # Populate data grid with VAT amount
+        new_VAT = {
+            "Item": f"{self.txtVAT.text}% VAT",
+            "Amount": vat_amount,
+        }
         updated_items4 = current_items4 + [new_VAT]
         self.repeating_panel_assigned_parts.items = updated_items4
         self.refresh()

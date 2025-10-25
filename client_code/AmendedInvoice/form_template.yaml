@@ -206,7 +206,7 @@ components:
       - data_bindings: []
         layout_properties: {grid_position: 'WARVBX,BNVCUM'}
         name: txtVAT
-        properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Amount, type: number}
+        properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter VAT, type: number}
         type: TextBox
       - event_bindings: {click: btn_AddVAT_click}
         layout_properties: {grid_position: 'BGRDNK,PWDEOG'}

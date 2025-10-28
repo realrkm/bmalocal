@@ -58,7 +58,7 @@ class MonthlyPerformanceSchedule(MonthlyPerformanceScheduleTemplate):
                 self.lbl_TotalInvoiceAmount.text = result["TotalInvoiceAmount"]
                 self.lbl_TotalAmountPaid.text=result["TotalAmountPaid"]
                 self.lbl_TotalDiscount.text=result["TotalDiscount"]
-                self.lbl_PaymentBalance.text=result["MaxBalance"]
+                self.lbl_PaymentBalance.text=result["Balance"]
 
     
     def btn_SaveAndNew_click(self, **event_args):

@@ -93,9 +93,11 @@ class JobCardForm(JobCardFormTemplate):
         if self.txt_JobCardRef.text.split("-")[-1] == "IQ": #IQ denotes Interim Quotation
             alert("Sorry, you cannot edit job card created for an interim quotation",title="Edit Restriction", large=False )
             return
-        elif self.form_data["Status"] != "Checked In": #Do not edit job card past Checked In status
-            alert("Sorry, you can only edit job cards with the 'Checked In' status.",title="Edit Restriction", large=False )
-            return
+        # This feature is retracted after some customer complained of wrong car details during payment.
+        # Hence, allow edits to be made 
+        #elif self.form_data["Status"] != "Checked In": #Do not edit job card past Checked In status
+        #    alert("Sorry, you can only edit job cards with the 'Checked In' status.",title="Edit Restriction", large=False )
+        #    return
         else:
             self.btn_Close_click()
             alert(content=EditJobCard(jobcard_data=self.form_data), buttons=[], dismissible=False,large=True)

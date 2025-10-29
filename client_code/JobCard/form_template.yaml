@@ -70,20 +70,16 @@ components:
     type: DropDown
   - layout_properties: {grid_position: 'RSNCIB,FPZQUU'}
     name: txt_PhoneNo
-    properties: {align: center, background: 'theme:Gray 300', bold: false, border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Phone No., text: ''}
+    properties: {align: center, background: 'theme:Gray 300', bold: false, border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Phone No., text: ''}
     type: TextBox
   - layout_properties: {grid_position: 'RSNCIB,QCXWMS'}
     name: txt_Address
-    properties: {align: center, background: 'theme:Gray 300', bold: false, border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Address}
+    properties: {align: center, background: 'theme:Gray 300', bold: false, border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Address}
     type: TextBox
   - layout_properties: {grid_position: 'VCUJYT,DYPMWK'}
     name: txt_Email
-    properties: {align: center, background: 'theme:Gray 300', bold: false, border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Email}
+    properties: {align: center, background: 'theme:Gray 300', bold: false, border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Email}
     type: TextBox
-  - layout_properties: {grid_position: 'KZWTME,RERCEN'}
-    name: search_keyword_3
-    properties: {}
-    type: form:SearchKeyword
   layout_properties: {grid_position: 'EZZHHZ,BHIMFS', row_background: 'theme:Black'}
   name: card_2
   properties: {border: solid, col_widths: '{"UNZOMA":40,"VQAIKI":20}', role: card}

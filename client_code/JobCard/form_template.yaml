@@ -53,25 +53,40 @@ components:
     name: label_1
     properties: {align: center, background: 'theme:Gray 300', font: Mozilla Headline, font_size: 16, text: 'Client Details '}
     type: Label
-  - layout_properties: {grid_position: 'RTEMCJ,UPUVNT KZWTME,RERCEN'}
-    name: search_keyword_3
-    properties: {}
-    type: form:SearchKeyword
-  - layout_properties: {grid_position: 'RTEMCJ,ISIZIA ETFQWP,AAWDWT'}
+  - event_bindings: {pressed_enter: btn_SearchCustomer_click}
+    layout_properties: {grid_position: 'SFSLYG,UNZOMA'}
+    name: txt_ClientName
+    properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 14, foreground: 'theme:Black', placeholder: Enter Customer Name, visible: true}
+    type: TextBox
+  - event_bindings: {click: btn_SearchCustomer_click}
+    layout_properties: {grid_position: 'SFSLYG,VQAIKI'}
+    name: btn_SearchCustomer
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: SEARCH, visible: true}
+    type: Button
+  - event_bindings: {change: drop_down_selectCustomer_change}
+    layout_properties: {grid_position: 'TEMHKD,WSZKME'}
+    name: drop_down_selectCustomer
+    properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Customer, visible: true}
+    type: DropDown
+  - layout_properties: {grid_position: 'RSNCIB,FPZQUU'}
     name: txt_PhoneNo
     properties: {align: center, background: 'theme:Gray 300', bold: false, border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Phone No., text: ''}
     type: TextBox
-  - layout_properties: {grid_position: 'RTEMCJ,ISIZIA UGFMCV,LCPHIV'}
+  - layout_properties: {grid_position: 'RSNCIB,QCXWMS'}
     name: txt_Address
     properties: {align: center, background: 'theme:Gray 300', bold: false, border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Address}
     type: TextBox
-  - layout_properties: {grid_position: 'RTEMCJ,ISIZIA VXUOLD,MZDCYZ'}
+  - layout_properties: {grid_position: 'VCUJYT,DYPMWK'}
     name: txt_Email
     properties: {align: center, background: 'theme:Gray 300', bold: false, border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Email}
     type: TextBox
+  - layout_properties: {grid_position: 'KZWTME,RERCEN'}
+    name: search_keyword_3
+    properties: {}
+    type: form:SearchKeyword
   layout_properties: {grid_position: 'EZZHHZ,BHIMFS', row_background: 'theme:Black'}
   name: card_2
-  properties: {border: solid, role: card}
+  properties: {border: solid, col_widths: '{"UNZOMA":40,"VQAIKI":20}', role: card}
   type: ColumnPanel
 - components:
   - layout_properties: {grid_position: 'FZCTPV,KKNIML'}

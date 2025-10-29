@@ -101,7 +101,7 @@ class JobCard(JobCardTemplate):
 
     def getClientDetailsWithoutCarDetails(self, result, **event_args):
         """This method is called when an item is selected"""
-        x = anvil.server.call('getClientNameWithID', result['ID'])
+        x = anvil.server.call('getClientNameWithID', result)
         self.txt_PhoneNo.text = x['Phone']
         self.txt_Address.text = x['Address']
         self.txt_Email.text = x['Email']
@@ -418,6 +418,21 @@ class JobCard(JobCardTemplate):
     def btn_SignJobCard_click(self, **event_args):
         """This method is called when the button is clicked"""
         alert(content=DownloadSignedJobCard(), buttons=[], dismissible=False, large=True)
+
+    def btn_SearchCustomer_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        valueCustomer = self.txt_ClientName.text
+        if valueCustomer is None:
+            alert("Enter Customer's name to proceed", title="Blank Field Found")
+            return
+        else:
+            result = anvil.server.call("getClientFullnameFromSearchWord", valueCustomer)
+            self.drop_down_selectCustomer.items = result
+
+    def drop_down_selectCustomer_change(self, **event_args):
+        """This method is called when an item is selected"""
+        self.getClientDetailsWithoutCarDetails(self.drop_down_selectCustomer.selected_value)
+
 
     
    

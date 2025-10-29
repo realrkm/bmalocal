@@ -23,6 +23,7 @@ class EditUserAccounts(EditUserAccountsTemplate):
         self.txt_email.text = items["email"]
         self.drop_down_role.selected_value = anvil.server.call("get_role_id", items["role"])
         self.drop_down_active.selected_value = items["enabled"]
+        self.text_box_login_attempts.text = items
 
     def btn_Update_click(self, **event_args):
         """This method is called when the button is clicked"""
@@ -30,6 +31,7 @@ class EditUserAccounts(EditUserAccountsTemplate):
         email = self.txt_email.text.strip()
         role = self.drop_down_role.selected_value
         active = True if self.drop_down_active.selected_value == "Yes" else False
+        login_attempts = self.text_box_login_attempts.text
     
         # Validate inputs
         if not email:
@@ -48,7 +50,8 @@ class EditUserAccounts(EditUserAccountsTemplate):
             email=oldemail,
             new_email=email,
             enabled=active,
-            role_id=role
+            role_id=role,
+            login_attempts = login_attempts
         )
     
         alert("Update is successful", title="Success", large=False)

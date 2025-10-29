@@ -5,7 +5,7 @@ components:
       name: repeating_panel_1
       properties: {item_template: UserAccounts.RowTemplate14}
       type: RepeatingPanel
-    layout_properties: {grid_position: 'WQGOLM,AGBUMU'}
+    layout_properties: {full_width_row: true, grid_position: 'WQGOLM,AGBUMU'}
     name: data_grid_1
     properties:
       background: theme:Black
@@ -17,6 +17,7 @@ components:
       - {data_key: signed_up, expand: true, id: OJLQEN, title: Created At}
       - {data_key: role, expand: true, id: WJMKUA, title: Role}
       - {data_key: enabled, expand: true, id: NBQTBW, title: Active}
+      - {data_key: loginattempts, expand: true, id: FQSWKZ, title: Login Attempts}
       - {data_key: '', id: ZDSCHS, title: '', width: '90'}
       - {data_key: '', id: GRYODO, title: '', width: '90'}
       foreground: theme:White

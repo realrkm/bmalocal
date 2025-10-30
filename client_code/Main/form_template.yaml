@@ -24,7 +24,13 @@ components:
     type: ColumnPanel
   layout_properties: {slot: default}
   name: column_panel_content
-  properties: {background: 'theme:White', border: '', spacing_above: large, spacing_below: large}
+  properties:
+    background: theme:White
+    border: ''
+    spacing:
+      padding: [null, 8, null, 8]
+    spacing_above: large
+    spacing_below: large
   type: ColumnPanel
 - components:
   - event_bindings: {click: link_1_click}

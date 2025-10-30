@@ -147,5 +147,6 @@ class MonthlyPerformanceSchedule(MonthlyPerformanceScheduleTemplate):
         """This method is called when the button is clicked"""
         alert(content=ViewSchedule(), buttons=[], dismissible=False,large=True)
         anvil.js.window.jQuery('.modal-lg').css({
-            'width': "90vw"
+            'width': 90,
+            'max-width': width
         })

@@ -14,7 +14,8 @@ class MonthlyPerformanceSchedule(MonthlyPerformanceScheduleTemplate):
         self.init_components(**properties)
 
         # Any code you write here will run before the form opens.
-    
+        anvil.js.call('replaceBanner')
+        
     def searchInvoices(self, **event_args):
         """This method is called when the button is clicked"""
         startDate = self.date_picker_start.date

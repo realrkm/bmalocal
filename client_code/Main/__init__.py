@@ -9,7 +9,6 @@ from .. import ModNavigation
 import anvil.js
 from anvil.js.window import navigator
 from ..FAQ import FAQ
-from ..Report import Report
 
 class Main(MainTemplate):
     def __init__(self, **properties):
@@ -132,9 +131,7 @@ class Main(MainTemplate):
         
     def btn_Report_click(self, **event_args):
         self.highlight_active_button("REPORTS")
-        #ModNavigation.go_Report(self.permissions)
-        self.column_panel_content.clear()
-        self.column_panel_content.add_component(Report(self.permissions))
+        ModNavigation.go_Report(self.permissions)
         #Now hide sidebar after clicking link. 
         #Additional function in standard-page.html
         self.call_js('hideSidebarIfModal') 

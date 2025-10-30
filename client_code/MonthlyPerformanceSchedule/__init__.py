@@ -6,7 +6,7 @@ import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
 from ..ViewSchedule import ViewSchedule
-
+import anvil.js
 
 class MonthlyPerformanceSchedule(MonthlyPerformanceScheduleTemplate):
     def __init__(self, **properties):
@@ -145,3 +145,6 @@ class MonthlyPerformanceSchedule(MonthlyPerformanceScheduleTemplate):
     def btn_ViewSchedule_click(self, **event_args):
         """This method is called when the button is clicked"""
         alert(content=ViewSchedule(), buttons=[], dismissible=False,large=True)
+        anvil.js.window.jQuery('.modal-lg').css({
+            'width': "90vw"
+        })

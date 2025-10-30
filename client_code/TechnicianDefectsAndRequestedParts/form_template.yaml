@@ -7,7 +7,7 @@ components:
       background: '#0056D6'
       bold: false
       font: Mozilla Headline
-      font_size: 16
+      font_size: 22
       foreground: theme:White
       text: |
         Defects List
@@ -148,7 +148,7 @@ components:
     name: btn_Close
     properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: null, text: Close}
     type: Button
-  layout_properties: {grid_position: 'HEOFNJ,KNGYLD', row_background: 'theme:Black'}
+  layout_properties: {grid_position: 'HEOFNJ,KNGYLD', row_background: 'theme:White'}
   name: card_1
   properties: {border: solid, col_widths: '{"YREHND":15,"QOFXMU":30,"NWKNIG":15}', role: card}
   type: ColumnPanel

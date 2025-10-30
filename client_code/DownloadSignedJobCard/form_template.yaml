@@ -80,7 +80,7 @@ components:
       name: card_3
       properties: {border: solid, col_widths: '{"ZHVJMR":40,"BREWUZ":20}', role: card}
       type: ColumnPanel
-    layout_properties: {grid_position: 'UAMNOW,EODTTC', row_background: 'theme:Black'}
+    layout_properties: {grid_position: 'UAMNOW,EODTTC', row_background: 'theme:White'}
     name: card_2
     properties: {border: solid, role: card}
     type: ColumnPanel

@@ -195,6 +195,9 @@ a:hover, a:active {
     .content > * > .anvil-container {
         padding: 16px 24px;
     }
+    .modal-lg {
+        width: 90vw;
+    }
 }
 
 /* Custom styles for Signature Pad application */

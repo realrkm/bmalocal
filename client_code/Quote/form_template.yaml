@@ -2,7 +2,7 @@ components:
 - components:
   - layout_properties: {grid_position: 'AFFRHS,KQESMY'}
     name: label_title
-    properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: Quotation}
+    properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', text: Quotation}
     type: Label
   - event_bindings: {change: cmbJobCardRef_change}
     layout_properties: {grid_position: 'MXOMMF,YKLUZP'}
@@ -134,7 +134,7 @@ components:
       spacing_above: medium
       text: Add Services
     type: Button
-  layout_properties: {grid_position: 'VZEDQW,PIQWRN', row_background: 'theme:Black'}
+  layout_properties: {grid_position: 'VZEDQW,PIQWRN', row_background: 'theme:White'}
   name: card_1
   properties: {border: solid, col_widths: '{"DOTYIB":40,"LHXZFM":20}', role: card}
   type: ColumnPanel
@@ -167,7 +167,7 @@ components:
       show_page_controls: false
       wrap_on: mobile
     type: DataGrid
-  layout_properties: {grid_position: 'UGCJBE,NJHZDA', row_background: 'theme:Black'}
+  layout_properties: {grid_position: 'UGCJBE,NJHZDA', row_background: 'theme:White'}
   name: card_2
   properties: {border: solid, role: card}
   type: ColumnPanel
@@ -187,11 +187,11 @@ components:
       placeholder: 'Select Next Workflow Status * '
       role: null
     type: DropDown
-  layout_properties: {grid_position: 'GQYNJR,ESUFUU', row_background: 'theme:Black'}
+  layout_properties: {grid_position: 'GQYNJR,ESUFUU', row_background: 'theme:White'}
   name: card_3
   properties: {border: solid, role: card}
   type: ColumnPanel
-- layout_properties: {grid_position: 'CHYEGR,USBRPY', row_background: 'theme:Black'}
+- layout_properties: {grid_position: 'CHYEGR,USBRPY', row_background: 'theme:White'}
   name: spacer_3
   properties: {height: 32}
   type: Spacer

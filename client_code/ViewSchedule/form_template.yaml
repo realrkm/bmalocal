@@ -44,7 +44,7 @@ components:
       name: spacer_1
       properties: {height: '10'}
       type: Spacer
-    layout_properties: {full_width_row: true, grid_position: 'IRLIYA,IIGWFD', row_background: 'theme:Black'}
+    layout_properties: {full_width_row: true, grid_position: 'IRLIYA,IIGWFD', row_background: 'theme:White'}
     name: card_2
     properties: {role: card}
     type: ColumnPanel

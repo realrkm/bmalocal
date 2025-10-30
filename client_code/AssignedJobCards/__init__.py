@@ -97,7 +97,7 @@ class AssignedJobCards(AssignedJobCardsTemplate):
         if not rows:
             alert("No data to export.")
             return
-    
+       
         excel_file = anvil.server.call("export_assigned_jobcards", rows)
         anvil.media.download(excel_file)
 

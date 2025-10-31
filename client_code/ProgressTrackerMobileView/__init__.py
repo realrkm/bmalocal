@@ -64,7 +64,7 @@ class ProgressTrackerMobileView(ProgressTrackerMobileViewTemplate):
     def drop_down_JobCardRefDetails_change(self, **event_args):
         """This method is called when an item is selected"""
         if self.drop_down_JobCardRefDetails.selected_value:
-            result = anvil.server.call_s(
+            result = anvil.server.call(
                 "getJobCardRow", self.drop_down_JobCardRefDetails.selected_value
             )
 
@@ -86,7 +86,7 @@ class ProgressTrackerMobileView(ProgressTrackerMobileViewTemplate):
 
             # Populate progress tracker
             if result["Status"] == "Ready for Pickup":
-                invoice_status = anvil.server.call_s(
+                invoice_status = anvil.server.call(
                     "getInvoiceStatus", self.drop_down_JobCardRefDetails.selected_value
                 )
                 self.set_progress_state(invoice_status)
@@ -131,11 +131,11 @@ class ProgressTrackerMobileView(ProgressTrackerMobileViewTemplate):
             self.text_area_1.visible=False
             
     def populatePaymentDetails(self, jobcardID, **event_args):
-        invoice_status = anvil.server.call_s("getInvoiceStatus", jobcardID)
-        self.label_Due.text = anvil.server.call_s(
+        invoice_status = anvil.server.call("getInvoiceStatus", jobcardID)
+        self.label_Due.text = anvil.server.call(
             "get_invoice_total_by_job_id", jobcardID
         )
-        self.label_Paid.text = anvil.server.call_s("get_previous_payment", jobcardID)
+        self.label_Paid.text = anvil.server.call("get_previous_payment", jobcardID)
 
         if invoice_status == "Pending":
             if self.label_Paid.text == 0:
@@ -165,10 +165,11 @@ class ProgressTrackerMobileView(ProgressTrackerMobileViewTemplate):
 
     def btn_JobCard_click(self, **event_args):
         """This method is called when the button is clicked"""
+        self.btn_JobCard.enabled = False
         job_id = self.drop_down_JobCardRefDetails.selected_value
 
         # Call the server first to check for data
-        jobcard_data = anvil.server.call_s("getJobCardRow", job_id)
+        jobcard_data = anvil.server.call("getJobCardRow", job_id)
 
         if not jobcard_data:
             alert(
@@ -185,13 +186,15 @@ class ProgressTrackerMobileView(ProgressTrackerMobileViewTemplate):
             dismissible=False,
             large=True,
         )
+        self.btn_JobCard.enabled = True
 
     def btn_Defects_click(self, **event_args):
         """This method is called when the button is clicked"""
+        self.btn_Defects.enabled = False
         job_id = self.drop_down_JobCardRefDetails.selected_value
 
         # Call the server first to check for data
-        defects_data = anvil.server.call_s("getJobCardRef", job_id)
+        defects_data = anvil.server.call("getJobCardRef", job_id)
 
         if not defects_data:
             alert(
@@ -208,9 +211,11 @@ class ProgressTrackerMobileView(ProgressTrackerMobileViewTemplate):
             dismissible=False,
             large=True,
         )
+        self.btn_Defects.enabled = True
 
     def btn_Quotation_click(self, **event_args):
         """This method is called when the button is clicked"""
+        self.btn_Quotation.enabled = False
         job_id = self.drop_down_JobCardRefDetails.selected_value
 
         # Call the server first to check for data
@@ -231,9 +236,11 @@ class ProgressTrackerMobileView(ProgressTrackerMobileViewTemplate):
             dismissible=False,
             large=True,
         )
+        self.btn_Quotation.enabled = True
         
     def btn_Confirmed_click(self, **event_args):
         """This method is called when the button is clicked"""
+        self.btn_Confirmed.enabled = False
         job_id = self.drop_down_JobCardRefDetails.selected_value
 
         # Call the server first to check for data
@@ -245,9 +252,10 @@ class ProgressTrackerMobileView(ProgressTrackerMobileViewTemplate):
 
         # If data exists, now show the form and pass the quote_data along
         alert(content=ConfirmForm(job_id, quote_data=quote_data), buttons=[], dismissible=False, large=True)
-
+        self.btn_Confirmed.enabled = True
     def btn_Invoice_click(self, **event_args):
         """This method is called when the button is clicked"""
+        self.btn_Invoice.enabled = False
         job_id = self.drop_down_JobCardRefDetails.selected_value
 
         # Call the server first to check for data
@@ -268,9 +276,10 @@ class ProgressTrackerMobileView(ProgressTrackerMobileViewTemplate):
             dismissible=False,
             large=True,
         )
-
+        self.btn_Invoice.enabled = True
     def btn_Payment_click(self, **event_args):
         """This method is called when the button is clicked"""
+        self.btn_Payment.enabled = False
         job_id = self.drop_down_JobCardRefDetails.selected_value
 
         # Call the server first to check for data
@@ -291,3 +300,4 @@ class ProgressTrackerMobileView(ProgressTrackerMobileViewTemplate):
             dismissible=False,
             large=True,
         )
+        self.btn_Payment.enabled = True

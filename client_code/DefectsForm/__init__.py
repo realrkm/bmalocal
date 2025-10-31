@@ -27,7 +27,7 @@ class DefectsForm(DefectsFormTemplate):
         # Store defects_data for later use
         self.defects_data = defects_data
 
-        items = anvil.server.call_s("getStaff")
+        items = anvil.server.call("getStaff")
         # Convert to a list of (display_text, value) tuples
         self.drop_down_staff.items = [(s['Staff'], s['ID']) for s in items]
        
@@ -49,8 +49,8 @@ class DefectsForm(DefectsFormTemplate):
         """This method is called when an item is selected"""   
         self.txtClientInstructions.text = ModGetData.getJobCardInstructions(defects_data[0]["ID"])
         self.txtTechNotes.text = ModGetData.getJobCardTechNotes(defects_data[0]["ID"])
-        self.txtDefectsList.text = anvil.server.call_s('getJobCardDefects',defects_data[0]["ID"])
-        self.txtRequestedParts.text = anvil.server.call_s('getRequestedParts',defects_data[0]["ID"])
+        self.txtDefectsList.text = anvil.server.call('getJobCardDefects',defects_data[0]["ID"])
+        self.txtRequestedParts.text = anvil.server.call('getRequestedParts',defects_data[0]["ID"])
         result = anvil.server.call("getDefectsStaffAndSignature",defects_data[0]["ID"])
         if result: #Return existing details
             self.drop_down_staff.selected_value = result[0]["PreparedByStaffID"]

@@ -20,7 +20,7 @@ components:
     name: search_keyword_1
     properties: {}
     type: form:SearchKeyword
-  layout_properties: {grid_position: 'XVKHJI,SEEHRE', row_background: 'theme:Black'}
+  layout_properties: {grid_position: 'XVKHJI,SEEHRE', row_background: 'theme:White'}
   name: card_1
   properties: {border: solid, col_widths: '{}', role: card}
   type: ColumnPanel
@@ -45,7 +45,7 @@ components:
     name: txt_Email
     properties: {align: center, background: 'theme:Gray 300', bold: false, border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Email}
     type: TextBox
-  layout_properties: {grid_position: 'EZZHHZ,BHIMFS', row_background: 'theme:Black'}
+  layout_properties: {grid_position: 'EZZHHZ,BHIMFS', row_background: 'theme:White'}
   name: card_2
   properties: {border: solid, role: card}
   type: ColumnPanel
@@ -77,7 +77,7 @@ components:
     name: search_keyword_4
     properties: {}
     type: form:SearchKeyword
-  layout_properties: {grid_position: 'BTAWMS,JUZSLX', row_background: 'theme:Black'}
+  layout_properties: {grid_position: 'BTAWMS,JUZSLX', row_background: 'theme:White'}
   name: card_3
   properties: {border: solid, role: card}
   type: ColumnPanel
@@ -96,7 +96,7 @@ components:
     name: chkTPO
     properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Third Party Only}
     type: CheckBox
-  layout_properties: {grid_position: 'PWWTUQ,YMQEEB', row_background: 'theme:Black'}
+  layout_properties: {grid_position: 'PWWTUQ,YMQEEB', row_background: 'theme:White'}
   name: card_4
   properties: {border: solid, role: card}
   type: ColumnPanel
@@ -117,7 +117,7 @@ components:
     name: chkBrace
     properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Brace}
     type: CheckBox
-  layout_properties: {grid_position: 'XYTJZM,UCZCPK', row_background: 'theme:Black'}
+  layout_properties: {grid_position: 'XYTJZM,UCZCPK', row_background: 'theme:White'}
   name: card_5
   properties: {border: solid, role: card}
   type: ColumnPanel
@@ -164,7 +164,7 @@ components:
     name: txtPaintCode
     properties: {align: center, background: 'theme:White', bold: false, border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Paint Code, text: ''}
     type: TextBox
-  layout_properties: {grid_position: 'BVAUZX,PSKBKS', row_background: 'theme:Black'}
+  layout_properties: {grid_position: 'BVAUZX,PSKBKS', row_background: 'theme:White'}
   name: card_6
   properties: {border: solid, role: card}
   type: ColumnPanel
@@ -183,7 +183,7 @@ components:
     name: chkAuto
     properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Auto}
     type: CheckBox
-  layout_properties: {grid_position: 'VEINEW,UHSTPN', row_background: 'theme:Black'}
+  layout_properties: {grid_position: 'VEINEW,UHSTPN', row_background: 'theme:White'}
   name: card_7
   properties: {border: solid, role: card}
   type: ColumnPanel
@@ -217,7 +217,7 @@ components:
     name: chkFull
     properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Full}
     type: CheckBox
-  layout_properties: {grid_position: 'VEINEW,VJJXCW', row_background: 'theme:Black'}
+  layout_properties: {grid_position: 'VEINEW,VJJXCW', row_background: 'theme:White'}
   name: card_7_copy
   properties: {border: solid, role: card}
   type: ColumnPanel
@@ -246,11 +246,11 @@ components:
     name: text_area_work_done
     properties: {auto_expand: true, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: ''}
     type: TextArea
-  layout_properties: {grid_position: 'RISTBB,BXUBFN', row_background: 'theme:Black'}
+  layout_properties: {grid_position: 'RISTBB,BXUBFN', row_background: 'theme:White'}
   name: card_8
   properties: {border: solid, role: card}
   type: ColumnPanel
-- layout_properties: {grid_position: 'YMVACX,JOZZCV', row_background: 'theme:Black'}
+- layout_properties: {grid_position: 'YMVACX,JOZZCV', row_background: 'theme:White'}
   name: spacer_1
   properties: {height: 32}
   type: Spacer

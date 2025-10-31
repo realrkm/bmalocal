@@ -195,8 +195,9 @@ a:hover, a:active {
     .content > * > .anvil-container {
         padding: 16px 24px;
     }
+    /* Enlarge alert content forms */
     .modal-lg {
-        width: 90vw;
+        width: 70vw;
     }
 }
 

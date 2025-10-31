@@ -40,7 +40,7 @@ components:
       name: spacer_2
       properties: {height: '10'}
       type: Spacer
-    layout_properties: {grid_position: 'FUVDZH,MPALTE', row_background: 'theme:Black'}
+    layout_properties: {grid_position: 'FUVDZH,MPALTE', row_background: 'theme:White'}
     name: card_2
     properties: {border: solid, col_widths: '{"YAXNIZ":40,"RJTLBU":20}', role: card}
     type: ColumnPanel

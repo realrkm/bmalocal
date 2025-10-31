@@ -75,8 +75,8 @@ class AddMoreStock(AddMoreStockTemplate):
         additionDate = self.date_picker_1.date
         supplier = self.drop_down_selectSupplier.selected_value
         partID = self.drop_down_selectPart.selected_value
-        no_of_units = self.txt_NoOfUnits.text.strip().upper()
-        unit_cost = self.txt_UnitCost.text.strip()
+        no_of_units = self.txt_NoOfUnits.text
+        unit_cost = self.txt_UnitCost.text
 
         if not additionDate:
             alert("Please enter date to proceed.")

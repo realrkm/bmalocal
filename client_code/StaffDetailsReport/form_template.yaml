@@ -6,7 +6,7 @@ components:
     type: Spacer
   - layout_properties: {full_width_row: false, grid_position: 'AFFRHS,KQESMY'}
     name: label_title
-    properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: full-screen-form, text: Staff Details}
+    properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', role: full-screen-form, text: Staff Details}
     type: Label
   - components:
     - layout_properties: {pinned: false}

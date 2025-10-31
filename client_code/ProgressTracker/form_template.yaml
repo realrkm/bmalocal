@@ -2,7 +2,7 @@ components:
 - components:
   - layout_properties: {grid_position: 'FDQGMW,RASGQB'}
     name: label_title
-    properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: Progress Tracker}
+    properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', text: Progress Tracker}
     type: Label
   - event_bindings: {pressed_enter: btn_SearchCustomer_click}
     layout_properties: {grid_position: 'YOTKWG,NJPDYL'}

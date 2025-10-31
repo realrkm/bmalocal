@@ -43,7 +43,7 @@ components:
     name: spacer_3_copy_copy
     properties: {height: 14}
     type: Spacer
-  layout_properties: {grid_position: 'HEOFNJ,KNGYLD', row_background: 'theme:Black'}
+  layout_properties: {grid_position: 'HEOFNJ,KNGYLD', row_background: 'theme:White'}
   name: card_1
   properties: {border: solid, role: card}
   type: ColumnPanel

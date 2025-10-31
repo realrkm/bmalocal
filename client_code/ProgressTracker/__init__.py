@@ -87,10 +87,11 @@ class ProgressTracker(ProgressTrackerTemplate):
         "Confirm Quote": self.label_confirm_quote,
         "In Service": self.label_in_service,
         "Verify Task": self.label_verify_task,
-        "Issue Invoice": self.label_issue_invoice,
+        "Issue Invoice": self.label_issue_invoice,    
         "Cancel Jobcard": self.label_cancelled,
         "Pending": self.label_payment_due,
-        "Paid": self.label_payment_done
+        "Paid": self.label_payment_done,
+        "Complete": self.label_completed
     }
 
         # Loop over all labels and set styles
@@ -141,6 +142,7 @@ class ProgressTracker(ProgressTrackerTemplate):
 
         if not jobcard_data:
             alert("No data found for the selected Job ID.", title='Missing Job Card Data', large=False)
+            self.btn_JobCard.enabled=True
             return
 
         # If data exists, now show the form and pass the quote_data along
@@ -156,6 +158,7 @@ class ProgressTracker(ProgressTrackerTemplate):
         
         if not defects_data:
             alert("No data found for the selected Job ID.", title='Missing Defects Data', large=False)
+            self.btn_Defects.enabled=True
             return
 
         # If data exists, now show the form and pass the quote_data along
@@ -171,6 +174,7 @@ class ProgressTracker(ProgressTrackerTemplate):
 
         if not quote_data:
             alert("No data found for the selected Job ID.", title='Missing Quotation Data', large=False)
+            self.btn_Quotation.enabled = True
             return
 
         # If data exists, now show the form and pass the quote_data along
@@ -186,6 +190,7 @@ class ProgressTracker(ProgressTrackerTemplate):
 
         if not quote_data:
             alert("No data found for the selected Job ID.", title='Missing Quotation Data', large=False)
+            self.btn_Confirmed.enabled = True
             return
 
         # If data exists, now show the form and pass the quote_data along
@@ -201,6 +206,7 @@ class ProgressTracker(ProgressTrackerTemplate):
     
         if not quote_data:
             alert("No data found for the selected Job ID.", title='Missing Invoice Data', large=False)
+            self.btn_Invoice.enabled = True
             return
     
         # If data exists, now show the form and pass the quote_data along
@@ -216,6 +222,7 @@ class ProgressTracker(ProgressTrackerTemplate):
 
         if not payment_data:
             alert("No data found for the selected Job ID.", title='Missing Payment Data', large=False)
+            self.btn_Payment.enabled = True
             return
 
         # If data exists, now show the form and pass the quote_data along

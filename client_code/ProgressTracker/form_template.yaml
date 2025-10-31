@@ -159,7 +159,11 @@ components:
           type: Label
         - layout_properties: {grid_position: 'XLUBOJ,UKASSG'}
           name: label_payment_done
-          properties: {align: center, font: Mozilla Headline, font_size: 16, icon: 'fa:check-square', text: Payment Done}
+          properties: {align: center, font: Mozilla Headline, font_size: 16, icon: 'fa:bank', text: Payment Done}
+          type: Label
+        - layout_properties: {grid_position: 'XLUBOJ,CMGCCT'}
+          name: label_completed
+          properties: {align: center, font: Mozilla Headline, font_size: 16, icon: 'fa:check-square', text: Complete}
           type: Label
         layout_properties: {grid_position: 'RGDOSG,VMRFAU', row_background: 'theme:Black'}
         name: card_3

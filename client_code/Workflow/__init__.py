@@ -143,7 +143,7 @@ class Workflow(WorkflowTemplate):
 
     def cmbStatus_change(self, **event_args):
         """This method is called when an item is selected"""
-        self.cmbRegNo.items = anvil.server.call("getRegNoUsingStatus", self.cmbStatus.selected_value)
+        self.cmbRegNo.items = anvil.server.call("getRegNoUsingStatus", self.cmbStatus.selected_value,None)
         self.vehicle_repeater.visible = True
         self.populateCards(self.cmbStatus.selected_value, None)
         self.refresh()
@@ -164,4 +164,5 @@ class Workflow(WorkflowTemplate):
             alert("Sorry, please enter RegNo to proceed", title="Blank Field Found")
             self.txt_RegNo.focus()
             return
-        result = anvil.server.call("getCarReg", regNo)
+        self.cmbRegNo.items = anvil.server.call("getRegNoUsingStatus", None, regNo)
+        

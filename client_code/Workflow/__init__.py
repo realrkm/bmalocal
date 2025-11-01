@@ -121,7 +121,7 @@ class Workflow(WorkflowTemplate):
         self.refresh()
 
         vehicle_data_source = ModGetData.getTechnicianJobCards(status, regNo)
-
+                    
         # Set the total
         self.total_label.text = f"Total Vehicles: {len(vehicle_data_source)}"
         self.total_label.visible = True
@@ -143,6 +143,8 @@ class Workflow(WorkflowTemplate):
 
     def cmbStatus_change(self, **event_args):
         """This method is called when an item is selected"""
+        self.txt_RegNo.text = ""
+        self.cmbRegNo.selected_value = None
         self.cmbRegNo.items = anvil.server.call("getRegNoUsingStatus", self.cmbStatus.selected_value,None)
         self.vehicle_repeater.visible = True
         self.populateCards(self.cmbStatus.selected_value, None)
@@ -155,8 +157,10 @@ class Workflow(WorkflowTemplate):
 
     def cmbRegNo_change(self, **event_args):
         """This method is called when an item is selected"""
+        self.vehicle_repeater.visible = True
         self.populateCards(self.cmbStatus.selected_value, self.cmbRegNo.selected_value)
-
+        self.refresh()
+        
     def btn_Search_click(self, **event_args):
         """This method is called when the button is clicked"""
         regNo = self.txt_RegNo.text

@@ -109,26 +109,41 @@ components:
         foreground: theme:Black
         include_placeholder: true
         items: []
-        placeholder: Select Workflow Status *
+        placeholder: 'Select Workflow Status '
       type: DropDown
-    - event_bindings: {change: cmbRegNo_change}
-      layout_properties: {grid_position: 'IVALPC,MKCDTX'}
-      name: cmbRegNo
-      properties:
-        border: ''
-        font: Mozilla Headline
-        font_size: 16
-        foreground: theme:Black
-        include_placeholder: true
-        items: []
-        placeholder: Select RegNo
-        visible: true
-      type: DropDown
+    - components:
+      - event_bindings: {pressed_enter: btn_Search_click}
+        layout_properties: {grid_position: 'UUAQSD,LDNVBJ'}
+        name: txt_RegNo
+        properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: 'Enter RegNo (Cars in Checked-In To Ready For Pickup Status)  '}
+        type: TextBox
+      - event_bindings: {click: btn_Search_click}
+        layout_properties: {grid_position: 'UUAQSD,PQRNED'}
+        name: btn_Search
+        properties: {align: full, background: '#0056D6', foreground: 'theme:White', text: SEARCH}
+        type: Button
+      - event_bindings: {change: cmbRegNo_change}
+        layout_properties: {grid_position: 'JWLDNY,SYMFAR'}
+        name: cmbRegNo
+        properties:
+          border: solid
+          font: Mozilla Headline
+          font_size: 16
+          foreground: theme:Black
+          include_placeholder: true
+          items: []
+          placeholder: Select RegNo
+          visible: true
+        type: DropDown
+      layout_properties: {grid_position: 'HDYRBO,YYOOUK', row_background: 'theme:Black'}
+      name: card_8
+      properties: {border: solid, col_widths: '{"LDNVBJ":45,"PQRNED":15}', role: card}
+      type: ColumnPanel
     layout_properties: {width: 967.2727355957031}
     name: column_panel_1
-    properties: {}
+    properties: {col_widths: '{}'}
     type: ColumnPanel
-  layout_properties: {full_width_row: true, grid_position: 'VDDAWN,FLEOCZ', row_background: 'theme:White'}
+  layout_properties: {full_width_row: false, grid_position: 'VDDAWN,FLEOCZ', row_background: 'theme:White'}
   name: flow_panel_1
   properties: {border: solid, role: null}
   type: FlowPanel

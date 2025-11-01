@@ -157,6 +157,11 @@ class Workflow(WorkflowTemplate):
         """This method is called when an item is selected"""
         self.populateCards(self.cmbStatus.selected_value, self.cmbRegNo.selected_value)
 
-   
-    
-        
+    def btn_Search_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        regNo = self.txt_RegNo.text
+        if not regNo:
+            alert("Sorry, please enter RegNo to proceed", title="Blank Field Found")
+            self.txt_RegNo.focus()
+            return
+        result = anvil.server.call("getCarReg", regNo)

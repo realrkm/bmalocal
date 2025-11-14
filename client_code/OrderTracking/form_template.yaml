@@ -1,0 +1,166 @@
+components:
+- components:
+  - components:
+    - layout_properties: {grid_position: 'NTZEAK,GMOJPA'}
+      name: label_title
+      properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', role: null, text: IMPORT ORDER DETAILS}
+      type: Label
+    - layout_properties: {grid_position: 'FQOFAI,LFJMDF'}
+      name: spacer_3_copy_3_copy_copy
+      properties: {height: '10'}
+      type: Spacer
+    - event_bindings: {click: btn_UpdateOrderTracking_click}
+      layout_properties: {grid_position: 'OELZRW,XAOXJD'}
+      name: btn_UpdateOrderTracking
+      properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: UPDATE ORDER}
+      type: Button
+    - event_bindings: {click: btn_OrderReport_click}
+      layout_properties: {grid_position: 'OELZRW,FPIYKS'}
+      name: btn_OrderReport
+      properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: VIEW ORDERS}
+      type: Button
+    - layout_properties: {grid_position: 'LVISBB,MDFPLK'}
+      name: spacer_3_copy_3_copy
+      properties: {height: '10'}
+      type: Spacer
+    - components:
+      - event_bindings: {pressed_enter: btn_SearchClient_click}
+        layout_properties: {grid_position: 'FFBFFG,TGRRSI'}
+        name: txt_ClientDetails
+        properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: 'Enter Client Name / Phone To Search * '}
+        type: TextBox
+      - event_bindings: {click: btn_SearchClient_click}
+        layout_properties: {grid_position: 'FFBFFG,KGMSAL'}
+        name: btn_SearchClient
+        properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: SEARCH}
+        type: Button
+      - layout_properties: {grid_position: 'GVCZHE,FXQXJF'}
+        name: drop_down_selectrole
+        properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: 'Select Client * '}
+        type: DropDown
+      layout_properties: {grid_position: 'FEUGGA,ZCQAWM'}
+      name: card_3
+      properties: {border: solid, col_widths: '{"TGRRSI":40,"KGMSAL":20}', role: card}
+      type: ColumnPanel
+    - layout_properties: {grid_position: 'AOYZZW,ZLAFHM', row_background: 'theme:Black'}
+      name: spacer_1
+      properties: {height: '10'}
+      type: Spacer
+    - layout_properties: {grid_position: 'DVROZK,JEPJAN'}
+      name: date_picker_1
+      properties: {background: 'theme:White', border: solid, foreground: 'theme:Black', placeholder: Select Date *}
+      type: DatePicker
+    - layout_properties: {grid_position: 'JQRUYR,WLTXQK', row_background: 'theme:Black'}
+      name: spacer_1_copy
+      properties: {height: '10'}
+      type: Spacer
+    - components:
+      - event_bindings: {pressed_enter: btn_SearchParts_click}
+        layout_properties: {grid_position: 'VNUUES,GQAFKW'}
+        name: text_box_searchPartNo
+        properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Part Name / Part No To Search *}
+        type: TextBox
+      - event_bindings: {click: btn_SearchParts_click}
+        layout_properties: {grid_position: 'VNUUES,SREFON'}
+        name: btn_SearchParts
+        properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: SEARCH}
+        type: Button
+      - event_bindings: {change: drop_down_selectPart_change}
+        layout_properties: {grid_position: 'HTQOMO,SERSIH'}
+        name: drop_down_selectPart
+        properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Part *}
+        type: DropDown
+      - layout_properties: {grid_position: 'IPPKSM,MJCKQA'}
+        name: lbl_ID
+        properties: {visible: false}
+        type: Label
+      - layout_properties: {grid_position: 'IPPKSM,UNVTGK'}
+        name: lbl_PartName
+        properties: {visible: false}
+        type: Label
+      - layout_properties: {grid_position: 'IPPKSM,VLXSIL'}
+        name: lbl_PartNumber
+        properties: {visible: false}
+        type: Label
+      - layout_properties: {grid_position: 'NKXRIC,YFTRQG', row_background: 'theme:Black'}
+        name: spacer_3_copy
+        properties: {height: '10'}
+        type: Spacer
+      - event_bindings: {}
+        layout_properties: {grid_position: 'BKGFQL,UIGAEE'}
+        name: txt_Quantity
+        properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Quantity *}
+        type: TextBox
+      - layout_properties: {grid_position: 'FWVFYV,JESSRD', row_background: 'theme:Black'}
+        name: spacer_3_copy_2
+        properties: {height: '10'}
+        type: Spacer
+      - layout_properties: {grid_position: 'TBRHQW,RVYPZH'}
+        name: spacer_3_copy_3
+        properties: {height: '10'}
+        type: Spacer
+      layout_properties: {grid_position: 'MHZXQP,RJOCED'}
+      name: card_5
+      properties: {border: solid, col_widths: '{"GQAFKW":40,"SREFON":20}', role: card}
+      type: ColumnPanel
+    - layout_properties: {grid_position: 'PIWLGW,MOHNDQ', row_background: 'theme:Black'}
+      name: spacer_2
+      properties: {height: '10'}
+      type: Spacer
+    - event_bindings: {click: btn_AddOrder_click}
+      layout_properties: {grid_position: 'KMMJLY,AAZVIB'}
+      name: btn_AddOrder
+      properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: ADD ORDER}
+      type: Button
+    - layout_properties: {grid_position: 'ZZPYCK,NYAIGE', row_background: 'theme:Black'}
+      name: spacer_3
+      properties: {height: '10'}
+      type: Spacer
+    - components:
+      - components:
+        - name: repeating_panel_1
+          properties: {item_template: OrderTracking.RowTemplate18}
+          type: RepeatingPanel
+        layout_properties: {grid_position: 'INTVUQ,CWCXZO'}
+        name: data_grid_1
+        properties:
+          background: theme:Black
+          border: solid
+          columns:
+          - {data_key: Name, expand: true, id: JKSDUP, title: Name}
+          - {data_key: Part_No, id: VJQQOR, title: Part No}
+          - {data_key: '', id: WBTRSP, title: '', width: '40'}
+          - {data_key: Quantity, expand: true, id: OJLQEN, title: Quantity}
+          - {data_key: Status, expand: true, id: PSOVFO, title: Status}
+          - {data_key: '', id: IBXJHQ, title: '', width: '90'}
+          foreground: theme:White
+          role: null
+          wrap_on: never
+        type: DataGrid
+      layout_properties: {grid_position: 'YQFQEP,RKFLFM'}
+      name: card_4
+      properties: {border: solid, role: card}
+      type: ColumnPanel
+    - layout_properties: {grid_position: 'HMXEZU,WEXJFI'}
+      name: spacer_4
+      properties: {height: '10'}
+      type: Spacer
+    - event_bindings: {click: btn_SaveAndNew_click}
+      layout_properties: {grid_position: 'YQATBY,GCVBTH'}
+      name: btn_SaveAndNew
+      properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: SAVE AND NEW}
+      type: Button
+    - layout_properties: {grid_position: 'XTOVEX,QBDTAL'}
+      name: spacer_4_copy
+      properties: {height: '10'}
+      type: Spacer
+    layout_properties: {grid_position: 'TOBBOG,LRRUZZ', row_background: 'theme:Black'}
+    name: card_2
+    properties: {border: solid, col_widths: '{}', role: card}
+    type: ColumnPanel
+  layout_properties: {full_width_row: true, grid_position: 'LKOSUU,IYPISS', row_background: 'theme:Black'}
+  name: card_1
+  properties: {role: card}
+  type: ColumnPanel
+container: {type: ColumnPanel}
+is_package: true

@@ -1,0 +1,277 @@
+components:
+- event_bindings: {click: btn_SaveAndDownload_click}
+  layout_properties: {grid_position: 'SBXHEZ,HMQJEB'}
+  name: btn_SaveAndDownload
+  properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: primary-color, text: UPDATE AND DOWNLOAD INVOICE}
+  type: Button
+- components:
+  - layout_properties: {grid_position: 'WSBGFB,VWUVVR'}
+    name: image_1
+    properties: {source: _/theme/Invoice Header Logo.jpg}
+    type: Image
+  - layout_properties: {grid_position: 'UOYLKG,UWOXRN'}
+    name: label_2
+    properties: {align: center, background: 'theme:Black', bold: true, border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: AMENDED INVOICE}
+    type: Label
+  - layout_properties: {grid_position: 'RXCXDG,YJXWIF'}
+    name: label_3_copy
+    properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, foreground: '#dc1818', text: Only Invoices With Pending Payment Can Be Amended}
+    type: Label
+  - layout_properties: {grid_position: 'SDEGHM,VJWRFV'}
+    name: label_3_copy_copy
+    properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, foreground: '#dc1818', text: 'To Add VAT And Previous Balance, Start By Adding VAT, Then Add Previous Balance. '}
+    type: Label
+  - components:
+    - event_bindings: {pressed_enter: btn_SearchCustomer_click}
+      layout_properties: {grid_position: 'XLROLO,DSBIZG'}
+      name: txtJobCardRef
+      properties: {align: left, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Gray 900', placeholder: Search Job Card Ref *}
+      type: TextBox
+    - event_bindings: {click: btn_SearchCustomer_click}
+      layout_properties: {grid_position: 'XLROLO,UCJSKV'}
+      name: btn_SearchCustomer
+      properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: primary-color, text: Search}
+      type: Button
+    - event_bindings: {change: drop_down_JobCardRefDetails_change}
+      layout_properties: {grid_position: 'SGROJS,SWLEFZ'}
+      name: drop_down_JobCardRefDetails
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select  Job Card Ref Details*}
+      type: DropDown
+    - layout_properties: {grid_position: 'PBWULM,YLEZPQ'}
+      name: label_makeandmodel
+      properties: {align: left, bold: true, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: 'Make And Model '}
+      type: Label
+    - layout_properties: {grid_position: 'PBWULM,NZJGEA'}
+      name: label_3
+      properties: {align: left, bold: true, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Gray 900', text: 'Chassis '}
+      type: Label
+    - layout_properties: {grid_position: 'DCPRJV,ENPMGU'}
+      name: label_MakeAndModel
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black'}
+      type: Label
+    - layout_properties: {grid_position: 'DCPRJV,GBQWLA'}
+      name: label_Chassis
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black'}
+      type: Label
+    - layout_properties: {grid_position: 'BDKKGF,SBWHSY NHTELK,CDRKIJ'}
+      name: label_regno
+      properties: {align: left, bold: true, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Reg No *}
+      type: Label
+    - layout_properties: {grid_position: 'BDKKGF,SBWHSY PJTSBW,EDHVLL'}
+      name: label_RegNo
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black'}
+      type: Label
+    - layout_properties: {grid_position: 'BDKKGF,ZDMVZC DEDDBM,MKEXUE'}
+      name: label_engine
+      properties: {align: left, bold: true, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Gray 900', text: Engine Code}
+      type: Label
+    - layout_properties: {grid_position: 'BDKKGF,ZDMVZC TPWJML,AOSRNK'}
+      name: label_EngineCode
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black'}
+      type: Label
+    - layout_properties: {grid_position: 'NQOKWP,MJGTMP NZBNBN,OHKNEC'}
+      name: label_date
+      properties: {align: left, bold: true, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Date *}
+      type: Label
+    - layout_properties: {grid_position: 'NQOKWP,MJGTMP RYNRSD,LZMOUA'}
+      name: date_picker_1
+      properties: {background: 'theme:White', border: solid, font: Roboto, font_size: 16, foreground: 'theme:Black', placeholder: Enter Date Here *}
+      type: DatePicker
+    - layout_properties: {grid_position: 'NQOKWP,OFZXGJ FMPBRA,UIOWFD'}
+      name: label_mileage
+      properties: {align: left, bold: true, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Gray 900', text: 'Mileage '}
+      type: Label
+    - layout_properties: {grid_position: 'NQOKWP,OFZXGJ EYXBLM,OHVFXU'}
+      name: label_Mileage
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black'}
+      type: Label
+    - layout_properties: {grid_position: 'OZXWIN,BJHMZV', row_background: 'theme:Black'}
+      name: spacer_4
+      properties: {height: '11.7'}
+      type: Spacer
+    - components:
+      - layout_properties: {grid_position: 'DULUQS,GECKQH'}
+        name: label_AssignParts
+        properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: '', role: null, text: Assign Parts}
+        type: Label
+      - event_bindings: {pressed_enter: btn_Search_click}
+        layout_properties: {grid_position: 'WEQBVA,CSVHRM'}
+        name: text_box_searchPartNo
+        properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Part Name / Part No To Search *}
+        type: TextBox
+      - event_bindings: {click: btn_Search_click}
+        layout_properties: {grid_position: 'WEQBVA,EDBLMM'}
+        name: btn_Search
+        properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: primary-color, text: Search}
+        type: Button
+      - event_bindings: {change: drop_down_selectPart_change}
+        layout_properties: {grid_position: ',undefined'}
+        name: drop_down_selectPart
+        properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Part *}
+        type: DropDown
+      - layout_properties: {grid_position: 'VXTPVL,RNMSBP'}
+        name: lbl_ID
+        properties: {visible: false}
+        type: Label
+      - layout_properties: {grid_position: 'VXTPVL,RJZGAO'}
+        name: lbl_PartNumber
+        properties: {visible: false}
+        type: Label
+      - layout_properties: {grid_position: 'VXTPVL,ASNLIU'}
+        name: lbl_PartName
+        properties: {visible: false}
+        type: Label
+      - data_bindings: []
+        layout_properties: {grid_position: 'OOIUAC,GFTDTI'}
+        name: txtQuantity
+        properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, foreground: 'theme:Black', placeholder: 'Enter Quantity  ', type: number}
+        type: TextBox
+      - data_bindings: []
+        layout_properties: {grid_position: 'OOIUAC,LPICPU'}
+        name: txtSellingPrice
+        properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, foreground: 'theme:Black', placeholder: Enter Selling Price Per Unit, type: number}
+        type: TextBox
+      - event_bindings: {click: btn_AddParts_click}
+        layout_properties: {grid_position: 'TAZCKF,AKFUGY'}
+        name: btn_AddParts
+        properties:
+          align: full
+          background: '#0056D6'
+          border: ''
+          font: Mozilla Headline
+          font_size: 16
+          foreground: theme:White
+          spacing:
+            padding: [null, null, 8, null]
+          spacing_above: medium
+          text: Add Parts
+        type: Button
+      - layout_properties: {grid_position: 'IIOMQM,NSNGAW', row_background: 'theme:Black'}
+        name: spacer_2
+        properties: {height: '11.7'}
+        type: Spacer
+      - layout_properties: {grid_position: 'DIIQJG,OHOJVK'}
+        name: label_OtherServices
+        properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: '', role: null, text: Services}
+        type: Label
+      - data_bindings: []
+        layout_properties: {grid_position: 'VULJSO,GSWAZN'}
+        name: txtServices
+        properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, foreground: 'theme:Black', placeholder: Enter Service Name, type: text}
+        type: TextBox
+      - data_bindings: []
+        layout_properties: {grid_position: 'VULJSO,SULNWA'}
+        name: txtAmount
+        properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, foreground: 'theme:Black', placeholder: Enter Amount, type: number}
+        type: TextBox
+      - event_bindings: {click: btn_AddServices_click}
+        layout_properties: {grid_position: 'LHIYAV,SOGQOH'}
+        name: btn_AddServices
+        properties:
+          align: full
+          background: '#0056D6'
+          border: ''
+          font: Mozilla Headline
+          font_size: 16
+          foreground: theme:White
+          spacing:
+            padding: [null, null, 8, null]
+          spacing_above: medium
+          text: Add Services
+        type: Button
+      - layout_properties: {grid_position: 'ZBNRUJ,HTJKJI'}
+        name: label_vat
+        properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: '', role: null, text: Add VAT (e.g. 16)}
+        type: Label
+      - data_bindings: []
+        layout_properties: {grid_position: 'QIBBSF,RXQFSR'}
+        name: txtVAT
+        properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter VAT, type: number}
+        type: TextBox
+      - event_bindings: {click: btn_AddVAT_click}
+        layout_properties: {grid_position: 'HWVVGD,JLVUUQ'}
+        name: btn_AddVAT
+        properties:
+          align: full
+          background: '#0056D6'
+          border: ''
+          font: Mozilla Headline
+          font_size: 16
+          foreground: theme:White
+          spacing:
+            padding: [null, null, 8, null]
+          spacing_above: medium
+          text: ADD VAT
+        type: Button
+      - layout_properties: {grid_position: 'ZEXMKA,HZDRTV'}
+        name: label_PreviousBalance
+        properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: '', role: null, text: Previous Balance (Either From Current Car Or Other Serviced Cars)}
+        type: Label
+      - data_bindings: []
+        layout_properties: {grid_position: 'WLIWAD,MEKDDM'}
+        name: txtPreviousAmount
+        properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Amount, type: number}
+        type: TextBox
+      - event_bindings: {click: btn_AddPreviousBalance_click}
+        layout_properties: {grid_position: 'IKARYM,PHKYXL'}
+        name: btn_AddPreviousBalance
+        properties:
+          align: full
+          background: '#0056D6'
+          border: ''
+          font: Mozilla Headline
+          font_size: 16
+          foreground: theme:White
+          spacing:
+            padding: [null, null, 8, null]
+          spacing_above: medium
+          text: ADD PREVIOUS BALANCE
+        type: Button
+      layout_properties: {grid_position: 'VEOYCL,IDSJYS', row_background: 'theme:Black'}
+      name: card_2
+      properties: {border: solid, col_widths: '{"CSVHRM":40,"EDBLMM":20}', role: card}
+      type: ColumnPanel
+    - layout_properties: {grid_position: 'JRGGHE,AMQLQO'}
+      name: label_ViewAssignedParts
+      properties: {align: center, background: 'theme:Gray 300', border: solid, font: Roboto, font_size: 16, foreground: 'theme:Black', icon: '', role: null, text: List Of Parts And Services}
+      type: Label
+    - layout_properties: {grid_position: 'MJVHMK,PDGAJW', row_background: 'theme:Black'}
+      name: spacer_1
+      properties: {height: '11.7'}
+      type: Spacer
+    - components:
+      - layout_properties: {}
+        name: repeating_panel_assigned_parts
+        properties: {background: 'theme:Black', border: solid, foreground: 'theme:White', item_template: AmendedInvoice.RowTemplate, role: card}
+        type: RepeatingPanel
+      - layout_properties: {}
+        name: txtTotal
+        properties: {align: right, background: 'theme:Gray 900', bold: true, border: '', font: Roboto, foreground: 'theme:White', role: dense}
+        type: TextBox
+      layout_properties: {grid_position: 'FIBFWU,BDAUFF'}
+      name: data_grid_1
+      properties:
+        background: theme:Black
+        border: solid
+        columns:
+        - {data_key: Item, expand: true, id: JKSDUP, title: Item, width: ''}
+        - {data_key: PartNo, expand: true, id: EXBEOB, title: Number}
+        - {data_key: QuantityIssued, expand: true, id: OJLQEN, title: Quantity, width: ''}
+        - {data_key: Amount, expand: true, id: VGKUXC, title: Amount (Kshs), width: ''}
+        - {data_key: '', expand: false, id: ULDDEA, title: ''}
+        foreground: theme:White
+        role: null
+        rows_per_page: 200
+        show_page_controls: false
+        wrap_on: mobile
+      type: DataGrid
+    layout_properties: {grid_position: 'VMGHTZ,PEEQHL'}
+    name: column_panel_1
+    properties: {border: '', col_widths: '{"DSBIZG":40,"UCJSKV":20}'}
+    type: ColumnPanel
+  layout_properties: {grid_position: 'SATMTE,MAAWTJ'}
+  name: card_1
+  properties: {role: card}
+  type: ColumnPanel
+container: {type: ColumnPanel}
+is_package: true

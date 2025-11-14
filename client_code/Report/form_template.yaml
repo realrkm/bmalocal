@@ -1,0 +1,46 @@
+components:
+- layout_properties: {full_width_row: true, grid_position: 'OYDUUP,VHWMUV', row_background: 'theme:Black'}
+  name: spacer_1
+  properties: {height: 3}
+  type: Spacer
+- components:
+  - components:
+    - layout_properties: {grid_position: 'CUQCLK,UTRBED'}
+      name: label_1_copy
+      properties: {align: center, background: '#0056D6', bold: false, border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: null, text: Reports}
+      type: Label
+    - event_bindings: {change: cmbReport_change}
+      layout_properties: {grid_position: 'IVALPC,NUPWUH'}
+      name: cmbReport
+      properties:
+        align: full
+        background: theme:White
+        border: ''
+        font: Mozilla Headline
+        font_size: 16
+        foreground: theme:Black
+        include_placeholder: true
+        items: []
+        placeholder: Select Report *
+      type: DropDown
+    - layout_properties: {grid_position: 'IVALPC,XXEZFF'}
+      name: search_keyword_1
+      properties: {}
+      type: form:SearchKeyword
+    layout_properties: {width: 967.2727355957031}
+    name: column_panel_1
+    properties: {}
+    type: ColumnPanel
+  layout_properties: {full_width_row: false, grid_position: 'VDDAWN,FLEOCZ'}
+  name: flow_panel_1
+  properties: {border: solid, role: null}
+  type: FlowPanel
+- layout_properties: {grid_position: 'XJQITE,DWZCKT'}
+  name: card_panel
+  properties: {role: card}
+  type: ColumnPanel
+container:
+  event_bindings: {}
+  properties: {col_spacing: huge, spacing_above: large, spacing_below: large}
+  type: ColumnPanel
+is_package: true

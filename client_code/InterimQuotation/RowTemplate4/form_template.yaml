@@ -1,0 +1,10 @@
+components:
+- event_bindings: {click: btn_DeleteRow_click}
+  layout_properties: {column: ULDDEA}
+  name: btn_DeleteRow
+  properties: {background: '#0056D6', border: '', foreground: 'theme:White', icon: 'fa:trash-o', text: ''}
+  type: Button
+container:
+  properties: {background: '', border: solid, font: Roboto, font_size: 16, foreground: ''}
+  type: DataRowPanel
+is_package: true

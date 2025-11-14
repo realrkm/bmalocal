@@ -1,0 +1,144 @@
+components:
+- components:
+  - event_bindings: {click: button_1_click}
+    layout_properties: {grid_position: 'UTQRFB,JOXFSY'}
+    name: button_1
+    properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: primary-color, text: Download CONFIRM Quotation}
+    type: Button
+  - layout_properties: {grid_position: 'FJVOLV,VQMSUL'}
+    name: spacer_2
+    properties: {height: '5'}
+    type: Spacer
+  - event_bindings: {click: btn_Close_click}
+    layout_properties: {grid_position: 'LEGHPW,VOQUEU'}
+    name: btn_Close
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: primary-color, text: Close}
+    type: Button
+  - layout_properties: {grid_position: 'QBHDNR,JZNIEA'}
+    name: label_JobCardID
+    properties: {visible: false}
+    type: Label
+  - layout_properties: {grid_position: 'VYELLE,CSJCGR'}
+    name: spacer_1
+    properties: {height: 9.5}
+    type: Spacer
+  - layout_properties: {full_width_row: false, grid_position: 'QDFLZW,KKYZAC'}
+    name: image_1
+    properties: {border: solid, source: _/theme/Invoice Header Logo.jpg}
+    type: Image
+  - layout_properties: {grid_position: 'PCOIWS,STEILN'}
+    name: label_2
+    properties: {align: center, background: 'theme:Black', bold: true, border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: CONFIRM QUOTATION}
+    type: Label
+  - components:
+    - layout_properties: {full_width_row: false, grid_position: 'RGWNOY,JGLSJJ PGTFFK,DMKBSH'}
+      name: label_1
+      properties: {align: left, bold: true, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', role: null, text: Customer Name}
+      type: Label
+    - layout_properties: {grid_position: 'RGWNOY,JGLSJJ XLROLO,DSBIZG'}
+      name: txtCustomerName
+      properties: {align: left, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Gray 900'}
+      type: TextBox
+    - layout_properties: {grid_position: 'RGWNOY,JGLSJJ PBWULM,YLEZPQ'}
+      name: label_makeandmodel
+      properties: {align: left, bold: true, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Make And Model}
+      type: Label
+    - layout_properties: {grid_position: 'RGWNOY,JGLSJJ DCPRJV,ENPMGU'}
+      name: txtMakeAndModel
+      properties: {align: left, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Gray 900'}
+      type: TextBox
+    - layout_properties: {grid_position: 'RGWNOY,JGLSJJ BDKKGF,SBWHSY'}
+      name: label_regno
+      properties: {align: left, bold: true, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Reg No}
+      type: Label
+    - layout_properties: {grid_position: 'RGWNOY,JGLSJJ BUSUHZ,BSMPOV'}
+      name: txtRegNo
+      properties: {align: left, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Gray 900'}
+      type: TextBox
+    - layout_properties: {grid_position: 'RGWNOY,JGLSJJ NQOKWP,MJGTMP'}
+      name: label_date
+      properties: {align: left, bold: true, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Date}
+      type: Label
+    - layout_properties: {grid_position: 'RGWNOY,JGLSJJ TECUJL,FVWRGW'}
+      name: txtDate
+      properties: {align: left, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Gray 900'}
+      type: TextBox
+    - layout_properties: {full_width_row: false, grid_position: 'RGWNOY,ZVZBYL SOPOSH,IGEAQP'}
+      name: label_3
+      properties: {align: left, bold: true, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Gray 900', text: Chassis}
+      type: Label
+    - layout_properties: {grid_position: 'RGWNOY,ZVZBYL HLYOAP,BBEZVG'}
+      name: txtChassis
+      properties: {align: left, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black'}
+      type: TextBox
+    - layout_properties: {grid_position: 'RGWNOY,ZVZBYL SZSXUP,LADMFO'}
+      name: label_engine
+      properties: {align: left, bold: true, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Gray 900', text: Engine}
+      type: Label
+    - layout_properties: {grid_position: 'RGWNOY,ZVZBYL TUCIAS,KQRFWN'}
+      name: txtEngine
+      properties: {align: left, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black'}
+      type: TextBox
+    - layout_properties: {grid_position: 'RGWNOY,ZVZBYL YUKJZC,MXVBNG'}
+      name: label_mileage
+      properties: {align: left, bold: true, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Gray 900', text: Mileage}
+      type: Label
+    - layout_properties: {grid_position: 'RGWNOY,ZVZBYL HOSGQB,ZZUQYQ'}
+      name: txtMileage
+      properties: {align: left, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black'}
+      type: TextBox
+    - components:
+      - layout_properties: {}
+        name: repeating_panel_1
+        properties: {border: '', foreground: 'theme:Black', item_template: ConfirmForm.RowTemplate, role: card}
+        type: RepeatingPanel
+      - layout_properties: {}
+        name: txtTotal
+        properties: {align: right, background: 'theme:Gray 900', bold: true, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: dense}
+        type: TextBox
+      layout_properties: {grid_position: 'FIBFWU,BDAUFF'}
+      name: data_grid_1
+      properties:
+        background: theme:Gray 600
+        border: solid
+        columns:
+        - {data_key: Item, expand: true, id: JKSDUP, title: Item}
+        - {data_key: Quantity, expand: true, id: OJLQEN, title: Quantity}
+        - {data_key: Amount, expand: true, id: VGKUXC, title: Amount (Kshs)}
+        - {data_key: Total, expand: true, id: VQKMLW, title: Total (Kshs)}
+        foreground: theme:White
+        role: null
+        rows_per_page: 200
+        show_page_controls: false
+        wrap_on: mobile
+      type: DataGrid
+    - layout_properties: {grid_position: 'ZGGMII,XEVDCM'}
+      name: label_4
+      properties:
+        bold: false
+        font: Mozilla Headline
+        font_size: 16
+        foreground: theme:Black
+        text: |-
+          NOTE: THE ABOVE ESTIMATE IS SUBJECT TO REVIEW DUE TO:
+          1. Price change at the time of actual repair
+          2. Further damages found during repairs
+          3. 100% Deposit on imported parts
+          4. 70% deposit on local parts on commencement
+      type: Label
+    layout_properties: {grid_position: 'XEMOEL,PDSIOY'}
+    name: column_panel_1
+    properties: {border: ''}
+    type: ColumnPanel
+  - layout_properties: {grid_position: ''}
+    name: spacer_3
+    properties: {height: '5'}
+    type: Spacer
+  layout_properties: {full_width_row: false, grid_position: 'WNBWSA,NHSORN', row_background: ''}
+  name: card_1
+  properties: {role: card}
+  type: ColumnPanel
+container:
+  properties: {border: ''}
+  type: ColumnPanel
+is_package: true

@@ -1,0 +1,39 @@
+components:
+- components:
+  - layout_properties: {full_width_row: false, grid_position: 'SFINNH,IGSHCK'}
+    name: spacer_2
+    properties: {height: 32}
+    type: Spacer
+  - layout_properties: {full_width_row: false, grid_position: 'AFFRHS,KQESMY'}
+    name: label_title
+    properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', role: full-screen-form, text: Staff Details}
+    type: Label
+  - components:
+    - layout_properties: {pinned: false}
+      name: client_repeater
+      properties: {item_template: ClientContactReport.RowTemplate3, role: null}
+      type: RepeatingPanel
+    data_bindings: []
+    layout_properties: {full_width_row: false, grid_position: 'WUUYLU,BXHIPD'}
+    name: data_grid_1
+    properties:
+      background: theme:Black
+      border: solid
+      columns:
+      - {data_key: 'No', expand: false, id: LXRVOX, title: 'No', width: 86.19999694824219}
+      - {data_key: Fullname, expand: true, id: CUNVFB, title: Fullname, width: ''}
+      - {data_key: Phone, expand: true, id: IUBBKG, title: Phone, width: ''}
+      - {data_key: Active, expand: true, id: UTZIMN, title: Active}
+      foreground: theme:White
+      role: null
+      rows_per_page: 25
+      spacing_above: medium
+      spacing_below: medium
+      wrap_on: mobile
+    type: DataGrid
+  layout_properties: {grid_position: 'TQXZXA,BGJKQF'}
+  name: card_1
+  properties: {border: solid, role: card, wrap_on: mobile}
+  type: ColumnPanel
+container: {type: ColumnPanel}
+is_package: true

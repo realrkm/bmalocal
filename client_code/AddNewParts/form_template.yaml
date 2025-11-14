@@ -1,0 +1,124 @@
+components:
+- components:
+  - components:
+    - layout_properties: {grid_position: 'XJYCWH,ZBMYRS'}
+      name: label_title
+      properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', text: Add New Part}
+      type: Label
+    - layout_properties: {grid_position: 'UCIJRB,ZZWGBI'}
+      name: label_1
+      properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Car Parts Details}
+      type: Label
+    - layout_properties: {grid_position: 'KIZCFB,KEJYOR'}
+      name: date_picker_purchase
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', format: '%d/%m/%Y', pick_time: false, placeholder: Enter Purchase Date *}
+      type: DatePicker
+    - layout_properties: {grid_position: 'DMKYTB,RZDQVF'}
+      name: txtPartName
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Part Name Here *}
+      type: TextBox
+    - layout_properties: {grid_position: 'GMOROL,FMOZDK'}
+      name: txtPartNumber
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Part Number Here *}
+      type: TextBox
+    - layout_properties: {grid_position: 'GBJDQK,XXVYCN', row_background: 'theme:Black'}
+      name: spacer_3
+      properties: {height: '11.7'}
+      type: Spacer
+    - layout_properties: {grid_position: 'KXSLGI,KBWBPZ'}
+      name: label_1_copy
+      properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Location And Supplier Details}
+      type: Label
+    - layout_properties: {grid_position: 'PYRZEI,KVQRPY'}
+      name: drop_down_location
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Storage Location *}
+      type: DropDown
+    - event_bindings: {click: btn_AddLocation_click}
+      layout_properties: {grid_position: 'PYRZEI,VAOANY'}
+      name: btn_AddLocation
+      properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: Add Location}
+      type: Button
+    - layout_properties: {grid_position: 'BRAUUK,ZWHJIK'}
+      name: drop_down_supplier
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Supplier *}
+      type: DropDown
+    - event_bindings: {click: btn_AddSupplier_click}
+      layout_properties: {grid_position: 'BRAUUK,TPZHHR'}
+      name: btn_AddSupplier
+      properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: Add Supplier}
+      type: Button
+    - layout_properties: {grid_position: 'NHUKGN,LPBXPM', row_background: 'theme:Black'}
+      name: spacer_3_copy
+      properties: {height: '11.7'}
+      type: Spacer
+    - layout_properties: {grid_position: 'KCNTVF,CHRFRN'}
+      name: label_1_copy_copy
+      properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Buying And Selling Price Details}
+      type: Label
+    - layout_properties: {grid_position: 'XXWOYP,SCXLXB'}
+      name: txtNoOfUnits
+      properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Number Of Units *, type: number}
+      type: TextBox
+    - layout_properties: {grid_position: 'XXWOYP,YROGDQ'}
+      name: txtBuyingPrice
+      properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Unit Buying Price *, type: number}
+      type: TextBox
+    - layout_properties: {grid_position: 'XXWOYP,NVTZPF'}
+      name: txtSellingPrice
+      properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Unit Selling Price *, type: number}
+      type: TextBox
+    - layout_properties: {grid_position: 'XXWOYP,RKAFTU'}
+      name: txtSellingDiscountedPrice
+      properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: 'Enter Unit Discounted Price ', type: number}
+      type: TextBox
+    - layout_properties: {grid_position: 'JCOWMX,PQABZY', row_background: 'theme:Black'}
+      name: spacer_3_copy_2
+      properties: {height: '11.7'}
+      type: Spacer
+    - layout_properties: {grid_position: 'TUIZYN,KWAKWK'}
+      name: label_buyingsellingprice
+      properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Reorder Level}
+      type: Label
+    - layout_properties: {grid_position: 'HSMVFU,WWBXQC'}
+      name: txtReorderLevel
+      properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Reorder Level *, type: number}
+      type: TextBox
+    - layout_properties: {grid_position: 'KHUWXK,BOIVDD', row_background: 'theme:Black'}
+      name: spacer_3_copy_2_copy
+      properties: {height: '11.7'}
+      type: Spacer
+    - layout_properties: {grid_position: 'AQZUET,JLRHIG'}
+      name: spacer_3_copy_3
+      properties: {height: 14}
+      type: Spacer
+    - event_bindings: {click: btn_SaveAndNew_click}
+      layout_properties: {grid_position: 'FDIXOL,VKOQED'}
+      name: btn_SaveAndNew
+      properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: primary-color, text: SAVE  AND NEW}
+      type: Button
+    - event_bindings: {click: btn_EditNewPart_click}
+      layout_properties: {grid_position: 'NNTDAM,YDKBXE'}
+      name: btn_EditNewPart
+      properties: {align: full, background: '#0056D6', border: '', enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: primary-color, text: EDIT  NEW PART, visible: true}
+      type: Button
+    - event_bindings: {click: btn_Close_click}
+      layout_properties: {grid_position: 'TVJJIF,XYMLUK'}
+      name: btn_Close
+      properties: {align: full, background: '#0056D6', border: '', enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: primary-color, text: CLOSE, visible: true}
+      type: Button
+    - layout_properties: {grid_position: 'GNSIRN,GWRESC'}
+      name: spacer_3_copy_copy
+      properties: {height: 14}
+      type: Spacer
+    layout_properties: {grid_position: 'EIEDFU,NMXMNZ', row_background: 'theme:White'}
+    name: card_2
+    properties: {col_widths: '{"ZWHJIK":45,"TPZHHR":15,"KVQRPY":45,"VAOANY":15,"SCXLXB":15,"YROGDQ":15,"NVTZPF":15,"RKAFTU":15}', role: card}
+    type: ColumnPanel
+  layout_properties: {full_width_row: true, grid_position: 'KJTCDK,FBNTHH', row_background: 'theme:Black'}
+  name: card_1
+  properties: {role: card}
+  type: ColumnPanel
+container:
+  properties: {background: 'theme:White', border: solid, foreground: 'theme:Black'}
+  type: ColumnPanel
+is_package: true

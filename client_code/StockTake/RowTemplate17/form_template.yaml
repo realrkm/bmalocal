@@ -1,0 +1,16 @@
+components:
+- event_bindings: {click: btn_DeleteRow_click}
+  layout_properties: {column: HALCHC}
+  name: btn_DeleteRow
+  properties: {background: '#0056D6', foreground: 'theme:White', icon: 'fa:trash-o', icon_align: right, text: '', tooltip: Delete Row}
+  type: Button
+- data_bindings:
+  - {code: 'self.item[''Quantity'']', property: text, writeback: true}
+  layout_properties: {column: OJLQEN}
+  name: txt_Quantity
+  properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 14, foreground: 'theme:Black', placeholder: Enter Quantity *, type: number}
+  type: TextBox
+container:
+  properties: {border: solid}
+  type: DataRowPanel
+is_package: true

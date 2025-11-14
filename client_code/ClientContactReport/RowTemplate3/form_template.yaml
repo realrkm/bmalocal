@@ -1,0 +1,5 @@
+components: []
+container:
+  properties: {align: left, border: solid, font: Roboto, font_size: 16, foreground: 'theme:White', role: full-screen-form, spacing_above: small, spacing_below: small}
+  type: DataRowPanel
+is_package: true

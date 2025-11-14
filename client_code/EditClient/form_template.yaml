@@ -1,0 +1,82 @@
+components:
+- components:
+  - layout_properties: {grid_position: 'RBNRFG,BXVXPP'}
+    name: label_title
+    properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', role: null, text: Edit Client Details}
+    type: Label
+  - components:
+    - event_bindings: {pressed_enter: btn_Search_click}
+      layout_properties: {grid_position: 'EVPYAL,VLPUSD'}
+      name: txt_clientname
+      properties: {align: left, background: 'theme:White', bold: false, border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Name *}
+      type: TextBox
+    - event_bindings: {click: btn_Search_click}
+      layout_properties: {grid_position: 'EVPYAL,VHTZPY'}
+      name: btn_Search
+      properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: SEARCH}
+      type: Button
+    - event_bindings: {change: drop_down_selectClient_change}
+      layout_properties: {grid_position: 'XWYHXL,KFEOYU'}
+      name: drop_down_selectClient
+      properties:
+        background: theme:White
+        border: solid
+        foreground: theme:Black
+        include_placeholder: true
+        items: []
+        placeholder: Select Client Name *
+      type: DropDown
+    layout_properties: {grid_position: 'LYISXC,KIDPBC'}
+    name: card_2
+    properties: {col_widths: '{"VLPUSD":40,"VHTZPY":20}', role: card}
+    type: ColumnPanel
+  - layout_properties: {grid_position: 'BQJHBP,FNSOSP', row_background: 'theme:Black'}
+    name: spacer_3
+    properties: {height: 32}
+    type: Spacer
+  - layout_properties: {grid_position: 'VQUCCX,KAMCLP YEXLGG,UWCWOQ'}
+    name: txt_name
+    properties: {align: center, background: 'theme:White', bold: false, border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Name *}
+    type: TextBox
+  - layout_properties: {grid_position: 'VQUCCX,KAMCLP IKCRVY,YZBYNE'}
+    name: txt_address
+    properties: {align: center, background: 'theme:White', bold: false, border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Address}
+    type: TextBox
+  - layout_properties: {grid_position: 'VQUCCX,RYKJQW KFAMUH,JMUHDF'}
+    name: txt_phone
+    properties: {align: center, background: 'theme:White', bold: false, border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Phone No. (e.g 0700000000) *, text: ''}
+    type: TextBox
+  - layout_properties: {grid_position: 'VQUCCX,RYKJQW CXNEMX,BRJBNP'}
+    name: txt_email
+    properties: {align: center, background: 'theme:White', bold: false, border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Email}
+    type: TextBox
+  - layout_properties: {grid_position: 'BURRXE,JGFROU'}
+    name: txt_narration
+    properties: {align: center, background: 'theme:White', bold: false, border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Narration}
+    type: TextBox
+  - layout_properties: {grid_position: 'GTKRJE,JEXRYQ', row_background: 'theme:Black'}
+    name: spacer_1
+    properties: {height: 32}
+    type: Spacer
+  - layout_properties: {grid_position: 'XSTOTT,KVGJKT'}
+    name: spacer_2
+    properties: {height: '11.7'}
+    type: Spacer
+  - event_bindings: {click: btn_Update_click}
+    layout_properties: {grid_position: 'PDBNUB,GHYCTH'}
+    name: btn_Update
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: Update}
+    type: Button
+  - event_bindings: {click: btn_Close_click}
+    layout_properties: {grid_position: 'PDBNUB,VYOMBG'}
+    name: btn_Close
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: Close}
+    type: Button
+  layout_properties: {full_width_row: false, grid_position: 'HEOFNJ,KNGYLD'}
+  name: card_1
+  properties: {border: solid, role: card}
+  type: ColumnPanel
+container:
+  properties: {background: ''}
+  type: ColumnPanel
+is_package: true

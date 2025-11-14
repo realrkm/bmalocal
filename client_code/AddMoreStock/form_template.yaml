@@ -1,0 +1,90 @@
+components:
+- components:
+  - layout_properties: {grid_position: 'AFFRHS,KQESMY'}
+    name: label_title
+    properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', text: Add More Stock}
+    type: Label
+  - event_bindings: {pressed_enter: btn_Search_click}
+    layout_properties: {grid_position: 'ERWTOD,ZNLMTP'}
+    name: text_box_searchPartNo
+    properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Part Name / Part No To Search *}
+    type: TextBox
+  - event_bindings: {click: btn_Search_click}
+    layout_properties: {grid_position: 'ERWTOD,FZTFWO'}
+    name: btn_Search
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: primary-color, text: Search}
+    type: Button
+  - event_bindings: {change: drop_down_selectPart_change}
+    layout_properties: {grid_position: 'WZBKRG,BKMGNZ'}
+    name: drop_down_selectPart
+    properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Part *}
+    type: DropDown
+  - layout_properties: {grid_position: 'AIFPMN,BCWJWG', row_background: 'theme:Black'}
+    name: spacer_3_copy_2
+    properties: {height: 14}
+    type: Spacer
+  - layout_properties: {grid_position: 'TIZFDW,LVRQWX'}
+    name: date_picker_1
+    properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:bBlack', format: '%d/%m/%Y', placeholder: Enter Date *}
+    type: DatePicker
+  - event_bindings: {}
+    layout_properties: {grid_position: 'IRDXSF,GYYVSC'}
+    name: drop_down_selectSupplier
+    properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Part Supplier *}
+    type: DropDown
+  - layout_properties: {grid_position: 'VQUCCX,KAMCLP'}
+    name: txt_NoOfUnits
+    properties: {align: center, background: 'theme:White', bold: false, border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter No Of Units *, type: number}
+    type: TextBox
+  - layout_properties: {grid_position: 'VQUCCX,RYKJQW'}
+    name: txt_UnitCost
+    properties: {align: center, background: 'theme:White', bold: false, border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Unit Cost *, tooltip: '', type: number}
+    type: TextBox
+  - layout_properties: {grid_position: 'GTKRJE,JEXRYQ', row_background: 'theme:Black'}
+    name: spacer_1
+    properties: {height: 32}
+    type: Spacer
+  - layout_properties: {grid_position: 'AAYHQB,YTDZGR'}
+    name: spacer_3
+    properties: {height: 14}
+    type: Spacer
+  - layout_properties: {grid_position: 'KFTBYJ,GYMZKS'}
+    name: label_1
+    properties: {align: center, background: 'theme:Gray 300', bold: false, border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: 'Previous Prices '}
+    type: Label
+  - components:
+    - name: repeating_panel_1
+      properties: {item_template: AddMoreStock.RowTemplate11}
+      type: RepeatingPanel
+    layout_properties: {grid_position: 'PBOFZM,BWNRCI'}
+    name: data_grid_2
+    properties:
+      background: theme:Black
+      border: solid
+      columns:
+      - {data_key: 'No', expand: false, id: JKSDUP, title: 'No', width: 41}
+      - {data_key: Date, expand: true, id: VJQQOR, title: Date}
+      - {data_key: Supplier, expand: true, id: OJLQEN, title: Supplier}
+      - {data_key: Name, expand: true, id: BZWDPW, title: Name}
+      - {data_key: PartNo, expand: true, id: QRXAQA, title: PartNo}
+      - {data_key: Cost, expand: true, id: NRVSXE, title: Buying Price (Kshs)}
+      foreground: theme:White
+      wrap_on: mobile
+    type: DataGrid
+  - event_bindings: {click: btn_SaveAndNew_click}
+    layout_properties: {grid_position: 'GXCNLB,WDZIWB'}
+    name: btn_SaveAndNew
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: Save AND NEW}
+    type: Button
+  - layout_properties: {grid_position: 'DADULD,CAPVTF'}
+    name: spacer_3_copy
+    properties: {height: 14}
+    type: Spacer
+  layout_properties: {grid_position: 'HEOFNJ,KNGYLD', row_background: 'theme:Black'}
+  name: card_1
+  properties: {border: solid, col_widths: '{"ZNLMTP":40,"FZTFWO":20,"TCYJXE":40}', role: card}
+  type: ColumnPanel
+container:
+  properties: {background: ''}
+  type: ColumnPanel
+is_package: true

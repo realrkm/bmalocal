@@ -1,0 +1,8 @@
+components:
+- event_bindings: {click: link_search_result_click}
+  layout_properties: {grid_position: 'NVHIYG,DLFGNO'}
+  name: link_search_result
+  properties: {align: left, background: '', bold: false, border: '', col_spacing: medium, col_widths: '', font: Mozilla Headline, font_size: 16, foreground: '', icon: '', icon_align: left, italic: false, role: null, spacing_above: small, spacing_below: small, text: link_search_result, underline: false, visible: true, wrap_on: mobile}
+  type: Link
+container: {type: ColumnPanel}
+is_package: true

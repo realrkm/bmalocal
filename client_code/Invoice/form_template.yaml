@@ -1,0 +1,213 @@
+components:
+- components:
+  - layout_properties: {grid_position: 'AFFRHS,KQESMY'}
+    name: label_title
+    properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', text: Invoice}
+    type: Label
+  - event_bindings: {change: cmbJobCardRef_change}
+    layout_properties: {grid_position: 'MXOMMF,YKLUZP'}
+    name: cmbJobCardRef
+    properties: {background: 'theme:White', border: solid, enabled: false, foreground: 'theme:Black', include_placeholder: false, placeholder: Select Job Card Ref}
+    type: DropDown
+  - layout_properties: {grid_position: 'SICJFP,MYGIBQ', row_background: 'theme:Black'}
+    name: spacer_1
+    properties: {height: 11.79998779296875}
+    type: Spacer
+  - layout_properties: {grid_position: 'HKBKHQ,WYXSJE'}
+    name: label_ClientInstructions
+    properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: '', role: null, text: Client Instructions}
+    type: Label
+  - layout_properties: {grid_position: 'SIHSIG,YJDIYU'}
+    name: txtClientInstructions
+    properties: {background: 'theme:White', border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black'}
+    type: TextArea
+  - layout_properties: {grid_position: 'GQXTCU,DZXBSV'}
+    name: label_TechNotes
+    properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: '', role: null, text: Tech Notes}
+    type: Label
+  - layout_properties: {grid_position: 'YLSQDU,WFLATS'}
+    name: txtTechNotes
+    properties: {background: 'theme:White', border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black'}
+    type: TextArea
+  - layout_properties: {grid_position: 'FVIUVJ,SSQAYL'}
+    name: label_DefectsList
+    properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: '', role: null, text: Defects List}
+    type: Label
+  - layout_properties: {grid_position: 'AOREJE,FSCRJD'}
+    name: txtDefectsList
+    properties: {background: 'theme:White', border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black'}
+    type: TextArea
+  - layout_properties: {grid_position: 'VAPSUX,KOMEWW'}
+    name: label_RequestedParts
+    properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: '', role: null, text: Requested Parts List}
+    type: Label
+  - layout_properties: {grid_position: 'TPENZA,UILEHJ'}
+    name: txtRequestedParts
+    properties: {background: 'theme:White', border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black'}
+    type: TextArea
+  - layout_properties: {grid_position: 'OVXDPV,ECHXYZ'}
+    name: label_AssignParts
+    properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: '', role: null, text: Assign Parts}
+    type: Label
+  - event_bindings: {pressed_enter: btn_Search_click}
+    layout_properties: {grid_position: 'BMKAYM,FYMLYQ'}
+    name: text_box_searchPartNo
+    properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Part Name / Part No To Search *}
+    type: TextBox
+  - event_bindings: {click: btn_Search_click}
+    layout_properties: {grid_position: 'BMKAYM,IEYBQU'}
+    name: btn_Search
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: primary-color, text: Search}
+    type: Button
+  - event_bindings: {change: drop_down_selectPart_change}
+    layout_properties: {grid_position: 'YOYEOH,HZBHGY'}
+    name: drop_down_selectPart
+    properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Part *}
+    type: DropDown
+  - layout_properties: {grid_position: 'SARTAC,ISEBZE'}
+    name: lbl_ID
+    properties: {visible: false}
+    type: Label
+  - layout_properties: {grid_position: 'SARTAC,EWZXLT'}
+    name: lbl_PartNumber
+    properties: {visible: false}
+    type: Label
+  - layout_properties: {grid_position: 'SARTAC,OEGLRD'}
+    name: lbl_PartName
+    properties: {visible: false}
+    type: Label
+  - components:
+    - data_bindings: []
+      layout_properties: {grid_position: 'KDHJZA,GFSXQP'}
+      name: txtQuantity
+      properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: 'Enter Quantity  ', type: number}
+      type: TextBox
+    - data_bindings: []
+      layout_properties: {grid_position: 'KDHJZA,SCJELV'}
+      name: txtSellingPrice
+      properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Selling Price Per Unit, type: number}
+      type: TextBox
+    - event_bindings: {click: btn_AddParts_click}
+      layout_properties: {grid_position: 'XYCXJG,APMRML'}
+      name: btn_AddParts
+      properties:
+        align: full
+        background: '#0056D6'
+        border: ''
+        font: Mozilla Headline
+        font_size: 16
+        foreground: theme:White
+        spacing:
+          padding: [null, null, 8, null]
+        spacing_above: medium
+        text: Add Parts
+      type: Button
+    layout_properties: {grid_position: 'ONFSJC,PDPZPH'}
+    name: column_panel_1
+    properties: {col_widths: '{"GFSXQP":20,"SCJELV":20}'}
+    type: ColumnPanel
+  - layout_properties: {grid_position: 'SPWEZC,NOHISD'}
+    name: label_OtherServices
+    properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: '', role: null, text: Services}
+    type: Label
+  - data_bindings: []
+    layout_properties: {grid_position: 'KUWRPL,BQOKCW'}
+    name: txtServices
+    properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Service Name, type: text}
+    type: TextBox
+  - data_bindings: []
+    layout_properties: {grid_position: 'KUWRPL,IXSYWX'}
+    name: txtAmount
+    properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Amount, type: number}
+    type: TextBox
+  - event_bindings: {click: btn_AddServices_click}
+    layout_properties: {grid_position: 'QTTJNS,ILUPGY'}
+    name: btn_AddServices
+    properties:
+      align: full
+      background: '#0056D6'
+      border: ''
+      font: Mozilla Headline
+      font_size: 16
+      foreground: theme:White
+      spacing:
+        padding: [null, null, 8, null]
+      spacing_above: medium
+      text: Add Services
+    type: Button
+  layout_properties: {grid_position: 'YBIKSJ,NEWLOH', row_background: 'theme:White'}
+  name: card_1
+  properties: {border: solid, col_widths: '{"FYMLYQ":40,"IEYBQU":20}', role: card}
+  type: ColumnPanel
+- components:
+  - layout_properties: {grid_position: 'ZANFPK,LTWGAL'}
+    name: label_ViewAssignedParts
+    properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: '', role: null, text: List Of Parts And Services}
+    type: Label
+  - layout_properties: {grid_position: 'CGSUOB,EVQQPE'}
+    name: spacer_1_copy
+    properties: {height: 11.79998779296875}
+    type: Spacer
+  - components:
+    - name: repeating_panel_assigned_parts
+      properties: {item_template: Invoice.RowTemplate6}
+      type: RepeatingPanel
+    layout_properties: {grid_position: 'XSJEPT,DFLRWI'}
+    name: data_grid_1
+    properties:
+      background: theme:Black
+      columns:
+      - {data_key: Name, expand: true, id: JKSDUP, title: Name}
+      - {data_key: Number, expand: true, id: VJQQOR, title: Number}
+      - {data_key: Quantity, expand: true, id: OJLQEN, title: Quantity}
+      - {data_key: Amount, expand: true, id: RADFIQ, title: Amount}
+      foreground: theme:White
+      rows_per_page: 200
+      show_page_controls: false
+      wrap_on: mobile
+    type: DataGrid
+  layout_properties: {grid_position: 'KCFWYE,MVMBXD', row_background: 'theme:White'}
+  name: card_2
+  properties: {border: solid, role: card}
+  type: ColumnPanel
+- components:
+  - layout_properties: {grid_position: 'XQVTXA,JHBWWY'}
+    name: label_Workflow
+    properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Workflow Status *}
+    type: Label
+  - layout_properties: {grid_position: 'CZNAXU,LIISFS'}
+    name: cmbWorkflow
+    properties:
+      border: solid
+      font: Mozilla Headline
+      font_size: 16
+      foreground: theme:Black
+      include_placeholder: true
+      items: [Ready for Pickup]
+      placeholder: 'Select Next Workflow Status * '
+      role: null
+    type: DropDown
+  layout_properties: {grid_position: 'RDWAMP,PPMBZR', row_background: 'theme:White'}
+  name: card_3
+  properties: {border: solid, role: card}
+  type: ColumnPanel
+- layout_properties: {grid_position: 'CRENOY,XWKVMP', row_background: 'theme:White'}
+  name: spacer_3
+  properties: {height: 32}
+  type: Spacer
+- event_bindings: {click: btn_Save_click}
+  layout_properties: {grid_position: 'PRGABQ,LHRNAU'}
+  name: btn_Save
+  properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: SAVE}
+  type: Button
+- layout_properties: {grid_position: 'EHLXAN,UWOTHM'}
+  name: spacer_2
+  properties: {height: '6.18182373046875'}
+  type: Spacer
+- event_bindings: {click: btn_Close_click}
+  layout_properties: {grid_position: 'AZKDJT,SQLCOD'}
+  name: btn_Close
+  properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: Close}
+  type: Button
+container: {type: ColumnPanel}
+is_package: true

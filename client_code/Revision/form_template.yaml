@@ -1,0 +1,32 @@
+components:
+- components:
+  - event_bindings: {click: btn_InterimQuotation_click}
+    layout_properties: {grid_position: 'ZBIBCS,RSDMVU'}
+    name: btn_InterimQuotation
+    properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: INTERIM QUOTATION}
+    type: Button
+  - event_bindings: {click: btn_AmendedInvoice_click}
+    layout_properties: {grid_position: 'ZBIBCS,WTTDVQ'}
+    name: btn_AmendedInvoice
+    properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: AMENDED INVOICE}
+    type: Button
+  - event_bindings: {click: btn_RepairPriorities_click}
+    layout_properties: {grid_position: 'ZBIBCS,GUCLXQ'}
+    name: btn_RepairPriorities
+    properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: REPAIR PRIORITIES}
+    type: Button
+  - event_bindings: {click: btn_BrandComparison_click}
+    layout_properties: {grid_position: 'ZBIBCS,JYCJIJ'}
+    name: btn_BrandComparison
+    properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: BRAND COMPARISON}
+    type: Button
+  layout_properties: {full_width_row: true, grid_position: 'VUYUYS,BUPJEJ', row_background: 'theme:Black'}
+  name: card_1
+  properties: {role: card}
+  type: ColumnPanel
+- layout_properties: {full_width_row: true, grid_position: 'VKRIBD,OQBACR', row_background: 'theme:Black'}
+  name: card_2
+  properties: {role: card}
+  type: ColumnPanel
+container: {type: ColumnPanel}
+is_package: true

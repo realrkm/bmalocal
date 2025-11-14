@@ -1,0 +1,13 @@
+components:
+- event_bindings: {click: btn_Edit_click}
+  layout_properties: {column: ZDSCHS}
+  name: btn_Edit
+  properties: {background: '#0056D6', foreground: 'theme:White', icon: 'fa:edit', text: '', tooltip: Edit User Details}
+  type: Button
+- event_bindings: {click: btn_ResetForgotPassword_click}
+  layout_properties: {column: GRYODO}
+  name: btn_ResetForgotPassword
+  properties: {background: '#0056D6', foreground: 'theme:White', icon: 'fa:key', text: '', tooltip: Reset Password}
+  type: Button
+container: {type: DataRowPanel}
+is_package: true

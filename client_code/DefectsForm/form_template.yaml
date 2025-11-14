@@ -1,0 +1,188 @@
+components:
+- components:
+  - layout_properties: {grid_position: 'AFFRHS,KQESMY'}
+    name: label_title
+    properties:
+      align: center
+      background: '#0056D6'
+      bold: false
+      font: Mozilla Headline
+      font_size: 22
+      foreground: theme:White
+      text: |
+        Defects List
+    type: Label
+  - layout_properties: {grid_position: 'AHMQXI,LNIGGJ', row_background: 'theme:Black'}
+    name: spacer_3
+    properties: {height: '11.7'}
+    type: Spacer
+  - layout_properties: {grid_position: 'DBIUUD,CIWCUI'}
+    name: spacer_2_copy
+    properties: {height: 6.18182373046875}
+    type: Spacer
+  - event_bindings: {click: btn_DownloadDefectsList_click}
+    layout_properties: {full_width_row: false, grid_position: 'JYAMLS,GWJENI'}
+    name: btn_DownloadDefectsList
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: DOWNLOAD DEFECTS LIST}
+    type: Button
+  - layout_properties: {grid_position: 'ANFDGB,DNBISW'}
+    name: spacer_2
+    properties: {height: 6.18182373046875}
+    type: Spacer
+  - event_bindings: {click: btn_Update_click}
+    layout_properties: {grid_position: 'ZZHUZR,ZXNXXV'}
+    name: btn_Update
+    properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: null, text: UPDATE}
+    type: Button
+  - event_bindings: {click: btn_Close_click}
+    layout_properties: {grid_position: 'ZZHUZR,CIGQKH'}
+    name: btn_Close
+    properties: {align: full, background: '#0056D6', bold: false, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: null, text: Close}
+    type: Button
+  - layout_properties: {grid_position: 'UBAZQG,BHTDZU'}
+    name: spacer_3_copy
+    properties: {height: 5}
+    type: Spacer
+  - layout_properties: {grid_position: 'NGPYWB,ZCTCWQ'}
+    name: label_title_10
+    properties:
+      align: center
+      background: theme:Gray 300
+      bold: false
+      font: Mozilla Headline
+      font_size: 22
+      foreground: theme:Gray 800
+      text: |
+        Client Instructions
+    type: Label
+  - layout_properties: {grid_position: 'BOMLKE,NKQXCH'}
+    name: txtClientInstructions
+    properties: {auto_expand: true, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: ''}
+    type: TextArea
+  - layout_properties: {grid_position: 'ROBDYJ,LCEFEZ'}
+    name: latel_TechNotes
+    properties:
+      align: center
+      background: theme:Gray 300
+      bold: false
+      font: Mozilla Headline
+      font_size: 22
+      foreground: theme:Gray 800
+      text: |
+        Tech Notes
+    type: Label
+  - layout_properties: {grid_position: 'SCBITU,FOZOKD'}
+    name: txtTechNotes
+    properties: {auto_expand: true, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: ''}
+    type: TextArea
+  - layout_properties: {grid_position: 'ZRXSFU,NEMGHF'}
+    name: label_title_1
+    properties:
+      align: center
+      background: theme:Gray 300
+      bold: false
+      font: Mozilla Headline
+      font_size: 22
+      foreground: theme:Gray 800
+      text: |
+        List of Defects
+    type: Label
+  - layout_properties: {grid_position: 'HFIRII,VGHXWP'}
+    name: txtDefectsList
+    properties: {auto_expand: true, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: 'Enter List Of Defects '}
+    type: TextArea
+  - layout_properties: {grid_position: 'DVYVDN,RBQNHV'}
+    name: label_title_2
+    properties:
+      align: center
+      background: theme:Gray 300
+      bold: false
+      font: Mozilla Headline
+      font_size: 22
+      foreground: theme:Gray 800
+      text: |
+        Requested Parts
+    type: Label
+  - layout_properties: {grid_position: 'YBPPNM,GEEBOX'}
+    name: txtRequestedParts
+    properties: {auto_expand: true, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: 'Enter Requested Parts '}
+    type: TextArea
+  - layout_properties: {grid_position: 'WDPLYB,KRIBON'}
+    name: label_title_2_copy
+    properties:
+      align: center
+      background: theme:Gray 300
+      bold: false
+      font: Mozilla Headline
+      font_size: 22
+      foreground: theme:Gray 800
+      text: |
+        Defects Prepared By
+    type: Label
+  - event_bindings: {change: drop_down_staff_change}
+    layout_properties: {grid_position: 'XVHJVH,CRLMJN'}
+    name: drop_down_staff
+    properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Staff *}
+    type: DropDown
+  - layout_properties: {grid_position: 'FQZNLS,BWEYGI'}
+    name: label_staffchanged
+    properties: {visible: false}
+    type: Label
+  - layout_properties: {grid_position: 'PKFRQA,LRPFUS'}
+    name: label_signature
+    properties:
+      align: center
+      background: theme:Gray 300
+      bold: false
+      font: Mozilla Headline
+      font_size: 22
+      foreground: theme:Gray 800
+      text: |
+        Staff Signature
+    type: Label
+  - components:
+    - layout_properties: {grid_position: 'BYISFE,GNWUJN'}
+      name: image_1
+      properties: {border: ''}
+      type: Image
+    layout_properties: {grid_position: 'QXWRFT,QOBQSC'}
+    name: column_panel_1
+    properties: {}
+    type: ColumnPanel
+  - components:
+    - layout_properties: {grid_position: 'JQXJGO,BZFOLG'}
+      name: label_signature_copy
+      properties:
+        align: center
+        background: theme:Gray 300
+        bold: false
+        font: Mozilla Headline
+        font_size: 22
+        foreground: theme:Gray 800
+        text: |
+          Update Signature
+      type: Label
+    - layout_properties: {grid_position: 'PUTIKN,APLRNS'}
+      name: spacer_4
+      properties: {height: 32}
+      type: Spacer
+    - layout_properties: {grid_position: 'PUTIKN,BKIYUI'}
+      name: signature_component_1
+      properties: {}
+      type: form:SignatureComponent
+    - layout_properties: {grid_position: 'PUTIKN,LCYZAU'}
+      name: spacer_5
+      properties: {height: 32}
+      type: Spacer
+    layout_properties: {grid_position: 'HTQWAK,XOCZMP'}
+    name: column_panel_update_signature
+    properties: {col_widths: '{"APLRNS":15,"BKIYUI":30,"LCYZAU":15}'}
+    type: ColumnPanel
+  layout_properties: {grid_position: 'HEOFNJ,KNGYLD', row_background: 'theme:White'}
+  name: card_1
+  properties: {border: solid, col_widths: '{}', role: card}
+  type: ColumnPanel
+container:
+  properties: {background: ''}
+  type: ColumnPanel
+is_package: true

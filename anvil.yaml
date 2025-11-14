@@ -1,0 +1,124 @@
+allow_embedding: false
+correct_dependency_ids: {}
+db_schema:
+  signatures:
+    client: none
+    columns:
+    - admin_ui: {width: 200}
+      name: signature_file
+      type: media
+    - admin_ui: {width: 200}
+      name: created_at
+      type: datetime
+    server: full
+    title: Signatures
+  tbl_stats:
+    client: none
+    columns:
+    - admin_ui: {width: 200}
+      name: OperatingSystem
+      type: string
+    - admin_ui: {width: 200}
+      name: WindowsVersion
+      type: string
+    - admin_ui: {width: 200}
+      name: AccessedVia
+      type: string
+    - admin_ui: {width: 200}
+      name: Browser
+      type: string
+    - admin_ui: {width: 200}
+      name: LoggedDate
+      type: string
+    - admin_ui: {width: 200}
+      name: User
+      type: string
+    - admin_ui: {width: 200}
+      name: UserAgentString
+      type: string
+    - admin_ui: {width: 200}
+      name: IPAddress
+      type: string
+    - admin_ui: {width: 200}
+      name: IPGeoCountry
+      type: string
+    - admin_ui: {width: 200}
+      name: IPGeoCity
+      type: string
+    - admin_ui: {width: 200}
+      name: IPGeoRegion
+      type: string
+    - admin_ui: {width: 200}
+      name: IPGeoCoordinates
+      type: string
+    - admin_ui: {width: 200}
+      name: BrowserProvidedLocation
+      type: string
+    server: full
+    title: tbl_stats
+  users:
+    client: none
+    columns:
+    - admin_ui: {width: 200}
+      name: email
+      type: string
+    - admin_ui: {width: 200}
+      name: enabled
+      type: bool
+    - admin_ui: {width: 200}
+      name: last_login
+      type: datetime
+    - admin_ui: {width: 200}
+      name: password_hash
+      type: string
+    - admin_ui: {width: 200}
+      name: n_password_failures
+      type: number
+    - admin_ui: {width: 200}
+      name: confirmed_email
+      type: bool
+    - admin_ui: {width: 200}
+      name: signed_up
+      type: datetime
+    - admin_ui: {order: 7, width: 200}
+      name: role_id
+      type: number
+    server: full
+    title: Users
+dependencies: []
+metadata: {logo_img: 'asset:BMAAutoAccessories.ico', title: BMA Auto Accessories}
+name: Clone of BMALocal
+native_deps:
+  head_html: |-
+    <script>
+        function replaceBanner(){
+            var els = [].slice.apply(document.getElementsByClassName("anvil-show-banner"));
+            for (var i = 0; i < els.length; i++) {
+                els[i].className = els[i].className.replace(/ *\banvil-show-banner\b/g, " ");
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mozilla+Headline:wght@200..700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Eczar:wght@400;600&family=Roboto+Condensed:wght@300;400;700&display=swap" rel="stylesheet" rel="preload" as="font" crossorigin="anonymous">
+package_name: BMALocal
+runtime_options:
+  client_version: '3'
+  server_spec: null
+  server_spec_disabled: {base: python310-minimal, requirements: ''}
+  server_version: python3-sandbox
+  version: 2
+services:
+- client_config: {}
+  server_config: {}
+  source: /runtime/services/tables.yml
+- client_config: {allow_signup: true, confirm_email: false, enable_automatically: false, mfa_timeout_days: 0, require_mfa: false, require_secure_passwords: true, use_email: true}
+  server_config: {user_table: users}
+  source: /runtime/services/anvil/users.yml
+- client_config: {}
+  server_config: {}
+  source: /runtime/services/anvil/secrets.yml
+startup: {module: Main, type: form}
+startup_form: null
+uplink_visible: true

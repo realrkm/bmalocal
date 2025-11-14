@@ -1,0 +1,160 @@
+components:
+- components:
+  - layout_properties: {grid_position: 'AUHXHD,NPMMSV'}
+    name: id
+    properties: {visible: false}
+    type: Label
+  - layout_properties: {grid_position: 'BSDTVW,DLAYDF'}
+    name: label_status
+    properties: {align: left, bold: true, font: Mozilla Headline}
+    type: Label
+  - layout_properties: {grid_position: 'BSDTVW,WZBUGW'}
+    name: label_technician
+    properties: {align: right, bold: true, font: Mozilla Headline}
+    type: Label
+  - layout_properties: {grid_position: 'ZGAWCQ,FCPGFB'}
+    name: label_date
+    properties: {font: Mozilla Headline, foreground: 'theme:White'}
+    type: Label
+  - layout_properties: {grid_position: 'MUYNGS,HPUQXA'}
+    name: label_make
+    properties: {font: Mozilla Headline, foreground: 'theme:White'}
+    type: Label
+  - layout_properties: {grid_position: 'KPBKDI,ZRGIIY'}
+    name: label_owner
+    properties: {font: Mozilla Headline, foreground: 'theme:White'}
+    type: Label
+  - layout_properties: {grid_position: 'LMCWIM,ISXFGU'}
+    name: label_plate
+    properties: {font: Mozilla Headline, foreground: 'theme:White'}
+    type: Label
+  - layout_properties: {grid_position: 'DMKZNJ,EFHMAI'}
+    name: label_chassis
+    properties: {font: Mozilla Headline, foreground: 'theme:White'}
+    type: Label
+  - layout_properties: {grid_position: 'JXYAJC,ZESXBP'}
+    name: label_instruction
+    properties: {font: Mozilla Headline, foreground: 'theme:White'}
+    type: Label
+  - event_bindings: {click: button_details_click}
+    layout_properties: {grid_position: 'DFXNNP,BSJLJL'}
+    name: button_details
+    properties: {align: full, background: '#0056D6', bold: true, font: Mozilla Headline, font_size: 16, foreground: '', role: primary-color, text: ''}
+    type: Button
+  - layout_properties: {grid_position: 'YKOCYO,ZGXRNC'}
+    name: spacer_1
+    properties: {height: '10'}
+    type: Spacer
+  layout_properties: {full_width_row: true, grid_position: 'SOBUDH,TJZSRW', row_background: ''}
+  name: left_card_panel
+  properties: {background: 'theme:Black', border: solid, col_spacing: huge, foreground: 'theme:White', role: card, spacing_above: large, spacing_below: large}
+  type: ColumnPanel
+- components:
+  - layout_properties: {grid_position: 'ZLHFYL,PTPTMK'}
+    name: id_1
+    properties: {visible: false}
+    type: Label
+  - layout_properties: {grid_position: 'DNEZMX,VFAARA'}
+    name: label_status_1
+    properties: {align: left, bold: true, font: Mozilla Headline, foreground: 'theme:White'}
+    type: Label
+  - layout_properties: {grid_position: 'DNEZMX,MTFZEG'}
+    name: label_technician_1
+    properties: {align: right, bold: true, font: Mozilla Headline, foreground: 'theme:White'}
+    type: Label
+  - layout_properties: {grid_position: 'QBIJWB,PBKIHM'}
+    name: label_date_1
+    properties: {font: Mozilla Headline, foreground: 'theme:White'}
+    type: Label
+  - layout_properties: {grid_position: 'GWZMIG,EZEMZS'}
+    name: label_make_1
+    properties: {font: Mozilla Headline, foreground: 'theme:White'}
+    type: Label
+  - layout_properties: {grid_position: 'XOLBDB,TDWFMV'}
+    name: label_owner_1
+    properties: {font: Mozilla Headline, foreground: 'theme:White'}
+    type: Label
+  - layout_properties: {grid_position: 'JDZRLN,AJLQFM'}
+    name: label_plate_1
+    properties: {font: Mozilla Headline, foreground: 'theme:White'}
+    type: Label
+  - layout_properties: {grid_position: 'VGFQRL,GCODEW'}
+    name: label_chassis_1
+    properties: {font: Mozilla Headline, foreground: 'theme:White'}
+    type: Label
+  - layout_properties: {grid_position: 'KBMCFK,LUSHNO'}
+    name: label_instruction_1
+    properties: {font: Mozilla Headline, foreground: 'theme:White'}
+    type: Label
+  - event_bindings: {click: button_details_1_click}
+    layout_properties: {grid_position: 'ERTQYV,YJWDHT'}
+    name: button_details_1
+    properties: {align: full, background: '#0056D6', bold: true, font: Mozilla Headline, font_size: 16, foreground: '', role: primary-color, text: ''}
+    type: Button
+  - layout_properties: {grid_position: 'AGUPSU,MZWRII'}
+    name: spacer_2
+    properties: {height: '10'}
+    type: Spacer
+  layout_properties: {full_width_row: true, grid_position: 'SOBUDH,TRMJXP', row_background: 'theme:Gray 800'}
+  name: middle_card_panel
+  properties: {background: 'theme:Black', border: solid, col_spacing: huge, foreground: 'theme:White', role: card, spacing_above: large, spacing_below: large}
+  type: ColumnPanel
+- components:
+  - layout_properties: {grid_position: 'WJQLLE,STOXGI'}
+    name: id_2
+    properties: {visible: false}
+    type: Label
+  - layout_properties: {grid_position: 'JMJPMX,OAZTWG'}
+    name: label_status_2
+    properties: {align: left, bold: true, font: Mozilla Headline, foreground: 'theme:White'}
+    type: Label
+  - layout_properties: {grid_position: 'JMJPMX,CDVRDA'}
+    name: label_technician_2
+    properties: {align: right, bold: true, font: Mozilla Headline, foreground: 'theme:White'}
+    type: Label
+  - layout_properties: {grid_position: 'CLYNNN,WAZBQA'}
+    name: label_date_2
+    properties: {font: Mozilla Headline, foreground: 'theme:White'}
+    type: Label
+  - layout_properties: {grid_position: 'LWROTL,PISVHQ'}
+    name: label_make_2
+    properties: {font: Mozilla Headline, foreground: 'theme:White'}
+    type: Label
+  - layout_properties: {grid_position: 'XOLBDB,TDWFMV'}
+    name: label_owner_2
+    properties: {font: Mozilla Headline, foreground: 'theme:White'}
+    type: Label
+  - layout_properties: {grid_position: 'JDZRLN,AJLQFM'}
+    name: label_plate_2
+    properties: {font: Mozilla Headline, foreground: 'theme:White'}
+    type: Label
+  - layout_properties: {grid_position: 'TZMZJW,JLUDGC'}
+    name: label_chassis_2
+    properties: {font: Mozilla Headline, foreground: 'theme:White'}
+    type: Label
+  - layout_properties: {grid_position: 'KBMCFK,LUSHNO'}
+    name: label_instruction_2
+    properties: {font: Mozilla Headline, foreground: 'theme:White'}
+    type: Label
+  - event_bindings: {click: button_details_2_click}
+    layout_properties: {grid_position: 'UIZLVS,LLTLAZ'}
+    name: button_details_2
+    properties: {align: full, background: '#0056D6', bold: true, border: '', font: Mozilla Headline, font_size: 16, foreground: '', icon_align: left, role: primary-color, text: ''}
+    type: Button
+  - layout_properties: {grid_position: 'BJZUQB,MUAIBM'}
+    name: spacer_3
+    properties: {height: '10'}
+    type: Spacer
+  layout_properties: {full_width_row: true, grid_position: 'SOBUDH,PIYFFE', row_background: 'theme:Black'}
+  name: right_card_panel
+  properties: {background: 'theme:Black', border: solid, col_spacing: huge, foreground: 'theme:White', role: card, spacing_above: large, spacing_below: large}
+  type: ColumnPanel
+- components: []
+  layout_properties: {full_width_row: true, grid_position: 'IOZKVM,HTXYCY'}
+  name: flow_panel_1
+  properties: {gap: huge, spacing_above: medium, spacing_below: medium}
+  type: FlowPanel
+container:
+  properties: {background: 'theme:Gray 300', col_spacing: huge, role: null, spacing_above: large, spacing_below: large}
+  type: ColumnPanel
+is_package: true

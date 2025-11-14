@@ -1,0 +1,118 @@
+components:
+- components:
+  - layout_properties: {grid_position: 'AFFRHS,KQESMY'}
+    name: label_title
+    properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', text: Edit Quote}
+    type: Label
+  - layout_properties: {grid_position: 'MXOMMF,YKLUZP'}
+    name: drop_down_JobCard
+    properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Job Card Ref}
+    type: DropDown
+  - layout_properties: {grid_position: 'SICJFP,MYGIBQ'}
+    name: spacer_1
+    properties: {height: 11.79998779296875}
+    type: Spacer
+  - layout_properties: {grid_position: 'JKKLMJ,RSOMMS'}
+    name: label_ClientInstructions
+    properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: '', role: null, text: Client Instructions}
+    type: Label
+  - layout_properties: {grid_position: 'UORPYV,YOOJLX'}
+    name: text_area_ClientInstructions
+    properties: {enabled: false, font: Mozilla Headline, font_size: 16}
+    type: TextArea
+  - layout_properties: {grid_position: 'HPQMRX,VZUIZK'}
+    name: label_TechNotes
+    properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: '', role: null, text: Tech Notes}
+    type: Label
+  - layout_properties: {grid_position: 'IPMFFD,NAKWOP'}
+    name: text_area_TechNotes
+    properties: {enabled: false, font: Mozilla Headline, font_size: 16}
+    type: TextArea
+  - layout_properties: {grid_position: 'QWUXAS,EEPGTO'}
+    name: label_DefectsList
+    properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: '', role: null, text: Defects List}
+    type: Label
+  - layout_properties: {grid_position: 'IUQGGC,GEGYHP'}
+    name: text_area_DefectsList
+    properties: {enabled: false, font: Mozilla Headline, font_size: 16}
+    type: TextArea
+  layout_properties: {grid_position: 'HEOFNJ,KNGYLD'}
+  name: card_1
+  properties: {border: solid, role: card}
+  type: ColumnPanel
+- components:
+  - layout_properties: {grid_position: 'ZANFPK,LTWGAL'}
+    name: label_AssignParts
+    properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: '', role: null, text: Assign Parts}
+    type: Label
+  - components:
+    - layout_properties: {grid_position: 'KDHJZA,GFSXQP'}
+      name: drop_down_Parts
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Parts To Add}
+      type: DropDown
+    - layout_properties: {grid_position: 'KDHJZA,COEHKU'}
+      name: btn_AddParts
+      properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', spacing_above: medium, text: Add Parts}
+      type: Button
+    layout_properties: {grid_position: 'YNJOSF,GLSSQB'}
+    name: column_panel_1
+    properties: {}
+    type: ColumnPanel
+  - layout_properties: {grid_position: 'CGSUOB,EVQQPE'}
+    name: spacer_1_copy
+    properties: {height: 11.79998779296875}
+    type: Spacer
+  - components:
+    - name: repeating_panel_2
+      properties: {item_template: EditQuote.RowTemplate1}
+      type: RepeatingPanel
+    layout_properties: {grid_position: 'HIQHRI,DQBNXI'}
+    name: data_grid_2
+    properties:
+      background: theme:Black
+      border: solid
+      columns:
+      - {data_key: column_1, id: JKSDUP, title: Part}
+      - {data_key: column_2, id: VJQQOR, title: Number}
+      foreground: theme:White
+      wrap_on: mobile
+    type: DataGrid
+  layout_properties: {grid_position: 'UGCJBE,NJHZDA'}
+  name: card_2
+  properties: {border: solid, role: card}
+  type: ColumnPanel
+- layout_properties: {grid_position: 'UUUHOS,MOWDNJ'}
+  name: label_QuoteStatus
+  properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: '', role: null, text: Quote Status}
+  type: Label
+- components:
+  - layout_properties: {grid_position: 'GTGPKH,AZGYPJ'}
+    name: check_box_Pending
+    properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Pending}
+    type: CheckBox
+  - layout_properties: {grid_position: 'GTGPKH,GOLAOH'}
+    name: check_box_Rejected
+    properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Rejected}
+    type: CheckBox
+  - layout_properties: {grid_position: 'GTGPKH,WVXUVY'}
+    name: check_box_Approved
+    properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Approved}
+    type: CheckBox
+  layout_properties: {grid_position: 'IWPXGV,GPLPQC'}
+  name: card_4
+  properties: {border: solid, role: card}
+  type: ColumnPanel
+- event_bindings: {click: btn_Update_click}
+  layout_properties: {grid_position: 'KEGPKK,TSNWCX'}
+  name: btn_Update
+  properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: Update}
+  type: Button
+- event_bindings: {click: btn_Close_click}
+  layout_properties: {grid_position: 'KEGPKK,EOIVCW'}
+  name: btn_Close
+  properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: Close}
+  type: Button
+container:
+  properties: {background: ''}
+  type: ColumnPanel
+is_package: true

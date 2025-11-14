@@ -1,0 +1,144 @@
+components:
+- components:
+  - layout_properties: {grid_position: 'AFFRHS,KQESMY'}
+    name: label_title
+    properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', text: In Service}
+    type: Label
+  - event_bindings: {change: cmbJobCardRef_change}
+    layout_properties: {grid_position: 'MXOMMF,YKLUZP'}
+    name: cmbJobCardRef
+    properties: {background: 'theme:White', border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: false, placeholder: Select Job Card Ref}
+    type: DropDown
+  - layout_properties: {grid_position: 'SICJFP,MYGIBQ', row_background: 'theme:Black'}
+    name: spacer_1
+    properties: {height: 11.79998779296875}
+    type: Spacer
+  - layout_properties: {grid_position: 'YTAFXF,FGNYVH'}
+    name: label_technician
+    properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, text: Assigned Technician}
+    type: Label
+  - layout_properties: {grid_position: 'VRXROB,WCNYFM'}
+    name: text_box_technician
+    properties: {align: left, background: 'theme:White', border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black'}
+    type: TextBox
+  - layout_properties: {grid_position: 'JKKLMJ,RSOMMS'}
+    name: label_ClientInstructions
+    properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: '', role: null, text: Client Instructions}
+    type: Label
+  - layout_properties: {grid_position: 'UORPYV,YOOJLX'}
+    name: txtClientInstructions
+    properties: {background: 'theme:White', border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black'}
+    type: TextArea
+  - layout_properties: {grid_position: 'HPQMRX,VZUIZK'}
+    name: label_TechNotes
+    properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: '', role: null, text: Tech Notes}
+    type: Label
+  - layout_properties: {grid_position: 'IPMFFD,NAKWOP'}
+    name: txtTechNotes
+    properties: {background: 'theme:White', border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black'}
+    type: TextArea
+  - layout_properties: {grid_position: 'QWUXAS,EEPGTO'}
+    name: label_DefectsList
+    properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: '', role: null, text: Defects List}
+    type: Label
+  - layout_properties: {grid_position: 'IUQGGC,GEGYHP'}
+    name: txtDefectsList
+    properties: {background: 'theme:White', border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black'}
+    type: TextArea
+  - layout_properties: {grid_position: 'RYHDSR,DSPEQV'}
+    name: label_RequestedParts
+    properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: '', role: null, text: Requested Parts List}
+    type: Label
+  - layout_properties: {grid_position: 'JGPAIX,EPTXZW'}
+    name: txtRequestedParts
+    properties: {background: 'theme:White', border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black'}
+    type: TextArea
+  layout_properties: {grid_position: 'VZEDQW,PIQWRN', row_background: 'theme:White'}
+  name: card_1
+  properties: {border: solid, role: card}
+  type: ColumnPanel
+- components:
+  - layout_properties: {grid_position: 'VMCUTK,CRESEO'}
+    name: label_customer_feedback
+    properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: '', role: null, text: Confirmed Customer Quotation Feedback}
+    type: Label
+  - layout_properties: {grid_position: 'LGSYZL,WQRYSS'}
+    name: spacer_1_copy
+    properties: {height: 11.79998779296875}
+    type: Spacer
+  - components:
+    - name: repeating_panel_1
+      properties: {item_template: InServiceForm.RowTemplate5}
+      type: RepeatingPanel
+    layout_properties: {grid_position: 'NFESDV,JYPYST'}
+    name: data_grid_1
+    properties:
+      background: theme:Black
+      border: solid
+      columns:
+      - {data_key: Item, expand: true, id: JKSDUP, title: Item}
+      - {data_key: Quantity, expand: true, id: VJQQOR, title: Quantity}
+      foreground: theme:White
+      rows_per_page: 200
+      show_page_controls: false
+      wrap_on: mobile
+    type: DataGrid
+  layout_properties: {grid_position: 'UGCJBE,NJHZDA', row_background: 'theme:White'}
+  name: card_2
+  properties: {border: solid, role: card}
+  type: ColumnPanel
+- components:
+  - layout_properties: {grid_position: 'AKCRRX,BAUKLE'}
+    name: label_WorkDone
+    properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Work Done *}
+    type: Label
+  - layout_properties: {grid_position: 'GFVMVK,STLRFB'}
+    name: text_area_work_done
+    properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter the work done here *}
+    type: TextArea
+  - layout_properties: {grid_position: 'USYJRA,EKAJVQ'}
+    name: label_Workflow
+    properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Workflow Status *}
+    type: Label
+  - layout_properties: {grid_position: 'LGYGAX,UJCOYV'}
+    name: cmbWorkflow
+    properties:
+      border: solid
+      font: Mozilla Headline
+      font_size: 16
+      foreground: theme:Black
+      include_placeholder: true
+      items: [Verify Task]
+      placeholder: 'Select Next Workflow Status * '
+      role: null
+    type: DropDown
+  layout_properties: {grid_position: 'JBSVYL,XPSHIZ', row_background: 'theme:White'}
+  name: card_3
+  properties: {border: solid, role: card}
+  type: ColumnPanel
+- layout_properties: {grid_position: 'CHYEGR,USBRPY', row_background: 'theme:White'}
+  name: spacer_3
+  properties: {height: 32}
+  type: Spacer
+- layout_properties: {grid_position: 'XJKIQA,SCGDIC'}
+  name: spacer_3_copy
+  properties: {height: 14}
+  type: Spacer
+- event_bindings: {click: btn_Save_click}
+  layout_properties: {grid_position: 'HYFBHI,SSZLAO'}
+  name: btn_Save
+  properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: SAVE}
+  type: Button
+- layout_properties: {grid_position: 'TQZJZA,WYRKEY'}
+  name: spacer_2
+  properties: {height: '6.18182373046875'}
+  type: Spacer
+- event_bindings: {click: btn_Close_click}
+  layout_properties: {grid_position: 'VQUKBE,UUSFCY'}
+  name: btn_Close
+  properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: Close}
+  type: Button
+container:
+  properties: {background: ''}
+  type: ColumnPanel
+is_package: true

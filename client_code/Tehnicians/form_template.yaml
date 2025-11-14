@@ -1,0 +1,62 @@
+components:
+- components:
+  - layout_properties: {grid_position: 'AFFRHS,KQESMY'}
+    name: label_title
+    properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', text: Technician Details}
+    type: Label
+  - layout_properties: {grid_position: 'VQUCCX,KAMCLP'}
+    name: txt_name
+    properties: {align: center, background: 'theme:White', bold: false, border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Name *}
+    type: TextBox
+  - layout_properties: {grid_position: 'VQUCCX,RYKJQW'}
+    name: txt_phone
+    properties: {align: center, background: 'theme:White', bold: false, border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Phone No. (e.g 0700000000) *, text: ''}
+    type: TextBox
+  - layout_properties: {grid_position: 'ZRUYIL,YMNAVM'}
+    name: dropdown_toolkits
+    properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select assigned toolkit *}
+    type: DropDown
+  - layout_properties: {grid_position: 'ZRUYIL,VTHSTH'}
+    name: spacer_2
+    properties: {height: 32}
+    type: Spacer
+  - layout_properties: {grid_position: 'GTKRJE,JEXRYQ', row_background: 'theme:Black'}
+    name: spacer_1
+    properties: {height: 32}
+    type: Spacer
+  - layout_properties: {grid_position: 'AQWZFS,BJVUSI'}
+    name: spacer_3_copy
+    properties: {height: 14}
+    type: Spacer
+  - event_bindings: {click: btn_SaveAndNew_click}
+    layout_properties: {grid_position: 'GXCNLB,WDZIWB'}
+    name: btn_SaveAndNew
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: Save AND NEW}
+    type: Button
+  - event_bindings: {click: btn_EditTechnician_click}
+    layout_properties: {grid_position: 'GXCNLB,AOGZDV'}
+    name: btn_EditTechnician
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: EDIT TECHNICIAN}
+    type: Button
+  - layout_properties: {grid_position: 'UXAXWP,ODPLPP'}
+    name: spacer_3
+    properties: {height: 14}
+    type: Spacer
+  - components:
+    - event_bindings: {click: btn_Toolkit_click}
+      layout_properties: {grid_position: 'TRAIMG,MQCZPH'}
+      name: btn_Toolkit
+      properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: raised, text: Add Toolkits}
+      type: Button
+    layout_properties: {grid_position: 'CACIQO,RSITOB', row_background: 'theme:Black'}
+    name: card_2
+    properties: {border: solid, role: card}
+    type: ColumnPanel
+  layout_properties: {grid_position: 'HEOFNJ,KNGYLD', row_background: 'theme:Black'}
+  name: card_1
+  properties: {background: '', border: solid, role: card}
+  type: ColumnPanel
+container:
+  properties: {background: ''}
+  type: ColumnPanel
+is_package: true

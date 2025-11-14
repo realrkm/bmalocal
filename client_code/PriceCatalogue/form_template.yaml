@@ -1,0 +1,106 @@
+components:
+- components:
+  - layout_properties: {grid_position: 'QIEPQD,VRIUKA'}
+    name: label_title
+    properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: Price Catalogue}
+    type: Label
+  - layout_properties: {grid_position: 'LNMTYT,QLNMZC'}
+    name: spacer_1_copy_copy_copy
+    properties: {height: 7}
+    type: Spacer
+  - components:
+    - layout_properties: {grid_position: 'NVFOSN,DLMREM'}
+      name: spacer_2_copy
+      properties: {height: '16'}
+      type: Spacer
+    - event_bindings: {click: btn_BuyingPrice_click}
+      layout_properties: {grid_position: 'UDZOJV,QQUGFZ CHKCJX,ILZXFF'}
+      name: btn_BuyingPrice
+      properties: {align: full, background: '#0056D6', enabled: true, foreground: 'theme:White', text: VIEW BUYING PRICE, visible: true}
+      type: Button
+    - layout_properties: {grid_position: 'UDZOJV,QQUGFZ IYTIFA,CQZMPP'}
+      name: spacer_3
+      properties: {height: '16'}
+      type: Spacer
+    - event_bindings: {click: btn_MissingBuyingPrice_click}
+      layout_properties: {grid_position: 'UDZOJV,QQUGFZ HHBJVL,GGKPKC'}
+      name: btn_MissingBuyingPrice
+      properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: Missing BUYING PRICE}
+      type: Button
+    - event_bindings: {click: btn_SellingPrice_click}
+      layout_properties: {grid_position: 'UDZOJV,TLAIGG JENVTC,PGIGKG'}
+      name: btn_SellingPrice
+      properties: {align: full, background: '#0056D6', enabled: true, foreground: 'theme:White', text: VIEW SELLING PRICE, visible: true}
+      type: Button
+    - layout_properties: {grid_position: 'UDZOJV,TLAIGG KIEJDM,BTUPSI'}
+      name: spacer_2
+      properties: {height: '16'}
+      type: Spacer
+    - event_bindings: {click: btn_MissingSellingPrice_click}
+      layout_properties: {grid_position: 'UDZOJV,TLAIGG SFQHTX,DWKVMA'}
+      name: btn_MissingSellingPrice
+      properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: MISSING SELLING PRICE}
+      type: Button
+    - layout_properties: {grid_position: 'MTEDGN,RKEZHN'}
+      name: spacer_2_copy_copy
+      properties: {height: '16'}
+      type: Spacer
+    layout_properties: {grid_position: 'NWEUAS,CHNGLZ', row_background: 'theme:Black'}
+    name: card_2
+    properties: {role: card}
+    type: ColumnPanel
+  - layout_properties: {grid_position: 'JWDAPA,KTCTNR'}
+    name: spacer_1_copy
+    properties: {height: 7}
+    type: Spacer
+  - layout_properties: {grid_position: 'LUCTYP,GKXCRI'}
+    name: label_3
+    properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, foreground: '#dc1818', text: Ensure all parts have both buying and selling prices in order to appear in the Price Catalogue.}
+    type: Label
+  - layout_properties: {grid_position: 'NUUINT,NLZUFC'}
+    name: spacer_1_copy_copy
+    properties: {height: 7}
+    type: Spacer
+  - event_bindings: {pressed_enter: btn_Search_click}
+    layout_properties: {grid_position: 'QXTLGH,NAGFFN'}
+    name: text_box_search
+    properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Part Name / Part No *}
+    type: TextBox
+  - event_bindings: {click: btn_Search_click}
+    layout_properties: {grid_position: 'QXTLGH,GLYMLM'}
+    name: btn_Search
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: SEARCH}
+    type: Button
+  - layout_properties: {grid_position: 'VYGHIA,EBSWFC'}
+    name: spacer_1
+    properties: {height: 7}
+    type: Spacer
+  - components:
+    - layout_properties: {pinned: false}
+      name: repeating_panel_1
+      properties: {item_template: PriceCatalogue.RowTemplate9, role: null}
+      type: RepeatingPanel
+    layout_properties: {full_width_row: true, grid_position: 'NMRTRA,IOXZSL'}
+    name: data_grid_1
+    properties:
+      background: theme:Black
+      border: solid
+      columns:
+      - {data_key: 'No', expand: false, id: JKSDUP, title: 'No', width: 42}
+      - {data_key: Name, expand: true, id: OJLQEN, title: Name, width: ''}
+      - {data_key: PartNo, expand: true, id: GOXAZB, title: PartNo, width: ''}
+      - {data_key: '', id: ZYXDYB, title: '', width: '20'}
+      - {data_key: ReorderLevel, expand: false, id: HGFISP, title: Reorder Level, width: 112}
+      - {data_key: Cost, expand: true, id: GYUEKP, title: Buying Price (Kshs)}
+      - {data_key: Selling, expand: true, id: BUEABL, title: Selling Price (Kshs)}
+      - {data_key: Discount, expand: true, id: LHIADB, title: Discounted Price (Kshs)}
+      foreground: theme:White
+      role: null
+      wrap_on: mobile
+    type: DataGrid
+  layout_properties: {full_width_row: true, grid_position: 'AWGLFW,UVUHMI', row_background: 'theme:Black'}
+  name: card_1
+  properties: {col_widths: '{"NAGFFN":40,"GLYMLM":20}', role: card}
+  type: ColumnPanel
+container: {type: ColumnPanel}
+is_package: true

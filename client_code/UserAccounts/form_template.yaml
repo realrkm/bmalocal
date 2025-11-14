@@ -1,0 +1,31 @@
+components:
+- components:
+  - components:
+    - data_bindings: []
+      name: repeating_panel_1
+      properties: {item_template: UserAccounts.RowTemplate14}
+      type: RepeatingPanel
+    layout_properties: {full_width_row: true, grid_position: 'WQGOLM,AGBUMU'}
+    name: data_grid_1
+    properties:
+      background: theme:Black
+      columns:
+      - {data_key: 'No', expand: false, id: QCDZOW, title: 'No', width: 60}
+      - {data_key: email, expand: false, id: JKSDUP, title: Account, width: 170.5}
+      - {data_key: '', expand: false, id: MYUHOR, title: '', width: 40}
+      - {data_key: last_login, expand: true, id: VJQQOR, title: Last Login}
+      - {data_key: signed_up, expand: true, id: OJLQEN, title: Created At}
+      - {data_key: role, expand: true, id: WJMKUA, title: Role}
+      - {data_key: enabled, expand: true, id: NBQTBW, title: Active}
+      - {data_key: loginattempts, expand: true, id: FQSWKZ, title: Login Attempts}
+      - {data_key: '', id: ZDSCHS, title: '', width: '90'}
+      - {data_key: '', id: GRYODO, title: '', width: '90'}
+      foreground: theme:White
+      wrap_on: mobile
+    type: DataGrid
+  layout_properties: {full_width_row: true, grid_position: 'HBBMXX,VAVFQV', row_background: 'theme:Black'}
+  name: card_1
+  properties: {role: card}
+  type: ColumnPanel
+container: {type: ColumnPanel}
+is_package: true

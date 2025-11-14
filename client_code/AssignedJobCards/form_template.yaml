@@ -1,0 +1,103 @@
+components:
+- components:
+  - components:
+    - layout_properties: {grid_position: 'KEAUNM,BNCICX'}
+      name: label_title
+      properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', text: Assigned Job Cards}
+      type: Label
+    - layout_properties: {grid_position: 'OOYBGD,EOFTAN'}
+      name: label_3
+      properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, foreground: '#dc1818', text: 'Search Date Period Only, Technician Only Or Both Date Period And Technician'}
+      type: Label
+    - layout_properties: {grid_position: 'YTJFAT,KYHHUZ'}
+      name: spacer_1
+      properties: {height: 14}
+      type: Spacer
+    - layout_properties: {grid_position: 'ODFPEN,CGIEXY'}
+      name: date_picker_start
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Start Date *}
+      type: DatePicker
+    - layout_properties: {grid_position: 'ODFPEN,BOCWDB'}
+      name: date_picker_end
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter End Date *}
+      type: DatePicker
+    - layout_properties: {grid_position: 'YSLAKU,QCAFCU'}
+      name: spacer_2
+      properties: {height: 14}
+      type: Spacer
+    - layout_properties: {grid_position: 'GCCYHQ,IRFWQW'}
+      name: drop_down_selectTechnician
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: 'Select Technician '}
+      type: DropDown
+    - layout_properties: {grid_position: 'RLFWIY,MGRIDE', row_background: ''}
+      name: spacer_3
+      properties: {height: 14}
+      type: Spacer
+    - event_bindings: {click: btn_Search_click}
+      layout_properties: {grid_position: 'RKVMTG,LKYLQO'}
+      name: btn_Search
+      properties: {align: full, background: '#0056D6', foreground: 'theme:White', text: SEARCH}
+      type: Button
+    - layout_properties: {grid_position: 'TLWJXQ,QMSGJR'}
+      name: spacer_3_copy
+      properties: {height: 14}
+      type: Spacer
+    - event_bindings: {click: btn_Export_click}
+      layout_properties: {grid_position: 'UGRZUH,XOCSZR'}
+      name: btn_Export
+      properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: EXPORT AS EXCEL}
+      type: Button
+    - layout_properties: {grid_position: 'MLYZYP,ZQSDMU'}
+      name: spacer_3_copy_copy
+      properties: {height: 14}
+      type: Spacer
+    layout_properties: {grid_position: 'LLTWBQ,PVTCFM', row_background: 'theme:Black'}
+    name: card_2
+    properties: {border: solid, role: card}
+    type: ColumnPanel
+  - layout_properties: {grid_position: 'IFFMDX,QPPQUZ'}
+    name: spacer_3_copy_copy_copy
+    properties: {height: 14}
+    type: Spacer
+  - components:
+    - name: repeating_panel_1
+      properties: {item_template: AssignedJobCards.RowTemplate13}
+      type: RepeatingPanel
+    - components:
+      - layout_properties: {column: QKFHUA}
+        name: label_1
+        properties: {text: Total Invoiced}
+        type: Label
+      - layout_properties: {column: BPALQG}
+        name: labelInvoiceTotal
+        properties: {}
+        type: Label
+      - layout_properties: {column: DESKMU}
+        name: labelLabourTotal
+        properties: {}
+        type: Label
+      name: data_row_panel_1
+      properties: {}
+      type: DataRowPanel
+    layout_properties: {grid_position: 'JZILFQ,CQZOVD'}
+    name: data_grid_1
+    properties:
+      background: theme:Black
+      border: solid
+      columns:
+      - {data_key: 'No', expand: false, id: JKSDUP, title: 'No', width: 82.5}
+      - {data_key: ReceivedDate, expand: false, id: VJQQOR, title: Date Received, width: 142.5}
+      - {data_key: JobCardRef, expand: true, id: OJLQEN, title: Job Card Ref}
+      - {data_key: Technician, expand: true, id: QKFHUA, title: Technician Assigned}
+      - {data_key: InvoicedAmount, expand: true, id: BPALQG, title: Invoiced (Kshs)}
+      - {data_key: LabourAmount, expand: true, id: DESKMU, title: Labour (Kshs)}
+      - {data_key: MakeAndModel, expand: true, id: OADPGP, title: Make & Model}
+      foreground: theme:White
+      wrap_on: mobile
+    type: DataGrid
+  layout_properties: {full_width_row: true, grid_position: 'JHIYPT,YXHMTD', row_background: 'theme:Black'}
+  name: card_1
+  properties: {role: card}
+  type: ColumnPanel
+container: {type: ColumnPanel}
+is_package: true

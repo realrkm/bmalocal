@@ -1,0 +1,27 @@
+components:
+- components:
+  - event_bindings: {click: btn_AddNewParts_click}
+    layout_properties: {full_width_row: true, grid_position: 'ICYPZW,QXSSLB'}
+    name: btn_AddNewParts
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, role: primary-color, text: ADD NEW PARTS}
+    type: Button
+  - event_bindings: {click: btn_AddMoreStock_click}
+    layout_properties: {full_width_row: true, grid_position: 'ICYPZW,KZTHLI'}
+    name: btn_AddMoreStock
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, role: primary-color, text: ADD MORE STOCK}
+    type: Button
+  - event_bindings: {click: btn_StockTaking_click}
+    layout_properties: {grid_position: 'ICYPZW,PJIUNW'}
+    name: btn_StockTaking
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, role: primary-color, text: STOCK TAKING}
+    type: Button
+  layout_properties: {full_width_row: true, grid_position: 'JZBVFT,RUNOIA', row_background: 'theme:Black'}
+  name: card_1
+  properties: {background: 'theme:White', role: null}
+  type: ColumnPanel
+- layout_properties: {full_width_row: true, grid_position: 'YGOXWJ,QYCVVH'}
+  name: card_2
+  properties: {col_spacing: huge, role: card}
+  type: ColumnPanel
+container: {type: ColumnPanel}
+is_package: true

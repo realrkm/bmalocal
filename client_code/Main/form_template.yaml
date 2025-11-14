@@ -1,0 +1,117 @@
+components:
+- components:
+  - components:
+    - layout_properties: {grid_position: 'ORTKHD,HEZLEL OUINEK,OUAOZU'}
+      name: spacer_1
+      properties: {height: '150'}
+      type: Spacer
+    - event_bindings: {tick: timer_keepalive_tick}
+      layout_properties: {grid_position: 'IBZQAO,IIPQYG'}
+      name: timer_keepalive
+      properties: {}
+      type: Timer
+    - layout_properties: {grid_position: 'ORTKHD,HEZLEL WLIFGF,XZDZFN', row_background: ''}
+      name: image_1
+      properties: {border_radius: '50', display_mode: shrink_to_fit, height: 384.1999816894531, horizontal_align: center, source: _/theme/BMAAutoAccessories.bmp, vertical_align: center}
+      type: Image
+    - layout_properties: {grid_position: 'ORTKHD,HEZLEL NNFERJ,MLFQQF'}
+      name: spacer_
+      properties: {height: '150'}
+      type: Spacer
+    layout_properties: {full_width_row: true, grid_position: 'CSTKFY,VFPDBF'}
+    name: card_1
+    properties: {background: 'theme:White', border: '', role: card}
+    type: ColumnPanel
+  layout_properties: {slot: default}
+  name: column_panel_content
+  properties:
+    background: theme:White
+    border: ''
+    spacing:
+      padding: [null, 8, null, 8]
+    spacing_above: large
+    spacing_below: large
+  type: ColumnPanel
+- components:
+  - event_bindings: {click: link_1_click}
+    layout_properties: {}
+    name: link_1
+    properties: {background: '', border: solid, foreground: 'theme:White', role: selected, text: FAQs, underline: true}
+    type: Link
+  layout_properties: {slot: nav-right}
+  name: navbar_links
+  properties: {}
+  type: FlowPanel
+- components:
+  - layout_properties: {grid_position: 'IULSBG,WFGITM'}
+    name: spacer_4
+    properties: {height: '10'}
+    type: Spacer
+  - event_bindings: {click: btn_Contact_click}
+    layout_properties: {grid_position: 'ISMFLU,FJZVMQ'}
+    name: btn_Contact
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:users', role: raised, text: CONTACT}
+    type: Button
+  - event_bindings: {click: btn_JobCard_click}
+    layout_properties: {full_width_row: false, grid_position: 'DBJWNM,QFZCSN'}
+    name: btn_JobCard
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:clipboard', role: raised, text: JOB CARD}
+    type: Button
+  - event_bindings: {click: btn_Workflow_click}
+    layout_properties: {grid_position: 'DGUCNL,KLUVCT'}
+    name: btn_Workflow
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:gears', role: raised, text: WORKFLOW}
+    type: Button
+  - event_bindings: {click: btn_Tracker_click}
+    layout_properties: {grid_position: 'YAITYQ,JVIJSE'}
+    name: btn_Tracker
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:steam', role: raised, text: TRACKER}
+    type: Button
+  - event_bindings: {click: btn_Revision_click}
+    layout_properties: {grid_position: 'WXLDNR,KIFELS'}
+    name: btn_Revision
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:rotate-right', role: raised, text: REVISION, visible: true}
+    type: Button
+  - event_bindings: {click: btn_Payment_click}
+    layout_properties: {grid_position: 'XIUWUO,HQSLAS'}
+    name: btn_Payment
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:money', role: raised, text: PAYMENT, visible: true}
+    type: Button
+  - event_bindings: {click: btn_Inventory_click}
+    layout_properties: {grid_position: 'OSQWPM,OQYHIG'}
+    name: btn_Inventory
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:gift', role: raised, text: INVENTORY}
+    type: Button
+  - event_bindings: {click: btn_Report_click}
+    layout_properties: {grid_position: 'RFMGUE,ANMPCK'}
+    name: btn_Report
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:bar-chart', role: raised, text: REPORTS, visible: true}
+    type: Button
+  - event_bindings: {click: btn_PartsHub_click}
+    layout_properties: {grid_position: 'EGGXOB,VPMSTZ'}
+    name: btn_PartsHub
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:dropbox', role: raised, text: PARTS HUB, visible: true}
+    type: Button
+  - event_bindings: {click: btn_Settings_click}
+    layout_properties: {grid_position: 'OETNOG,VUTIGC'}
+    name: btn_Settings
+    properties: {align: full, background: '#0056D6', enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:wrench', role: raised, text: SETTINGS, visible: true}
+    type: Button
+  - event_bindings: {click: btn_ResetPassword_click}
+    layout_properties: {grid_position: 'XGYGHI,OAJOVS'}
+    name: btn_ResetPassword
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:key', role: raised, text: 'RESET '}
+    type: Button
+  - event_bindings: {click: btn_Logout_click}
+    layout_properties: {grid_position: 'BEMCGF,VNEXVK'}
+    name: btn_Logout
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:sign-out', role: raised, text: LOGOUT}
+    type: Button
+  layout_properties: {slot: left-nav}
+  name: column_panel_navigation
+  properties: {background: 'theme:White', border: ''}
+  type: ColumnPanel
+container:
+  properties: {html: '@theme:standard-page.html'}
+  type: HtmlTemplate
+is_package: true

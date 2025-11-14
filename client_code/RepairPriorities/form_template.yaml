@@ -1,0 +1,198 @@
+components:
+- components:
+  - event_bindings: {click: btn_Download_click}
+    layout_properties: {grid_position: 'XWTDPA,WOMXWC'}
+    name: btn_Download
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: primary-color, text: DOWNLOAD REPAIR PRIORITY List}
+    type: Button
+  - layout_properties: {grid_position: 'KFQRXH,HHYOXM'}
+    name: image_1
+    properties: {source: _/theme/Invoice Header Logo.jpg}
+    type: Image
+  - layout_properties: {grid_position: 'ZDGEVH,QKSOLJ'}
+    name: label_2
+    properties: {align: center, background: 'theme:Black', bold: true, border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: 'REPAIR PRIORITY '}
+    type: Label
+  - layout_properties: {grid_position: 'UYASBD,SIXRCP'}
+    name: spacer_1
+    properties: {height: '10'}
+    type: Spacer
+  - event_bindings: {pressed_enter: btnSearch_click}
+    layout_properties: {grid_position: 'QDSGIF,XCNMEF'}
+    name: txt_SearchRegNo
+    properties: {border: solid, font: Mozilla Headline, font_size: 16, placeholder: Enter Reg No To Search *}
+    type: TextBox
+  - event_bindings: {click: btnSearch_click}
+    layout_properties: {grid_position: 'QDSGIF,GQBNEX'}
+    name: btnSearch
+    properties: {align: full, background: '#0056d6', font: Roboto, font_size: 15, foreground: 'theme:White', text: SEARCH}
+    type: Button
+  - event_bindings: {change: drop_down_select_change}
+    layout_properties: {grid_position: 'XSDZJY,HKZUUI'}
+    name: drop_down_select
+    properties: {border: solid, font: Mozilla Headline, font_size: 16, include_placeholder: true, placeholder: Select Reg No *}
+    type: DropDown
+  - layout_properties: {grid_position: 'BECDLV,OPWWPQ'}
+    name: spacer_1_copy
+    properties: {height: '10'}
+    type: Spacer
+  - components:
+    - layout_properties: {grid_position: 'KQLEZP,TZJCIK'}
+      name: label_AssignParts
+      properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: '', role: null, text: Assign Parts}
+      type: Label
+    - event_bindings: {pressed_enter: btn_Search_click}
+      layout_properties: {grid_position: ',undefined'}
+      name: text_box_searchPartNo
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Part Name / Part No To Search *}
+      type: TextBox
+    - event_bindings: {click: btn_Search_click}
+      layout_properties: {grid_position: ',RUAYED'}
+      name: btn_Search
+      properties: {align: full, background: '#0056D6', foreground: 'theme:White', role: primary-color, text: Search}
+      type: Button
+    - event_bindings: {change: drop_down_selectPart_change}
+      layout_properties: {grid_position: 'ARUACJ,IMZNUQ'}
+      name: drop_down_selectPart
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Part *}
+      type: DropDown
+    - layout_properties: {grid_position: 'XDFVGO,FEDQBH'}
+      name: lbl_ID
+      properties: {visible: false}
+      type: Label
+    - layout_properties: {grid_position: 'XDFVGO,QPEJUC'}
+      name: lbl_PartName
+      properties: {visible: false}
+      type: Label
+    - layout_properties: {grid_position: 'XDFVGO,AXGKIG'}
+      name: lbl_PartNumber
+      properties: {visible: false}
+      type: Label
+    - data_bindings: []
+      layout_properties: {grid_position: 'IDYZWU,REIZYI'}
+      name: txtQuantity
+      properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: 'Enter Quantity  ', type: number}
+      type: TextBox
+    - data_bindings: []
+      layout_properties: {grid_position: 'IDYZWU,DABOTQ'}
+      name: txtSellingPrice
+      properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Selling Price Per Unit, type: number}
+      type: TextBox
+    - event_bindings: {}
+      layout_properties: {grid_position: 'IDYZWU,ITHVCV'}
+      name: drop_down_selectPriority
+      properties:
+        background: theme:White
+        border: solid
+        font: Mozilla Headline
+        font_size: 16
+        foreground: theme:Black
+        include_placeholder: true
+        items: [Urgent, Can Wait]
+        placeholder: 'Select Priority * '
+      type: DropDown
+    - event_bindings: {click: btn_AddParts_click}
+      layout_properties: {grid_position: 'JQKEFQ,DZFZWS'}
+      name: btn_AddParts
+      properties:
+        align: full
+        background: '#0056D6'
+        border: ''
+        font: Roboto
+        foreground: theme:White
+        spacing:
+          padding: [null, null, 8, null]
+        spacing_above: medium
+        text: Add Parts
+      type: Button
+    - layout_properties: {grid_position: 'BITFSX,ZMHHAD'}
+      name: label_OtherServices
+      properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: '', role: null, text: Services}
+      type: Label
+    - data_bindings: []
+      layout_properties: {grid_position: 'ZFXNAD,UIAJBU'}
+      name: txtServices
+      properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Service Name, type: text}
+      type: TextBox
+    - data_bindings: []
+      layout_properties: {grid_position: 'ZFXNAD,OVHSZB'}
+      name: txtAmount
+      properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Amount, type: number}
+      type: TextBox
+    - event_bindings: {}
+      layout_properties: {grid_position: 'ZFXNAD,SYVOLH'}
+      name: drop_down_selectPriorityService
+      properties:
+        background: theme:White
+        border: solid
+        font: Mozilla Headline
+        font_size: 16
+        foreground: theme:Black
+        include_placeholder: true
+        items: [Urgent, Can Wait]
+        placeholder: 'Select Priority * '
+      type: DropDown
+    - event_bindings: {click: btn_AddServices_click}
+      layout_properties: {grid_position: 'KPWNLO,JELUWL'}
+      name: btn_AddServices
+      properties:
+        align: full
+        background: '#0056D6'
+        border: ''
+        font: Mozilla Headline
+        font_size: 16
+        foreground: theme:White
+        spacing:
+          padding: [null, null, 8, null]
+        spacing_above: medium
+        text: Add Services
+      type: Button
+    - layout_properties: {grid_position: 'CAYPOU,MLBACN'}
+      name: label_ViewAssignedParts
+      properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: '', role: null, text: List Of Parts And Services}
+      type: Label
+    - layout_properties: {grid_position: 'OQZXGS,BFKYAL'}
+      name: spacer_1_copy_copy
+      properties: {height: 11.79998779296875}
+      type: Spacer
+    - components:
+      - layout_properties: {}
+        name: repeating_panel_assigned_parts
+        properties: {item_template: RepairPriorities.RowTemplate}
+        type: RepeatingPanel
+      layout_properties: {grid_position: 'PYRLTV,GIRQZR'}
+      name: data_grid_1
+      properties:
+        background: theme:Black
+        border: solid
+        columns:
+        - {data_key: Name, expand: true, id: JKSDUP, title: Name}
+        - {data_key: Number, expand: true, id: VJQQOR, title: Number}
+        - {data_key: Quantity, expand: true, id: XXAINL, title: Quantity, width: ''}
+        - {data_key: Amount, expand: true, id: YZKVTV, title: Amount, width: ''}
+        - {data_key: Priority, expand: true, id: ZNBGRF, title: Priority}
+        - {data_key: '', id: ZBHQLY, title: '', width: '90'}
+        foreground: theme:White
+        rows_per_page: 200
+        show_page_controls: false
+        wrap_on: mobile
+      type: DataGrid
+    - layout_properties: {grid_position: 'YDLDPK,KQDTQY'}
+      name: spacer_2
+      properties: {height: '10'}
+      type: Spacer
+    - event_bindings: {click: btn_Save_click}
+      layout_properties: {grid_position: 'ZTAYGW,XGVKON'}
+      name: btn_Save
+      properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: primary-color, text: SAVE AND DOWNLOAD PRIORITY}
+      type: Button
+    layout_properties: {grid_position: 'TYGUWU,YJMZRA'}
+    name: card_2
+    properties: {col_widths: '{"undefined":40,"RUAYED":20}', role: card}
+    type: ColumnPanel
+  layout_properties: {grid_position: 'ZBOKPB,TZXUHH'}
+  name: card_1
+  properties: {col_widths: '{"XCNMEF":40,"GQBNEX":20}', role: card}
+  type: ColumnPanel
+container: {type: ColumnPanel}
+is_package: true

@@ -1,0 +1,218 @@
+components:
+- components:
+  - layout_properties: {grid_position: 'FDQGMW,RASGQB'}
+    name: label_title
+    properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', text: Progress Tracker}
+    type: Label
+  - layout_properties: {grid_position: 'YOTKWG,NJPDYL'}
+    name: txtJobCardRef
+    properties: {align: left, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Gray 900', placeholder: Search Job Card Ref Or Client Name *}
+    type: TextBox
+  - event_bindings: {click: btn_SearchCustomer_click}
+    layout_properties: {grid_position: 'YOTKWG,LZQOZW'}
+    name: btn_SearchCustomer
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: primary-color, text: Search}
+    type: Button
+  - event_bindings: {change: drop_down_JobCardRefDetails_change}
+    layout_properties: {grid_position: 'ZODTMU,UIVWXD'}
+    name: drop_down_JobCardRefDetails
+    properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select  Job Card Ref Details*}
+    type: DropDown
+  - layout_properties: {grid_position: 'FQLXZN,KPQOYN', row_background: 'theme:Black'}
+    name: spacer_2_copy
+    properties: {height: 5}
+    type: Spacer
+  - layout_properties: {full_width_row: false, grid_position: 'NZUIBS,IGKOYR', row_background: 'theme:Black'}
+    name: image_1
+    properties: {background: 'theme:White', display_mode: zoom_to_fill, source: _/theme/unnamed.png, vertical_align: center}
+    type: Image
+  - components:
+    - components:
+      - components:
+        - layout_properties: {grid_position: 'IHJJMH,CUICUY'}
+          name: headline_1_copy_copy
+          properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, role: null, text: Make}
+          type: Label
+        - layout_properties: {grid_position: 'IHJJMH,GJAXTN'}
+          name: label_MakeAndModel
+          properties: {align: center, border: 'border-right-width: thick;', font: Mozilla Headline, font_size: 16, role: null}
+          type: Label
+        - layout_properties: {grid_position: 'BOUQWW,GXKUAT'}
+          name: headline_1_copy_copy_2
+          properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, role: null, text: Mileage}
+          type: Label
+        - layout_properties: {grid_position: 'BOUQWW,PMFWQY'}
+          name: label_Mileage
+          properties: {align: center, border: 'border-right-width: thick;', font: Mozilla Headline, font_size: 16, role: null}
+          type: Label
+        - layout_properties: {grid_position: 'UBPMJJ,HCYSIV'}
+          name: headline_1_copy
+          properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, role: null, text: Plate}
+          type: Label
+        - layout_properties: {grid_position: 'UBPMJJ,DMSPWF'}
+          name: label_RegNo
+          properties: {align: center, border: '', font: Mozilla Headline, font_size: 16, role: null}
+          type: Label
+        layout_properties: {grid_position: 'HPQEGH,MCBIAC', row_background: 'theme:Black'}
+        name: card_5
+        properties: {col_widths: '{"CUICUY":25,"GJAXTN":31}', role: card}
+        type: ColumnPanel
+      - components:
+        - layout_properties: {grid_position: 'OIWYVL,KFQZEK'}
+          name: headline_1_copy_2_copy
+          properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, role: null, text: Date Rec.}
+          type: Label
+        - layout_properties: {grid_position: 'OIWYVL,TJXZJB'}
+          name: label_date_received
+          properties: {align: center, border: '', font: Mozilla Headline, font_size: 16, role: null, text: ''}
+          type: Label
+        - layout_properties: {grid_position: 'DEWOZY,YZEDCV'}
+          name: headline_1_copy_2
+          properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, role: null, text: Name}
+          type: Label
+        - layout_properties: {grid_position: 'DEWOZY,JRBJSB'}
+          name: label_Owner
+          properties: {align: center, border: '', font: Mozilla Headline, font_size: 16, role: null, text: ''}
+          type: Label
+        - layout_properties: {grid_position: 'ZRNMQY,AOKFKW'}
+          name: headline_1
+          properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, role: null, text: Phone}
+          type: Label
+        - layout_properties: {grid_position: 'ZRNMQY,VAFSSM'}
+          name: label_Phone
+          properties: {align: center, border: '', font: Mozilla Headline, font_size: 16, role: null, text: ''}
+          type: Label
+        layout_properties: {grid_position: 'HPQEGH,TTYTAE', row_background: 'theme:Black'}
+        name: card_4
+        properties: {role: card}
+        type: ColumnPanel
+      - components:
+        - layout_properties: {grid_position: 'JIMJBR,IUOTET'}
+          name: headline_1_copy_copy_copy
+          properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, role: null, text: Due}
+          type: Label
+        - layout_properties: {grid_position: 'JIMJBR,REAMVI'}
+          name: label_Due
+          properties: {align: center, border: 'border-right-width: thick;', font: Mozilla Headline, font_size: 16, role: null}
+          type: Label
+        - layout_properties: {grid_position: 'OTMNYY,BEUWTJ'}
+          name: headline_1_copy_copy_2_copy
+          properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, role: null, text: Paid}
+          type: Label
+        - layout_properties: {grid_position: 'OTMNYY,AWXVUN'}
+          name: label_Paid
+          properties: {align: center, border: 'border-right-width: thick;', font: Mozilla Headline, font_size: 16, role: display-4}
+          type: Label
+        - layout_properties: {grid_position: 'HXHBBR,SZNZKT'}
+          name: headline_discount
+          properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, role: null, text: Discount}
+          type: Label
+        - layout_properties: {grid_position: 'HXHBBR,RMKWTQ'}
+          name: label_Discount
+          properties: {align: center, border: '', font: Mozilla Headline, font_size: 16, role: null}
+          type: Label
+        - layout_properties: {grid_position: 'VJEXFD,NTUVAB'}
+          name: headline_1_copy_copy_3
+          properties: {align: center, border: solid, font: Roboto, font_size: 16, role: null, text: Balance}
+          type: Label
+        - layout_properties: {grid_position: 'VJEXFD,MYLQNY'}
+          name: label_Balance
+          properties: {align: center, border: '', font: Mozilla Headline, font_size: 16, role: null}
+          type: Label
+        layout_properties: {grid_position: 'SFXWRW,AEXAJA', row_background: 'theme:Black'}
+        name: card_5_copy
+        properties: {col_widths: '{"VLQGFY":40}', role: card}
+        type: ColumnPanel
+      - components:
+        - layout_properties: {grid_position: 'TSCEFA,PKDXHG RYFWAV,VSWGVM'}
+          name: label_checked_in
+          properties: {align: center, font: Mozilla Headline, font_size: 16, icon: 'fa:check-circle-o', icon_align: left, text: Checked In}
+          type: Label
+        - layout_properties: {grid_position: 'TSCEFA,PKDXHG PKCXMC,YOKMGP'}
+          name: label_in_service
+          properties: {align: center, font: Mozilla Headline, font_size: 16, icon: 'fa:wrench', text: In Service}
+          type: Label
+        - layout_properties: {grid_position: 'TSCEFA,FUAVPP AEYEMB,DBWJFZ'}
+          name: label_create_quote
+          properties: {align: center, font: Mozilla Headline, font_size: 16, icon: 'fa:file-text', text: Create Quote}
+          type: Label
+        - layout_properties: {grid_position: 'TSCEFA,FUAVPP USKGCV,TPRMKD'}
+          name: label_verify_task
+          properties: {align: center, font: Mozilla Headline, font_size: 16, icon: 'fa:tasks', text: Verify Task}
+          type: Label
+        - layout_properties: {grid_position: 'TSCEFA,VLMCQX EKBGND,UFIQHL'}
+          name: label_confirm_quote
+          properties: {align: center, font: Mozilla Headline, font_size: 16, icon: 'fa:files-o', text: Confirm Quote}
+          type: Label
+        - layout_properties: {grid_position: 'TSCEFA,VLMCQX FBTUOZ,BRURGH'}
+          name: label_issue_invoice
+          properties: {align: center, font: Mozilla Headline, font_size: 16, icon: 'fa:dollar', text: Issue Invoice}
+          type: Label
+        - layout_properties: {grid_position: 'XTMJKH,BQLOLG'}
+          name: label_cancelled
+          properties: {align: center, font: Mozilla Headline, font_size: 16, icon: 'fa:times', text: Cancelled Jobcard}
+          type: Label
+        - layout_properties: {grid_position: 'SIORKJ,AXMCWC'}
+          name: text_area_1
+          properties: {auto_expand: true, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', visible: false}
+          type: TextArea
+        - layout_properties: {full_width_row: true, grid_position: 'EZFTFK,FQAHWZ', row_background: 'theme:Black'}
+          name: spacer_1
+          properties: {height: '0.5'}
+          type: Spacer
+        - layout_properties: {grid_position: 'XLUBOJ,IWOYRX'}
+          name: label_payment_due
+          properties: {align: center, font: Mozilla Headline, font_size: 16, icon: 'fa:clock-o', text: Payment Due}
+          type: Label
+        - layout_properties: {grid_position: 'XLUBOJ,UKASSG'}
+          name: label_payment_done
+          properties: {align: center, font: Mozilla Headline, font_size: 16, icon: 'fa:check-square', text: Payment Done}
+          type: Label
+        layout_properties: {grid_position: 'RGDOSG,VMRFAU'}
+        name: card_3
+        properties: {background: '', border: solid, role: card}
+        type: ColumnPanel
+      - event_bindings: {click: btn_JobCard_click}
+        layout_properties: {grid_position: 'GOPPPW,WSVUBH'}
+        name: btn_JobCard
+        properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:clipboard', role: primary-color, text: JOB CARD}
+        type: Button
+      - event_bindings: {click: btn_Defects_click}
+        layout_properties: {grid_position: 'GOPPPW,JEHHOH'}
+        name: btn_Defects
+        properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:exclamation-triangle', role: primary-color, text: DEFECTS}
+        type: Button
+      - event_bindings: {click: btn_Quotation_click}
+        layout_properties: {grid_position: 'GOPPPW,PCODYN'}
+        name: btn_Quotation
+        properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:file-text', role: primary-color, text: QUOTATION}
+        type: Button
+      - event_bindings: {click: btn_Confirmed_click}
+        layout_properties: {grid_position: 'GOPPPW,OXORMY'}
+        name: btn_Confirmed
+        properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:chevron-circle-right', role: primary-color, text: CONFIRM}
+        type: Button
+      - event_bindings: {click: btn_Invoice_click}
+        layout_properties: {grid_position: 'GOPPPW,NDEYST'}
+        name: btn_Invoice
+        properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:dollar', role: primary-color, text: INVOICE}
+        type: Button
+      - event_bindings: {click: btn_Payment_click}
+        layout_properties: {grid_position: 'GOPPPW,GBFWUW'}
+        name: btn_Payment
+        properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:money', role: primary-color, text: PAYMENT}
+        type: Button
+      layout_properties: {full_width_row: true, grid_position: 'IPNLVC,XQIQLH'}
+      name: column_panel_1
+      properties: {}
+      type: ColumnPanel
+    layout_properties: {full_width_row: true, grid_position: 'MUWGDE,XDGYOJ', row_background: 'theme:Black'}
+    name: card_2
+    properties: {role: card}
+    type: ColumnPanel
+  layout_properties: {full_width_row: true, grid_position: 'RITPNN,XAQHGR', row_background: 'theme:Black'}
+  name: card_1
+  properties: {col_widths: '{"NJPDYL":40,"LZQOZW":20}', role: card}
+  type: ColumnPanel
+container: {type: ColumnPanel}
+is_package: true

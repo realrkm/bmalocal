@@ -1,0 +1,25 @@
+components:
+- event_bindings: {click: btn_DeleteRow_click}
+  layout_properties: {column: IBXJHQ}
+  name: btn_DeleteRow
+  properties: {background: '#0056D6', foreground: 'theme:White', icon: 'fa:trash-o', icon_align: right, text: '', tooltip: Delete Row}
+  type: Button
+- data_bindings:
+  - {code: 'self.item[''Amount'']', property: text, writeback: true}
+  layout_properties: {column: LQWTXJ}
+  name: txt_Amount
+  properties: {align: center, background: 'theme:White', foreground: 'theme:Black', placeholder: 'Enter Amount ', type: number}
+  type: TextBox
+- data_bindings:
+  - {code: 'self.item[''Status'']', property: selected_value, writeback: true}
+  layout_properties: {column: PSOVFO}
+  name: drop_down_status
+  properties:
+    background: theme:White
+    foreground: theme:Black
+    items: [Arrived, Pending]
+  type: DropDown
+container:
+  properties: {align: center, background: 'theme:Black', border: solid, foreground: 'theme:White'}
+  type: DataRowPanel
+is_package: true

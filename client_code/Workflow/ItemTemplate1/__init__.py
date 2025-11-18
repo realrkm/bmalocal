@@ -23,6 +23,7 @@ class ItemTemplate1(ItemTemplate1Template):
         right = self.item.get("right")
     
         if left:
+            self.button_details.visible = False
             self.id.text=f"{left['id']}"
             self.label_make.text = f"Make: {left['make']}"
             self.label_owner.text = f"Job Card Ref: {left['jobcardref']}"

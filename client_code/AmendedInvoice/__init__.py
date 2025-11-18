@@ -259,7 +259,9 @@ class AmendedInvoice(AmendedInvoiceTemplate):
         
             try:
                 amount = float(amount_str)
-                if row.get("Item") != "Previous Balance" and isinstance(qty, int):
+                if row.get("Item") != "Previous Balance" and isinstance(qty, float):
+                    total_amount += amount * float(qty)
+                elif row.get("Item") != "Previous Balance" and isinstance(qty, int):
                     total_amount += amount * float(qty)
                 elif row.get("Item") != "Previous Balance" and isinstance(qty, str):
                     total_amount += amount

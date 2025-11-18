@@ -23,7 +23,6 @@ class ItemTemplate1(ItemTemplate1Template):
         right = self.item.get("right")
     
         if left:
-            self.button_details.visible = False
             self.id.text=f"{left['id']}"
             self.label_make.text = f"Make: {left['make']}"
             self.label_owner.text = f"Job Card Ref: {left['jobcardref']}"
@@ -42,29 +41,22 @@ class ItemTemplate1(ItemTemplate1Template):
             
             if status == "Checked In":
                 self.button_details.text = "TECHNICIAN REVIEW"
-                self.button_details.visible = True
             elif status == "Create Quote":
                 self.button_details.text = "CREATE QUOTE"
-                self.button_details.visible = True
             elif status == "Confirm Quote":
-                self.button_details.text = "CONFIRM QUOTE"
-                self.button_details.visible = True
+                self.button_details.text = "CONFIRM QUOTE"                
             elif status == "In Service":
                 self.button_details.text = "IN SERVICE"
-                self.button_details.visible = True
             elif status == "Verify Task":
                 self.button_details.text = "VERIFY TASK"
-                self.button_details.visible = True
             elif status == "Issue Invoice":
                 self.button_details.text = "ISSUE INVOICE"
-                self.button_details.visible = True
             else:
                 self.button_details.visible = False
         else:
             self.left_card_panel.visible = False
 
         if middle:
-            self.button_details_1.visible = False
             self.id_1.text=f"{middle['id']}"
             self.label_make_1.text = f"Make: {middle['make']}"
             self.label_owner_1.text = f"Job Card Ref: {middle['jobcardref']}"
@@ -82,22 +74,16 @@ class ItemTemplate1(ItemTemplate1Template):
             
             if status == "Checked In":
                 self.button_details_1.text = "TECHNICIAN REVIEW"
-                self.button_details_1.visible = True
             elif status == "Create Quote":
                 self.button_details_1.text = "CREATE QUOTE"
-                self.button_details_1.visible = True
             elif status == "Confirm Quote":
                 self.button_details_1.text = "CONFIRM QUOTE"
-                self.button_details_1.visible = True
             elif status == "In Service":
                 self.button_details_1.text = "IN SERVICE"
-                self.button_details_1.visible = True
             elif status == "Verify Task":
-                self.button_details_1.text = "VERIFY TASK" 
-                self.button_details_1.visible = True
+                self.button_details_1.text = "VERIFY TASK"               
             elif status == "Issue Invoice":
                 self.button_details_1.text = "ISSUE INVOICE"
-                self.button_details_1.visible = True
             else:
                 self.button_details_1.visible = False
 
@@ -105,7 +91,6 @@ class ItemTemplate1(ItemTemplate1Template):
             self.middle_card_panel.visible = False
             
         if right:
-            self.button_details_2.visible = False
             self.id_2.text=f"{right['id']}"
             self.label_make_2.text = f"Make: {right['make']}"
             self.label_owner_2.text = f"Job Card Ref: {right['jobcardref']}"
@@ -123,22 +108,16 @@ class ItemTemplate1(ItemTemplate1Template):
             
             if status == "Checked In":
                 self.button_details_2.text = "TECHNICIAN REVIEW"
-                self.button_details_2.visible = True
             elif status == "Create Quote":
                 self.button_details_2.text = "CREATE QUOTE"
-                self.button_details_2.visible = True
             elif status == "Confirm Quote":
                 self.button_details_2.text = "CONFIRM QUOTE"
-                self.button_details_2.visible = True
             elif status == "In Service":
                 self.button_details_2.text = "IN SERVICE"
-                self.button_details_2.visible = True
             elif status == "Verify Task":
                 self.button_details_2.text = "VERIFY TASK"
-                self.button_details_2.visible = True
             elif status == "Issue Invoice":
                 self.button_details_2.text = "ISSUE INVOICE"
-                self.button_details_2.visible = True
             else:
                 self.button_details_2.visible = False
                 

@@ -133,4 +133,26 @@ class DefectsForm(DefectsFormTemplate):
         if self.drop_down_staff.selected_value > 0:
             self.label_staffchanged.text = "Yes"
             alert("Update Signature", title="Staff Name Changed")
-           
+
+    def btn_Search_click(self, **event_args):
+        """This method is called when the text in this text box is edited"""
+        search_value = self.text_box_searchPartNo.text.strip()
+
+        if not search_value:
+            alert("Please enter part name or part no. to proceed.", title="Blank Field(s) Found", large=False)
+            self.text_box_searchPartNo.focus()
+            return
+
+        result = anvil.server.call('getCarPartNameAndNumber', search_value)
+
+        #Clear drop down 
+        self.drop_down_selectPart.items = ""
+
+        if result:
+            self.drop_down_selectPart.items = result 
+        else:
+            alert("No records found for the entered part detail.", title="Not Found")
+
+    def drop_down_selectPart_change(self, **event_args):
+        """This method is called when an item is selected"""
+        self.txtSellingPrice.text = ModGetData.getSellingPrice(self.drop_down_selectPart.selected_value)

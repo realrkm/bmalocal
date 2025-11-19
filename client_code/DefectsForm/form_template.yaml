@@ -107,6 +107,35 @@ components:
     name: txtRequestedParts
     properties: {auto_expand: true, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: 'Enter Requested Parts '}
     type: TextArea
+  - components:
+    - layout_properties: {grid_position: 'HPZMTI,GRUPUC'}
+      name: label_AssignParts
+      properties: {align: center, background: 'theme:Gray 800', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: '', role: null, text: Search Part Selling Price}
+      type: Label
+    - event_bindings: {pressed_enter: btn_Search_click}
+      layout_properties: {grid_position: 'HQUNCB,VEHYEH'}
+      name: text_box_searchPartNo
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Part Name / Part No To Search *}
+      type: TextBox
+    - event_bindings: {click: btn_Search_click}
+      layout_properties: {grid_position: 'HQUNCB,FXOPCI'}
+      name: btn_Search
+      properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: primary-color, text: Search}
+      type: Button
+    - event_bindings: {change: drop_down_selectPart_change}
+      layout_properties: {grid_position: 'ODDOIT,FSYMIT'}
+      name: drop_down_selectPart
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Part *}
+      type: DropDown
+    - data_bindings: []
+      layout_properties: {grid_position: 'UFUCIX,OKDSHB'}
+      name: txtSellingPrice
+      properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Selling Price Per Unit, type: number}
+      type: TextBox
+    layout_properties: {grid_position: 'QDUYRT,WGANLZ'}
+    name: card_2
+    properties: {background: 'theme:Gray 600', border: solid, col_widths: '{"VEHYEH":45,"FXOPCI":15}', role: card}
+    type: ColumnPanel
   - layout_properties: {grid_position: 'WDPLYB,KRIBON'}
     name: label_title_2_copy
     properties:

@@ -208,8 +208,4 @@ class Quote(QuoteTemplate):
         """This method is called when the button is clicked"""
         self.remove_from_parent()
 
-    def text_box_searchPartNo_pressed_enter(self, **event_args):
-        """This method is called when the user presses Enter in this text box"""
-        pass
-
    

@@ -135,7 +135,8 @@ class Workflow(WorkflowTemplate):
             grouped_dict = {
                 "left": group[0] if len(group) > 0 else None,
                 "middle": group[1] if len(group) > 1 else None,
-                "right": group[2] if len(group) > 2 else None
+                "right": group[2] if len(group) > 2 else None,
+                "permissions": self.permissions.get("WORKFLOW", {}).get("subs", {})
             }
             grouped_vehicles.append(grouped_dict)
             

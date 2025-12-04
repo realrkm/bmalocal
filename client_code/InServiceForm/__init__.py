@@ -59,7 +59,7 @@ class InServiceForm(InServiceFormTemplate):
             self.btn_Save.enabled = True
             return
             
-        if not self.text_area_work_done.text:
+        if not self.text_area_work_done.text and self.cmbWorkflow.selected_value != "Confirm Quote":
             alert("Sorry, please enter the work done to proceed.", title="Blank Field(s) Found")
             self.text_area_work_done.focus()
             self.btn_Save.enabled = True
@@ -68,9 +68,14 @@ class InServiceForm(InServiceFormTemplate):
         jobCardID = self.cmbJobCardRef.selected_value['ID']
         status = self.cmbWorkflow.selected_value  
         workDone = self.text_area_work_done.text
-        anvil.server.call_s('updateJobCardStatus', jobCardID, status)
-        anvil.server.call("saveWorkDoneInJobCard", jobCardID, workDone)
-        alert("Service saved successfully", title="Success")
+
+        if status == "Confirm Quote":
+            anvil.server.call_s('updateJobCardStatus', jobCardID, status)
+            alert("Job reverted back to Confirm Quote", title="Success")
+        else:   
+            anvil.server.call_s('updateJobCardStatus', jobCardID, status)
+            anvil.server.call("saveWorkDoneInJobCard", jobCardID, workDone)
+            alert("Service saved successfully", title="Success")
         # Close Form
         self.btn_Close_click()
 

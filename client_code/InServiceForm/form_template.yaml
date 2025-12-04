@@ -108,7 +108,7 @@ components:
       font_size: 16
       foreground: theme:Black
       include_placeholder: true
-      items: [Verify Task]
+      items: [Verify Task, Confirm Quote]
       placeholder: 'Select Next Workflow Status * '
       role: null
     type: DropDown

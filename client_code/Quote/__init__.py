@@ -160,7 +160,7 @@ class Quote(QuoteTemplate):
 
         rows = self.repeating_panel_assigned_parts.items or []
     
-        if not rows:
+        if not rows and self.cmbWorkflow.selected_value != "Checked In":
             anvil.alert("Sorry, please assign parts or service to proceed.", title="Missing Assigned Parts or Service", large=False)
             self.btn_Save.enabled = True
             return
@@ -183,9 +183,12 @@ class Quote(QuoteTemplate):
             amount = float(row["Amount"].replace(",", "")) if "," in row["Amount"] else float(row["Amount"])
             anvil.server.call('saveQuotationPartsAndServices', assignedDate, jobCardID, name, number, quantity, amount)
         
-        anvil.server.call_s('updateJobCardStatus', jobCardID, status)    
-        alert("Quotation saved successfully and download is initiated", title="Success")
-        self.downloadQuotationPdf(jobCardID)
+        anvil.server.call_s('updateJobCardStatus', jobCardID, status)
+        if status == "Checked In":
+            alert("Job reverted back to Checked In", title="Success")
+        else:
+            alert("Quotation saved successfully and download is initiated", title="Success")
+            self.downloadQuotationPdf(jobCardID)
         
         # Close Form
         self.btn_Close_click()

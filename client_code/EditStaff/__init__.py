@@ -97,6 +97,7 @@ class EditStaff(EditStaffTemplate):
             self.txt_name.focus()
             self.btn_Update.enabled = True
             return
+            """
         elif not phone:
             alert("Please enter staff's phone number.")
             self.txt_phone.focus()
@@ -110,6 +111,7 @@ class EditStaff(EditStaffTemplate):
             self.txt_phone.focus()
             self.btn_Update.enabled = True
             return
+            """
         elif not archived:
             alert("Please select active status.")
             self.drop_down_archived.focus()

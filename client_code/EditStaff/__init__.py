@@ -97,6 +97,7 @@ class EditStaff(EditStaffTemplate):
             self.txt_name.focus()
             self.btn_Update.enabled = True
             return
+            
         elif not phone:
             alert("Please enter staff's phone number.")
             self.txt_phone.focus()

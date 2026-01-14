@@ -176,14 +176,21 @@ class Main(MainTemplate):
     def form_show(self, **event_args):
         """Set up real-time updates for dashboard forms"""
         if hasattr(self, 'notification_timer'):
-            self.notification_timer
             self.notification_timer.interval = 10  # 10 seconds
             self.notification_timer.enabled = True
 
     @handle("notification_timer", "tick")
     def notification_timer_tick(self, **event_args):
         """Refresh dashboard data"""
-        self.load_dashboard_data()
+        jobcard = anvil.server.call_s("getNotificationJobCardRef", JobCardID)
+
+        n = Notification(f"{jobcard} {message}",style="success",timeout=None)
+    
+        def delayed_show():
+            n.show()
+    
+        # Delay showing the notification by 10 seconds (10000 ms)
+        anvil.js.window.setTimeout(delayed_show, 10000)
         
 
    

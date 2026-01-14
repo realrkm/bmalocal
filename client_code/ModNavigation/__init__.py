@@ -3,6 +3,7 @@ import anvil.users
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
+from anvil import *
 from ..Client import Client
 from ..JobCard import JobCard
 from ..Workflow import Workflow
@@ -82,5 +83,16 @@ def go_Settings(permissions):
     form = get_form()
     form.load_component(Settings(permissions))
 
-#Load Notification
-def go_
+#************************************************* Notification Section *******************************
+def showNotification(JobCardID, message):
+    jobcard = anvil.server.call_s("getNotificationJobCardRef", JobCardID)
+
+    n = Notification(f"{jobcard} {message}",style="success",timeout=None)
+
+    def delayed_show():
+        n.show()
+
+    # Delay showing the notification by 10 seconds (10000 ms)
+    anvil.js.window.setTimeout(delayed_show, 10000)
+
+    return n

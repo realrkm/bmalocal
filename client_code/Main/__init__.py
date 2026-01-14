@@ -173,7 +173,16 @@ class Main(MainTemplate):
         """This method is called when the button is clicked"""
         anvil.users.change_password_with_form()
 
-    
+    def form_show(self, **event_args):
+        """Set up real-time updates for dashboard forms"""
+        if hasattr(self, 'notification_timer'):
+            self.notification_timer
+            self.notification_timer.interval = 10  # 30 seconds
+            self.notification_timer.enabled = True
+
+    def notification_timer_tick(self, **event_args):
+        """Refresh dashboard data"""
+        self.load_dashboard_data()
         
 
    

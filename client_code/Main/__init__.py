@@ -177,9 +177,10 @@ class Main(MainTemplate):
         """Set up real-time updates for dashboard forms"""
         if hasattr(self, 'notification_timer'):
             self.notification_timer
-            self.notification_timer.interval = 10  # 30 seconds
+            self.notification_timer.interval = 10  # 10 seconds
             self.notification_timer.enabled = True
 
+    @handle("notification_timer", "tick")
     def notification_timer_tick(self, **event_args):
         """Refresh dashboard data"""
         self.load_dashboard_data()

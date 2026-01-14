@@ -85,6 +85,9 @@ def go_Settings(permissions):
 
 #************************************************* Notification Section *******************************
 def showNotification(JobCardID, message):
+    form = get_form()
+    form.form_show(JobCardID, message)
+    
     jobcard = anvil.server.call_s("getNotificationJobCardRef", JobCardID)
 
     n = Notification(f"{jobcard} {message}",style="success",timeout=None)

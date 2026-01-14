@@ -76,7 +76,7 @@ def showNotification(JobCardID, task):
     jobcard = anvil.server.call_s("getNotificationJobCardRef", JobCardID)
 
     n = Notification(
-        f"{jobcard} {task}",
+        f"{jobcard} {task}",style="success",
         timeout=None  
     )
 

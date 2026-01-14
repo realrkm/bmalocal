@@ -15,6 +15,7 @@ from ..ProgressTracker import ProgressTracker
 from ..ProgressTrackerMobileView import ProgressTrackerMobileView
 from ..Inventory import Inventory
 from ..PartsHub import PartsHub
+from ..Main import Main
 
 home_form = None
 
@@ -81,3 +82,5 @@ def go_Settings(permissions):
     form = get_form()
     form.load_component(Settings(permissions))
 
+#Load Notification
+def go_

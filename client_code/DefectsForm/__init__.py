@@ -109,6 +109,9 @@ class DefectsForm(DefectsFormTemplate):
             
         anvil.server.call("updateDefectsList", jobcardID, instructions, notes,defects,parts, staffID, signature)
         alert("Update is successful", title="Success")
+        n = Notification("This is an important message!",
+                         timeout=None)
+        n.show()
         self.btn_DownloadDefectsList_click()
         self.btn_Close_click()
 

@@ -70,4 +70,20 @@ def getClientQuotationFeedback(JobCardID):
 
 def getQuotationConfirmationFeedback(JobCardID):
     return anvil.server.call_s('getQuotationConfirmationFeedback', JobCardID)
- 
+
+#************************************************* Notification Section *******************************
+def showNotification(JobCardID, task):
+    jobcard = anvil.server.call_s("getNotificationJobCardRef", JobCardID)
+
+    n = Notification(
+        f"{jobcard} {task}",
+        timeout=None  
+    )
+
+    def delayed_show():
+        n.show()
+
+    # Delay showing the notification by 10 seconds (10000 ms)
+    anvil.js.window.setTimeout(delayed_show, 10000)
+
+    return n

@@ -12,19 +12,41 @@ db_schema:
       type: datetime
     server: full
     title: Signatures
+  tbl_notification_reads:
+    client: none
+    columns:
+    - admin_ui: {width: 200}
+      name: notification
+      target: tbl_notifications
+      type: link_single
+    - admin_ui: {order: 1, width: 200}
+      name: user
+      target: users
+      type: link_single
+    - admin_ui: {order: 2, width: 200}
+      name: read_at
+      type: datetime
+    server: full
+    title: tbl_notification_reads
   tbl_notifications:
     client: none
     columns:
-    - admin_ui: {order: 0, width: 200}
+    - admin_ui: {width: 200}
       name: jobcard
       type: string
-    - admin_ui: {order: 1, width: 200}
+    - admin_ui: {width: 200}
       name: message
       type: string
-    - admin_ui: {order: 2, width: 200}
+    - admin_ui: {width: 200}
       name: role
       target: users
       type: link_single
+    - admin_ui: {width: 200}
+      name: created_at
+      type: datetime
+    - admin_ui: {width: 200}
+      name: active
+      type: bool
     server: full
     title: tbl_notifications
   tbl_stats:
@@ -95,7 +117,7 @@ db_schema:
     - admin_ui: {width: 200}
       name: signed_up
       type: datetime
-    - admin_ui: {order: 7, width: 200}
+    - admin_ui: {width: 200}
       name: role_id
       type: number
     server: full

@@ -10,6 +10,7 @@ import datetime
 import anvil.js
 from ..DownloadSignedJobCard import DownloadSignedJobCard
 
+
 class JobCard(JobCardTemplate):
     def __init__(self, **properties):
         # Set Form properties and Data Bindings.
@@ -31,8 +32,8 @@ class JobCard(JobCardTemplate):
         # Attach the event that fetches checked in by details
         self.search_keyword_4.set_event_handler('x-get-search-keys', self.getStaffDetails)
         self.search_keyword_4.text_box_search.placeholder = "Checked In By *"
-
-
+        
+        
     def handle_server_errors(self, exc):
         if isinstance(exc, anvil.server.UplinkDisconnectedError):
             anvil.alert("Connection to server lost. Please check your internet or try again later.", title="Disconnected", large=False)

@@ -111,9 +111,7 @@ class DefectsForm(DefectsFormTemplate):
         anvil.server.call("updateDefectsList", jobcardID, instructions, notes,defects,parts, staffID, signature)
         alert("Update is successful", title="Success")
         anvil.server.call_s("publish_role_notification",jobcardID, "defect(s) have been updated" )
-        self.notification_timer.interval = 10
-        self.notification_timer.enabled = True
-        self.notification_timer_tick()
+        ModNavigation.go_Notification()
         self.btn_DownloadDefectsList_click()
         self.btn_Close_click()
 

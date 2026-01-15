@@ -82,3 +82,9 @@ def go_PartsHub(permissions):
 def go_Settings(permissions):
     form = get_form()
     form.load_component(Settings(permissions))
+
+#Load Notification
+def go_Notification():
+    form=get_form()
+    form.notification_timer.enabled = True
+    form.notification_timer_tick()

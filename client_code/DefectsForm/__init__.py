@@ -111,6 +111,9 @@ class DefectsForm(DefectsFormTemplate):
         anvil.server.call("updateDefectsList", jobcardID, instructions, notes,defects,parts, staffID, signature)
         alert("Update is successful", title="Success")
         anvil.server.call_s("publish_role_notification",jobcardID, "defect(s) have been updated" )
+        self.notification_timer.interval = 10
+        self.notification_timer.enabled = True
+        self.notification_timer_tick()
         self.btn_DownloadDefectsList_click()
         self.btn_Close_click()
 
@@ -159,3 +162,6 @@ class DefectsForm(DefectsFormTemplate):
     def drop_down_selectPart_change(self, **event_args):
         """This method is called when an item is selected"""
         self.txtSellingPrice.text = ModGetData.getSellingPrice(self.drop_down_selectPart.selected_value)
+
+    
+    

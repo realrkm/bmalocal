@@ -173,41 +173,16 @@ class Main(MainTemplate):
         """This method is called when the button is clicked"""
         anvil.users.change_password_with_form()
 
-    def form_show(self, **event_args):
-        if hasattr(self, 'notification_timer'):
-            self.notification_timer.interval = 10  # 10 seconds
-            self.notification_timer.enabled = True
-            
     @handle("notification_timer", "tick")
     def notification_timer_tick(self, **event_args):
-        notifications = anvil.server.call('fetch_role_notifications')
-        alert(notifications)
+        """This method is called Every [interval] seconds. Does not trigger if [interval] is 0."""
+
+        notifications = anvil.server.call('fetch_role_notifications', anvil.users.get_user())
         for n in notifications:
-            jobcard = anvil.server.call_s(
-                "getNotificationJobCardRef",
-                n['jobcard']
-            )
-            alert(f"the jobcard is {jobcard}")
-            
             Notification(
-                f"{jobcard} {n['message']}",
+                f"{n['jobcard']} {n['message']}",
                 style="success",
                 timeout=None
             ).show()
 
-            anvil.server.call(
-                'mark_notification_read',
-                n['role']
-            )
-
-            
-    
-    
-    
-    
-    
-    
-    
-    
-        
     

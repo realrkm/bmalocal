@@ -3,7 +3,7 @@ components:
   - event_bindings: {}
     layout_properties: {grid_position: 'LWFJAY,LGYZNG'}
     name: notification_timer
-    properties: {}
+    properties: {interval: 0.5}
     type: Timer
   - components:
     - layout_properties: {grid_position: 'ORTKHD,HEZLEL OUINEK,OUAOZU'}

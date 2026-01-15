@@ -82,8 +82,3 @@ def go_PartsHub(permissions):
 def go_Settings(permissions):
     form = get_form()
     form.load_component(Settings(permissions))
-
-#************************************************* Notification Section *******************************
-def showNotification(JobCardID, message):
-    form = get_form()
-    form.notification_timer_tick(JobCardID, message)

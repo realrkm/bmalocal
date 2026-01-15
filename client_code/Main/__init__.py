@@ -174,27 +174,37 @@ class Main(MainTemplate):
         anvil.users.change_password_with_form()
 
 
-    def notification_timer_tick(self, JobCardID, message):
-        """Refresh dashboard data"""
-        self.notification_timer.interval = 10  # 10 seconds
-        self.notification_timer.enabled = True
-        jobcard = anvil.server.call_s("getNotificationJobCardRef", JobCardID)
-
-        n = Notification(f"{jobcard} {message}",style="success",timeout=None)
+    def notification_timer_tick(self, **event_args):
+        if hasattr(self, 'notification_timer'):
+            self.notification_timer.interval = 10  # 10 seconds
+            self.notification_timer.enabled = True
+            
+            notifications = anvil.server.call('fetch_role_notifications')
     
-        def delayed_show():
-            n.show()
-    
-        # Delay showing the notification by 10 seconds (10000 ms)
-        anvil.js.window.setTimeout(delayed_show, 10000)
+            for n in notifications:
+                jobcard = anvil.server.call_s(
+                    "getNotificationJobCardRef",
+                    n['jobcard']
+                )
         
-
-   
-
-   
- 
-
-
-
+                Notification(
+                    f"{jobcard} {n['message']}",
+                    style="success",
+                    timeout=None
+                ).show()
+        
+                anvil.server.call(
+                    'mark_notification_read',
+                    n['id']
+                )
+                
     
-   
+    
+    
+    
+    
+    
+    
+    
+        
+    

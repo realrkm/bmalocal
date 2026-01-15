@@ -19,13 +19,12 @@ db_schema:
       name: notification
       target: tbl_notifications
       type: link_single
-    - admin_ui: {order: 1, width: 200}
-      name: user
-      target: users
-      type: link_single
-    - admin_ui: {order: 2, width: 200}
+    - admin_ui: {width: 200}
       name: read_at
       type: datetime
+    - admin_ui: {order: 1, width: 200}
+      name: user_role
+      type: number
     server: full
     title: tbl_notification_reads
   tbl_notifications:
@@ -39,8 +38,7 @@ db_schema:
       type: string
     - admin_ui: {width: 200}
       name: role
-      target: users
-      type: link_single
+      type: number
     - admin_ui: {width: 200}
       name: created_at
       type: datetime

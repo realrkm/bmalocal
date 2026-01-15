@@ -16,7 +16,7 @@ from ..ProgressTracker import ProgressTracker
 from ..ProgressTrackerMobileView import ProgressTrackerMobileView
 from ..Inventory import Inventory
 from ..PartsHub import PartsHub
-from ..Main import Main
+
 
 home_form = None
 
@@ -86,4 +86,4 @@ def go_Settings(permissions):
 #************************************************* Notification Section *******************************
 def showNotification(JobCardID, message):
     form = get_form()
-    form.form_show(JobCardID, message)
+    form.notification_timer_tick(JobCardID, message)

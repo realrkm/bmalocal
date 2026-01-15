@@ -173,15 +173,11 @@ class Main(MainTemplate):
         """This method is called when the button is clicked"""
         anvil.users.change_password_with_form()
 
-    def form_show(self, **event_args):
-        """Set up real-time updates for dashboard forms"""
-        if hasattr(self, 'notification_timer'):
-            self.notification_timer.interval = 10  # 10 seconds
-            self.notification_timer.enabled = True
 
-    @handle("notification_timer", "tick")
-    def notification_timer_tick(self, **event_args):
+    def notification_timer_tick(self, JobCardID, message):
         """Refresh dashboard data"""
+        self.notification_timer.interval = 10  # 10 seconds
+        self.notification_timer.enabled = True
         jobcard = anvil.server.call_s("getNotificationJobCardRef", JobCardID)
 
         n = Notification(f"{jobcard} {message}",style="success",timeout=None)

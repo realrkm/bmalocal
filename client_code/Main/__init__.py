@@ -188,6 +188,7 @@ class Main(MainTemplate):
                 timeout=None
             ).show()
             self.label_1.text=f"{n['jobcard']} {n['message']}"
+            anvil.server.call_s("delete_notification")
             self.notification_timer.interval=0
         
 

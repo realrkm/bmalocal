@@ -6,9 +6,28 @@ components:
     properties: {interval: 10}
     type: Timer
   - layout_properties: {grid_position: 'FBKMZC,DJBSVS'}
-    name: label_1
-    properties: {align: center, background: '#1d723e', bold: true, border: solid, font_size: 16, foreground: '#000000', italic: true, role: text}
+    name: notification_label
+    properties:
+      align: center
+      background: ''
+      bold: true
+      border: ''
+      font_size: 16
+      foreground: '#000000'
+      icon: fa:bell
+      icon_align: left
+      italic: true
+      role: text
+      spacing:
+        margin: [null, null, 0, null]
+        padding: [null, null, 0, null]
+      spacing_above: medium
+      spacing_below: large
     type: Label
+  - layout_properties: {grid_position: 'FBKMZC,NYQZNG'}
+    name: btn_alerts
+    properties: {background: '#0056D6', border: '', foreground: 'theme:White', icon: 'fa:bell', role: raised, spacing_above: none, text: View All Alerts}
+    type: Button
   - components:
     - components:
       - layout_properties: {grid_position: 'ORTKHD,HEZLEL OUINEK,OUAOZU'}
@@ -41,6 +60,7 @@ components:
   properties:
     background: theme:White
     border: ''
+    col_widths: '{"DJBSVS":60,"NYQZNG":15}'
     role: card
     spacing:
       padding: [null, 8, null, 8]

@@ -12,26 +12,6 @@ db_schema:
       type: datetime
     server: full
     title: Signatures
-  tbl_notifications:
-    client: none
-    columns:
-    - admin_ui: {width: 200}
-      name: jobcard
-      type: string
-    - admin_ui: {width: 200}
-      name: message
-      type: string
-    - admin_ui: {width: 200}
-      name: role
-      type: number
-    - admin_ui: {width: 200}
-      name: created_at
-      type: datetime
-    - admin_ui: {width: 200}
-      name: active
-      type: bool
-    server: full
-    title: tbl_notifications
   tbl_stats:
     client: none
     columns:

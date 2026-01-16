@@ -23,7 +23,12 @@ class Main(MainTemplate):
         if user:
             # Fetch permissions from server
             self.permissions = anvil.server.call("get_user_permissions", user["role_id"])
-            self.apply_permissions()    
+            self.apply_permissions()
+            if user['role_id']==1:
+                self.notification_label.visible=True
+            else:
+                self.notification_label.visible=False
+                self.btn_alerts.visible=False
         user_agent = navigator.userAgent
         # Now call your server function and pass the user_agent
         anvil.server.call_s('get_stats', user_agent)
@@ -180,10 +185,8 @@ class Main(MainTemplate):
     def notification_timer_tick(self, **event_args):
         """This method is called Every [interval] seconds. Does not trigger if [interval] is 0."""
         self.refresh()
-        notifications = anvil.server.call('fetch_role_notifications', anvil.users.get_user())
-        for n in notifications:
-            #Notification(f"{n['jobcard']} {n['message']}",style="success",timeout=None).show()
-            self.label_1.text=f"{n['jobcard']} {n['message']} {n['created_at']}"
-        
+        notifications = anvil.server.call('fetch_role_notifications',anvil.users.get_user())
 
-    
+        for n in notifications:
+            self.notification_label.text = (f"{n['jobcard']} {n['message']}")
+        

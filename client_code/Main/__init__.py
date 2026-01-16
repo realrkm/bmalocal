@@ -27,6 +27,7 @@ class Main(MainTemplate):
             self.apply_permissions()
             if user['role_id']==1:
                 self.notification_label.visible=True
+                self.refresh()
             else:
                 self.notification_label.visible=False
                 self.btn_alerts.visible=False
@@ -186,6 +187,7 @@ class Main(MainTemplate):
     def notification_timer_tick(self, **event_args):
         """This method is called Every [interval] seconds. Does not trigger if [interval] is 0."""
         self.refresh()
+        self.notification_label.text=""
         notifications = anvil.server.call('fetch_role_notifications',anvil.users.get_user())
 
         for n in notifications:

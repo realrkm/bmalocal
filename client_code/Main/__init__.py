@@ -189,7 +189,7 @@ class Main(MainTemplate):
             ).show()
             self.label_1.text=f"{n['jobcard']} {n['message']}"
             anvil.server.call_s("delete_notification")
-            self.notification_timer.interval=0
+            self.notification_timer.interval=anvil.server.call_s("delete_notification")
         
 
     

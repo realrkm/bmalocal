@@ -40,7 +40,7 @@ components:
   name: column_panel_main
   properties:
     background: theme:White
-    border: solid
+    border: ''
     role: card
     spacing:
       padding: [null, 8, null, 8]

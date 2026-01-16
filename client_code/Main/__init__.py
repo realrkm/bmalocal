@@ -183,7 +183,7 @@ class Main(MainTemplate):
         notifications = anvil.server.call('fetch_role_notifications', anvil.users.get_user())
         for n in notifications:
             #Notification(f"{n['jobcard']} {n['message']}",style="success",timeout=None).show()
-            self.label_1.text=f"{n['jobcard']} {n['message']}"
+            self.label_1.text=f"{n['jobcard']} {n['message']} {n['created_at']}"
         
 
     

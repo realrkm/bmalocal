@@ -1,0 +1,28 @@
+components:
+- components:
+  - event_bindings: {}
+    layout_properties: {grid_position: 'TIWELF,FYFLXD'}
+    name: btn_UpdateStatus
+    properties: {align: full, background: '#0056D6', bold: false, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: null, text: Update Pending StatUS}
+    type: Button
+  - components:
+    - name: repeating_panel_1
+      properties: {item_template: FAQ.RowTemplate21}
+      type: RepeatingPanel
+    layout_properties: {full_width_row: false, grid_position: 'AKAKUY,NXYLBT'}
+    name: data_grid_1
+    properties:
+      columns:
+      - {data_key: jobcard, expand: true, id: JKSDUP, title: JobCard Ref}
+      - {data_key: message, expand: true, id: VJQQOR, title: Message}
+      - {data_key: created_at, expand: true, id: OJLQEN, title: Created At}
+      - {data_key: active, expand: true, id: EAFWMU, title: Pending}
+      foreground: theme:Black
+      role: null
+    type: DataGrid
+  layout_properties: {full_width_row: true, grid_position: 'VEVJGL,WBCQON'}
+  name: card_1
+  properties: {role: card}
+  type: ColumnPanel
+container: {type: ColumnPanel}
+is_package: true

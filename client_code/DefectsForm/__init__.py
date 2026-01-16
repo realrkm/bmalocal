@@ -31,7 +31,9 @@ class DefectsForm(DefectsFormTemplate):
         items = anvil.server.call("getStaff")
         # Convert to a list of (display_text, value) tuples
         self.drop_down_staff.items = [(s['Staff'], s['ID']) for s in items]
-       
+
+        #Store JobcardID 
+        self.jobcardid = defects_data[0]["ID"]
          
     def refresh(self, **event_args):
         self.set_event_handler("x-refresh", self.refresh)
@@ -110,8 +112,6 @@ class DefectsForm(DefectsFormTemplate):
             
         anvil.server.call("updateDefectsList", jobcardID, instructions, notes,defects,parts, staffID, signature)
         alert("Update is successful", title="Success")
-        anvil.server.call_s("publish_role_notification",jobcardID, "defect(s) have been updated" )
-        ModNavigation.go_Notification()
         self.btn_DownloadDefectsList_click()
         self.btn_Close_click()
 
@@ -160,6 +160,14 @@ class DefectsForm(DefectsFormTemplate):
     def drop_down_selectPart_change(self, **event_args):
         """This method is called when an item is selected"""
         self.txtSellingPrice.text = ModGetData.getSellingPrice(self.drop_down_selectPart.selected_value)
+
+    @handle("btn_IssueInvoice", "click")
+    def btn_IssueInvoice_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        anvil.server.call_s("publish_role_notification",self.jobcardid, "ready for invoicing" )
+        ModNavigation.go_Notification()
+        alert("Alert has been sent successfully", title="Issue Invoice")
+        self.btn_Close_click()
 
     
     

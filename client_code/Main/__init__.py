@@ -9,6 +9,7 @@ from .. import ModNavigation
 import anvil.js
 from anvil.js.window import navigator
 from ..FAQ import FAQ
+from ..Alerts import Alerts
 
 class Main(MainTemplate):
     def __init__(self, **properties):
@@ -188,5 +189,11 @@ class Main(MainTemplate):
         notifications = anvil.server.call('fetch_role_notifications',anvil.users.get_user())
 
         for n in notifications:
-            self.notification_label.text = (f"{n['jobcard']} {n['message']}")
-        
+            self.notification_label.text = (f"{n['jobcard']} - {n['message']}")
+
+    @handle("btn_alerts", "click")
+    def btn_alerts_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        self.btn_alerts.enabled=False
+        alert(content=Alerts(), dismissible=False,large=True)
+        self.btn_alerts.enabled=True

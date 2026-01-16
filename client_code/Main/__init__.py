@@ -182,11 +182,7 @@ class Main(MainTemplate):
         self.refresh()
         notifications = anvil.server.call('fetch_role_notifications', anvil.users.get_user())
         for n in notifications:
-            Notification(
-                f"{n['jobcard']} {n['message']}",
-                style="success",
-                timeout=None
-            ).show()
+            #Notification(f"{n['jobcard']} {n['message']}",style="success",timeout=None).show()
             self.label_1.text=f"{n['jobcard']} {n['message']}"
             #self.notification_timer.interval=anvil.server.call_s("delete_notification")
         

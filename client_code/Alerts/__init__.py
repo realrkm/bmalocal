@@ -19,7 +19,6 @@ class Alerts(AlertsTemplate):
         self.user = anvil.users.get_user()
         self.repeating_panel_1.items=anvil.server.call_s("fetch_active_notifications", self.user)
 
-    @handle("btn_UpdateStatus", "click")
     def btn_UpdateStatus_click(self, **event_args):
         """This method is called when the button is clicked"""
         anvil.server.call_s("deactivate_notifications")

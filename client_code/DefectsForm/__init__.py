@@ -161,7 +161,6 @@ class DefectsForm(DefectsFormTemplate):
         """This method is called when an item is selected"""
         self.txtSellingPrice.text = ModGetData.getSellingPrice(self.drop_down_selectPart.selected_value)
 
-    @handle("btn_IssueInvoice", "click")
     def btn_IssueInvoice_click(self, **event_args):
         """This method is called when the button is clicked"""
         anvil.server.call_s("publish_role_notification",self.jobcardid, "ready for invoicing" )

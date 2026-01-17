@@ -183,7 +183,6 @@ class Main(MainTemplate):
     def refresh(self, **event_args):
         self.set_event_handler("x-refresh", self.refresh)
         
-    @handle("notification_timer", "tick")
     def notification_timer_tick(self, **event_args):
         """This method is called Every [interval] seconds. Does not trigger if [interval] is 0."""
         self.refresh()
@@ -193,7 +192,6 @@ class Main(MainTemplate):
         for n in notifications:
             self.notification_label.text = (f"{n['jobcard']} - {n['message']}")
 
-    @handle("btn_alerts", "click")
     def btn_alerts_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.btn_alerts.enabled=False

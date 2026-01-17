@@ -34,6 +34,11 @@ components:
     name: btn_Update
     properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: null, text: UPDATE}
     type: Button
+  - event_bindings: {click: btn_DefectsPDF_click}
+    layout_properties: {grid_position: 'ZZHUZR,QWUMFR'}
+    name: btn_DefectsPDF
+    properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: null, text: DEFECTS PDF}
+    type: Button
   - event_bindings: {click: btn_IssueInvoice_click}
     layout_properties: {grid_position: 'ZZHUZR,DRQDDE'}
     name: btn_IssueInvoice

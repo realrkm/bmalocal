@@ -24,6 +24,11 @@ class Workflow(WorkflowTemplate):
 
         # Apply permissions to buttons and load the first available subform
         self.apply_permissions()
+        user = anvil.users.get_user()
+        if user['role_id']==1:
+            self.btn_TransitionToComplete.visible=True
+        else:
+            self.btn_TransitionToComplete.visible=False
 
     def apply_permissions(self):
         """Apply only WORKFLOW-related permissions and load the first available subform."""

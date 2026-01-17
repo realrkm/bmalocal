@@ -112,8 +112,10 @@ class DefectsForm(DefectsFormTemplate):
             
         anvil.server.call("updateDefectsList", jobcardID, instructions, notes,defects,parts, staffID, signature)
         alert("Update is successful", title="Success")
+        
+    def btn_DefectsPDF_click(self, **event_args):
+        """This method is called when the button is clicked"""
         self.btn_DownloadDefectsList_click()
-        self.btn_Close_click()
 
     def btn_DownloadDefectsList_click(self, **event_args):
         """This method is called when the button is clicked"""
@@ -166,7 +168,6 @@ class DefectsForm(DefectsFormTemplate):
         anvil.server.call_s("publish_role_notification",self.jobcardid, "ready for invoicing" )
         ModNavigation.go_Notification()
         alert("Alert has been sent successfully", title="Issue Invoice")
-        self.btn_Close_click()
 
     
     

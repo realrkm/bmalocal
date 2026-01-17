@@ -24,7 +24,7 @@ components:
       spacing_above: medium
       spacing_below: large
     type: Label
-  - event_bindings: {}
+  - event_bindings: {click: btn_alerts_click}
     layout_properties: {grid_position: 'FBKMZC,NYQZNG'}
     name: btn_alerts
     properties: {background: '#0056D6', border: '', foreground: 'theme:White', icon: 'fa:bell', role: raised, spacing_above: none, text: View All Alerts}

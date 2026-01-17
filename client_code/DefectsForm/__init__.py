@@ -112,10 +112,12 @@ class DefectsForm(DefectsFormTemplate):
             
         anvil.server.call("updateDefectsList", jobcardID, instructions, notes,defects,parts, staffID, signature)
         alert("Update is successful", title="Success")
+        self.btn_Update.enabled = True
         
     def btn_DefectsPDF_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.btn_DownloadDefectsList_click()
+        alert("Defects PDF download is successful", title="Success")
 
     def btn_DownloadDefectsList_click(self, **event_args):
         """This method is called when the button is clicked"""

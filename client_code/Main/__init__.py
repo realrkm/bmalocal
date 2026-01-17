@@ -192,6 +192,7 @@ class Main(MainTemplate):
         for n in notifications:
             self.notification_label.text = (f"{n['jobcard']} - {n['message']}")
 
+    @handle("btn_alerts", "click")
     def btn_alerts_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.btn_alerts.enabled=False

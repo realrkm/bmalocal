@@ -27,12 +27,12 @@ class Main(MainTemplate):
             self.permissions = anvil.server.call("get_user_permissions", user["role_id"])
             self.apply_permissions()
             if user['role_id']==1:
-                self.notification_label.visible=True
+                self.notification_label.visible=False
                 self.refresh()
             else:
                 self.notification_label.visible=False
                 self.btn_alerts.visible=False
-                self.btn_IncompleteDefectsInfo.enabled=False
+                self.btn_IncompleteDefectsInfo.visible=False
         user_agent = navigator.userAgent
         # Now call your server function and pass the user_agent
         anvil.server.call_s('get_stats', user_agent)

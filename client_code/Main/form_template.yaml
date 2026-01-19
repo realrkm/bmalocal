@@ -29,6 +29,11 @@ components:
     name: btn_alerts
     properties: {background: '#0056D6', border: '', foreground: 'theme:White', icon: 'fa:bell', role: raised, spacing_above: none, text: View All Alerts}
     type: Button
+  - event_bindings: {click: btn_IncompleteDefectsInfo_click}
+    layout_properties: {grid_position: 'FBKMZC,AVOQHW'}
+    name: btn_IncompleteDefectsInfo
+    properties: {background: '#0056D6', border: '', foreground: 'theme:White', icon: '', role: raised, spacing_above: none, text: Incomplete DEFECTS}
+    type: Button
   - components:
     - components:
       - layout_properties: {grid_position: 'ORTKHD,HEZLEL OUINEK,OUAOZU'}
@@ -61,7 +66,7 @@ components:
   properties:
     background: theme:White
     border: ''
-    col_widths: '{"DJBSVS":60,"NYQZNG":15}'
+    col_widths: '{"DJBSVS":55,"NYQZNG":20,"AVOQHW":20}'
     role: card
     spacing:
       padding: [null, 8, null, 8]

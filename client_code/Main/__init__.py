@@ -10,6 +10,7 @@ import anvil.js
 from anvil.js.window import navigator
 from ..FAQ import FAQ
 from ..Alerts import Alerts
+from ..IncompleteDefectsInfo import IncompleteDefectsInfo
 
 class Main(MainTemplate):
     def __init__(self, **properties):
@@ -31,6 +32,7 @@ class Main(MainTemplate):
             else:
                 self.notification_label.visible=False
                 self.btn_alerts.visible=False
+                self.btn_IncompleteDefectsInfo.enabled=False
         user_agent = navigator.userAgent
         # Now call your server function and pass the user_agent
         anvil.server.call_s('get_stats', user_agent)
@@ -197,3 +199,9 @@ class Main(MainTemplate):
         self.btn_alerts.enabled=False
         alert(content=Alerts(), dismissible=False,large=True)
         self.btn_alerts.enabled=True
+
+    def btn_IncompleteDefectsInfo_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        self.btn_IncompleteDefectsInfo.enabled=False
+        alert(content=IncompleteDefectsInfo(), dismissible=False,large=True)
+        self.btn_IncompleteDefectsInfo.enabled=True

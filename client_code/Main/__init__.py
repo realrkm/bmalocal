@@ -28,7 +28,6 @@ class Main(MainTemplate):
             self.apply_permissions()
             if user['role_id']==1:
                 self.notification_label.visible=True
-                self.notification_timer_tick()
                 self.refresh()
             else:
                 self.notification_label.visible=False

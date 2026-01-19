@@ -87,5 +87,4 @@ def go_Settings(permissions):
 def go_Notification():
     form=get_form()
     form.notification_timer.enabled = True
-    form.notification_timer.interval=10
     form.notification_timer_tick()

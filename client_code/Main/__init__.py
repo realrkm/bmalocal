@@ -193,6 +193,7 @@ class Main(MainTemplate):
 
         for n in notifications:
             self.notification_label.text = (f"{n['jobcard']} - {n['message']}")
+            self.notification_label.visible=True
             self.btn_alerts.visible=True
             self.refresh()
 

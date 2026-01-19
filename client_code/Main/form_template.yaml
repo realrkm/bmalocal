@@ -27,12 +27,12 @@ components:
   - event_bindings: {click: btn_alerts_click}
     layout_properties: {grid_position: 'FBKMZC,NYQZNG'}
     name: btn_alerts
-    properties: {background: '#0056D6', border: '', foreground: 'theme:White', icon: 'fa:bell', role: raised, spacing_above: none, text: View All Alerts}
+    properties: {background: '#0056D6', border: '', foreground: 'theme:White', icon: 'fa:bell', role: raised, spacing_above: none, text: View All Alerts, visible: false}
     type: Button
   - event_bindings: {click: btn_IncompleteDefectsInfo_click}
     layout_properties: {grid_position: 'FBKMZC,AVOQHW'}
     name: btn_IncompleteDefectsInfo
-    properties: {background: '#0056D6', border: '', foreground: 'theme:White', icon: '', role: raised, spacing_above: none, text: Incomplete DEFECTS}
+    properties: {background: '#0056D6', border: '', foreground: 'theme:White', icon: '', role: raised, spacing_above: none, text: Incomplete DEFECTS, visible: false}
     type: Button
   - components:
     - components:

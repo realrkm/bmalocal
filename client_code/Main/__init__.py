@@ -187,11 +187,13 @@ class Main(MainTemplate):
         
     def notification_timer_tick(self, **event_args):
         """This method is called Every [interval] seconds. Does not trigger if [interval] is 0."""
-        #self.notification_label.text=""
+        self.notification_label.text=""
+        self.btn_alerts.visible=False
         notifications = anvil.server.call('fetch_role_notifications',anvil.users.get_user())
 
         for n in notifications:
             self.notification_label.text = (f"{n['jobcard']} - {n['message']}")
+            self.btn_alerts.visible=True
             self.refresh()
 
     def btn_alerts_click(self, **event_args):

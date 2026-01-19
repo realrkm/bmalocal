@@ -6,7 +6,7 @@ import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
 import anvil.js
-
+from .. import ModNavigation
 
 class IncompleteDefectsInfo(IncompleteDefectsInfoTemplate):
     def __init__(self, **properties):
@@ -27,3 +27,4 @@ class IncompleteDefectsInfo(IncompleteDefectsInfoTemplate):
         anvil.server.call_s("deactivate_incomplete_defects_info")
         alert("Incomplete defects info is updated successfully", title="Success")
         self.raise_event("x-close-alert", value=True)
+        ModNavigation.go_Disable_Incomplete_Defects_Info()

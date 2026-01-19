@@ -176,5 +176,6 @@ class DefectsForm(DefectsFormTemplate):
         """This method is called when the button is clicked"""
         anvil.server.call_s("publish_defects_notification",self.jobcardid, "defects list incomplete" )
         alert("Incomplete defects list updated ", title="Success")
+        ModNavigation.go_Enable_Incomplete_Defects_Info()
         
     

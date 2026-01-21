@@ -27,7 +27,7 @@ components:
   - event_bindings: {click: btn_alerts_click}
     layout_properties: {grid_position: 'FBKMZC,NYQZNG'}
     name: btn_alerts
-    properties: {background: '#0056D6', border: '', enabled: false, foreground: 'theme:White', icon: '', role: raised, spacing_above: none, text: View Invoice Alerts, visible: true}
+    properties: {background: '#0056D6', border: '', enabled: false, foreground: 'theme:White', icon: '', role: raised, spacing_above: none, text: View Issue Invoice Alerts, visible: true}
     type: Button
   - event_bindings: {click: btn_IncompleteDefectsInfo_click}
     layout_properties: {grid_position: 'FBKMZC,AVOQHW'}
@@ -66,7 +66,7 @@ components:
   properties:
     background: theme:White
     border: ''
-    col_widths: '{"DJBSVS":50,"NYQZNG":20,"AVOQHW":25}'
+    col_widths: '{"DJBSVS":45,"NYQZNG":25,"AVOQHW":25}'
     role: card
     spacing:
       padding: [null, 8, null, 8]

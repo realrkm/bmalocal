@@ -189,16 +189,16 @@ class Main(MainTemplate):
         with anvil.server.no_loading_indicator:
             self.notification_label.text=""
             self.btn_alerts.enabled=False
+            if self.btn_IncompleteDefectsInfo.enabled:
+                self.btn_IncompleteDefectsInfo.enabled=True
+            else:
+                self.btn_IncompleteDefectsInfo.enabled=False
             notifications = anvil.server.call('fetch_role_notifications',anvil.users.get_user())
 
             for n in notifications:
                 self.notification_label.text = (f"{n['jobcard']} - {n['message']}")
                 #self.notification_label.visible=True
                 self.btn_alerts.enabled=True
-                if self.btn_IncompleteDefectsInfo.enabled:
-                    self.btn_IncompleteDefectsInfo.enabled=True
-                else:
-                    self.btn_IncompleteDefectsInfo.enabled=False
                 self.refresh()
 
     def btn_alerts_click(self, **event_args):

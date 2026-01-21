@@ -167,14 +167,14 @@ class DefectsForm(DefectsFormTemplate):
 
     def btn_IssueInvoice_click(self, **event_args):
         """This method is called when the button is clicked"""
-        anvil.server.call_s("publish_role_notification",self.jobcardid, "ready for invoicing" )
+        anvil.server.call("publish_role_notification",self.jobcardid, "ready for invoicing" )
         ModNavigation.go_Notification()
         alert("Alert has been sent successfully", title="Issue Invoice")
 
 
     def btn_IncompleteDefectsInfo(self, **event_args):
         """This method is called when the button is clicked"""
-        anvil.server.call_s("publish_defects_notification",self.jobcardid, "defects list incomplete" )
+        anvil.server.call("publish_defects_notification",self.jobcardid, "defects list incomplete" )
         alert("Incomplete defects list updated ", title="Success")
         ModNavigation.go_Enable_Incomplete_Defects_Info()
         

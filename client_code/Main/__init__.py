@@ -38,6 +38,9 @@ class Main(MainTemplate):
                 
         ModNavigation.home_form = self
         
+    def refresh(self, **event_args):
+        self.set_event_handler("x-refresh", self.refresh)
+        
     def apply_permissions(self):
         """Apply user permissions to the sidebar only"""
         section_map = {
@@ -180,25 +183,24 @@ class Main(MainTemplate):
     def btn_ResetPassword_click(self, **event_args):
         """This method is called when the button is clicked"""
         anvil.users.change_password_with_form()
-
-    def refresh(self, **event_args):
-        self.set_event_handler("x-refresh", self.refresh)
         
     def notification_timer_tick(self, **event_args):
         """This method is called Every [interval] seconds. Does not trigger if [interval] is 0."""
         with anvil.server.no_loading_indicator:
             self.notification_label.text=""
-            self.btn_alerts.enabled=False
-            if self.btn_IncompleteDefectsInfo.enabled:
+            notifications = anvil.server.call('fetch_role_notifications',anvil.users.get_user())
+            if notifications:
+                self.btn_alerts.enabled=True
+            else:
+                self.btn_alerts.enabled=False
+            if anvil.server.call_s("fetch_active_incomplete_defects_info",anvil.users.get_user()):
                 self.btn_IncompleteDefectsInfo.enabled=True
             else:
                 self.btn_IncompleteDefectsInfo.enabled=False
-            notifications = anvil.server.call('fetch_role_notifications',anvil.users.get_user())
-
             for n in notifications:
                 self.notification_label.text = (f"{n['jobcard']} - {n['message']}")
                 #self.notification_label.visible=True
-                self.btn_alerts.enabled=True
+                
                 self.refresh()
 
     def btn_alerts_click(self, **event_args):

@@ -37,6 +37,7 @@ class Main(MainTemplate):
         anvil.server.call_s('get_stats', user_agent)
                 
         ModNavigation.home_form = self
+
         
     def refresh(self, **event_args):
         self.set_event_handler("x-refresh", self.refresh)

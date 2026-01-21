@@ -177,5 +177,4 @@ class DefectsForm(DefectsFormTemplate):
         anvil.server.call("publish_defects_notification",self.jobcardid, "defects list incomplete" )
         alert("Incomplete defects list updated ", title="Success")
         ModNavigation.go_Enable_Incomplete_Defects_Info()
-        
     

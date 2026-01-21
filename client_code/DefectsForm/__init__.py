@@ -167,7 +167,7 @@ class DefectsForm(DefectsFormTemplate):
 
     def btn_IssueInvoice_click(self, **event_args):
         """This method is called when the button is clicked"""
-        anvil.server.call_s("publish_role_notification",self.jobcardid, "ready for invoicing" )
+        anvil.server.call("publish_role_notification",self.jobcardid, "ready for invoicing" )
         ModNavigation.go_Notification()
         alert("Alert has been sent successfully", title="Issue Invoice")
 

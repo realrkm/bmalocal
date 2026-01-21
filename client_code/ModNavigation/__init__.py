@@ -92,8 +92,8 @@ def go_Notification():
 #Load Incomplete Defects Button
 def go_Disable_Incomplete_Defects_Info():
     form = get_open_form()
-    form.btn_IncompleteDefectsInfo.visible = False
+    form.btn_IncompleteDefectsInfo.enabled = False
 
 def go_Enable_Incomplete_Defects_Info():
     form = get_open_form()
-    form.btn_IncompleteDefectsInfo.visible = True
+    form.btn_IncompleteDefectsInfo.enabled = True

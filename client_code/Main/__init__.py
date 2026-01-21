@@ -27,7 +27,6 @@ class Main(MainTemplate):
             self.permissions = anvil.server.call("get_user_permissions", user["role_id"])
             self.apply_permissions()
             if user['role_id']==1:
-                self.notification_label.visible=False
                 self.refresh()
             else:
                 self.notification_label.visible=False
@@ -187,15 +186,20 @@ class Main(MainTemplate):
         
     def notification_timer_tick(self, **event_args):
         """This method is called Every [interval] seconds. Does not trigger if [interval] is 0."""
-        self.notification_label.text=""
-        self.btn_alerts.visible=False
-        notifications = anvil.server.call('fetch_role_notifications',anvil.users.get_user())
+        with anvil.server.no_loading_indicator:
+            self.notification_label.text=""
+            self.btn_alerts.enabled=False
+            notifications = anvil.server.call('fetch_role_notifications',anvil.users.get_user())
 
-        for n in notifications:
-            self.notification_label.text = (f"{n['jobcard']} - {n['message']}")
-            self.notification_label.visible=True
-            self.btn_alerts.visible=True
-            self.refresh()
+            for n in notifications:
+                self.notification_label.text = (f"{n['jobcard']} - {n['message']}")
+                #self.notification_label.visible=True
+                self.btn_alerts.enabled=True
+                if self.btn_IncompleteDefectsInfo.enabled:
+                    self.btn_IncompleteDefectsInfo.enabled=True
+                else:
+                    self.btn_IncompleteDefectsInfo.enabled=False
+                self.refresh()
 
     def btn_alerts_click(self, **event_args):
         """This method is called when the button is clicked"""

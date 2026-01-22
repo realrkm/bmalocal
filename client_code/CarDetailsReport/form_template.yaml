@@ -12,7 +12,7 @@ components:
     - event_bindings: {pressed_enter: btn_Search_click}
       layout_properties: {grid_position: 'MSOVXI,GFNFCU'}
       name: txt_Search
-      properties: {border: solid, font: Mozilla Headline, font_size: 16, placeholder: Enter Customer Name / Phone No /  RegNo / Chassis No To Search *}
+      properties: {border: solid, font: Mozilla Headline, font_size: 16, placeholder: Enter Customer Name / Phone No /  RegNo / Chassis No / Make And Model To Search *}
       type: TextBox
     - event_bindings: {pressed_enter: btn_Search_click}
       layout_properties: {grid_position: 'ILBADB,NHFQWF'}
@@ -52,6 +52,7 @@ components:
       - {data_key: '', expand: false, id: HIVUJH, title: '', width: 89}
       - {data_key: ReceivedDate, expand: true, id: CDALEJ, title: Date Received}
       - {data_key: JobCardRef, expand: true, id: PWPZHT, title: Job Card Ref}
+      - {data_key: MakeAndModel, expand: true, id: LGMPBL, title: MakeAndModel}
       foreground: theme:White
       role: null
       rows_per_page: 25

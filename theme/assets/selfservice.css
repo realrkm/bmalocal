@@ -1,0 +1,29 @@
+/* Custom scrollbar for a cleaner kiosk look */
+::-webkit-scrollbar {
+    width: 10px;
+}
+::-webkit-scrollbar-track {
+    background: #1e293b;
+}
+::-webkit-scrollbar-thumb {
+    background: #ef4444;
+    border-radius: 5px;
+}
+
+.category-card {
+    transition: transform 0.2s ease-in-out;
+    min-height: 240px;
+}
+
+.category-card:hover {
+    transform: scale(1.05);
+}
+
+#main-content {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

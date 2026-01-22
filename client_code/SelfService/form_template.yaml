@@ -1,0 +1,5 @@
+components: []
+container:
+  properties: {background: 'theme:Black', html: '@theme:selfservice.html'}
+  type: HtmlTemplate
+is_package: true

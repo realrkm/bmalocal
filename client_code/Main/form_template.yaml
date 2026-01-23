@@ -3,7 +3,7 @@ components:
   - event_bindings: {tick: notification_timer_tick}
     layout_properties: {grid_position: 'DUWVYT,MIIKOB'}
     name: notification_timer
-    properties: {interval: 0}
+    properties: {interval: 5}
     type: Timer
   - layout_properties: {grid_position: 'FBKMZC,DJBSVS'}
     name: notification_label

@@ -129,23 +129,49 @@
     }
 
     function renderSearch() {
-        const activeCats = [...new Set(searchResults.map(p => categorize(p)))].filter(c => c !== 'other');
-        const filtered = activeSearchFilter === 'all' ? searchResults : searchResults.filter(p => categorize(p) === activeSearchFilter);
+        // Find which categories are actually present in the results
+        const resultCategories = [...new Set(searchResults.map(p => categorize(p)))].filter(c => c !== 'other');
+
+        // Filter the results based on the active pill
+        const filteredResults = activeSearchFilter === 'all' 
+            ? searchResults 
+            : searchResults.filter(p => categorize(p) === activeSearchFilter);
+
         mainContent.innerHTML = `
-            <h2 style="margin-bottom:1rem">Results: ${filtered.length}</h2>
-            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:2rem;">
-                <button class="pill ${activeSearchFilter === 'all' ? 'active' : ''}" onclick="setFilter('all')">All</button>
-                ${activeCats.map(c => `<button class="pill ${activeSearchFilter === c ? 'active' : ''}" onclick="setFilter('${c}')">${categories.find(x => x.id === c).name}</button>`).join('')}
-            </div>
-            <div class="category-grid">${renderParts(filtered)}</div>`;
+            <div class="view-animate">
+                <h2 style="font-size:3rem; margin-bottom:1.5rem;">Search Results (${filteredResults.length})</h2>
+                
+                <div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-bottom:2rem;">
+                    <button onclick="setSearchFilter('all')" style="padding:0.75rem 1.5rem; border-radius:2rem; border:none; cursor:pointer; font-weight:bold; ${activeSearchFilter === 'all' ? 'background:#dc2626; color:white;' : 'background:#334155; color:#94a3b8;'}">
+                        All Results
+                    </button>
+                    ${resultCategories.map(catId => {
+                        const cat = categories.find(c => c.id === catId);
+                        return `
+                            <button onclick="setSearchFilter('${catId}')" style="padding:0.75rem 1.5rem; border-radius:2rem; border:none; cursor:pointer; font-weight:bold; ${activeSearchFilter === catId ? 'background:#dc2626; color:white;' : 'background:#334155; color:#94a3b8;'}">
+                                ${cat ? cat.name : catId}
+                            </button>
+                        `;
+                    }).join('')}
+                </div>
+
+                ${filteredResults.length === 0 ? `<p style="font-size:2rem; text-align:center; padding:4rem;">No items found in this category.</p>` : `
+                <div style="display:grid; gap:1.5rem; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+                    ${filteredResults.map(part => `
+                        <div style="background:#334155; padding:2rem; border-radius:1.5rem; display:flex; flex-direction:column; justify-content:space-between; gap:1.5rem;">
+                            <div><h3 style="font-size:1.75rem;">${part.name}</h3><p>#${part.partNo}</p></div>
+                            <button onclick="addToCart('${part.partNo}')" style="background:#dc2626; color:white; padding:1.25rem; border-radius:0.75rem; font-weight:bold; cursor:pointer; border:none;">Add to Order</button>
+                        </div>`).join('')}
+                </div>`}
+            </div>`;
     }
 
     function renderParts(arr) {
         return arr.map(p => `
             <div style="background:#334155; padding:2.5rem; border-radius:1.5rem; display:flex; flex-direction:column; justify-content:space-between; gap:2rem; text-align:center; box-shadow: 0 10px 20px rgba(0,0,0,0.2);">
                 <div>
-                    <h3 style="font-size:1.5rem;">${p.name}</h3>
-                    <p style="color:#94a3b8; margin-top:0.6rem; font-size:1rem;">Part #${p.partNo}</p>
+                    <h3 style="font-size:2rem;">${p.name}</h3>
+                    <p style="color:#94a3b8; margin-top:0.6rem; font-size:2rem;">Part #${p.partNo}</p>
                 </div>
                 <button onclick="addToCart('${p.partNo}')" class="add-btn-circular" title="Add to Order">
                     <i data-lucide="plus" style="width:32px; height:32px; stroke-width:3;"></i>
@@ -162,7 +188,7 @@
                 </div>
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <h3>Total: ${cart.length} Parts</h3>
-                    <button onclick="confirmOrder()" style="background:#22c55e; color:white; padding:1rem 2rem; border-radius:0.5rem; border:none; font-weight:bold; cursor:pointer; font-size:1.2rem;" ${cart.length === 0 ? 'disabled' : ''}>Confirm Order</button>
+                    <button onclick="confirmOrder()" style="background:#22c55e; color:white; padding:1rem 2rem; border-radius:0.5rem; border:none; font-weight:bold; cursor:pointer; font-size:1.6rem;" ${cart.length === 0 ? 'disabled' : ''}>Confirm Order</button>
                 </div>
             </div>`;
     }
@@ -183,7 +209,7 @@
         window.addToCart = (no) => { const item = parts.find(p => p.partNo === no); if(item) cart.push(item); render(); };
         window.removeFromCart = (i) => { cart.splice(i,1); render(); };
         window.goToHome = () => { currentView = 'home'; render(); };
-        window.setFilter = (f) => { activeSearchFilter = f; render(); };
+        window.setSearchFilter = (f) => { activeSearchFilter = f; render(); };
         window.confirmOrder = () => { window.lastOrderID = Math.floor(1000 + Math.random() * 9000); orderHistory.push({id: window.lastOrderID, count: cart.length}); cart = []; currentView = 'success'; render(); };
         
         backBtn.onclick = goToHome;

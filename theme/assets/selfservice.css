@@ -34,7 +34,9 @@ header {
     justify-content: space-between; 
     align-items: center; 
     max-width: 1400px; 
-    margin: 0 auto; 
+    margin: 0 auto;
+    margin-bottom: 6rem;
+    
 }
 
 .header-left { 
@@ -64,10 +66,10 @@ header {
     right: -10px;
     background: #facc15;
     color: #000000; /* Black text for count */
-    font-size: 0.9rem;
+    font-size: 2.4rem;
     font-weight: 900;
-    width: 24px;
-    height: 24px;
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -152,7 +154,7 @@ footer button {
     background: none;
     border: none;
     color: white;
-    font-size: 1.8rem;
+    font-size: 2rem;
     font-weight: bold;
     cursor: pointer;
     display: flex;
@@ -188,7 +190,7 @@ footer button {
     border: none; 
     background: #334155; 
     color: white; 
-    font-size: 1.3rem; 
+    font-size: 2.4rem; 
 }
 
 .breadcrumb-nav { max-width: 1400px; margin: 1rem auto; padding: 0 2rem; display: flex; align-items: center; gap: 0.5rem; color: #94a3b8; }
@@ -200,12 +202,55 @@ footer button {
     box-shadow: 0 4px 15px rgba(0,0,0,0.4);
 }
 
-/* --- Print & Utility --- */
+/* --- Print Logic --- */
 @media print {
-    header, footer, #back-to-top, .breadcrumb-nav, button { display: none !important; }
-    body { background: white; color: black; }
+    /* Hide the entire UI */
+    header, footer, .auto-reset-text, button, .category-grid, .checkout-container {
+        display: none !important;
+    }
+
+    /* Reset background for printer ink savings */
+    body {
+        background: white !important;
+        color: black !important;
+    }
+
+    /* Center and format the ticket */
+    .success-card {
+        border: 2px solid black !important;
+        box-shadow: none !important;
+        margin: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 20px !important;
+    }
+
+    .order-number {
+        border: 2px solid black !important;
+        color: black !important;
+        font-size: 4rem !important;
+    }
 }
 
+/* Button styles for the screen */
+.btn-print {
+    background: #475569;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 0.5rem;
+    font-size: 2.4rem;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 1rem auto;
+}
+
+.btn-print:hover {
+    background: #334155;
+}
 .hidden { display: none !important; }
 .hidden-fade { opacity: 0; pointer-events: none; transform: translateY(20px); }
 .visible-fade { opacity: 1; pointer-events: auto; transform: translateY(0); }

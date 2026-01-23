@@ -215,3 +215,11 @@ class Main(MainTemplate):
         self.btn_IncompleteDefectsInfo.enabled=False
         alert(content=IncompleteDefectsInfo(), dismissible=False,large=True)
         self.btn_IncompleteDefectsInfo.enabled=True
+
+    def btn_SelfService_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        self.highlight_active_button("SELF SERVICE")
+        ModNavigation.go_SelfService()
+        #Now hide sidebar after clicking link. 
+        #Additional function in standard-page.html
+        self.call_js('hideSidebarIfModal')

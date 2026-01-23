@@ -16,6 +16,7 @@ from ..ProgressTracker import ProgressTracker
 from ..ProgressTrackerMobileView import ProgressTrackerMobileView
 from ..Inventory import Inventory
 from ..PartsHub import PartsHub
+from ..SelfService import SelfService
 
 
 home_form = None
@@ -83,6 +84,11 @@ def go_Settings(permissions):
     form = get_form()
     form.load_component(Settings(permissions))
 
+#Load PartsHub Form
+def go_SelfService():
+    form = get_form()
+    form.load_component(SelfService())
+    
 #Load Notification
 def go_Notification():
     form=get_form()

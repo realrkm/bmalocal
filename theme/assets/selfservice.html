@@ -3,39 +3,37 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Auto Parts Express</title>
+        <title>Auto Parts Express Kiosk</title>
         <link rel="stylesheet" href="_/theme/selfservice.css">
         <script src="_/theme/lucide.min.js"></script>
-        <script>
-            lucide.createIcons();
-        </script>
     </head>
     <body>
         <header>
             <div class="header-container">
                 <div class="header-left">
-                    <button id="back-btn" class="hidden">
-                        <i data-lucide="arrow-left" style="width: 2rem; height: 2rem;"></i>
-                    </button>
-                    <div>
+                    <button id="back-btn" class="hidden header-action-btn"><i data-lucide="arrow-left"></i></button>
+                    <div id="admin-trigger" style="cursor: pointer;">
                         <h1>Auto Parts Express</h1>
                         <p class="subtitle">Self-Service Ordering</p>
                     </div>
                 </div>
-
-                <button id="cart-btn">
-                    <i data-lucide="shopping-cart" style="width: 2rem; height: 2rem;"></i>
-                    <span id="cart-count" class="hidden">0</span>
-                </button>
+                <div class="header-right">
+                    <button id="cart-btn" class="header-action-btn">
+                        <i data-lucide="shopping-cart"></i>
+                        <span id="cart-count" class="hidden">0</span>
+                    </button>
+                </div>
             </div>
         </header>
 
+        <nav id="breadcrumb-container" class="breadcrumb-nav hidden"></nav>
         <main id="main-content"></main>
+
+        <button id="back-to-top" class="hidden-fade"><i data-lucide="arrow-up"></i></button>
 
         <footer>
             <button id="home-footer-btn">
-                <i data-lucide="home" style="width: 1.75rem; height: 1.75rem;"></i>
-                Return to Main Menu
+                <i data-lucide="home"></i> Return to Main Menu
             </button>
         </footer>
 

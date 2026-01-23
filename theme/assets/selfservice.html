@@ -1,45 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auto Parts Express</title>
-    <script src="_/theme/selfservice.js"></script>
-    <link rel="stylesheet" href="_/theme/selfservice.css">
-    <script src="_/theme/lucide.min.js"></script>
-    <script>
-        lucide.createIcons();
-    </script>
-
-</head>
-<body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen flex flex-col text-white">
-
-    <header class="bg-red-600 p-6 shadow-xl sticky top-0 z-50">
-        <div class="flex items-center justify-between max-w-7xl mx-auto">
-            <div class="flex items-center gap-4">
-                <button id="back-btn" class="hidden p-2 hover:bg-red-700 rounded-lg transition">
-                    <i data-lucide="arrow-left" class="w-8 h-8"></i>
-                </button>
-                <div>
-                    <h1 class="text-4xl font-bold">Auto Parts Express</h1>
-                    <p class="text-red-100 text-lg">Self-Service Ordering</p>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Auto Parts Express</title>
+        <link rel="stylesheet" href="_/theme/selfservice.css">
+        <script src="_/theme/lucide.min.js"></script>
+        <script>
+            lucide.createIcons();
+        </script>
+    </head>
+    <body>
+        <header>
+            <div class="header-container">
+                <div class="header-left">
+                    <button id="back-btn" class="hidden">
+                        <i data-lucide="arrow-left" style="width: 2rem; height: 2rem;"></i>
+                    </button>
+                    <div>
+                        <h1>Auto Parts Express</h1>
+                        <p class="subtitle">Self-Service Ordering</p>
+                    </div>
                 </div>
+
+                <button id="cart-btn">
+                    <i data-lucide="shopping-cart" style="width: 2rem; height: 2rem;"></i>
+                    <span id="cart-count" class="hidden">0</span>
+                </button>
             </div>
-            <button id="cart-btn" class="relative p-4 bg-white text-red-600 rounded-full hover:bg-red-50 transition shadow-lg">
-                <i data-lucide="shopping-cart" class="w-8 h-8"></i>
-                <span id="cart-count" class="hidden absolute -top-2 -right-2 bg-yellow-400 text-slate-900 w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg">0</span>
+        </header>
+
+        <main id="main-content"></main>
+
+        <footer>
+            <button id="home-footer-btn">
+                <i data-lucide="home" style="width: 1.75rem; height: 1.75rem;"></i>
+                Return to Main Menu
             </button>
-        </div>
-    </header>
+        </footer>
 
-    <main id="main-content" class="flex-1 overflow-y-auto p-8 max-w-7xl mx-auto w-full">
-        </main>
-
-    <footer class="bg-slate-800 p-6 text-center border-t-4 border-red-600 mt-auto">
-        <button id="home-footer-btn" class="flex items-center justify-center gap-3 mx-auto text-2xl hover:text-red-400 transition">
-            <i data-lucide="home" class="w-7 h-7"></i>
-            Return to Main Menu
-        </button>
-    </footer>
-</body>
+        <script src="_/theme/selfservice.js"></script>
+    </body>
 </html>

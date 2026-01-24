@@ -233,10 +233,11 @@
                         : cart.map((item, i) => `
                             <div class="checkout-row">
                                 <div><strong>${item.name}</strong><br><small>#${item.partNo}</small></div>
-                                <button onclick="removeFromCart(${i})" class="btn-remove"><i data-lucide="trash-2"></i></button>
+                                <button onclick="removeFromCart(${i})" style="color:#ef4444; background:none; border:none; cursor:pointer;"><i data-lucide="trash-2"></i></button>
                             </div>
                         `).join('')}
                 </div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
                 <div class="checkout-footer">
                     <h3>Total: ${cart.length} Parts</h3>
                     <button onclick="confirmOrder()" ${cart.length === 0 ? 'disabled' : ''} class="btn-confirm">Confirm Order</button>

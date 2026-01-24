@@ -1,5 +1,4 @@
 (() => {
-
     // -------------------------------
     // DOM REFERENCES
     // -------------------------------
@@ -15,36 +14,32 @@
     // -------------------------------
     // STATE
     // -------------------------------
-    let currentView = 'home';          // home | issueParts | category | checkout | success | admin
+    let currentView = 'home';
     let selectedCategory = null;
     let activeReg = null;
-
-    let parts = [];
-    let cart = [];
-
     let serviceSearchQuery = '';
     let currentStatusFilter = 'all';
-
     let orderHistory = [];
     let lastOrderID = null;
-
     let adminClicks = 0;
     let adminTimeout = null;
 
     // -------------------------------
     // STATIC DATA
     // -------------------------------
+    let parts = [];
+    let cart = [];
 
     const categories = [
-        { id: 'body', name: 'Body & Exterior', icon: '🚗', color: 'bg-indigo', keywords: ['bumper','fender','door','hood'] },
-        { id: 'brakes', name: 'Brake System', icon: '🛑', color: 'bg-orange', keywords: ['brake','rotor','caliper','pad'] },
-        { id: 'cooling', name: 'Cooling System', icon: '❄️', color: 'bg-cyan', keywords: ['radiator','fan','coolant','thermostat'] },
-        { id: 'electrical', name: 'Electrical & Lighting', icon: '💡', color: 'bg-yellow', keywords: ['battery','alternator','starter','light'] },
-        { id: 'engine', name: 'Engine Components', icon: '⚙️', color: 'bg-red', keywords: ['engine','piston','cylinder','valve','gasket'] },
-        { id: 'exhaust', name: 'Exhaust System', icon: '💨', color: 'bg-gray', keywords: ['exhaust','muffler','catalytic'] },
-        { id: 'filters', name: 'Filters & Fluids', icon: '🔍', color: 'bg-green', keywords: ['filter','oil filter','air filter'] },
-        { id: 'suspension', name: 'Suspension & Steering', icon: '🔧', color: 'bg-blue', keywords: ['suspension','shock','strut','spring'] },
-        { id: 'transmission', name: 'Transmission', icon: '⚡', color: 'bg-purple', keywords: ['transmission','clutch','gearbox'] }
+        { id: 'body', name: 'Body & Exterior', icon: '🚗', color: 'bg-indigo', keywords: ['bumper', 'fender', 'door', 'hood'] },
+        { id: 'brakes', name: 'Brake System', icon: '🛑', color: 'bg-orange', keywords: ['brake', 'rotor', 'caliper', 'pad'] },
+        { id: 'cooling', name: 'Cooling System', icon: '❄️', color: 'bg-cyan', keywords: ['radiator', 'fan', 'coolant', 'thermostat'] },
+        { id: 'electrical', name: 'Electrical & Lighting', icon: '💡', color: 'bg-yellow', keywords: ['battery', 'alternator', 'starter', 'light'] },
+        { id: 'engine', name: 'Engine Components', icon: '⚙️', color: 'bg-red', keywords: ['engine', 'piston', 'cylinder', 'valve', 'gasket'] },
+        { id: 'exhaust', name: 'Exhaust System', icon: '💨', color: 'bg-gray', keywords: ['exhaust', 'muffler', 'catalytic'] },
+        { id: 'filters', name: 'Filters & Fluids', icon: '🔍', color: 'bg-green', keywords: ['filter', 'air filter', 'oil filter'] },
+        { id: 'suspension', name: 'Suspension & Steering', icon: '🔧', color: 'bg-blue', keywords: ['suspension', 'shock', 'strut', 'spring'] },
+        { id: 'transmission', name: 'Transmission', icon: '⚡', color: 'bg-purple', keywords: ['transmission', 'clutch', 'gearbox'] }
     ];
 
     let activeServices = [
@@ -52,23 +47,38 @@
         { date: '2026-01-24', tech: 'Sarah Smith', reg: 'KCC 789Z', instruction: 'Brake Check', status: 'Checked-In', statusChangedAt: new Date(Date.now() - 1800000) }
     ];
 
+    // Categorize a part based on keywords
+    function categorizePart(part) {
+        const text = (part.name + part.partNo).toLowerCase();
+        for (const cat of categories) {
+            if (cat.keywords.some(k => text.includes(k))) return cat.id;
+        }
+        return 'other';
+    }
+
+    async function loadParts() {
+        try {
+            const res = await fetch('_/theme/data/tbl_carpartnames.csv');
+            const data = await res.text();
+            parts = data.split('\n')
+                .slice(1)
+                .filter(l => l.trim() && l.includes(','))
+                .map(line => {
+                    const [name, partNo] = line.split(',').map(s => s.trim());
+                    return { name, partNo, category: categorizePart({name, partNo}) };
+                });
+        } catch (e) {
+            console.error('Error loading parts:', e);
+        }
+    }
+
     // -------------------------------
     // INIT
     // -------------------------------
-    function init() {
-        // Simulate CSV-loaded parts (replace with fetch later)
-        parts = [
-            { name: "Oil Filter - Synthetic", partNo: "OF-1001" },
-            { name: "Brake Pads - Front", partNo: "BP-5522" },
-            { name: "Radiator Fan", partNo: "RF-0990" },
-            { name: "Alternator Assembly", partNo: "ALT-8831" },
-            { name: "Shock Absorber", partNo: "SH-2201" }
-        ];
-
+    async function init() {
+        await loadParts();
         setupListeners();
         render();
-        lucide.createIcons();
-
         setInterval(() => {
             if (currentView === 'home') render();
         }, 60000);
@@ -77,14 +87,6 @@
     // -------------------------------
     // HELPERS
     // -------------------------------
-    function categorize(part) {
-        const text = (part.name + part.partNo).toLowerCase();
-        for (const c of categories) {
-            if (c.keywords.some(k => text.includes(k))) return c.id;
-        }
-        return 'other';
-    }
-
     function getTimeElapsed(startTime) {
         const diffMs = new Date() - new Date(startTime);
         const mins = Math.floor(diffMs / 60000);
@@ -113,27 +115,19 @@
         else if (currentView === 'success') renderSuccess();
         else if (currentView === 'admin') renderAdmin();
 
-        lucide.createIcons();
+        if (window.lucide) lucide.createIcons();
         window.scrollTo({ top: 0, behavior: 'instant' });
     }
 
     // -------------------------------
     // VIEWS
     // -------------------------------
-
     function renderHome() {
         const isHistory = currentStatusFilter === 'Completed';
-
         const filtered = activeServices.filter(s => {
-            const matchesStatus =
-                currentStatusFilter === 'all'
-                    ? s.status !== 'Completed'
-                    : s.status === currentStatusFilter;
-
-            const matchesSearch =
-                s.reg.toLowerCase().includes(serviceSearchQuery.toLowerCase()) ||
+            const matchesStatus = currentStatusFilter === 'all' ? s.status !== 'Completed' : s.status === currentStatusFilter;
+            const matchesSearch = s.reg.toLowerCase().includes(serviceSearchQuery.toLowerCase()) || 
                 s.tech.toLowerCase().includes(serviceSearchQuery.toLowerCase());
-
             return matchesStatus && matchesSearch;
         });
 
@@ -150,8 +144,7 @@
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
                 <h1>${isHistory ? 'Service History' : 'Service Queue'}</h1>
                 <div style="position:relative; width:400px;">
-                    <input type="text" id="service-search" class="search-input"
-                        placeholder="Search Reg or Tech..." value="${serviceSearchQuery}">
+                    <input type="text" id="service-search" class="search-input" placeholder="Search Reg or Tech..." value="${serviceSearchQuery}">
                     <i data-lucide="search" style="position:absolute; left:1rem; top:1.2rem;"></i>
                 </div>
             </div>
@@ -166,12 +159,7 @@
                 <table class="kiosk-table">
                     <thead>
                         <tr>
-                            <th>Received</th>
-                            <th>Technician</th>
-                            <th>Reg No</th>
-                            <th>Elapsed</th>
-                            <th>Status</th>
-                            <th>Action</th>
+                            <th>Received</th><th>Technician</th><th>Reg No</th><th>Elapsed</th><th>Status</th><th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -182,11 +170,7 @@
                                 <td style="color:#facc15; font-weight:bold;">${s.reg}</td>
                                 <td><i data-lucide="clock"></i> ${getTimeElapsed(s.statusChangedAt)}</td>
                                 <td>
-                                    <span class="status-badge ${
-                                        s.status === 'In-Service' ? 'status-in-service' :
-                                        s.status === 'Completed' ? 'status-completed' :
-                                        'status-checked-in'
-                                    }">${s.status}</span>
+                                    <span class="status-badge ${s.status === 'In-Service' ? 'status-in-service' : s.status === 'Completed' ? 'status-completed' : 'status-checked-in'}">${s.status}</span>
                                 </td>
                                 <td>
                                     ${s.status === 'Completed' ? '✅ Finished' : `
@@ -201,8 +185,7 @@
             </div>
         `;
 
-        const sInput = document.getElementById('service-search');
-        sInput.oninput = e => {
+        document.getElementById('service-search').oninput = e => {
             serviceSearchQuery = e.target.value;
             renderHome();
         };
@@ -210,7 +193,7 @@
 
     function renderIssueParts() {
         mainContent.innerHTML = `
-            <h2>Issuing Parts for: <span style="color:#facc15">${activeReg}</span></h2>
+            <h2 style="margin-bottom:2rem">Issuing Parts for: <span style="color:#facc15">${activeReg}</span></h2>
             <div class="category-grid">
                 ${categories.map(c => `
                     <button onclick="selectCategory('${c.id}')" class="category-card ${c.color}">
@@ -223,20 +206,19 @@
     }
 
     function renderCategory() {
-        const filtered = parts.filter(p => categorize(p) === selectedCategory.id);
-
+        const filtered = parts.filter(p => p.category === selectedCategory.id);
         mainContent.innerHTML = `
-            <h2>${selectedCategory.icon} ${selectedCategory.name}</h2>
+            <h2 style="margin-bottom:2rem">${selectedCategory.icon} ${selectedCategory.name}</h2>
             <div class="category-grid">
-                ${filtered.map(p => `
-                    <div class="part-card">
+                ${filtered.length ? filtered.map(p => `
+                    <div style="background:#334155; padding:2rem; border-radius:1rem; text-align:center;">
                         <h3>${p.name}</h3>
                         <p>#${p.partNo}</p>
-                        <button onclick="addToCart('${p.partNo}')" class="add-btn-circular">
+                        <button onclick="addToCart('${p.partNo}')" style="background:#dc2626; border:none; color:white; width:50px; height:50px; border-radius:50%; margin-top:1rem; cursor:pointer;">
                             <i data-lucide="plus"></i>
                         </button>
                     </div>
-                `).join('')}
+                `).join('') : '<p>No parts found in this category.</p>'}
             </div>
         `;
     }
@@ -246,38 +228,28 @@
             <div class="checkout-container">
                 <h2>Your Order</h2>
                 <div>
-                    ${cart.length === 0
-                        ? '<p style="text-align:center;">Your cart is empty.</p>'
+                    ${cart.length === 0 
+                        ? '<p style="text-align:center; font-size:2rem;">Your cart is empty.</p>' 
                         : cart.map((item, i) => `
                             <div class="checkout-row">
-                                <div>
-                                    <strong>${item.name}</strong><br>
-                                    <small>#${item.partNo}</small>
-                                </div>
-                                <button onclick="removeFromCart(${i})" class="btn-remove">
-                                    <i data-lucide="trash-2"></i>
-                                </button>
+                                <div><strong>${item.name}</strong><br><small>#${item.partNo}</small></div>
+                                <button onclick="removeFromCart(${i})" class="btn-remove"><i data-lucide="trash-2"></i></button>
                             </div>
                         `).join('')}
                 </div>
-
                 <div class="checkout-footer">
                     <h3>Total: ${cart.length} Parts</h3>
-                    <button onclick="confirmOrder()" ${cart.length === 0 ? 'disabled' : ''} class="btn-confirm">
-                        Confirm Order
-                    </button>
+                    <button onclick="confirmOrder()" ${cart.length === 0 ? 'disabled' : ''} class="btn-confirm">Confirm Order</button>
                 </div>
             </div>
         `;
     }
 
     function renderSuccess() {
-        const id = lastOrderID;
-
         mainContent.innerHTML = `
             <div class="success-card">
                 <h2>Order Confirmed</h2>
-                <div class="order-number">#${id}</div>
+                <div class="order-number">#${lastOrderID}</div>
                 <button class="btn-print" onclick="window.print()">Print Ticket</button>
                 <button class="btn-home" onclick="goHome()">Finish</button>
             </div>
@@ -286,39 +258,26 @@
 
     function renderAdmin() {
         const totalItems = orderHistory.reduce((sum, o) => sum + o.itemCount, 0);
-
         mainContent.innerHTML = `
             <h2>Admin Dashboard</h2>
-
             <div class="admin-stats">
                 <div>Orders Today: ${orderHistory.length}</div>
                 <div>Total Items: ${totalItems}</div>
                 <div>Time: ${new Date().toLocaleTimeString()}</div>
             </div>
-
             <table class="admin-table">
-                <thead>
-                    <tr><th>Time</th><th>Order ID</th><th>Items</th></tr>
-                </thead>
+                <thead><tr><th>Time</th><th>Order ID</th><th>Items</th></tr></thead>
                 <tbody>
-                    ${orderHistory.map(o => `
-                        <tr>
-                            <td>${o.time}</td>
-                            <td>#${o.id}</td>
-                            <td>${o.itemCount}</td>
-                        </tr>
-                    `).reverse().join('')}
+                    ${orderHistory.map(o => `<tr><td>${o.time}</td><td>#${o.id}</td><td>${o.itemCount}</td></tr>`).reverse().join('')}
                 </tbody>
             </table>
-
             <button onclick="clearStats()" class="btn-clear">Clear Session Data</button>
         `;
     }
 
     // -------------------------------
-    // NAV / ACTIONS
+    // WINDOW GLOBAL ACTIONS
     // -------------------------------
-
     window.filterByStatus = s => {
         currentStatusFilter = (currentStatusFilter === s) ? 'all' : s;
         render();
@@ -349,20 +308,20 @@
 
     window.completeJob = reg => {
         const svc = activeServices.find(s => s.reg === reg);
-        svc.status = 'Completed';
-        svc.statusChangedAt = new Date();
-        render();
+        if (svc) {
+            svc.status = 'Completed';
+            svc.statusChangedAt = new Date();
+            render();
+        }
     };
 
     window.confirmOrder = () => {
         const id = generateOrderID();
-
         orderHistory.push({
             id,
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             itemCount: cart.length
         });
-
         lastOrderID = id;
         cart = [];
         currentView = 'success';
@@ -387,23 +346,17 @@
             return;
         }
         breadcrumbContainer.classList.remove('hidden');
-        breadcrumbContainer.innerHTML =
-            `<span onclick="goHome()" style="cursor:pointer; color:#dc2626;">Home</span> > ${currentView}`;
+        breadcrumbContainer.innerHTML = `<span onclick="goHome()" style="cursor:pointer; color:#dc2626;">Home</span> > ${currentView}`;
     }
 
     function setupListeners() {
         backBtn.onclick = goHome;
         homeFooterBtn.onclick = goHome;
-
-        cartBtn.onclick = () => {
-            currentView = 'checkout';
-            render();
-        };
-
+        cartBtn.onclick = () => { currentView = 'checkout'; render(); };
+        
         adminTrigger.onclick = () => {
             adminClicks++;
             clearTimeout(adminTimeout);
-
             if (adminClicks === 5) {
                 adminClicks = 0;
                 currentView = 'admin';
@@ -414,17 +367,14 @@
         };
 
         window.onscroll = () => {
-            backToTopBtn.className = window.scrollY > 300 ? 'visible-fade' : 'hidden-fade';
+            backToTopBtn.classList.toggle('visible-fade', window.scrollY > 300);
+            backToTopBtn.classList.toggle('hidden-fade', window.scrollY <= 300);
         };
 
-        backToTopBtn.onclick = () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        };
+        backToTopBtn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // -------------------------------
-    // START
-    // -------------------------------
-    init();
-
+    init().catch(err => {
+        console.error("Initialization error:", err);
+    });
 })();

@@ -16,5 +16,7 @@ class SelfService(SelfServiceTemplate):
         self.call_from_js()
     def call_from_js(self):
         # Calls the server function from the client
-        result = anvil.server.call('getCarPartNamesAndCategory')
-        return result
+        #result = anvil.server.call('getCarPartNamesAndCategory')
+        #return result
+        alert("Hello,Tom")
+        return 42

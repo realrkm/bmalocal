@@ -13,18 +13,20 @@
     let searchResults = [], activeSearchFilter = 'all', orderHistory = [];
     let adminClicks = 0, adminTimeout;
     let activeReg = null, serviceSearchQuery = '', currentStatusFilter = 'all';
+    let categories = []; // Will be populated from server
 
-    const categories = [
-        { id: 'body', name: 'Body & Exterior', icon: '🚗', color: 'bg-indigo', keywords: ['bumper', 'fender', 'door', 'hood'] },
-        { id: 'brakes', name: 'Brake System', icon: '🛑', color: 'bg-orange', keywords: ['brake', 'rotor', 'caliper', 'pad'] },
-        { id: 'cooling', name: 'Cooling System', icon: '❄️', color: 'bg-cyan', keywords: ['radiator', 'fan', 'coolant', 'thermostat'] },
-        { id: 'electrical', name: 'Electrical & Lighting', icon: '💡', color: 'bg-yellow', keywords: ['battery', 'alternator', 'starter', 'light'] },
-        { id: 'engine', name: 'Engine Components', icon: '⚙️', color: 'bg-red', keywords: ['engine', 'piston', 'cylinder', 'valve', 'gasket'] },
-        { id: 'exhaust', name: 'Exhaust System', icon: '💨', color: 'bg-gray', keywords: ['exhaust', 'muffler', 'catalytic'] },
-        { id: 'filters', name: 'Filters & Fluids', icon: '🔍', color: 'bg-green', keywords: ['filter', 'air filter', 'oil filter'] },
-        { id: 'suspension', name: 'Suspension & Steering', icon: '🔧', color: 'bg-blue', keywords: ['suspension', 'shock', 'strut', 'spring'] },
-        { id: 'transmission', name: 'Transmission', icon: '⚡', color: 'bg-purple', keywords: ['transmission', 'clutch', 'gearbox'] }
-    ];
+    // Category display configuration (icons and colors)
+    const categoryConfig = {
+        'Body & Exterior': { icon: '🚗', color: 'bg-indigo' },
+        'Brake System': { icon: '🛑', color: 'bg-orange' },
+        'Cooling System': { icon: '❄️', color: 'bg-cyan' },
+        'Electrical & Lighting': { icon: '💡', color: 'bg-yellow' },
+        'Engine Components': { icon: '⚙️', color: 'bg-red' },
+        'Exhaust System': { icon: '💨', color: 'bg-gray' },
+        'Filters & Fluids': { icon: '🔍', color: 'bg-green' },
+        'Suspension & Steering': { icon: '🔧', color: 'bg-blue' },
+        'Transmission': { icon: '⚡', color: 'bg-purple' }
+    };
 
     let activeServices = [
         { date: '2026-01-24', tech: 'John Doe', reg: 'KBA 123X', instruction: 'Oil Change', status: 'In-Service', statusChangedAt: new Date(Date.now() - 5400000) },
@@ -33,69 +35,73 @@
 
     async function init() {
         try {
-            // Try to load from CSV, fallback to mock data
-            try {
-                const res = await fetch('_/theme/data/tbl_carpartnames.csv');
-                const data = await res.text();
-                parts = data.split('\n').slice(1).filter(l => l.trim()).map(line => {
-                    const [name, partNo] = line.split(',').map(s => s.trim());
-                    return { name, partNo };
-                });
-            } catch {
-                // Fallback mock data
-                parts = [
-                    { name: "Oil Filter - Synthetic", partNo: "OF-1001" },
-                    { name: "Brake Pads - Front", partNo: "BP-5522" },
-                    { name: "Radiator Fan", partNo: "RF-990" },
-                        { name: "Air Filter", partNo: "AF-2210" },
-                        { name: "Spark Plugs Set", partNo: "SP-8800" }
-                    ];
-                }
-                setupListeners();
-                render();
-                setInterval(() => { if(currentView === 'home') render(); }, 60000);
-            } catch (e) { 
-                console.error("Initialization Error:", e); 
-            }
+            // Call Anvil server function to get parts and categories
+            const serverData = await anvil.call('getCarPartNamesAndCategory');
+
+            // Transform server data into parts array
+            parts = serverData.map(item => ({
+                name: item.Name,
+                category: item.Category,
+                partNo: item.Name // Use name as partNo if no separate field exists
+            }));
+
+            // Extract unique categories from server data
+            const uniqueCategories = [...new Set(serverData.map(item => item.Category))];
+
+            // Build categories array with config
+            categories = uniqueCategories.map(catName => {
+                const config = categoryConfig[catName] || { icon: '📦', color: 'bg-gray' };
+                return {
+                    id: catName.toLowerCase().replace(/\s+/g, '-'),
+                    name: catName,
+                    icon: config.icon,
+                    color: config.color
+                };
+            });
+
+            setupListeners();
+            render();
+            setInterval(() => { if(currentView === 'home') render(); }, 60000);
+        } catch (e) { 
+            console.error("Initialization Error:", e);
+            alert("Failed to load data from server. Please refresh the page.");
         }
+    }
 
-        function categorize(p) {
-            const text = (p.name + p.partNo).toLowerCase();
-            for (const cat of categories) {
-                if (cat.keywords.some(k => text.includes(k))) return cat.id;
-            }
-            return 'other';
-        }
+    function categorize(p) {
+        // Since category comes from server, just return it directly
+        return p.category ? p.category.toLowerCase().replace(/\s+/g, '-') : 'other';
+    }
 
-        function getTimeElapsed(startTime) {
-            const diffMs = new Date() - new Date(startTime);
-            const diffMins = Math.floor(diffMs / 60000);
-            const hours = Math.floor(diffMins / 60);
-            return hours > 0 ? `${hours}h ${diffMins % 60}m` : `${diffMins}m`;
-        }
+    function getTimeElapsed(startTime) {
+        const diffMs = new Date() - new Date(startTime);
+        const diffMins = Math.floor(diffMs / 60000);
+        const hours = Math.floor(diffMins / 60);
+        return hours > 0 ? `${hours}h ${diffMins % 60}m` : `${diffMins}m`;
+    }
 
-        function render() {
-            backBtn.classList.toggle('hidden', currentView === 'home' || currentView === 'success' || currentView === 'admin');
-            cartCount.innerText = cart.length;
-            cartCount.classList.toggle('hidden', cart.length === 0 || currentView === 'success');
-            updateBreadcrumbs();
+    function render() {
+        backBtn.classList.toggle('hidden', currentView === 'home' || currentView === 'success' || currentView === 'admin');
+        cartCount.innerText = cart.length;
+        cartCount.classList.toggle('hidden', cart.length === 0 || currentView === 'success');
+        updateBreadcrumbs();
 
-            if (currentView === 'home') renderHome();
-            else if (currentView === 'issueParts') renderIssueParts();
-            else if (currentView === 'category') renderCategory();
-            else if (currentView === 'search') renderSearch();
-            else if (currentView === 'checkout') renderCheckout();
-            else if (currentView === 'success') renderSuccess();
-            else if (currentView === 'admin') renderAdmin();
+        if (currentView === 'home') renderHome();
+        else if (currentView === 'issueParts') renderIssueParts();
+        else if (currentView === 'category') renderCategory();
+        else if (currentView === 'search') renderSearch();
+        else if (currentView === 'checkout') renderCheckout();
+        else if (currentView === 'success') renderSuccess();
+        else if (currentView === 'admin') renderAdmin();
 
-            window.scrollTo({ top: 0, behavior: 'instant' });
-        }
+        window.scrollTo({ top: 0, behavior: 'instant' });
+    }
 
-        function renderHome() {
-            const isHistory = currentStatusFilter === 'Completed';
-            const filtered = activeServices.filter(s => {
-                const matchesStatus = currentStatusFilter === 'all' ? (s.status !== 'Completed') : (s.status === currentStatusFilter);
-                const matchesSearch = s.reg.toLowerCase().includes(serviceSearchQuery.toLowerCase()) || s.tech.toLowerCase().includes(serviceSearchQuery.toLowerCase());
+    function renderHome() {
+        const isHistory = currentStatusFilter === 'Completed';
+        const filtered = activeServices.filter(s => {
+            const matchesStatus = currentStatusFilter === 'all' ? (s.status !== 'Completed') : (s.status === currentStatusFilter);
+            const matchesSearch = s.reg.toLowerCase().includes(serviceSearchQuery.toLowerCase()) || s.tech.toLowerCase().includes(serviceSearchQuery.toLowerCase());
                 return matchesStatus && matchesSearch;
             });
 
@@ -188,27 +194,27 @@
         function renderParts(arr) {
             return arr.map(p => `
                 <div style="background:#334155; padding:2rem; border-radius:1.5rem; display:flex; flex-direction:column; justify-content:space-between; gap:1.5rem; text-align:center;">
-                    <div><h3 style="font-size:2.4rem;">${p.name}</h3><p style="color:#94a3b8; margin-top:0.5rem">Part #${p.partNo}</p></div>
-                    <button onclick="addToCart('${p.partNo}')" class="add-btn-circular">+</button>
+                    <div>
+                        <h3 style="font-size:2.4rem;">${p.name}</h3>
+                        <p style="color:#94a3b8; margin-top:0.5rem">Category: ${p.category || 'N/A'}</p>
+                    </div>
+                    <button onclick="addToCart('${p.name}')" class="add-btn-circular">+</button>
                 </div>`).join('');
         }
 
-    function renderCheckout() {
-        mainContent.innerHTML = `
-        <div style="background:#1e293b; padding:3rem; border-radius:2rem; border:4px solid #3b82f6; max-width:800px; margin:2rem auto;">
-            <h2 style="text-align:center; margin-bottom:2rem; font-size:2.5rem;">Your Order</h2>
-            <div style="margin-bottom:2rem;">
-                ${cart.length === 0 ? '<p style="text-align:center; font-size:1.8rem;">Your cart is empty.</p>' : cart.map((item, i) => `<div style="padding:1rem; border-bottom:1px solid #334155; display:flex; justify-content:space-between; align-items:center; font-size:1.8rem;"><div><strong>${item.name}</strong><br><small>#${item.partNo}</small></div><button onclick="removeFromCart(${i})" style="color:#ef4444; background:none; border:none; cursor:pointer; font-size:1.5rem; display:flex; align-items:center;"><i data-lucide="trash-2" style="width:20px; height:20px;"></i></button></div>`).join('')}
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h3 style="font-size:2rem;">Total: ${cart.length} Parts</h3>
-                <button onclick="confirmOrder()" style="background:#22c55e; color:white; padding:1rem 2rem; border-radius:0.5rem; border:none; font-weight:bold; cursor:pointer; font-size:2.4rem;" ${cart.length === 0 ? 'disabled' : ''}>Confirm Order</button>
-            </div>
-        </div>`;
-
-        // Initialize Lucide icons after rendering
-        lucide.createIcons();
-    }
+        function renderCheckout() {
+            mainContent.innerHTML = `
+                <div style="background:#1e293b; padding:3rem; border-radius:2rem; border:4px solid #3b82f6; max-width:800px; margin:2rem auto;">
+                    <h2 style="text-align:center; margin-bottom:2rem; font-size:2.5rem;">Your Order</h2>
+                    <div style="margin-bottom:2rem;">
+                        ${cart.length === 0 ? '<p style="text-align:center; font-size:1.8rem;">Your cart is empty.</p>' : cart.map((item, i) => `<div style="padding:1rem; border-bottom:1px solid #334155; display:flex; justify-content:space-between; align-items:center; font-size:1.8rem;"><div><strong>${item.name}</strong><br><small>${item.category}</small></div><button onclick="removeFromCart(${i})" style="color:#ef4444; background:none; border:none; cursor:pointer; font-size:1.5rem;">🗑️</button></div>`).join('')}
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3 style="font-size:2rem;">Total: ${cart.length} Parts</h3>
+                        <button onclick="confirmOrder()" style="background:#22c55e; color:white; padding:1rem 2rem; border-radius:0.5rem; border:none; font-weight:bold; cursor:pointer; font-size:2.4rem;" ${cart.length === 0 ? 'disabled' : ''}>Confirm Order</button>
+                    </div>
+                </div>`;
+        }
 
         function renderSuccess() {
             const id = window.lastOrderID;
@@ -285,8 +291,8 @@
                 render(); 
             };
             
-            window.addToCart = (no) => { 
-                const item = parts.find(p => p.partNo === no); 
+            window.addToCart = (name) => { 
+                const item = parts.find(p => p.name === name); 
                 if(item) cart.push(item); 
                 render(); 
             };

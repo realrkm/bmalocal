@@ -35,14 +35,21 @@
 
     async function init() {
         try {
-            // Call Anvil server function to get parts and categories
-            const serverData = await anvil.call('getCarPartNamesAndCategory');
+            // Use anvil.server.call for standalone JavaScript (not anvil.call which requires a Form)
+            const serverData = await anvil.call($(this),'getCarPartNamesAndCategory');
+
+            console.log("Raw serverData:", serverData);
+            console.log("Type of serverData:", typeof serverData, Array.isArray(serverData));
+
+            if (!Array.isArray(serverData)) {
+                throw new Error("Server did not return a list. Check server logs.");
+            }
 
             // Transform server data into parts array
             parts = serverData.map(item => ({
                 name: item.Name,
                 category: item.Category,
-                partNo: item.Name // Use name as partNo if no separate field exists
+                partNo: item.PartNo || item.Name
             }));
 
             // Extract unique categories from server data
@@ -63,10 +70,16 @@
             render();
             setInterval(() => { if(currentView === 'home') render(); }, 60000);
         } catch (e) { 
-            console.error("Initialization Error:", e);
-            alert("Failed to load data from server. Please refresh the page.");
+            console.error("Initialization Error (raw):", e);
+            if (e && e.args) {
+                console.error("Python args:", e.args);
+            }
+            alert("Failed to load data from server. Check server logs and ensure you're logged in.");
         }
     }
+
+
+
 
     function categorize(p) {
         // Since category comes from server, just return it directly

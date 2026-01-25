@@ -13,3 +13,8 @@ class SelfService(SelfServiceTemplate):
         self.init_components(**properties)
 
         # Any code you write here will run before the form opens.
+        self.call_from_js()
+    def call_from_js(self):
+        # Calls the server function from the client
+        result = anvil.server.call('getCarPartNamesAndCategory')
+        return result

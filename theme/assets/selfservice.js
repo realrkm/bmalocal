@@ -32,11 +32,11 @@
         { date: '2026-01-24', tech: 'John Doe', reg: 'KBA 123X', instruction: 'Oil Change', status: 'In-Service', statusChangedAt: new Date(Date.now() - 5400000) },
         { date: '2026-01-24', tech: 'Sarah Smith', reg: 'KCC 789Z', instruction: 'Brake Check', status: 'Checked-In', statusChangedAt: new Date(Date.now() - 1800000) }
     ];
-
+    
     async function init() {
         try {
             // Use anvil.server.call for standalone JavaScript (not anvil.call which requires a Form)
-            const serverData = await anvil.call($(this),'getCarPartNamesAndCategory');
+            const serverData = await anvil.call($(this),'call_from_js');
 
             console.log("Raw serverData:", serverData);
             console.log("Type of serverData:", typeof serverData, Array.isArray(serverData));
@@ -77,6 +77,7 @@
             alert("Failed to load data from server. Check server logs and ensure you're logged in.");
         }
     }
+    
 
 
 

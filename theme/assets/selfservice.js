@@ -34,21 +34,48 @@
     ];
     
     async function init() {
-        var test = this
-        anvil.call(test,'call_from_js').then(function (r) {
-            // resolves after the python function has exectuted
+        try {
+            // Use anvil.server.call for standalone JavaScript (not anvil.call which requires a Form)
+            const serverData = await anvil.call(mainContent, 'getCarPartNamesAndCategory');
+            console.log("Raw serverData:", serverData);
+            console.log("Type of serverData:", typeof serverData, Array.isArray(serverData));
 
-            // in this case r will be 42
+            if (!Array.isArray(serverData)) {
+                throw new Error("Server did not return a list. Check server logs.");
+            }
 
-            console.log("The function returned:", r);
-        });
-        e.preventDefault();;
-        
+            // Transform server data into parts array
+            parts = serverData.map(item => ({
+                name: item.Name,
+                category: item.Category,
+                partNo: item.PartNo || item.Name
+            }));
+
+            // Extract unique categories from server data
+            const uniqueCategories = [...new Set(serverData.map(item => item.Category))];
+
+            // Build categories array with config
+            categories = uniqueCategories.map(catName => {
+                const config = categoryConfig[catName] || { icon: '📦', color: 'bg-gray' };
+                return {
+                    id: catName.toLowerCase().replace(/\s+/g, '-'),
+                    name: catName,
+                    icon: config.icon,
+                    color: config.color
+                };
+            });
+
+            setupListeners();
+            render();
+            setInterval(() => { if(currentView === 'home') render(); }, 60000);
+        } catch (e) { 
+            console.error("Initialization Error (raw):", e);
+            if (e && e.args) {
+                console.error("Python args:", e.args);
+            }
+            alert("Failed to load data from server. Check server logs and ensure you're logged in.");
+        }
     }
-    
-
-
-
 
     function categorize(p) {
         // Since category comes from server, just return it directly

@@ -22,6 +22,11 @@ components:
     name: btn_Close
     properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: null, text: Close}
     type: Button
+  - event_bindings: {click: btn_DownloadTechNotes_click}
+    layout_properties: {grid_position: 'HKXWXD,EBBVUF'}
+    name: btn_DownloadTechNotes
+    properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: null, text: Download Tech Notes}
+    type: Button
   - layout_properties: {grid_position: 'AHZWUG,JMXGFO'}
     name: spacer_4
     properties: {height: '10'}

@@ -141,7 +141,7 @@ components:
   - event_bindings: {click: btn_SelfService_click}
     layout_properties: {grid_position: 'XOBTVA,NVOVPZ'}
     name: btn_SelfService
-    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:desktop', role: raised, text: Self Service}
+    properties: {align: full, background: '#0056D6', enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:desktop', role: raised, text: Self Service, visible: false}
     type: Button
   - event_bindings: {click: btn_ResetPassword_click}
     layout_properties: {grid_position: 'XGYGHI,OAJOVS'}

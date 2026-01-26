@@ -22,8 +22,8 @@ class Main(MainTemplate):
         while anvil.users.get_user() is None:
             anvil.users.login_with_form()
         user = anvil.users.get_user()
-        #result = anvil.server.call("update_carpart_categories")
-        #alert(f"Updated {result['updated_rows']} rows")
+        result = anvil.server.call("update_carpart_categories")
+        alert(f"Updated {result['updated_rows']} rows")
         
         if user:
             # Fetch permissions from server

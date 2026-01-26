@@ -17,14 +17,14 @@
 
     // Category display configuration (icons and colors)
     const categoryConfig = {
-        'Body & Exterior': { icon: '🚗', color: 'bg-indigo' },
+        'Body And Exterior': { icon: '🚗', color: 'bg-indigo' },
         'Brake System': { icon: '🛑', color: 'bg-orange' },
         'Cooling System': { icon: '❄️', color: 'bg-cyan' },
-        'Electrical & Lighting': { icon: '💡', color: 'bg-yellow' },
+        'Electrical And Lighting': { icon: '💡', color: 'bg-yellow' },
         'Engine Components': { icon: '⚙️', color: 'bg-red' },
         'Exhaust System': { icon: '💨', color: 'bg-gray' },
-        'Filters & Fluids': { icon: '🔍', color: 'bg-green' },
-        'Suspension & Steering': { icon: '🔧', color: 'bg-blue' },
+        'Filters And Fluids': { icon: '🔍', color: 'bg-green' },
+        'Suspension And Steering': { icon: '🔧', color: 'bg-blue' },
         'Transmission': { icon: '⚡', color: 'bg-purple' }
     };
 

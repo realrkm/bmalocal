@@ -11,6 +11,7 @@ import base64
 import time
 from .. import ModGetData
 from .. import ModNavigation
+from datetime import datetime
 
 
 class DefectsForm(DefectsFormTemplate):
@@ -167,7 +168,8 @@ class DefectsForm(DefectsFormTemplate):
 
     def btn_IssueInvoice_click(self, **event_args):
         """This method is called when the button is clicked"""
-        anvil.server.call("publish_role_notification",self.jobcardid, "ready for invoicing" )
+        now_str = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+        anvil.server.call("publish_role_notification",self.jobcardid, f"ready for invoicing - {now_str}" )
         ModNavigation.go_Notification()
         alert("Alert has been sent successfully", title="Issue Invoice")
 

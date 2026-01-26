@@ -106,12 +106,19 @@ class JobCardForm(JobCardFormTemplate):
         """This method is called when the button is clicked"""
         self.btn_DownloadTechNotes.enabled=False
         jobcardIDWithTechNotes = anvil.server.call("getTechNotes", self.form_data["ID"])
-
-        if jobcardIDWithTechNotes:
-            #Download Tech Notes
+        # Normalize the check: strip strings and handle casing
+        invalid_values = [None, "", "none", "None"]
+    
+        # Check if the value is valid
+        # We use .strip() if it's a string to handle whitespace-only entries
+        val_to_check = jobcardIDWithTechNotes.strip() if isinstance(jobcardIDWithTechNotes, str) else jobcardIDWithTechNotes
+        
+        if val_to_check not in invalid_values:
+            # Download Tech Notes
             self.downloadTechNotesPdf(self.form_data["ID"])
+            alert("Tech Notes PDF download is successful", title="Success")
         else:
-            alert("Jobcard has no tech notes", buttons=[], dismissible=False, large=True)
+            alert("Jobcard has no tech notes", title="Missing Tech Notes")
         self.btn_DownloadTechNotes.enabled=True 
 
     def downloadTechNotesPdf(self, job_card_id):

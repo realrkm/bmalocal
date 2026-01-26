@@ -105,17 +105,17 @@ class JobCardForm(JobCardFormTemplate):
     def btn_DownloadTechNotes_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.btn_DownloadTechNotes.enabled=False
-        jobcardIDWithTechNotes = anvil.server.call("downloadTechNotesPdfForm", self.form_data["ID"])
+        jobcardIDWithTechNotes = anvil.server.call("getTechNotes", self.form_data["ID"])
 
         if jobcardIDWithTechNotes:
             #Download Tech Notes
-            self.downloadTechNotesPdf(jobcardIDWithTechNotes)
+            self.downloadTechNotesPdf(self.form_data["ID"])
         else:
             alert("Jobcard has no tech notes", buttons=[], dismissible=False, large=True)
         self.btn_DownloadTechNotes.enabled=True 
 
     def downloadTechNotesPdf(self, job_card_id):
-        media_object = anvil.server.call('downloadDefectsPdfForm', job_card_id, "TechNotes")
+        media_object = anvil.server.call('downloadTechNotesPdfForm', job_card_id, "TechNotes")
         anvil.media.download(media_object)
         self.deleteFile(job_card_id, "TechNotes")
 

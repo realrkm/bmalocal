@@ -71,7 +71,7 @@
             if (e && e.args) {
                 console.error("Python args:", e.args);
             }
-            alert("Failed to load data from server. Check server logs and ensure you're logged in.");
+            
         }
     }
 

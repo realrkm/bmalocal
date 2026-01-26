@@ -17,14 +17,14 @@
 
     // Category display configuration (icons and colors)
     const categoryConfig = {
-        'Body And Exterior': { icon: '🚗', color: 'bg-indigo' },
+        'Body & Exterior': { icon: '🚗', color: 'bg-indigo' },
         'Brake System': { icon: '🛑', color: 'bg-orange' },
         'Cooling System': { icon: '❄️', color: 'bg-cyan' },
-        'Electrical And Lighting': { icon: '💡', color: 'bg-yellow' },
+        'Electrical & Lighting': { icon: '💡', color: 'bg-yellow' },
         'Engine Components': { icon: '⚙️', color: 'bg-red' },
         'Exhaust System': { icon: '💨', color: 'bg-gray' },
-        'Filters And Fluids': { icon: '🔍', color: 'bg-green' },
-        'Suspension And Steering': { icon: '🔧', color: 'bg-blue' },
+        'Filters & Fluids': { icon: '🔍', color: 'bg-green' },
+        'Suspension & Steering': { icon: '🔧', color: 'bg-blue' },
         'Transmission': { icon: '⚡', color: 'bg-purple' }
     };
 
@@ -37,9 +37,7 @@
         try {
             // Use anvil.server.call for standalone JavaScript (not anvil.call which requires a Form)
             const serverData = await anvil.call(mainContent, 'getCarPartNamesAndCategory');
-            console.log("Raw serverData:", serverData);
-            console.log("Type of serverData:", typeof serverData, Array.isArray(serverData));
-
+            
             if (!Array.isArray(serverData)) {
                 throw new Error("Server did not return a list. Check server logs.");
             }

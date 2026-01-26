@@ -71,7 +71,6 @@
             if (e && e.args) {
                 console.error("Python args:", e.args);
             }
-            
         }
     }
 

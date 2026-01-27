@@ -194,7 +194,7 @@ class DefectsForm(DefectsFormTemplate):
         alert("Alert has been sent successfully", title="Issue Invoice")
 
 
-    def btn_IncompleteDefectsInfo(self, **event_args):
+    def btn_IncompleteDefectsInfo_click(self, **event_args):
         """This method is called when the button is clicked"""
         anvil.server.call("publish_defects_notification",self.jobcardid, "defects list incomplete" )
         alert("Incomplete defects list updated ", title="Success")

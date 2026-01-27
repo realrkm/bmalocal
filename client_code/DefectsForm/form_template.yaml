@@ -101,7 +101,7 @@ components:
     name: txtDefectsList
     properties: {auto_expand: true, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: 'Enter List Of Defects '}
     type: TextArea
-  - event_bindings: {click: btn_IncompleteDefectsInfo}
+  - event_bindings: {click: btn_IncompleteDefectsInfo_click}
     layout_properties: {grid_position: 'HAHPYI,QSPIXO'}
     name: btn_IncompleteDefectsInfo
     properties: {align: full, background: '#00d679', bold: false, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: null, text: INCOMPLETE DEFECTS INFO}

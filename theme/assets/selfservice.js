@@ -83,31 +83,26 @@
         try {
             const jobcardsData = await anvil.call(mainContent, 'get_technician_jobcards_by_status');
 
-            // Transform server data to match the expected format
-            activeServices = [];
-
-            // Process each status group
-            for (const [status, cards] of Object.entries(jobcardsData)) {
-                cards.forEach(card => {
-                    activeServices.push({
-                        no: card.id,
-                        date: card.ReceivedDate,
-                        tech: card.Technician,
-                        reg: card.RegNo,
-                        instruction: card.Instruction,
-                        status: status === 'Checked In' ? 'Checked-In' : status, // Normalize status format
-                    });
-                });
-            }
+            // Server now returns a flat list, not grouped by status
+            activeServices = jobcardsData.map(card => ({
+                no: card.id,
+                date: card.ReceivedDate,
+                tech: card.Technician,
+                reg: card.RegNo,
+                instruction: card.Instruction,
+                // Normalize status: "Checked In" -> "Checked-In", "In Service" -> "In-Service"
+                status: card.status === 'Checked In' ? 'Checked-In' : 
+                    card.status === 'In Service' ? 'In-Service' : 
+                    card.status
+            }));
 
             console.log('Loaded active services:', activeServices.length);
         } catch (error) {
             console.error('Error loading active services:', error);
-            // Fall back to empty array or keep hardcoded data as fallback
+            // Fall back to empty array on error
             activeServices = [];
         }
     }
-    
     function categorize(p) {
         // Since category comes from server, just return it directly
         return p.category ? p.category.toLowerCase().replace(/\s+/g, '-') : 'other';

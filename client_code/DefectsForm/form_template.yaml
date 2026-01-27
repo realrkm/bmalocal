@@ -25,6 +25,11 @@ components:
     name: btn_DownloadDefectsList
     properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: DOWNLOAD DEFECTS LIST}
     type: Button
+  - event_bindings: {click: btn_DownloadTechNotes_click}
+    layout_properties: {grid_position: 'JYAMLS,WOFJAI'}
+    name: btn_DownloadTechNotes
+    properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: null, text: DOWNLOAD TECH NOTES}
+    type: Button
   - layout_properties: {grid_position: 'ANFDGB,DNBISW'}
     name: spacer_2
     properties: {height: 6.18182373046875}
@@ -33,11 +38,6 @@ components:
     layout_properties: {grid_position: 'ZZHUZR,ZXNXXV'}
     name: btn_Update
     properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: null, text: UPDATE}
-    type: Button
-  - event_bindings: {click: btn_DefectsPDF_click}
-    layout_properties: {grid_position: 'ZZHUZR,QWUMFR'}
-    name: btn_DefectsPDF
-    properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: null, text: DEFECTS PDF}
     type: Button
   - event_bindings: {click: btn_IssueInvoice_click}
     layout_properties: {grid_position: 'ZZHUZR,DRQDDE'}

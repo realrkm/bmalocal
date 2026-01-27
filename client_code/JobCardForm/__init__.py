@@ -104,6 +104,7 @@ class JobCardForm(JobCardFormTemplate):
 
     def btn_DownloadTechNotes_click(self, **event_args):
         """This method is called when the button is clicked"""
+        # DOWNLOAD TECH NOTES HERE WHEN NO DEFECTS EXIST, WHEN TECH NOTES EXIST AND DEFECTS DON'T
         self.btn_DownloadTechNotes.enabled=False
         jobcardIDWithTechNotes = anvil.server.call("getTechNotes", self.form_data["ID"])
         # Normalize the check: strip strings and handle casing

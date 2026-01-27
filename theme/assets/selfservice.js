@@ -28,16 +28,13 @@
         'Transmission': { icon: '⚡', color: 'bg-purple' }
     };
 
-    let activeServices = [
-        { date: '2026-01-24', tech: 'John Doe', reg: 'KBA 123X', instruction: 'Oil Change', status: 'In-Service', statusChangedAt: new Date(Date.now() - 5400000) },
-        { date: '2026-01-24', tech: 'Sarah Smith', reg: 'KCC 789Z', instruction: 'Brake Check', status: 'Checked-In', statusChangedAt: new Date(Date.now() - 1800000) }
-    ];
+    let activeServices = [];
     
     async function init() {
         try {
             // Use anvil.server.call for standalone JavaScript (not anvil.call which requires a Form)
             const serverData = await anvil.call(mainContent, 'getCarPartNamesAndCategory');
-            
+
             if (!Array.isArray(serverData)) {
                 throw new Error("Server did not return a list. Check server logs.");
             }
@@ -63,9 +60,17 @@
                 };
             });
 
+            // **CRITICAL: Load active services from server**
+            await loadActiveServices();
+
             setupListeners();
             render();
-            setInterval(() => { if(currentView === 'home') render(); }, 60000);
+            setInterval(async () => { 
+                if(currentView === 'home') {
+                    await loadActiveServices();
+                    render();
+                }
+            }, 60000); // Refresh every minute (both render AND data)
         } catch (e) { 
             console.error("Initialization Error (raw):", e);
             if (e && e.args) {
@@ -74,6 +79,35 @@
         }
     }
 
+    async function loadActiveServices() {
+        try {
+            const jobcardsData = await anvil.call(mainContent, 'get_technician_jobcards_by_status');
+
+            // Transform server data to match the expected format
+            activeServices = [];
+
+            // Process each status group
+            for (const [status, cards] of Object.entries(jobcardsData)) {
+                cards.forEach(card => {
+                    activeServices.push({
+                        date: card.ReceivedDate,
+                        tech: card.Technician,
+                        reg: card.RegNo,
+                        instruction: card.Instruction,
+                        status: status === 'Checked In' ? 'Checked-In' : status, // Normalize status format
+                        statusChangedAt: new Date(card.ReceivedDate) // Use received date as initial timestamp
+                    });
+                });
+            }
+
+            console.log('Loaded active services:', activeServices.length);
+        } catch (error) {
+            console.error('Error loading active services:', error);
+            // Fall back to empty array or keep hardcoded data as fallback
+            activeServices = [];
+        }
+    }
+    
     function categorize(p) {
         // Since category comes from server, just return it directly
         return p.category ? p.category.toLowerCase().replace(/\s+/g, '-') : 'other';

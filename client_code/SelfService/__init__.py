@@ -18,3 +18,6 @@ class SelfService(SelfServiceTemplate):
     def getCarPartNamesAndCategory(self):
         # Bridge method for HTML Panel
         return anvil.server.call('getCarPartNamesAndCategory')
+
+    def get_technician_jobcards_by_status(self):
+        return anvil.server.call("get_technician_jobcards_by_status")

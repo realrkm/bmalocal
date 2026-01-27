@@ -65,6 +65,7 @@
 
             setupListeners();
             render();
+               
             setInterval(async () => { 
                 if(currentView === 'home') {
                     await loadActiveServices();
@@ -124,6 +125,8 @@
         else if (currentView === 'admin') renderAdmin();
 
         window.scrollTo({ top: 0, behavior: 'instant' });
+        // Initialize all Lucide icons after any render
+        lucide.createIcons();
     }
 
     function renderHome() {
@@ -237,7 +240,7 @@
                 <div style="background:#1e293b; padding:3rem; border-radius:2rem; border:4px solid #3b82f6; max-width:800px; margin:2rem auto;">
                     <h2 style="text-align:center; margin-bottom:2rem; font-size:2.5rem;">Your Order</h2>
                     <div style="margin-bottom:2rem;">
-                        ${cart.length === 0 ? '<p style="text-align:center; font-size:1.8rem;">Your cart is empty.</p>' : cart.map((item, i) => `<div style="padding:1rem; border-bottom:1px solid #334155; display:flex; justify-content:space-between; align-items:center; font-size:1.8rem;"><div><strong>${item.name}</strong><br><small>${item.category}</small></div><button onclick="removeFromCart(${i})" style="color:#ef4444; background:none; border:none; cursor:pointer; font-size:1.5rem;">🗑️</button></div>`).join('')}
+                        ${cart.length === 0 ? '<p style="text-align:center; font-size:1.8rem;">Your cart is empty.</p>' : cart.map((item, i) => `<div style="padding:1rem; border-bottom:1px solid #334155; display:flex; justify-content:space-between; align-items:center; font-size:1.8rem;"><div><strong>${item.name}</strong><br><small>${item.category}</small></div><button onclick="removeFromCart(${i})" style="color:#ef4444; background:none; border:none; cursor:pointer; font-size:1.5rem;"><i data-lucide="trash-2"></i></button></div>`).join('')}
                     </div>
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                         <h3 style="font-size:2rem;">Total: ${cart.length} Parts</h3>

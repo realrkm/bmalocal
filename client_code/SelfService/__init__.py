@@ -13,6 +13,8 @@ class SelfService(SelfServiceTemplate):
         self.init_components(**properties)
 
         # Any code you write here will run before the form opens.
+        #result = anvil.server.call("update_carpart_categories")
+        #alert(f"Updated {result['updated_rows']} rows")
     def getCarPartNamesAndCategory(self):
         # Bridge method for HTML Panel
         return anvil.server.call('getCarPartNamesAndCategory')

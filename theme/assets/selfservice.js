@@ -90,12 +90,12 @@
             for (const [status, cards] of Object.entries(jobcardsData)) {
                 cards.forEach(card => {
                     activeServices.push({
+                        no: card.id,
                         date: card.ReceivedDate,
                         tech: card.Technician,
                         reg: card.RegNo,
                         instruction: card.Instruction,
                         status: status === 'Checked In' ? 'Checked-In' : status, // Normalize status format
-                        statusChangedAt: new Date(card.ReceivedDate) // Use received date as initial timestamp
                     });
                 });
             }
@@ -113,12 +113,6 @@
         return p.category ? p.category.toLowerCase().replace(/\s+/g, '-') : 'other';
     }
 
-    function getTimeElapsed(startTime) {
-        const diffMs = new Date() - new Date(startTime);
-        const diffMins = Math.floor(diffMs / 60000);
-        const hours = Math.floor(diffMins / 60);
-        return hours > 0 ? `${hours}h ${diffMins % 60}m` : `${diffMins}m`;
-    }
 
     function render() {
         backBtn.classList.toggle('hidden', currentView === 'home' || currentView === 'success' || currentView === 'admin');
@@ -164,14 +158,15 @@
 
                 <div class="service-table-container">
                     <table class="kiosk-table">
-                        <thead><tr><th>Received</th><th>Technician</th><th>Reg No</th><th>Elapsed</th><th>Status</th><th>Action</th></tr></thead>
+                        <thead><tr><th>No</th><th>Received</th><th>Technician</th><th>Reg No</th><th>Instruction</th><th>Status</th><th>Action</th></tr></thead>
                         <tbody>
                             ${filtered.map(s => `
                                 <tr>
+                                    <td>${s.no}</td>
                                     <td>${s.date}</td>
                                     <td><strong>${s.tech}</strong></td>
                                     <td style="color:#facc15; font-weight:bold;">${s.reg}</td>
-                                    <td>🕐 ${getTimeElapsed(s.statusChangedAt)}</td>
+                                    <td>${s.instruction}</td>
                                     <td><span class="status-badge ${s.status === 'In-Service' ? 'status-in-service' : s.status === 'Completed' ? 'status-completed' : 'status-checked-in'}">${s.status}</span></td>
                                     <td>
                                         ${s.status === 'Completed' ? '✅ Finished' : `

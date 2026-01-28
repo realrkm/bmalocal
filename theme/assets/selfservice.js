@@ -536,7 +536,7 @@
 
                 // 3. Success feedback
                 customAlert(
-                    `Work done has been saved successfully for vehicle ${currentWorkDoneReg}`,
+                    `Work done has been saved successfully for jobcard reference ${currentWorkDoneReg}`,
                     '✅ Success'
                 );
 

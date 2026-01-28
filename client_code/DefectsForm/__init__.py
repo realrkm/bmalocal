@@ -110,9 +110,16 @@ class DefectsForm(DefectsFormTemplate):
             if not signature:
                 self.btn_Update.enabled = True
                 return
-            
-        anvil.server.call("updateDefectsList", jobcardID, instructions, notes,defects,parts, staffID, signature)
-        alert("Update is successful", title="Success")
+        
+        existingrecord = anvil.server.call("getJobCardDefects", jobcardID)   
+        if not existingrecord:
+            Notification("No record found relating to defects and or requested parts to be updated.\nCreate details in Workflow section first.",
+                timeout=None,
+                title="Update Failed",
+                style="warning").show()
+        else:
+            anvil.server.call("updateDefectsList", jobcardID, instructions, notes,defects,parts, staffID, signature)
+            alert("Update is successful", title="Success")
         self.btn_Update.enabled = True
         
     def btn_DownloadTechNotes_click(self, **event_args):

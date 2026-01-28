@@ -5,7 +5,7 @@ import anvil.users
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
-
+import anvil.js
 
 class SelfService(SelfServiceTemplate):
     def __init__(self, **properties):
@@ -15,8 +15,19 @@ class SelfService(SelfServiceTemplate):
         # Any code you write here will run before the form opens.
         #result = anvil.server.call("update_carpart_categories")
         #alert(f"Updated {result['updated_rows']} rows")
+        set_default_error_handling(self.handle_server_errors) #Set global server error handler
+
+    def handle_server_errors(self, exc):
+        if isinstance(exc, anvil.server.UplinkDisconnectedError):
+            anvil.alert("Connection to server lost. Please check your internet or try again later.", title="Disconnected", large=False)
+        elif isinstance(exc, anvil.server.SessionExpiredError):
+            anvil.js.window.location.reload() #Reload the app on session timeout
+        elif isinstance(exc, anvil.server.AppOfflineError):
+            anvil.alert("Please connect to the internet to proceed.", title="No Internet", large=False)   
+        else:
+            anvil.alert(f"Unexpected error: {exc}", title="Error", large=False)
+
     def getCarPartNamesAndCategory(self):
-        # Bridge method for HTML Panel
         return anvil.server.call('getCarPartNamesAndCategory')
 
     def get_technician_jobcards_by_status(self):

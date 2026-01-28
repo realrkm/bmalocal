@@ -142,29 +142,29 @@
         mainContent.innerHTML = `
         ${isHistory ? `<div class="summary-card">✅<div><h2>Daily Summary</h2><p>Completed Units Today: ${activeServices.filter(s => s.status === 'Completed').length}</p></div></div>` : ''}
         
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
-            <h1>${isHistory ? 'Service History' : 'Service Queue'}</h1>
-            <div style="position:relative; width:400px;">
-                <input type="text" id="service-search" class="search-input" placeholder="Search JobCard or Tech..." value="${serviceSearchQuery}" style="font-size:1.5rem; padding:1rem 1rem 1rem 3.5rem;">
+        <h1 style="margin-bottom:2rem;">${isHistory ? 'Service History' : 'Service Queue'}</h1>
+        
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:2rem; flex-wrap:wrap;">
+            <div style="display:flex; gap:1rem;">
+                <button class="btn-status bg-yellow ${currentStatusFilter === 'Checked-In' ? 'active-filter' : ''}" onclick="filterByStatus('Checked-In')">Checked-In</button>
+                <button class="btn-status bg-green ${currentStatusFilter === 'In-Service' ? 'active-filter' : ''}" onclick="filterByStatus('In-Service')">In-Service</button>
+                <button class="btn-status bg-gray ${currentStatusFilter === 'Completed' ? 'active-filter' : ''}" onclick="filterByStatus('Completed')">History</button>
+            </div>
+            
+            <div style="position:relative; flex:1; max-width:400px; min-width:300px;">
+                <input type="text" id="service-search" class="search-input" placeholder="Search JobCard or Tech..." value="${serviceSearchQuery}" style="font-size:1.5rem; padding:1rem 1rem 1rem 3.5rem; width:100%;">
                 <span style="position:absolute; left:1rem; top:1.2rem; color:#94a3b8;">🔍</span>
             </div>
         </div>
 
-        <div style="display:flex; gap:1rem; margin-bottom:2rem;">
-            <button class="btn-status bg-yellow ${currentStatusFilter === 'Checked-In' ? 'active-filter' : ''}" onclick="filterByStatus('Checked-In')">Checked-In</button>
-            <button class="btn-status bg-green ${currentStatusFilter === 'In-Service' ? 'active-filter' : ''}" onclick="filterByStatus('In-Service')">In-Service</button>
-            <button class="btn-status bg-gray ${currentStatusFilter === 'Completed' ? 'active-filter' : ''}" onclick="filterByStatus('Completed')">History</button>
-        </div>
-
         <div class="service-table-container">
             <table class="kiosk-table">
-                <thead><tr><th>No</th><th>Received</th><th></th><th>Technician</th><th>JobCard Ref</th><th>Instruction</th><th>Status</th><th>Action</th></tr></thead>
+                <thead><tr><th>No</th><th>Received</th><th>Technician</th><th>JobCard Ref</th><th>Instruction</th><th>Status</th><th>Action</th></tr></thead>
                 <tbody>
                     ${filtered.map(s => `
                         <tr>
                             <td data-label="No">${s.no}</td>
                             <td data-label="Received">${s.date}</td>
-                            <td></td>
                             <td data-label="Technician"><strong>${s.tech}</strong></td>
                             <td data-label="JobCard Ref" style="color:#facc15; font-weight:bold;">${s.jobcardref}</td>
                             <td data-label="Instruction">${s.instruction}</td>

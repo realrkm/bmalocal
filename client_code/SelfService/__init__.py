@@ -35,3 +35,4 @@ class SelfService(SelfServiceTemplate):
 
     def save_work_done(self, jobcardref, workdone):
         anvil.server.call("save_work_done_by_technician", jobcardref, workdone)
+        return None

@@ -511,29 +511,50 @@
             render();
         };
 
-        window.saveWorkDone = () => {
+        window.saveWorkDone = async () => {
             const textarea = document.getElementById('work-done-textarea');
-            if (!textarea) return;
-
             const workDoneText = textarea.value.trim();
 
             if (!workDoneText) {
-                customAlert('Please enter work done description before saving.', 'Work Done Required');
+                customAlert('Please enter the work done details before saving.', 'Work Done Required');
                 return;
             }
 
-            const service = activeServices.find(s => s.jobcardref === currentWorkDoneReg);
-            if (service) {
-                service.workDone = workDoneText;
-                // TODO: Here you would call an Anvil server function to save the work done
-                await anvil.call(mainContent, 'save_work_done', currentWorkDoneReg, workDoneText);
+            try {
+                // 1. Call server to save + complete job
+                anvil.call(mainContent, 'save_work_done', currentWorkDoneReg, workDoneText);
 
-                customAlert(`Work done saved for ${currentWorkDoneReg}`, 'Success');
+                // 2. Update local state immediately (no waiting)
+                const service = activeServices.find(
+                    s => s.jobcardref === currentWorkDoneReg
+                );
+
+                if (service) {
+                    service.workDone = workDoneText;
+                    service.status = 'Completed';
+                }
+
+                // 3. Success feedback
+                customAlert(
+                    `Work done has been saved successfully for vehicle ${currentWorkDoneReg}`,
+                    '✅ Success'
+                );
+
+                // 4. Reset view + go home
                 currentWorkDoneReg = null;
+                currentStatusFilter = 'Completed'; // optional: auto-show history
                 currentView = 'home';
                 render();
+
+            } catch (err) {
+                console.error(err);
+                await customAlert(
+                    'Failed to save work done. Please try again.',
+                    '❌ Error'
+                );
             }
         };
+
 
         window.completeJob = (jobcardref) => { 
             const service = activeServices.find(s => s.jobcardref === jobcardref);

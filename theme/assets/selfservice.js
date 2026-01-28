@@ -186,7 +186,7 @@
         updateBreadcrumbs();
 
         if (currentView === 'home') renderHome();
-        else if (currentView === 'issueParts') renderIssueParts();
+        else if (currentView === 'Request Parts') renderRequestParts();
         else if (currentView === 'category') renderCategory();
         else if (currentView === 'search') renderSearch();
         else if (currentView === 'checkout') renderCheckout();
@@ -220,7 +220,7 @@
             </div>
             
             <div style="position:relative; flex:1; max-width:400px; min-width:300px;">
-                <input type="text" id="service-search" class="search-input" placeholder="Search JobCard or Tech..." value="${serviceSearchQuery}" style="font-size:1.5rem; padding:1rem 1rem 1rem 3.5rem; width:100%;">
+                <input type="text" id="service-search" class="search-input" placeholder="Search JobCard or Technician..." value="${serviceSearchQuery}" style="font-size:1.5rem; padding:1rem 1rem 1rem 3.5rem; width:100%;">
                 <span style="position:absolute; left:1rem; top:1.2rem; color:#94a3b8;">🔍</span>
             </div>
         </div>
@@ -241,7 +241,7 @@
                                 ${s.status === 'Completed' ? '✅ Finished' : s.status === 'In-Service' ? `
                                     <button onclick="openWorkDone('${s.jobcardref}')" style="background:#3b82f6; border:none; color:white; padding:0.8rem 1.2rem; border-radius:0.5rem; cursor:pointer; font-weight:bold;">Work Done</button>
                                 ` : `
-                                    <button onclick="openParts('${s.jobcardref}')" class="btn-issue-parts">Issue Parts</button>
+                                    <button onclick="openParts('${s.jobcardref}')" class="btn-issue-parts">Request Parts</button>
                                 `}
                             </td>
                         </tr>
@@ -253,7 +253,14 @@
 
         const sInput = document.getElementById('service-search');
         if(sInput) {
-            sInput.oninput = (e) => { serviceSearchQuery = e.target.value; renderHome(); };
+            // Search when Enter is pressed
+            sInput.onkeydown = (e) => {
+                if (e.key === 'Enter') {
+                    serviceSearchQuery = e.target.value;
+                    renderHome();
+                }
+            };
+
             sInput.onclick = (e) => e.target.focus();
         }
     }
@@ -305,9 +312,9 @@
             `;
     }
 
-    function renderIssueParts() {
+    function renderRequestParts() {
         mainContent.innerHTML = `
-                <h2 style="margin-bottom:2rem">Issuing Parts for: <span style="color:#facc15">${activeReg}</span></h2>
+                <h2 style="margin-bottom:2rem">Requesting Parts for: <span style="color:#facc15">${activeReg}</span></h2>
                 <div class="category-grid">
                     ${categories.map(c => `
                         <button onclick="selectCategory('${c.id}')" class="category-card ${c.color}">
@@ -356,16 +363,18 @@
 
     function renderCheckout() {
         mainContent.innerHTML = `
-                <div style="background:#1e293b; padding:3rem; border-radius:2rem; border:4px solid #3b82f6; max-width:800px; margin:2rem auto;">
-                    <h2 style="text-align:center; margin-bottom:2rem; font-size:2.5rem;">Your Order</h2>
-                    <div style="margin-bottom:2rem;">
-                        ${cart.length === 0 ? '<p style="text-align:center; font-size:1.8rem;">Your cart is empty.</p>' : cart.map((item, i) => `<div style="padding:1rem; border-bottom:1px solid #334155; display:flex; justify-content:space-between; align-items:center; font-size:1.8rem;"><div><strong>${item.name}</strong><br><small>${item.category}</small></div><button onclick="removeFromCart(${i})" style="color:#ef4444; background:none; border:none; cursor:pointer; font-size:1.5rem;"><i data-lucide="trash-2"></i></button></div>`).join('')}
-                    </div>
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <h3 style="font-size:2rem;">Total: ${cart.length} Parts</h3>
-                        <button onclick="confirmOrder()" style="background:#22c55e; color:white; padding:1rem 2rem; border-radius:0.5rem; border:none; font-weight:bold; cursor:pointer; font-size:2.4rem;" ${cart.length === 0 ? 'disabled' : ''}>Confirm Order</button>
-                    </div>
-                </div>`;
+        <div style="background:#1e293b; padding:3rem; border-radius:2rem; border:4px solid #3b82f6; max-width:800px; margin:2rem auto;">
+            <h2 style="text-align:center; margin-bottom:2rem; font-size:2.5rem;">Your Order</h2>
+            <div style="margin-bottom:2rem;">
+                ${cart.length === 0 ? '<p style="text-align:center; font-size:1.8rem;">Your cart is empty.</p>' : cart.map((item, i) => `<div style="padding:1rem; border-bottom:1px solid #334155; display:flex; justify-content:space-between; align-items:center; font-size:1.8rem;"><div><strong>${item.name}</strong><br><small>${item.category}</small></div><button onclick="removeFromCart(${i})" style="color:#ef4444; background:none; border:none; cursor:pointer; font-size:1.5rem;"><i data-lucide="trash-2"></i></button></div>`).join('')}
+            </div>
+            ${cart.length > 0 ? `
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h3 style="font-size:2rem;">Total: ${cart.length} Parts</h3>
+                    <button onclick="confirmOrder()" style="background:#22c55e; color:white; padding:1rem 2rem; border-radius:0.5rem; border:none; font-weight:bold; cursor:pointer; font-size:2.4rem;">Confirm Order</button>
+                </div>
+            ` : ''}
+        </div>`;
     }
 
     function renderSuccess() {
@@ -495,7 +504,7 @@
 
         window.openParts = (reg) => { 
             activeReg = reg; 
-            currentView = 'issueParts'; 
+            currentView = 'Request Parts'; 
             render(); 
         };
 

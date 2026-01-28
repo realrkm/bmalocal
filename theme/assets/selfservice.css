@@ -849,3 +849,20 @@ CHECKOUT & SUCCESS PAGE RESPONSIVE
 .custom-alert-button:active {
     transform: scale(0.98);
 }
+
+/* Shopping Cart Quantity input styling */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    opacity: 1;
+    height: 30px;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+input[type="number"]:focus {
+    outline: none;
+    border-color: #dc2626;
+    box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2);
+}

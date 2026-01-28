@@ -314,27 +314,42 @@
 
     function renderRequestParts() {
         mainContent.innerHTML = `
-                <h2 style="margin-bottom:2rem">Requesting Parts for: <span style="color:#facc15">${activeReg}</span></h2>
-                <div class="category-grid">
-                    ${categories.map(c => `
-                        <button onclick="selectCategory('${c.id}')" class="category-card ${c.color}">
-                            <span class="category-icon">${c.icon}</span>
-                            <span class="category-name">${c.name}</span>
-                            <span style="font-size:2rem;">
-                                ${parts.filter(p => categorize(p) === c.id).length} Items
-                            </span>
-                        </button>
-                    `).join('')}
-                </div>
-            `;
+        <h2 style="margin-bottom:2rem">Requesting Parts for: <span style="color:#facc15">${activeReg}</span></h2>
+        <div class="category-grid">
+            ${categories.map(c => {
+                const categoryParts = parts.filter(p => categorize(p) === c.id);
+                const uniqueNames = new Set(categoryParts.map(p => p.name));
+                return `
+                    <button onclick="selectCategory('${c.id}')" class="category-card ${c.color}">
+                        <span class="category-icon">${c.icon}</span>
+                        <span class="category-name">${c.name}</span>
+                        <span style="font-size:2rem;">
+                            ${uniqueNames.size} Items
+                        </span>
+                    </button>
+                `;
+            }).join('')}
+        </div>
+    `;
     }
 
     function renderCategory() {
         const filtered = parts.filter(p => categorize(p) === selectedCategory.id);
+
+        // Remove duplicates by part name, keeping first occurrence
+        const uniquePartsMap = new Map();
+        filtered.forEach(part => {
+            if (!uniquePartsMap.has(part.name)) {
+                uniquePartsMap.set(part.name, part);
+            }
+        });
+
+        const uniqueParts = Array.from(uniquePartsMap.values());
+
         mainContent.innerHTML = `
-                <h2 style="font-size:2.5rem; margin-bottom:2rem">${selectedCategory.icon} ${selectedCategory.name}</h2>
-                <div class="category-grid">${renderParts(filtered)}</div>
-            `;
+        <h2 style="font-size:2.5rem; margin-bottom:2rem">${selectedCategory.icon} ${selectedCategory.name}</h2>
+        <div class="category-grid">${renderParts(uniqueParts)}</div>
+    `;
     }
 
     function renderSearch() {
@@ -351,26 +366,67 @@
     }
 
     function renderParts(arr) {
-        return arr.map(p => `
-                <div style="background:#334155; padding:2rem; border-radius:1.5rem; display:flex; flex-direction:column; justify-content:space-between; gap:1.5rem; text-align:center;">
-                    <div>
-                        <h3 style="font-size:2.4rem;">${p.name}</h3>
-                        <p style="color:#94a3b8; margin-top:0.5rem">Category: ${p.category || 'N/A'}</p>
-                    </div>
-                    <button onclick="addToCart('${p.name}')" class="add-btn-circular">+</button>
-                </div>`).join('');
+        return arr.map((p, index) => `
+        <div style="background:#334155; padding:2rem; border-radius:1.5rem; display:flex; flex-direction:column; justify-content:space-between; gap:1.5rem; text-align:center;">
+            <div>
+                <h3 style="font-size:2.4rem;">${p.name}</h3>
+                <p style="color:#94a3b8; margin-top:0.5rem">Category: ${p.category || 'N/A'}</p>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:1rem; align-items:center;">
+                <div style="width:100%;">
+                    <label style="display:block; color:#94a3b8; font-size:1.4rem; margin-bottom:0.5rem;">Quantity</label>
+                    <input 
+                        type="number" 
+                        id="qty-${index}" 
+                        min="0" 
+                        step="0.01" 
+                        value="1" 
+                        placeholder="0.00"
+                        style="width:100%; padding:0.8rem; font-size:1.6rem; border-radius:0.5rem; border:2px solid #475569; background:#1e293b; color:white; text-align:center;"
+                    >
+                </div>
+                <button onclick="addToCart('${p.name.replace(/'/g, "\\'")}', '${index}')" class="add-btn-circular">+</button>
+            </div>
+        </div>`).join('');
     }
 
     function renderCheckout() {
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+
         mainContent.innerHTML = `
         <div style="background:#1e293b; padding:3rem; border-radius:2rem; border:4px solid #3b82f6; max-width:800px; margin:2rem auto;">
             <h2 style="text-align:center; margin-bottom:2rem; font-size:2.5rem;">Your Order</h2>
             <div style="margin-bottom:2rem;">
-                ${cart.length === 0 ? '<p style="text-align:center; font-size:1.8rem;">Your cart is empty.</p>' : cart.map((item, i) => `<div style="padding:1rem; border-bottom:1px solid #334155; display:flex; justify-content:space-between; align-items:center; font-size:1.8rem;"><div><strong>${item.name}</strong><br><small>${item.category}</small></div><button onclick="removeFromCart(${i})" style="color:#ef4444; background:none; border:none; cursor:pointer; font-size:1.5rem;"><i data-lucide="trash-2"></i></button></div>`).join('')}
+                ${cart.length === 0 ? '<p style="text-align:center; font-size:1.8rem;">Your cart is empty.</p>' : cart.map((item, i) => `
+                    <div style="padding:1rem; border-bottom:1px solid #334155; display:flex; justify-content:space-between; align-items:center; font-size:1.8rem; gap:1rem;">
+                        <div style="min-width:40px; font-size:2rem; font-weight:bold; color:#dc2626;">${i + 1}.</div>
+                        <div style="flex:1;">
+                            <strong>${item.name}</strong><br>
+                            <small style="color:#94a3b8;">${item.category}</small>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:1rem;">
+                            <div style="display:flex; flex-direction:column; align-items:center;">
+                                <span style="color:#94a3b8; font-size:1.2rem;">QTY</span>
+                                <input 
+                                    type="number" 
+                                    id="cart-qty-${i}"
+                                    value="${item.quantity}" 
+                                    min="0.01"
+                                    step="0.01"
+                                    onchange="updateCartQuantity(${i}, this.value)"
+                                    style="width:80px; padding:0.5rem; font-size:1.6rem; border-radius:0.5rem; border:2px solid #475569; background:#0f172a; color:white; text-align:center;"
+                                >
+                            </div>
+                            <button onclick="removeFromCart(${i})" style="color:#ef4444; background:none; border:none; cursor:pointer; font-size:1.5rem;">
+                                <i data-lucide="trash-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('')}
             </div>
             ${cart.length > 0 ? `
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h3 style="font-size:2rem;">Total: ${cart.length} Parts</h3>
+                    <h3 style="font-size:2rem;">Total: ${totalItems.toFixed(2)} Units</h3>
                     <button onclick="confirmOrder()" style="background:#22c55e; color:white; padding:1rem 2rem; border-radius:0.5rem; border:none; font-weight:bold; cursor:pointer; font-size:2.4rem;">Confirm Order</button>
                 </div>
             ` : ''}
@@ -484,13 +540,16 @@
             }
         };
 
-        window.confirmOrder = () => { 
+        window.confirmOrder = () => {
             const id = Math.floor(1000 + Math.random() * 9000);
+            const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+
             orderHistory.push({
                 id: id,
                 time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-                itemCount: cart.length
+                itemCount: totalQuantity.toFixed(2) // Store with decimals
             });
+
             window.lastOrderID = id;
             cart = []; 
             currentView = 'success'; 
@@ -573,7 +632,54 @@
             }
             render(); 
         };
+        
+        window.addToCart = (name, index) => {
+            const qtyInput = document.getElementById(`qty-${index}`);
+            const quantity = parseFloat(qtyInput?.value) || 1;
 
+            if (quantity <= 0) {
+                customAlert('Please enter a valid quantity greater than 0.', 'Invalid Quantity');
+                return;
+            }
+
+            const item = parts.find(p => p.name === name);
+            if (!item) return;
+
+            // Check if item already exists in cart
+            const existingItemIndex = cart.findIndex(c => c.name === item.name);
+
+            if (existingItemIndex > -1) {
+                // Add to existing quantity
+                cart[existingItemIndex].quantity += quantity;
+            } else {
+                // Add new item with quantity
+                cart.push({
+                    name: item.name,
+                    category: item.category,
+                    partNo: item.partNo,
+                    quantity: quantity
+                });
+            }
+
+            // Reset quantity input to 1
+            if (qtyInput) qtyInput.value = '1';
+
+            render();
+        };
+
+        window.updateCartQuantity = (index, newQuantity) => {
+            const qty = parseFloat(newQuantity);
+
+            if (isNaN(qty) || qty <= 0) {
+                customAlert('Please enter a valid quantity greater than 0.', 'Invalid Quantity');
+                document.getElementById(`cart-qty-${index}`).value = cart[index].quantity;
+                return;
+            }
+
+            cart[index].quantity = qty;
+            render();
+        };
+        
         backBtn.onclick = goToHome;
         cartBtn.onclick = () => { currentView = 'checkout'; render(); };
         homeFooterBtn.onclick = goToHome;

@@ -32,3 +32,6 @@ class SelfService(SelfServiceTemplate):
 
     def get_technician_jobcards_by_status(self):
         return anvil.server.call("get_technician_jobcards_by_status")
+
+    def save_work_done(self, jobcardref, workdone):
+        anvil.server.call("save_work_done_by_technician", jobcardref, workdone)

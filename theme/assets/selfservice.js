@@ -17,7 +17,7 @@
             overlay.innerHTML = `
                 <div class="custom-alert-box">
                     <div class="custom-alert-title">
-                        ⚠️ ${title}
+                        ${title}
                     </div>
                     <div class="custom-alert-message">${message}</div>
                     <button class="custom-alert-button">OK</button>
@@ -526,7 +526,7 @@
             if (service) {
                 service.workDone = workDoneText;
                 // TODO: Here you would call an Anvil server function to save the work done
-                // await anvil.call(mainContent, 'save_work_done', currentWorkDoneReg, workDoneText);
+                await anvil.call(mainContent, 'save_work_done', currentWorkDoneReg, workDoneText);
 
                 customAlert(`Work done saved for ${currentWorkDoneReg}`, 'Success');
                 currentWorkDoneReg = null;

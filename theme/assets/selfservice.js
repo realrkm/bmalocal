@@ -14,6 +14,7 @@
     let adminClicks = 0, adminTimeout;
     let activeReg = null, serviceSearchQuery = '', currentStatusFilter = 'all';
     let categories = []; // Will be populated from server
+    let currentWorkDoneReg = null; // Track which job is having work done entered
 
     // Category display configuration (icons and colors)
     const categoryConfig = {
@@ -29,7 +30,7 @@
     };
 
     let activeServices = [];
-    
+
     async function init() {
         try {
             // Use anvil.server.call for standalone JavaScript (not anvil.call which requires a Form)
@@ -65,7 +66,7 @@
 
             setupListeners();
             render();
-               
+
             setInterval(async () => { 
                 if(currentView === 'home') {
                     await loadActiveServices();
@@ -91,6 +92,7 @@
                 tech: card.Technician,
                 reg: card.RegNo,
                 instruction: card.Instruction,
+                workDone: card.workDone || '', // Store work done if it exists
                 // Normalize status: "Checked In" -> "Checked-In", "In Service" -> "In-Service"
                 status: card.status === 'Checked In' ? 'Checked-In' : 
                     card.status === 'In Service' ? 'In-Service' : 
@@ -104,6 +106,7 @@
             activeServices = [];
         }
     }
+
     function categorize(p) {
         // Since category comes from server, just return it directly
         return p.category ? p.category.toLowerCase().replace(/\s+/g, '-') : 'other';
@@ -111,9 +114,9 @@
 
 
     function render() {
-        backBtn.classList.toggle('hidden', currentView === 'home' || currentView === 'success' || currentView === 'admin');
+        backBtn.classList.toggle('hidden', currentView === 'home' || currentView === 'success' || currentView === 'admin' || currentView === 'workDone');
         cartCount.innerText = cart.length;
-        cartCount.classList.toggle('hidden', cart.length === 0 || currentView === 'success');
+        cartCount.classList.toggle('hidden', cart.length === 0 || currentView === 'success' || currentView === 'workDone');
         updateBreadcrumbs();
 
         if (currentView === 'home') renderHome();
@@ -123,6 +126,7 @@
         else if (currentView === 'checkout') renderCheckout();
         else if (currentView === 'success') renderSuccess();
         else if (currentView === 'admin') renderAdmin();
+        else if (currentView === 'workDone') renderWorkDone();
 
         window.scrollTo({ top: 0, behavior: 'instant' });
         // Initialize all Lucide icons after any render
@@ -134,10 +138,10 @@
         const filtered = activeServices.filter(s => {
             const matchesStatus = currentStatusFilter === 'all' ? (s.status !== 'Completed') : (s.status === currentStatusFilter);
             const matchesSearch = s.reg.toLowerCase().includes(serviceSearchQuery.toLowerCase()) || s.tech.toLowerCase().includes(serviceSearchQuery.toLowerCase());
-                return matchesStatus && matchesSearch;
-            });
+            return matchesStatus && matchesSearch;
+        });
 
-            mainContent.innerHTML = `
+        mainContent.innerHTML = `
                 ${isHistory ? `<div class="summary-card">✅<div><h2>Daily Summary</h2><p>Completed Units Today: ${activeServices.filter(s => s.status === 'Completed').length}</p></div></div>` : ''}
                 
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
@@ -167,9 +171,10 @@
                                     <td>${s.instruction}</td>
                                     <td><span class="status-badge ${s.status === 'In-Service' ? 'status-in-service' : s.status === 'Completed' ? 'status-completed' : 'status-checked-in'}">${s.status}</span></td>
                                     <td>
-                                        ${s.status === 'Completed' ? '✅ Finished' : `
+                                        ${s.status === 'Completed' ? '✅ Finished' : s.status === 'In-Service' ? `
+                                            <button onclick="openWorkDone('${s.reg}')" style="background:#3b82f6; border:none; color:white; padding:0.8rem 1.2rem; border-radius:0.5rem; cursor:pointer; font-weight:bold;">Work Done</button>
+                                        ` : `
                                             <button onclick="openParts('${s.reg}')" class="btn-issue-parts">Issue Parts</button>
-                                            <button onclick="completeJob('${s.reg}')" style="background:#22c55e; border:none; color:white; padding:0.8rem; border-radius:0.5rem; cursor:pointer;">✓</button>
                                         `}
                                     </td>
                                 </tr>
@@ -179,15 +184,62 @@
                 </div>
             `;
 
-            const sInput = document.getElementById('service-search');
-            if(sInput) {
-                sInput.oninput = (e) => { serviceSearchQuery = e.target.value; renderHome(); };
-                sInput.onclick = (e) => e.target.focus();
-            }
+        const sInput = document.getElementById('service-search');
+        if(sInput) {
+            sInput.oninput = (e) => { serviceSearchQuery = e.target.value; renderHome(); };
+            sInput.onclick = (e) => e.target.focus();
+        }
+    }
+
+    function renderWorkDone() {
+        const service = activeServices.find(s => s.reg === currentWorkDoneReg);
+        if (!service) {
+            goToHome();
+            return;
         }
 
-        function renderIssueParts() {
-            mainContent.innerHTML = `
+        mainContent.innerHTML = `
+                <div style="max-width:800px; margin:2rem auto;">
+                    <div style="background:#1e293b; padding:3rem; border-radius:2rem; border:4px solid #3b82f6;">
+                        <div style="margin-bottom:2rem;">
+                            <h2 style="font-size:2.5rem; margin-bottom:1rem;">Work Done Report</h2>
+                            <div style="background:#334155; padding:1.5rem; border-radius:1rem; margin-bottom:2rem;">
+                                <p style="font-size:1.8rem;"><strong>Registration:</strong> <span style="color:#facc15;">${service.reg}</span></p>
+                                <p style="font-size:1.8rem;"><strong>Technician:</strong> ${service.tech}</p>
+                                <p style="font-size:1.8rem;"><strong>Instruction:</strong> ${service.instruction}</p>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom:2rem;">
+                            <label style="display:block; margin-bottom:1rem; font-size:1.8rem; font-weight:bold;">Describe the work completed:</label>
+                            <textarea 
+                                id="work-done-textarea" 
+                                rows="8" 
+                                placeholder="Enter detailed description of work performed..."
+                                style="width:100%; padding:1.5rem; font-size:1.6rem; border-radius:0.5rem; border:2px solid #475569; background:#0f172a; color:white; resize:vertical;"
+                            >${service.workDone || ''}</textarea>
+                        </div>
+
+                        <div style="display:flex; gap:1rem; justify-content:flex-end;">
+                            <button 
+                                onclick="cancelWorkDone()" 
+                                style="background:#64748b; color:white; padding:1rem 2rem; border-radius:0.5rem; border:none; font-weight:bold; cursor:pointer; font-size:1.8rem;">
+                                Cancel
+                            </button>
+                            <button 
+                                onclick="saveWorkDone()" 
+                                style="background:#22c55e; color:white; padding:1rem 2rem; border-radius:0.5rem; border:none; font-weight:bold; cursor:pointer; font-size:1.8rem;">
+                                <i data-lucide="save" style="width:20px; height:20px; display:inline-block; vertical-align:middle; margin-right:0.5rem;"></i>
+                                Save Work Done
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+    }
+
+    function renderIssueParts() {
+        mainContent.innerHTML = `
                 <h2 style="margin-bottom:2rem">Issuing Parts for: <span style="color:#facc15">${activeReg}</span></h2>
                 <div class="category-grid">
                     ${categories.map(c => `
@@ -201,20 +253,20 @@
                     `).join('')}
                 </div>
             `;
-        }
+    }
 
-        function renderCategory() {
-            const filtered = parts.filter(p => categorize(p) === selectedCategory.id);
-            mainContent.innerHTML = `
+    function renderCategory() {
+        const filtered = parts.filter(p => categorize(p) === selectedCategory.id);
+        mainContent.innerHTML = `
                 <h2 style="font-size:2.5rem; margin-bottom:2rem">${selectedCategory.icon} ${selectedCategory.name}</h2>
                 <div class="category-grid">${renderParts(filtered)}</div>
             `;
-        }
+    }
 
-        function renderSearch() {
-            const resultCats = [...new Set(searchResults.map(p => categorize(p)))].filter(c => c !== 'other');
-            const filtered = activeSearchFilter === 'all' ? searchResults : searchResults.filter(p => categorize(p) === activeSearchFilter);
-            mainContent.innerHTML = `
+    function renderSearch() {
+        const resultCats = [...new Set(searchResults.map(p => categorize(p)))].filter(c => c !== 'other');
+        const filtered = activeSearchFilter === 'all' ? searchResults : searchResults.filter(p => categorize(p) === activeSearchFilter);
+        mainContent.innerHTML = `
                 <h2 style="font-size:2.5rem; margin-bottom:1.5rem;">Results (${filtered.length})</h2>
                 <div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-bottom:2rem;">
                     <button onclick="setSearchFilter('all')" style="padding:0.75rem 1.5rem; border-radius:2rem; border:none; cursor:pointer; font-weight:bold; font-size:1.5rem; ${activeSearchFilter === 'all' ? 'background:#dc2626; color:white;' : 'background:#334155; color:#94a3b8;'}">All</button>
@@ -222,10 +274,10 @@
                 </div>
                 <div class="category-grid">${renderParts(filtered)}</div>
             `;
-        }
+    }
 
-        function renderParts(arr) {
-            return arr.map(p => `
+    function renderParts(arr) {
+        return arr.map(p => `
                 <div style="background:#334155; padding:2rem; border-radius:1.5rem; display:flex; flex-direction:column; justify-content:space-between; gap:1.5rem; text-align:center;">
                     <div>
                         <h3 style="font-size:2.4rem;">${p.name}</h3>
@@ -233,10 +285,10 @@
                     </div>
                     <button onclick="addToCart('${p.name}')" class="add-btn-circular">+</button>
                 </div>`).join('');
-        }
+    }
 
-        function renderCheckout() {
-            mainContent.innerHTML = `
+    function renderCheckout() {
+        mainContent.innerHTML = `
                 <div style="background:#1e293b; padding:3rem; border-radius:2rem; border:4px solid #3b82f6; max-width:800px; margin:2rem auto;">
                     <h2 style="text-align:center; margin-bottom:2rem; font-size:2.5rem;">Your Order</h2>
                     <div style="margin-bottom:2rem;">
@@ -247,14 +299,14 @@
                         <button onclick="confirmOrder()" style="background:#22c55e; color:white; padding:1rem 2rem; border-radius:0.5rem; border:none; font-weight:bold; cursor:pointer; font-size:2.4rem;" ${cart.length === 0 ? 'disabled' : ''}>Confirm Order</button>
                     </div>
                 </div>`;
-        }
+    }
 
-        function renderSuccess() {
-            const id = window.lastOrderID;
-            const originalTitle = document.title;
-            document.title = `Order_Ticket_${id}`;
+    function renderSuccess() {
+        const id = window.lastOrderID;
+        const originalTitle = document.title;
+        document.title = `Order_Ticket_${id}`;
 
-            mainContent.innerHTML = `
+        mainContent.innerHTML = `
                 <div style="text-align:center; padding:4rem 2rem; background:#1e293b; border-radius:2rem; max-width:600px; margin:2rem auto; border:4px solid #22c55e;">
                     <div style="background:#22c55e; width:80px; height:80px; border-radius:50%; margin:0 auto 1.5rem; display:flex; align-items:center; justify-content:center; font-size:3rem;">✓</div>
                     <h2 style="font-size:2.5rem;">Order Confirmed</h2>
@@ -266,19 +318,19 @@
                     </div>
                 </div>`;
 
-            document.getElementById('print-ticket-btn').onclick = () => window.print();
-            
-            setTimeout(() => { 
-                if(currentView === 'success') { 
-                    document.title = originalTitle; 
-                    goToHome(); 
-                } 
-            }, 20000);
-        }
+        document.getElementById('print-ticket-btn').onclick = () => window.print();
 
-        function renderAdmin() {
-            const totalItems = orderHistory.reduce((sum, order) => sum + order.itemCount, 0);
-            mainContent.innerHTML = `
+        setTimeout(() => { 
+            if(currentView === 'success') { 
+                document.title = originalTitle; 
+                goToHome(); 
+            } 
+        }, 20000);
+    }
+
+    function renderAdmin() {
+        const totalItems = orderHistory.reduce((sum, order) => sum + order.itemCount, 0);
+        mainContent.innerHTML = `
             <div>
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
                     <h2 style="font-size:3rem;">Admin Dashboard</h2>
@@ -306,110 +358,147 @@
                 </div>
                 <button onclick="clearStats()" style="margin-top:2rem; background:none; border:1px solid #ef4444; color:#ef4444; padding:0.8rem 1.5rem; border-radius:0.5rem; cursor:pointer; font-weight:bold; font-size:2.4rem;">Clear Session Data</button>
             </div>`;
-        }
+    }
 
-        function updateBreadcrumbs() {
-            if (currentView === 'home' || currentView === 'success') { 
-                breadcrumbContainer.classList.add('hidden'); 
-                return; 
+    function updateBreadcrumbs() {
+        if (currentView === 'home' || currentView === 'success' || currentView === 'workDone') { 
+            breadcrumbContainer.classList.add('hidden'); 
+            return; 
+        }
+        breadcrumbContainer.classList.remove('hidden');
+        breadcrumbContainer.innerHTML = `<span onclick="goToHome()" style="cursor:pointer; color:#dc2626; font-weight:bold;">Home</span> > ${currentView.charAt(0).toUpperCase() + currentView.slice(1)}`;
+    }
+
+    function setupListeners() {
+        window.selectCategory = (id) => { 
+            selectedCategory = categories.find(c => c.id === id); 
+            currentView = 'category'; 
+            render(); 
+        };
+
+        window.addToCart = (name) => { 
+            const item = parts.find(p => p.name === name); 
+            if(item) cart.push(item); 
+            render(); 
+        };
+
+        window.removeFromCart = (i) => { 
+            cart.splice(i,1); 
+            render(); 
+        };
+
+        window.goToHome = () => { 
+            currentView = 'home'; 
+            serviceSearchQuery = '';
+            currentStatusFilter = 'all';
+            currentWorkDoneReg = null;
+            render(); 
+        };
+
+        window.setSearchFilter = (f) => { 
+            activeSearchFilter = f; 
+            render(); 
+        };
+
+        window.clearStats = () => { 
+            if(confirm("Clear session history?")) { 
+                orderHistory = []; 
+                renderAdmin(); 
+            } 
+        };
+
+        window.confirmOrder = () => { 
+            const id = Math.floor(1000 + Math.random() * 9000);
+            orderHistory.push({
+                id: id,
+                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                itemCount: cart.length
+            });
+            window.lastOrderID = id;
+            cart = []; 
+            currentView = 'success'; 
+            render(); 
+        };
+
+        window.filterByStatus = (s) => { 
+            currentStatusFilter = (currentStatusFilter === s) ? 'all' : s; 
+            render(); 
+        };
+
+        window.openParts = (reg) => { 
+            activeReg = reg; 
+            currentView = 'issueParts'; 
+            render(); 
+        };
+
+        window.openWorkDone = (reg) => {
+            currentWorkDoneReg = reg;
+            currentView = 'workDone';
+            render();
+        };
+
+        window.cancelWorkDone = () => {
+            currentWorkDoneReg = null;
+            currentView = 'home';
+            render();
+        };
+
+        window.saveWorkDone = () => {
+            const textarea = document.getElementById('work-done-textarea');
+            if (!textarea) return;
+
+            const workDoneText = textarea.value.trim();
+
+            if (!workDoneText) {
+                alert('Please enter work done description before saving.');
+                return;
             }
-            breadcrumbContainer.classList.remove('hidden');
-            breadcrumbContainer.innerHTML = `<span onclick="goToHome()" style="cursor:pointer; color:#dc2626; font-weight:bold;">Home</span> > ${currentView.charAt(0).toUpperCase() + currentView.slice(1)}`;
-        }
 
-        function setupListeners() {
-            window.selectCategory = (id) => { 
-                selectedCategory = categories.find(c => c.id === id); 
-                currentView = 'category'; 
-                render(); 
-            };
-            
-            window.addToCart = (name) => { 
-                const item = parts.find(p => p.name === name); 
-                if(item) cart.push(item); 
-                render(); 
-            };
-            
-            window.removeFromCart = (i) => { 
-                cart.splice(i,1); 
-                render(); 
-            };
-            
-            window.goToHome = () => { 
-                currentView = 'home'; 
-                serviceSearchQuery = '';
-                currentStatusFilter = 'all';
-                render(); 
-            };
-            
-            window.setSearchFilter = (f) => { 
-                activeSearchFilter = f; 
-                render(); 
-            };
-            
-            window.clearStats = () => { 
-                if(confirm("Clear session history?")) { 
-                    orderHistory = []; 
-                    renderAdmin(); 
-                } 
-            };
-            
-            window.confirmOrder = () => { 
-                const id = Math.floor(1000 + Math.random() * 9000);
-                orderHistory.push({
-                    id: id,
-                    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-                    itemCount: cart.length
-                });
-                window.lastOrderID = id;
-                cart = []; 
-                currentView = 'success'; 
-                render(); 
-            };
+            const service = activeServices.find(s => s.reg === currentWorkDoneReg);
+            if (service) {
+                service.workDone = workDoneText;
+                // TODO: Here you would call an Anvil server function to save the work done
+                // await anvil.call(mainContent, 'save_work_done', currentWorkDoneReg, workDoneText);
 
-            window.filterByStatus = (s) => { 
-                currentStatusFilter = (currentStatusFilter === s) ? 'all' : s; 
-                render(); 
-            };
-            
-            window.openParts = (reg) => { 
-                activeReg = reg; 
-                currentView = 'issueParts'; 
-                render(); 
-            };
-            
-            window.completeJob = (reg) => { 
-                const service = activeServices.find(s => s.reg === reg);
-                if(service) {
-                    service.status = 'Completed';
-                    service.statusChangedAt = new Date();
-                }
-                render(); 
-            };
+                alert(`Work done saved for ${currentWorkDoneReg}`);
+                currentWorkDoneReg = null;
+                currentView = 'home';
+                render();
+            }
+        };
 
-            backBtn.onclick = goToHome;
-            cartBtn.onclick = () => { currentView = 'checkout'; render(); };
-            homeFooterBtn.onclick = goToHome;
-            
-            // Admin Secret Trigger - 5 clicks on logo
-            adminTrigger.onclick = () => {
-                adminClicks++;
-                clearTimeout(adminTimeout);
-                if (adminClicks === 5) {
-                    adminClicks = 0;
-                    currentView = 'admin';
-                    render();
-                } else {
-                    adminTimeout = setTimeout(() => { adminClicks = 0; }, 2000);
-                }
-            };
+        window.completeJob = (reg) => { 
+            const service = activeServices.find(s => s.reg === reg);
+            if(service) {
+                service.status = 'Completed';
+                service.statusChangedAt = new Date();
+            }
+            render(); 
+        };
 
-            window.onscroll = () => {
-                backToTopBtn.className = window.scrollY > 300 ? 'visible-fade' : 'hidden-fade';
-            };
-            
-            backToTopBtn.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
-        }
+        backBtn.onclick = goToHome;
+        cartBtn.onclick = () => { currentView = 'checkout'; render(); };
+        homeFooterBtn.onclick = goToHome;
 
-        init();
-    })();
+        // Admin Secret Trigger - 5 clicks on logo
+        adminTrigger.onclick = () => {
+            adminClicks++;
+            clearTimeout(adminTimeout);
+            if (adminClicks === 5) {
+                adminClicks = 0;
+                currentView = 'admin';
+                render();
+            } else {
+                adminTimeout = setTimeout(() => { adminClicks = 0; }, 2000);
+            }
+        };
+
+        window.onscroll = () => {
+            backToTopBtn.className = window.scrollY > 300 ? 'visible-fade' : 'hidden-fade';
+        };
+
+        backToTopBtn.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
+    }
+
+    init();
+})();

@@ -755,3 +755,22 @@ CHECKOUT & SUCCESS PAGE RESPONSIVE
         font-size: 2.5rem !important;
     }
 }
+
+/* Home view search and filter layout */
+@media (max-width: 768px) {
+    /* Stack vertically on mobile */
+    div[style*="justify-content:space-between"][style*="align-items:center"] {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+
+    div[style*="display:flex; gap:1rem;"] {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    div[style*="position:relative"][style*="max-width:400px"] {
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+}

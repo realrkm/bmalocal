@@ -185,6 +185,7 @@ class Quote(QuoteTemplate):
         
         anvil.server.call_s('updateJobCardStatus', jobCardID, status)
         if status == "Checked In":
+            anvil.server.call_s("deleteDefects", jobCardID)
             alert("Job reverted back to Checked In", title="Success")
         else:
             alert("Quotation saved successfully and download is initiated", title="Success")

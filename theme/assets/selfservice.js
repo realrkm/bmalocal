@@ -83,6 +83,7 @@
     let activeReg = null, serviceSearchQuery = '', currentStatusFilter = 'all';
     let categories = []; // Will be populated from server
     let currentWorkDoneReg = null; // Track which job is having work done entered
+    let partsSearchQuery = '';
 
     // Category display configuration (icons and colors)
     const categoryConfig = {
@@ -180,9 +181,18 @@
 
 
     function render() {
-        backBtn.classList.toggle('hidden', currentView === 'home' || currentView === 'success' || currentView === 'admin' || currentView === 'workDone');
-        cartCount.innerText = cart.length;
+        // Show back button for category view to go back to Request Parts
+        const showBackBtn = currentView === 'category' || 
+            (currentView !== 'home' && currentView !== 'success' && 
+             currentView !== 'admin' && currentView !== 'workDone' && 
+             currentView !== 'Request Parts');
+
+        backBtn.classList.toggle('hidden', !showBackBtn);
+
+        const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+        cartCount.innerText = Math.round(totalQuantity);
         cartCount.classList.toggle('hidden', cart.length === 0 || currentView === 'success' || currentView === 'workDone');
+
         updateBreadcrumbs();
 
         if (currentView === 'home') renderHome();
@@ -195,7 +205,6 @@
         else if (currentView === 'workDone') renderWorkDone();
 
         window.scrollTo({ top: 0, behavior: 'instant' });
-        // Initialize all Lucide icons after any render
         lucide.createIcons();
     }
 
@@ -315,22 +324,35 @@
     function renderRequestParts() {
         mainContent.innerHTML = `
         <h2 style="margin-bottom:2rem">Requesting Parts for: <span style="color:#facc15">${activeReg}</span></h2>
-        <div class="category-grid">
-            ${categories.map(c => {
-                const categoryParts = parts.filter(p => categorize(p) === c.id);
-                const uniqueNames = new Set(categoryParts.map(p => p.name));
-                return `
-                    <button onclick="selectCategory('${c.id}')" class="category-card ${c.color}">
-                        <span class="category-icon">${c.icon}</span>
-                        <span class="category-name">${c.name}</span>
-                        <span style="font-size:2rem;">
-                            ${uniqueNames.size} Items
-                        </span>
-                    </button>
-                `;
-            }).join('')}
+        
+        <div style="position:relative; max-width:600px; margin:0 auto 2rem;">
+            <input 
+                type="text" 
+                id="parts-search" 
+                class="search-input" 
+                placeholder="Search parts by name..." 
+                value="${partsSearchQuery}" 
+                style="font-size:1.8rem; padding:1.2rem 1.2rem 1.2rem 4rem; width:100%;">
+            <span style="position:absolute; left:1.2rem; top:1.4rem; color:#94a3b8; font-size:1.8rem;">🔍</span>
+        </div>
+        
+        <div id="parts-results-container">
+            ${partsSearchQuery ? renderPartsSearchResults() : renderCategoryGrid()}
         </div>
     `;
+
+        const partsInput = document.getElementById('parts-search');
+        if(partsInput) {
+            // Search when Enter is pressed
+            partsInput.onkeydown = (e) => {
+                if (e.key === 'Enter') {
+                    partsSearchQuery = e.target.value.trim();
+                    renderRequestParts();
+                }
+            };
+
+            partsInput.onclick = (e) => e.target.focus();
+        }
     }
 
     function renderCategory() {
@@ -352,6 +374,65 @@
     `;
     }
 
+    function renderCategoryGrid() {
+        return `
+        <div class="category-grid">
+            ${categories.map(c => {
+                const categoryParts = parts.filter(p => categorize(p) === c.id);
+                const uniqueNames = new Set(categoryParts.map(p => p.name));
+                return `
+                    <button onclick="selectCategory('${c.id}')" class="category-card ${c.color}">
+                        <span class="category-icon">${c.icon}</span>
+                        <span class="category-name">${c.name}</span>
+                        <span style="font-size:2rem;">
+                            ${uniqueNames.size} Items
+                        </span>
+                    </button>
+                `;
+            }).join('')}
+        </div>
+    `;
+    }
+
+    function renderPartsSearchResults() {
+        if (!partsSearchQuery) return '';
+
+        const searchTerm = partsSearchQuery.toLowerCase();
+        const matchedParts = parts.filter(p => 
+            p.name.toLowerCase().includes(searchTerm) ||
+            (p.category && p.category.toLowerCase().includes(searchTerm)) ||
+            (p.partNo && p.partNo.toLowerCase().includes(searchTerm))
+                                         );
+
+        // Remove duplicates by name
+        const uniquePartsMap = new Map();
+        matchedParts.forEach(part => {
+            const normalizedName = part.name.trim().toLowerCase();
+            if (!uniquePartsMap.has(normalizedName)) {
+                uniquePartsMap.set(normalizedName, part);
+            }
+        });
+
+        const uniqueMatchedParts = Array.from(uniquePartsMap.values());
+
+        if (uniqueMatchedParts.length === 0) {
+            return `
+            <div style="text-align:center; padding:3rem;">
+                <p style="font-size:2rem; color:#94a3b8;">No parts found matching "${partsSearchQuery}"</p>
+                <button onclick="clearPartsSearch()" style="margin-top:1rem; background:#dc2626; color:white; padding:1rem 2rem; border-radius:0.5rem; border:none; font-weight:bold; cursor:pointer; font-size:1.6rem;">Clear Search</button>
+            </div>
+        `;
+        }
+
+        return `
+        <div style="margin-bottom:2rem; display:flex; justify-content:space-between; align-items:center;">
+            <h3 style="font-size:2rem;">Found ${uniqueMatchedParts.length} part(s) matching "${partsSearchQuery}"</h3>
+            <button onclick="clearPartsSearch()" style="background:#64748b; color:white; padding:0.8rem 1.5rem; border-radius:0.5rem; border:none; font-weight:bold; cursor:pointer; font-size:1.6rem;">Clear Search</button>
+        </div>
+        <div class="category-grid">${renderParts(uniqueMatchedParts)}</div>
+    `;
+    }
+    
     function renderSearch() {
         const resultCats = [...new Set(searchResults.map(p => categorize(p)))].filter(c => c !== 'other');
         const filtered = activeSearchFilter === 'all' ? searchResults : searchResults.filter(p => categorize(p) === activeSearchFilter);
@@ -498,7 +579,22 @@
             return; 
         }
         breadcrumbContainer.classList.remove('hidden');
-        breadcrumbContainer.innerHTML = `<span onclick="goToHome()" style="cursor:pointer; color:#dc2626; font-weight:bold;">Home</span> > ${currentView.charAt(0).toUpperCase() + currentView.slice(1)}`;
+
+        let breadcrumb = `<span onclick="goToHome()" style="cursor:pointer; color:#dc2626; font-weight:bold;">Home</span>`;
+
+        if (currentView === 'category' || currentView === 'checkout') {
+            breadcrumb += ` > <span onclick="backToPartsRequest()" style="cursor:pointer; color:#dc2626; font-weight:bold;">Request Parts</span>`;
+        }
+
+        if (currentView === 'category') {
+            breadcrumb += ` > Category`;
+        } else if (currentView === 'checkout') {
+            breadcrumb += ` > Checkout`;
+        } else {
+            breadcrumb += ` > ${currentView.charAt(0).toUpperCase() + currentView.slice(1)}`;
+        }
+
+        breadcrumbContainer.innerHTML = breadcrumb;
     }
 
     function setupListeners() {
@@ -524,9 +620,17 @@
             serviceSearchQuery = '';
             currentStatusFilter = 'all';
             currentWorkDoneReg = null;
+            partsSearchQuery = ''; // Clear parts search when going home
             render(); 
         };
 
+        window.backToPartsRequest = () => {
+            currentView = 'Request Parts';
+            selectedCategory = null;
+            partsSearchQuery = ''; // Clear search when going back
+            render();
+        };
+        
         window.setSearchFilter = (f) => { 
             activeSearchFilter = f; 
             render(); 
@@ -680,7 +784,13 @@
             render();
         };
         
-        backBtn.onclick = goToHome;
+        backBtn.onclick = () => {
+            if (currentView === 'category') {
+                backToPartsRequest();
+            } else {
+                goToHome();
+            }
+        };
         cartBtn.onclick = () => { currentView = 'checkout'; render(); };
         homeFooterBtn.onclick = goToHome;
 
@@ -701,6 +811,11 @@
             backToTopBtn.className = window.scrollY > 300 ? 'visible-fade' : 'hidden-fade';
         };
 
+        window.clearPartsSearch = () => {
+            partsSearchQuery = '';
+            renderRequestParts();
+        };
+        
         backToTopBtn.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
     }
 

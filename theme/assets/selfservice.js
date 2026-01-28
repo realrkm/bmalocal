@@ -158,12 +158,13 @@
 
         <div class="service-table-container">
             <table class="kiosk-table">
-                <thead><tr><th>No</th><th>Received</th><th>Technician</th><th>JobCard Ref</th><th>Instruction</th><th>Status</th><th>Action</th></tr></thead>
+                <thead><tr><th>No</th><th>Received</th><th></th><th>Technician</th><th>JobCard Ref</th><th>Instruction</th><th>Status</th><th>Action</th></tr></thead>
                 <tbody>
                     ${filtered.map(s => `
                         <tr>
                             <td data-label="No">${s.no}</td>
                             <td data-label="Received">${s.date}</td>
+                            <td></td>
                             <td data-label="Technician"><strong>${s.tech}</strong></td>
                             <td data-label="JobCard Ref" style="color:#facc15; font-weight:bold;">${s.jobcardref}</td>
                             <td data-label="Instruction">${s.instruction}</td>

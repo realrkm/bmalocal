@@ -90,10 +90,9 @@
                 no: card.id,
                 date: card.ReceivedDate,
                 tech: card.Technician,
-                jobcardref: card.JobCardRef,
+                jobcardref: card.JobCardRef,  // Changed from 'reg' to 'jobcardref'
                 instruction: card.Instruction,
-                workDone: card.workDone || '', // Store work done if it exists
-                // Normalize status: "Checked In" -> "Checked-In", "In Service" -> "In-Service"
+                workDone: card.workDone || '',
                 status: card.status === 'Checked In' ? 'Checked-In' : 
                     card.status === 'In Service' ? 'In-Service' : 
                     card.status
@@ -102,7 +101,6 @@
             console.log('Loaded active services:', activeServices.length);
         } catch (error) {
             console.error('Error loading active services:', error);
-            // Fall back to empty array on error
             activeServices = [];
         }
     }
@@ -142,47 +140,47 @@
         });
 
         mainContent.innerHTML = `
-                ${isHistory ? `<div class="summary-card">✅<div><h2>Daily Summary</h2><p>Completed Units Today: ${activeServices.filter(s => s.status === 'Completed').length}</p></div></div>` : ''}
-                
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
-                    <h1>${isHistory ? 'Service History' : 'Service Queue'}</h1>
-                    <div style="position:relative; width:400px;">
-                        <input type="text" id="service-search" class="search-input" placeholder="Search Reg or Tech..." value="${serviceSearchQuery}" style="font-size:1.5rem; padding:1rem 1rem 1rem 3.5rem;">
-                        <span style="position:absolute; left:1rem; top:1.2rem; color:#94a3b8;">🔍</span>
-                    </div>
-                </div>
+        ${isHistory ? `<div class="summary-card">✅<div><h2>Daily Summary</h2><p>Completed Units Today: ${activeServices.filter(s => s.status === 'Completed').length}</p></div></div>` : ''}
+        
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+            <h1>${isHistory ? 'Service History' : 'Service Queue'}</h1>
+            <div style="position:relative; width:400px;">
+                <input type="text" id="service-search" class="search-input" placeholder="Search JobCard or Tech..." value="${serviceSearchQuery}" style="font-size:1.5rem; padding:1rem 1rem 1rem 3.5rem;">
+                <span style="position:absolute; left:1rem; top:1.2rem; color:#94a3b8;">🔍</span>
+            </div>
+        </div>
 
-                <div style="display:flex; gap:1rem; margin-bottom:2rem;">
-                    <button class="btn-status bg-yellow ${currentStatusFilter === 'Checked-In' ? 'active-filter' : ''}" onclick="filterByStatus('Checked-In')">Checked-In</button>
-                    <button class="btn-status bg-green ${currentStatusFilter === 'In-Service' ? 'active-filter' : ''}" onclick="filterByStatus('In-Service')">In-Service</button>
-                    <button class="btn-status bg-gray ${currentStatusFilter === 'Completed' ? 'active-filter' : ''}" onclick="filterByStatus('Completed')">History</button>
-                </div>
+        <div style="display:flex; gap:1rem; margin-bottom:2rem;">
+            <button class="btn-status bg-yellow ${currentStatusFilter === 'Checked-In' ? 'active-filter' : ''}" onclick="filterByStatus('Checked-In')">Checked-In</button>
+            <button class="btn-status bg-green ${currentStatusFilter === 'In-Service' ? 'active-filter' : ''}" onclick="filterByStatus('In-Service')">In-Service</button>
+            <button class="btn-status bg-gray ${currentStatusFilter === 'Completed' ? 'active-filter' : ''}" onclick="filterByStatus('Completed')">History</button>
+        </div>
 
-                <div class="service-table-container">
-                    <table class="kiosk-table">
-                        <thead><tr><th>No</th><th>Received</th><th>Technician</th><th>JobCard Ref</th><th>Instruction</th><th>Status</th><th>Action</th></tr></thead>
-                        <tbody>
-                            ${filtered.map(s => `
-                                <tr>
-                                    <td data-label="No">${s.no}</td>
-                                    <td data-label="Received">${s.date}</td>
-                                    <td data-label="Technician"><strong>${s.tech}</strong></td>
-                                    <td data-label="JobCard Ref" style="color:#facc15; font-weight:bold;">${s.jobcardref}</td>
-                                    <td data-label="Instruction">${s.instruction}</td>
-                                    <td data-label="Status"><span class="status-badge ${s.status === 'In-Service' ? 'status-in-service' : s.status === 'Completed' ? 'status-completed' : 'status-checked-in'}">${s.status}</span></td>
-                                    <td data-label="Action">
-                                        ${s.status === 'Completed' ? '✅ Finished' : s.status === 'In-Service' ? `
-                                            <button onclick="openWorkDone('${s.jobcardref}')" style="background:#3b82f6; border:none; color:white; padding:0.8rem 1.2rem; border-radius:0.5rem; cursor:pointer; font-weight:bold;">Work Done</button>
-                                        ` : `
-                                            <button onclick="openParts('${s.jobcardref}')" class="btn-issue-parts">Issue Parts</button>
-                                        `}
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
+        <div class="service-table-container">
+            <table class="kiosk-table">
+                <thead><tr><th>No</th><th>Received</th><th>Technician</th><th>JobCard Ref</th><th>Instruction</th><th>Status</th><th>Action</th></tr></thead>
+                <tbody>
+                    ${filtered.map(s => `
+                        <tr>
+                            <td data-label="No">${s.no}</td>
+                            <td data-label="Received">${s.date}</td>
+                            <td data-label="Technician"><strong>${s.tech}</strong></td>
+                            <td data-label="JobCard Ref" style="color:#facc15; font-weight:bold;">${s.jobcardref}</td>
+                            <td data-label="Instruction">${s.instruction}</td>
+                            <td data-label="Status"><span class="status-badge ${s.status === 'In-Service' ? 'status-in-service' : s.status === 'Completed' ? 'status-completed' : 'status-checked-in'}">${s.status}</span></td>
+                            <td data-label="Action">
+                                ${s.status === 'Completed' ? '✅ Finished' : s.status === 'In-Service' ? `
+                                    <button onclick="openWorkDone('${s.jobcardref}')" style="background:#3b82f6; border:none; color:white; padding:0.8rem 1.2rem; border-radius:0.5rem; cursor:pointer; font-weight:bold;">Work Done</button>
+                                ` : `
+                                    <button onclick="openParts('${s.jobcardref}')" class="btn-issue-parts">Issue Parts</button>
+                                `}
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
 
         const sInput = document.getElementById('service-search');
         if(sInput) {

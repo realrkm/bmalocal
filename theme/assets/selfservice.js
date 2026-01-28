@@ -8,6 +8,74 @@
     const homeFooterBtn = document.getElementById('home-footer-btn');
     const adminTrigger = document.getElementById('admin-trigger');
 
+    // Custom Alert Function
+    function customAlert(message, title = 'BMA Parts Express') {
+        return new Promise((resolve) => {
+            const overlay = document.createElement('div');
+            overlay.className = 'custom-alert-overlay';
+
+            overlay.innerHTML = `
+                <div class="custom-alert-box">
+                    <div class="custom-alert-title">
+                        ⚠️ ${title}
+                    </div>
+                    <div class="custom-alert-message">${message}</div>
+                    <button class="custom-alert-button">OK</button>
+                </div>
+            `;
+
+            document.body.appendChild(overlay);
+
+            const button = overlay.querySelector('.custom-alert-button');
+            const closeAlert = () => {
+                overlay.remove();
+                resolve();
+            };
+
+            button.onclick = closeAlert;
+            overlay.onclick = (e) => {
+                if (e.target === overlay) closeAlert();
+            };
+
+            // Focus the button for keyboard accessibility
+            setTimeout(() => button.focus(), 100);
+        });
+    }
+
+    // Custom Confirm Function
+    function customConfirm(message, title = 'Confirm Action') {
+        return new Promise((resolve) => {
+            const overlay = document.createElement('div');
+            overlay.className = 'custom-alert-overlay';
+
+            overlay.innerHTML = `
+                <div class="custom-alert-box">
+                    <div class="custom-alert-title">
+                        ❓ ${title}
+                    </div>
+                    <div class="custom-alert-message">${message}</div>
+                    <div style="display:flex; gap:1rem;">
+                        <button class="custom-alert-button" style="background:#64748b;" data-action="cancel">Cancel</button>
+                        <button class="custom-alert-button" data-action="confirm">Confirm</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(overlay);
+
+            const handleClick = (confirmed) => {
+                overlay.remove();
+                resolve(confirmed);
+            };
+
+            overlay.querySelector('[data-action="confirm"]').onclick = () => handleClick(true);
+            overlay.querySelector('[data-action="cancel"]').onclick = () => handleClick(false);
+            overlay.onclick = (e) => {
+                if (e.target === overlay) handleClick(false);
+            };
+        });
+    }
+    
     // State Management
     let parts = [], cart = [], currentView = 'home', selectedCategory = null;
     let searchResults = [], activeSearchFilter = 'all', orderHistory = [];
@@ -399,11 +467,12 @@
             render(); 
         };
 
-        window.clearStats = () => { 
-            if(confirm("Clear session history?")) { 
-                orderHistory = []; 
-                renderAdmin(); 
-            } 
+        window.clearStats = async () => {
+            const confirmed = await customConfirm('Are you sure you want to clear all session data? This cannot be undone.', 'Clear Session Data');
+            if(confirmed) {
+                orderHistory = [];
+                renderAdmin();
+            }
         };
 
         window.confirmOrder = () => { 
@@ -449,7 +518,7 @@
             const workDoneText = textarea.value.trim();
 
             if (!workDoneText) {
-                alert('Please enter work done description before saving.');
+                customAlert('Please enter work done description before saving.', 'Work Done Required');
                 return;
             }
 
@@ -459,7 +528,7 @@
                 // TODO: Here you would call an Anvil server function to save the work done
                 // await anvil.call(mainContent, 'save_work_done', currentWorkDoneReg, workDoneText);
 
-                alert(`Work done saved for ${currentWorkDoneReg}`);
+                customAlert(`Work done saved for ${currentWorkDoneReg}`, 'Success');
                 currentWorkDoneReg = null;
                 currentView = 'home';
                 render();

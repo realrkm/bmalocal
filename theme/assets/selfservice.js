@@ -90,7 +90,7 @@
                 no: card.id,
                 date: card.ReceivedDate,
                 tech: card.Technician,
-                reg: card.RegNo,
+                jobcardref: card.JobCardRef,
                 instruction: card.Instruction,
                 workDone: card.workDone || '', // Store work done if it exists
                 // Normalize status: "Checked In" -> "Checked-In", "In Service" -> "In-Service"
@@ -137,7 +137,7 @@
         const isHistory = currentStatusFilter === 'Completed';
         const filtered = activeServices.filter(s => {
             const matchesStatus = currentStatusFilter === 'all' ? (s.status !== 'Completed') : (s.status === currentStatusFilter);
-            const matchesSearch = s.reg.toLowerCase().includes(serviceSearchQuery.toLowerCase()) || s.tech.toLowerCase().includes(serviceSearchQuery.toLowerCase());
+            const matchesSearch = s.jobcardref.toLowerCase().includes(serviceSearchQuery.toLowerCase()) || s.tech.toLowerCase().includes(serviceSearchQuery.toLowerCase());
             return matchesStatus && matchesSearch;
         });
 
@@ -160,21 +160,21 @@
 
                 <div class="service-table-container">
                     <table class="kiosk-table">
-                        <thead><tr><th>No</th><th>Received</th><th>Technician</th><th>Reg No</th><th>Instruction</th><th>Status</th><th>Action</th></tr></thead>
+                        <thead><tr><th>No</th><th>Received</th><th>Technician</th><th>JobCard Ref</th><th>Instruction</th><th>Status</th><th>Action</th></tr></thead>
                         <tbody>
                             ${filtered.map(s => `
                                 <tr>
-                                    <td>${s.no}</td>
-                                    <td>${s.date}</td>
-                                    <td><strong>${s.tech}</strong></td>
-                                    <td style="color:#facc15; font-weight:bold;">${s.reg}</td>
-                                    <td>${s.instruction}</td>
-                                    <td><span class="status-badge ${s.status === 'In-Service' ? 'status-in-service' : s.status === 'Completed' ? 'status-completed' : 'status-checked-in'}">${s.status}</span></td>
-                                    <td>
+                                    <td data-label="No">${s.no}</td>
+                                    <td data-label="Received">${s.date}</td>
+                                    <td data-label="Technician"><strong>${s.tech}</strong></td>
+                                    <td data-label="JobCard Ref" style="color:#facc15; font-weight:bold;">${s.jobcardref}</td>
+                                    <td data-label="Instruction">${s.instruction}</td>
+                                    <td data-label="Status"><span class="status-badge ${s.status === 'In-Service' ? 'status-in-service' : s.status === 'Completed' ? 'status-completed' : 'status-checked-in'}">${s.status}</span></td>
+                                    <td data-label="Action">
                                         ${s.status === 'Completed' ? '✅ Finished' : s.status === 'In-Service' ? `
-                                            <button onclick="openWorkDone('${s.reg}')" style="background:#3b82f6; border:none; color:white; padding:0.8rem 1.2rem; border-radius:0.5rem; cursor:pointer; font-weight:bold;">Work Done</button>
+                                            <button onclick="openWorkDone('${s.jobcardref}')" style="background:#3b82f6; border:none; color:white; padding:0.8rem 1.2rem; border-radius:0.5rem; cursor:pointer; font-weight:bold;">Work Done</button>
                                         ` : `
-                                            <button onclick="openParts('${s.reg}')" class="btn-issue-parts">Issue Parts</button>
+                                            <button onclick="openParts('${s.jobcardref}')" class="btn-issue-parts">Issue Parts</button>
                                         `}
                                     </td>
                                 </tr>
@@ -192,7 +192,7 @@
     }
 
     function renderWorkDone() {
-        const service = activeServices.find(s => s.reg === currentWorkDoneReg);
+        const service = activeServices.find(s => s.jobcardref === currentWorkDoneReg);
         if (!service) {
             goToHome();
             return;
@@ -204,7 +204,7 @@
                         <div style="margin-bottom:2rem;">
                             <h2 style="font-size:2.5rem; margin-bottom:1rem;">Work Done Report</h2>
                             <div style="background:#334155; padding:1.5rem; border-radius:1rem; margin-bottom:2rem;">
-                                <p style="font-size:1.8rem;"><strong>Registration:</strong> <span style="color:#facc15;">${service.reg}</span></p>
+                                <p style="font-size:1.8rem;"><strong>Registration:</strong> <span style="color:#facc15;">${service.jobcardref}</span></p>
                                 <p style="font-size:1.8rem;"><strong>Technician:</strong> ${service.tech}</p>
                                 <p style="font-size:1.8rem;"><strong>Instruction:</strong> ${service.instruction}</p>
                             </div>
@@ -349,9 +349,9 @@
                         <tbody>
                             ${orderHistory.map(o => `
                                 <tr style="border-bottom:1px solid #334155; font-size:2.4rem;">
-                                    <td style="padding:1rem; text-align:center;">${o.time}</td>
-                                    <td style="padding:1rem; text-align:center;">#${o.id}</td>
-                                    <td style="padding:1rem; text-align:center;">${o.itemCount} Units</td>
+                                    <td data-label="Time" style="padding:1rem; text-align:center;">${o.time}</td>
+                                    <td data-label="ID" style="padding:1rem; text-align:center;">#${o.id}</td>
+                                    <td data-label="Counter" style="padding:1rem; text-align:center;">${o.itemCount} Units</td>
                                 </tr>`).reverse().join('')}
                         </tbody>
                     </table>
@@ -454,7 +454,7 @@
                 return;
             }
 
-            const service = activeServices.find(s => s.reg === currentWorkDoneReg);
+            const service = activeServices.find(s => s.jobcardref === currentWorkDoneReg);
             if (service) {
                 service.workDone = workDoneText;
                 // TODO: Here you would call an Anvil server function to save the work done
@@ -467,8 +467,8 @@
             }
         };
 
-        window.completeJob = (reg) => { 
-            const service = activeServices.find(s => s.reg === reg);
+        window.completeJob = (jobcardref) => { 
+            const service = activeServices.find(s => s.jobcardref === jobcardref);
             if(service) {
                 service.status = 'Completed';
                 service.statusChangedAt = new Date();

@@ -329,40 +329,63 @@
         mainContent.innerHTML = `
         <h2 style="margin-bottom:2rem">Requesting Parts for: <span style="color:#facc15">${activeReg}</span></h2>
         
-        <!-- Tech Notes Section -->
-        <div style="background:#1e293b; padding:2rem; border-radius:1rem; margin-bottom:2rem; border:2px solid #475569;">
-            <label style="display:block; margin-bottom:0.5rem; font-size:1.8rem; font-weight:bold; color:#facc15;">Tech Notes</label>
-            <textarea 
-                id="tech-notes-textarea" 
-                rows="4" 
-                placeholder="Enter any technical notes or observations..."
-                style="width:100%; padding:1rem; font-size:1.6rem; border-radius:0.5rem; border:2px solid #475569; background:#0f172a; color:white; resize:vertical;"
-            >${techNotes}</textarea>
-        </div>
-        
-        <!-- List of Defects Section -->
-        <div style="background:#1e293b; padding:2rem; border-radius:1rem; margin-bottom:2rem; border:2px solid #475569;">
-            <label style="display:block; margin-bottom:0.5rem; font-size:1.8rem; font-weight:bold; color:#facc15;">List of Defects</label>
-            <textarea 
-                id="defects-textarea" 
-                rows="4" 
-                placeholder="List any defects found during inspection..."
-                style="width:100%; padding:1rem; font-size:1.6rem; border-radius:0.5rem; border:2px solid #475569; background:#0f172a; color:white; resize:vertical;"
-            >${defectList}</textarea>
-        </div>
-        
-        <!-- Confirm Order Button -->
+        <!-- Cart Summary (if items exist) -->
         ${cart.length > 0 ? `
-            <div style="background:#1e293b; padding:2rem; border-radius:1rem; margin-bottom:2rem; border:3px solid #22c55e; display:flex; justify-content:space-between; align-items:center;">
-                <div>
-                    <h3 style="font-size:2rem; margin-bottom:0.5rem;">Cart Summary</h3>
-                    <p style="color:#94a3b8; font-size:1.6rem;">${cart.length} item(s) • ${totalQuantity.toFixed(2)} total units</p>
+            <div style="background:#1e293b; padding:2rem; border-radius:1rem; margin-bottom:2rem; border:3px solid #22c55e;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                    <div>
+                        <h3 style="font-size:2rem; margin-bottom:0.5rem;">Cart Summary</h3>
+                        <p style="color:#94a3b8; font-size:1.6rem;">${cart.length} item(s) • ${totalQuantity.toFixed(2)} total units</p>
+                    </div>
+                    <button onclick="viewCart()" style="background:#3b82f6; color:white; padding:0.8rem 1.5rem; border-radius:0.5rem; border:none; font-weight:bold; cursor:pointer; font-size:1.6rem;">
+                        View Cart
+                    </button>
                 </div>
-                <button onclick="confirmPartsOrder()" style="background:#22c55e; color:white; padding:1.2rem 2.5rem; border-radius:0.5rem; border:none; font-weight:bold; cursor:pointer; font-size:2rem;">
-                    Confirm Order
-                </button>
+                <div style="display:flex; gap:1rem; justify-content:flex-end;">
+                    <button onclick="cancelOrder()" style="background:#64748b; color:white; padding:1rem 2rem; border-radius:0.5rem; border:none; font-weight:bold; cursor:pointer; font-size:1.8rem;">
+                        Cancel Order
+                    </button>
+                    <button onclick="confirmPartsOrder()" style="background:#22c55e; color:white; padding:1rem 2rem; border-radius:0.5rem; border:none; font-weight:bold; cursor:pointer; font-size:1.8rem;">
+                        Confirm Order
+                    </button>
+                </div>
             </div>
         ` : ''}
+        
+        <!-- Collapsible Tech Notes / Defects Panel -->
+        <div style="background:#1e293b; border-radius:1rem; margin-bottom:2rem; border:2px solid #475569; overflow:hidden;">
+            <button 
+                id="collapse-toggle" 
+                onclick="toggleCollapse()"
+                style="width:100%; padding:1.5rem 2rem; background:#334155; border:none; color:white; font-size:1.8rem; font-weight:bold; cursor:pointer; display:flex; justify-content:space-between; align-items:center; transition:background 0.2s;">
+                <span>📋 Add Tech Notes / List Of Defects</span>
+                <i id="collapse-icon" data-lucide="chevron-down" style="width:24px; height:24px; transition:transform 0.3s;"></i>
+            </button>
+            
+            <div id="collapse-content" style="display:none; padding:2rem;">
+                <!-- Tech Notes Section -->
+                <div style="margin-bottom:2rem;">
+                    <label style="display:block; margin-bottom:0.5rem; font-size:1.6rem; font-weight:bold; color:#facc15;">Tech Notes</label>
+                    <textarea 
+                        id="tech-notes-textarea" 
+                        rows="4" 
+                        placeholder="Enter any technical notes or observations..."
+                        style="width:100%; padding:1rem; font-size:1.6rem; border-radius:0.5rem; border:2px solid #475569; background:#0f172a; color:white; resize:vertical;"
+                    >${techNotes}</textarea>
+                </div>
+                
+                <!-- List of Defects Section -->
+                <div>
+                    <label style="display:block; margin-bottom:0.5rem; font-size:1.6rem; font-weight:bold; color:#facc15;">List of Defects</label>
+                    <textarea 
+                        id="defects-textarea" 
+                        rows="4" 
+                        placeholder="List any defects found during inspection..."
+                        style="width:100%; padding:1rem; font-size:1.6rem; border-radius:0.5rem; border:2px solid #475569; background:#0f172a; color:white; resize:vertical;"
+                    >${defectList}</textarea>
+                </div>
+            </div>
+        </div>
         
         <!-- Parts Search -->
         <div style="position:relative; max-width:600px; margin:0 auto 2rem;">
@@ -376,6 +399,7 @@
             <span style="position:absolute; left:1.2rem; top:1.4rem; color:#94a3b8; font-size:1.8rem;">🔍</span>
         </div>
         
+        <!-- Categories / Search Results -->
         <div id="parts-results-container">
             ${partsSearchQuery ? renderPartsSearchResults() : renderCategoryGrid()}
         </div>
@@ -636,7 +660,9 @@
 
         let breadcrumb = `<span onclick="goToHome()" style="cursor:pointer; color:#dc2626; font-weight:bold;">Home</span>`;
 
-        if (currentView === 'category' || currentView === 'checkout') {
+        if (currentView === 'Request Parts') {
+            breadcrumb += ` > Request Parts`;
+        } else if (currentView === 'category' || currentView === 'checkout') {
             breadcrumb += ` > <span onclick="backToPartsRequest()" style="cursor:pointer; color:#dc2626; font-weight:bold;">Request Parts</span>`;
         }
 
@@ -644,7 +670,7 @@
             breadcrumb += ` > Category`;
         } else if (currentView === 'checkout') {
             breadcrumb += ` > Checkout`;
-        } else {
+        } else if (currentView !== 'Request Parts' && currentView !== 'home') {
             breadcrumb += ` > ${currentView.charAt(0).toUpperCase() + currentView.slice(1)}`;
         }
 
@@ -878,12 +904,20 @@
                 return;
             }
 
+            // Show confirmation dialog
+            const confirmed = await customConfirm(
+                `You are about to submit an order with ${cart.length} item(s). Do you want to proceed?`,
+                'Confirm Order Submission'
+            );
+
+            if (!confirmed) return;
+
             // Prepare parts and quantities as formatted text
             let partsAndQuantities = cart.map((item, i) => 
                 `${i + 1}. ${item.name} (${item.category}) - Qty: ${item.quantity}`
                                              ).join('\n');
 
-            // Get textarea values
+            // Get textarea values (default to None if empty)
             const techNotesValue = techNotes.trim() || null;
             const defectListValue = defectList.trim() || null;
             const partsValue = partsAndQuantities || null;
@@ -924,8 +958,60 @@
                 console.error('Error storing tech details:', error);
                 await customAlert(
                     'Failed to submit order. Please try again.',
-                    'Error'
+                    '❌ Error'
                 );
+            }
+        };
+
+        window.toggleCollapse = () => {
+            const content = document.getElementById('collapse-content');
+            const icon = document.getElementById('collapse-icon');
+            const button = document.getElementById('collapse-toggle');
+
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                button.style.background = '#475569';
+                if (icon) {
+                    icon.style.transform = 'rotate(180deg)';
+                }
+            } else {
+                content.style.display = 'none';
+                button.style.background = '#334155';
+                if (icon) {
+                    icon.style.transform = 'rotate(0deg)';
+                }
+            }
+
+            // Re-initialize lucide icons after DOM change
+            lucide.createIcons();
+        };
+
+        window.viewCart = () => {
+            currentView = 'checkout';
+            render();
+        };
+
+        window.cancelOrder = async () => {
+            const confirmed = await customConfirm(
+                'Are you sure you want to cancel this order? All items in the cart and entered notes will be cleared.',
+                'Cancel Order'
+            );
+
+            if (confirmed) {
+                // Clear all order-related data
+                cart = [];
+                techNotes = '';
+                defectList = '';
+                partsSearchQuery = '';
+
+                await customAlert(
+                    'Order has been cancelled successfully.',
+                    'Order Cancelled'
+                );
+
+                // Return to home
+                currentView = 'home';
+                render();
             }
         };
         

@@ -886,3 +886,59 @@ input[type="number"]:focus {
         font-size: 1.3rem !important;
     }
 }
+
+/* Collapsible Panel Styling */
+#collapse-toggle:hover {
+    background: #475569 !important;
+}
+
+#collapse-toggle:active {
+    transform: scale(0.98);
+}
+
+#collapse-content {
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        max-height: 500px;
+    }
+}
+
+/* Button Group Styling */
+.button-group {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+@media (max-width: 768px) {
+    .button-group {
+        flex-direction: column;
+    }
+
+    .button-group button {
+        width: 100%;
+    }
+
+    #collapse-toggle {
+        font-size: 1.6rem !important;
+        padding: 1.2rem 1.5rem !important;
+    }
+
+    #collapse-content {
+        padding: 1.5rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    #collapse-toggle {
+        font-size: 1.4rem !important;
+    }
+}

@@ -924,7 +924,7 @@
                 console.error('Error storing tech details:', error);
                 await customAlert(
                     'Failed to submit order. Please try again.',
-                    '❌ Error'
+                    'Error'
                 );
             }
         };

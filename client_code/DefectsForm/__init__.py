@@ -111,15 +111,13 @@ class DefectsForm(DefectsFormTemplate):
                 self.btn_Update.enabled = True
                 return
         
-        existingrecord = anvil.server.call("getJobCardDefects", jobcardID)   
+        existingrecord = anvil.server.call("getJobCardDefects", jobcardID)
         if not existingrecord:
-            Notification("No record found relating to defects and or requested parts to be updated.\nCreate details in Workflow section first.",
-                timeout=None,
-                title="Update Failed",
-                style="warning").show()
-        else:
-            anvil.server.call("updateDefectsList", jobcardID, instructions, notes,defects,parts, staffID, signature)
-            alert("Update is successful", title="Success")
+            #Create record first in tbl_techniciandefectsandrequestedparts
+            anvil.server.call('saveTecnicianDefectsAndRequestedParts', jobcardID, defects, parts, staffID, signature)
+            
+        anvil.server.call("updateDefectsList", jobcardID, instructions, notes,defects,parts, staffID, signature)
+        alert("Update is successful", title="Success")
         self.btn_Update.enabled = True
         
     def btn_DownloadTechNotes_click(self, **event_args):

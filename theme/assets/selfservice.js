@@ -84,6 +84,8 @@
     let categories = []; // Will be populated from server
     let currentWorkDoneReg = null; // Track which job is having work done entered
     let partsSearchQuery = '';
+    let techNotes = ''; // Add for Tech Notes
+    let defectList = ''; // Add for List of Defects
 
     // Category display configuration (icons and colors)
     const categoryConfig = {

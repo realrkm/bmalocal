@@ -84,6 +84,8 @@
     let categories = []; // Will be populated from server
     let currentWorkDoneReg = null; // Track which job is having work done entered
     let partsSearchQuery = '';
+    let techNotes = ''; 
+    let defectList = ''; 
 
     // Category display configuration (icons and colors)
     const categoryConfig = {
@@ -322,9 +324,47 @@
     }
 
     function renderRequestParts() {
+        const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+
         mainContent.innerHTML = `
         <h2 style="margin-bottom:2rem">Requesting Parts for: <span style="color:#facc15">${activeReg}</span></h2>
         
+        <!-- Tech Notes Section -->
+        <div style="background:#1e293b; padding:2rem; border-radius:1rem; margin-bottom:2rem; border:2px solid #475569;">
+            <label style="display:block; margin-bottom:0.5rem; font-size:1.8rem; font-weight:bold; color:#facc15;">Tech Notes</label>
+            <textarea 
+                id="tech-notes-textarea" 
+                rows="4" 
+                placeholder="Enter any technical notes or observations..."
+                style="width:100%; padding:1rem; font-size:1.6rem; border-radius:0.5rem; border:2px solid #475569; background:#0f172a; color:white; resize:vertical;"
+            >${techNotes}</textarea>
+        </div>
+        
+        <!-- List of Defects Section -->
+        <div style="background:#1e293b; padding:2rem; border-radius:1rem; margin-bottom:2rem; border:2px solid #475569;">
+            <label style="display:block; margin-bottom:0.5rem; font-size:1.8rem; font-weight:bold; color:#facc15;">List of Defects</label>
+            <textarea 
+                id="defects-textarea" 
+                rows="4" 
+                placeholder="List any defects found during inspection..."
+                style="width:100%; padding:1rem; font-size:1.6rem; border-radius:0.5rem; border:2px solid #475569; background:#0f172a; color:white; resize:vertical;"
+            >${defectList}</textarea>
+        </div>
+        
+        <!-- Confirm Order Button -->
+        ${cart.length > 0 ? `
+            <div style="background:#1e293b; padding:2rem; border-radius:1rem; margin-bottom:2rem; border:3px solid #22c55e; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <h3 style="font-size:2rem; margin-bottom:0.5rem;">Cart Summary</h3>
+                    <p style="color:#94a3b8; font-size:1.6rem;">${cart.length} item(s) • ${totalQuantity.toFixed(2)} total units</p>
+                </div>
+                <button onclick="confirmPartsOrder()" style="background:#22c55e; color:white; padding:1.2rem 2.5rem; border-radius:0.5rem; border:none; font-weight:bold; cursor:pointer; font-size:2rem;">
+                    Confirm Order
+                </button>
+            </div>
+        ` : ''}
+        
+        <!-- Parts Search -->
         <div style="position:relative; max-width:600px; margin:0 auto 2rem;">
             <input 
                 type="text" 
@@ -341,16 +381,30 @@
         </div>
     `;
 
+        // Save textarea values when they change
+        const techNotesTextarea = document.getElementById('tech-notes-textarea');
+        const defectsTextarea = document.getElementById('defects-textarea');
+
+        if (techNotesTextarea) {
+            techNotesTextarea.oninput = (e) => {
+                techNotes = e.target.value;
+            };
+        }
+
+        if (defectsTextarea) {
+            defectsTextarea.oninput = (e) => {
+                defectList = e.target.value;
+            };
+        }
+
         const partsInput = document.getElementById('parts-search');
         if(partsInput) {
-            // Search when Enter is pressed
             partsInput.onkeydown = (e) => {
                 if (e.key === 'Enter') {
                     partsSearchQuery = e.target.value.trim();
                     renderRequestParts();
                 }
             };
-
             partsInput.onclick = (e) => e.target.focus();
         }
     }
@@ -506,9 +560,9 @@
                 `).join('')}
             </div>
             ${cart.length > 0 ? `
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h3 style="font-size:2rem;">Total: ${totalItems.toFixed(2)} Units</h3>
-                    <button onclick="confirmOrder()" style="background:#22c55e; color:white; padding:1rem 2rem; border-radius:0.5rem; border:none; font-weight:bold; cursor:pointer; font-size:2.4rem;">Confirm Order</button>
+                <div style="text-align:center; padding:2rem 0;">
+                    <h3 style="font-size:2rem; margin-bottom:1rem;">Total: ${totalItems.toFixed(2)} Units</h3>
+                    <p style="color:#94a3b8; font-size:1.6rem;">Return to Request Parts to confirm your order</p>
                 </div>
             ` : ''}
         </div>`;
@@ -620,14 +674,16 @@
             serviceSearchQuery = '';
             currentStatusFilter = 'all';
             currentWorkDoneReg = null;
-            partsSearchQuery = ''; // Clear parts search when going home
+            partsSearchQuery = '';
+            techNotes = ''; // Clear tech notes
+            defectList = ''; // Clear defects
             render(); 
         };
 
         window.backToPartsRequest = () => {
             currentView = 'Request Parts';
             selectedCategory = null;
-            partsSearchQuery = ''; // Clear search when going back
+            partsSearchQuery = ''; // Clear search but preserve techNotes and defectList
             render();
         };
         
@@ -814,6 +870,63 @@
         window.clearPartsSearch = () => {
             partsSearchQuery = '';
             renderRequestParts();
+        };
+
+        window.confirmPartsOrder = async () => {
+            if (cart.length === 0) {
+                await customAlert('Your cart is empty. Please add parts before confirming.', 'Empty Cart');
+                return;
+            }
+
+            // Prepare parts and quantities as formatted text
+            let partsAndQuantities = cart.map((item, i) => 
+                `${i + 1}. ${item.name} (${item.category}) - Qty: ${item.quantity}`
+                                             ).join('\n');
+
+            // Get textarea values
+            const techNotesValue = techNotes.trim() || null;
+            const defectListValue = defectList.trim() || null;
+            const partsValue = partsAndQuantities || null;
+
+            try {
+                // Call server function
+                await anvil.call(
+                    mainContent, 
+                    'storeTechDetails', 
+                    activeReg,
+                    techNotesValue, 
+                    defectListValue, 
+                    partsValue
+                );
+
+                // Generate order ID and show success
+                const id = Math.floor(1000 + Math.random() * 9000);
+                const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+                orderHistory.push({
+                    id: id,
+                    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                    itemCount: totalQuantity.toFixed(2)
+                });
+
+                window.lastOrderID = id;
+
+                // Clear state
+                cart = [];
+                techNotes = '';
+                defectList = '';
+                partsSearchQuery = '';
+
+                currentView = 'success';
+                render();
+
+            } catch (error) {
+                console.error('Error storing tech details:', error);
+                await customAlert(
+                    'Failed to submit order. Please try again.',
+                    '❌ Error'
+                );
+            }
         };
         
         backToTopBtn.onclick = () => window.scrollTo({top:0, behavior:'smooth'});

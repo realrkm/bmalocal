@@ -866,3 +866,23 @@ input[type="number"]:focus {
     border-color: #dc2626;
     box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2);
 }
+
+/* Tech Notes and Defects Textareas */
+@media (max-width: 768px) {
+    #tech-notes-textarea,
+    #defects-textarea {
+        font-size: 1.4rem !important;
+        padding: 0.8rem !important;
+    }
+
+    div[style*="border:2px solid #475569"] label {
+        font-size: 1.6rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    #tech-notes-textarea,
+    #defects-textarea {
+        font-size: 1.3rem !important;
+    }
+}

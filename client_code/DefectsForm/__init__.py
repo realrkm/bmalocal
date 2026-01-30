@@ -112,12 +112,13 @@ class DefectsForm(DefectsFormTemplate):
                 return
         
         existingrecord = anvil.server.call("getJobCardDefects", jobcardID)
+        print(jobcardID)
         if not existingrecord:
             #Create record first in tbl_techniciandefectsandrequestedparts
             anvil.server.call('saveTecnicianDefectsAndRequestedParts', jobcardID, defects, parts, staffID, signature)
 
         #Delete record to resolve non-type error
-        anvil.server.call_s("deleteTechnicianDefectsAndRequestedParts", jobcardID)
+        #anvil.server.call_s("deleteTechnicianDefectsAndRequestedParts", jobcardID)
         anvil.server.call("updateDefectsList", jobcardID, instructions, notes,defects,parts, staffID, signature)
         alert("Update is successful", title="Success")
         self.btn_Update.enabled = True

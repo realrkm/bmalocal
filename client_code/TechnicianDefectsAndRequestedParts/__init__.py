@@ -127,6 +127,9 @@ class TechnicianDefectsAndRequestedParts(TechnicianDefectsAndRequestedPartsTempl
 
         if status == "Cancel Jobcard":
             anvil.server.call("saveCancellationReason", jobcardref, self.text_area_1.text)
+
+        #Update Blank Defects And Requested Parts
+        anvil.server.call_s("updateBlankDefectsAndRequestedParts")
         
         alert("Data saved successfully", title="Success")
             

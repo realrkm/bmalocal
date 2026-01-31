@@ -34,7 +34,6 @@ def getTechnicianJobCards(status, regNo):
     return anvil.server.call_s('getTechnicianJobCards', status, regNo)
      
 def getJobCardDefects(id):
-    print(f"The Id Is {id}")
     return anvil.server.call_s('getJobCardDefects', id)
         
 def getRequestedParts(id):

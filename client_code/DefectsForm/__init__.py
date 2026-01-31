@@ -120,6 +120,10 @@ class DefectsForm(DefectsFormTemplate):
             
 
         anvil.server.call("updateDefectsList", jobcardID, instructions, notes,defects,parts, staffID, signature)
+        
+        #Update Blank Defects And Requested Parts
+        anvil.server.call_s("updateBlankDefectsAndRequestedParts")
+        
         alert("Update is successful", title="Success")
         self.btn_Update.enabled = True
         

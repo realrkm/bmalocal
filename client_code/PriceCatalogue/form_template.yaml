@@ -94,6 +94,7 @@ components:
       - {data_key: Cost, expand: true, id: GYUEKP, title: Buying Price (Kshs)}
       - {data_key: Selling, expand: true, id: BUEABL, title: Selling Price (Kshs)}
       - {data_key: Discount, expand: true, id: LHIADB, title: Discounted Price (Kshs)}
+      - {data_key: StockBalance, id: ZSGDYX, title: Stock Balance}
       foreground: theme:White
       role: null
       wrap_on: mobile

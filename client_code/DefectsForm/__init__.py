@@ -111,10 +111,13 @@ class DefectsForm(DefectsFormTemplate):
                 self.btn_Update.enabled = True
                 return
         
-        #existingrecord = anvil.server.call("getJobCardDefects", jobcardID)
-        #if not existingrecord:
+        existingrecord = anvil.server.call("getJobCardDefects", jobcardID)
+        if not existingrecord:
             #Create record first in tbl_techniciandefectsandrequestedparts
-         #   anvil.server.call('saveTecnicianDefectsAndRequestedParts', jobcardID, defects, parts, staffID, signature)
+            anvil.server.call('saveTecnicianDefectsAndRequestedParts', jobcardID, defects, parts, staffID, signature)
+            #Transition Checked In jobcards to Create Quote since data now exists in tbl_techniciandefectsandrequestedparts
+            anvil.server.call_s("transitionCheckedInToCreateQuote")
+            
 
         anvil.server.call("updateDefectsList", jobcardID, instructions, notes,defects,parts, staffID, signature)
         alert("Update is successful", title="Success")

@@ -80,17 +80,25 @@ class TechnicianDefectsAndRequestedParts(TechnicianDefectsAndRequestedPartsTempl
     def btn_Save_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.btn_Save.enabled = False #Prevent multiple clicks
+
+        jobcardref = self.cmbJobCardRef.selected_value['ID']
+        defects = self.txtDefectsList.text
+        requestedParts = self.txtRequestedParts.text
+        status = self.cmbWorkflow.selected_value
+        staffID = self.drop_down_staff.selected_value
+        signature = self.get_signature_image()
+        
         if not self.cmbJobCardRef.selected_value:
             alert("Sorry, please select job card ref to proceed.", title="Blank Field(s) Found")
             self.cmbJobCardRef.focus()
             self.btn_Save.enabled = True
             return
 
-        if not self.txtDefectsList.text and not self.txtRequestedParts.text:
-            alert("Sorry, please enter defects (if any) or request parts to proceed.", title="Blank Field(s) Found")
-            self.cmbJobCardRef.focus()
-            self.btn_Save.enabled = True
-            return
+        if not self.txtDefectsList.text:
+            defects="None"
+            
+        if not self.txtRequestedParts.text:
+            requestedParts="None"
             
         if not self.cmbWorkflow.selected_value:
             alert("Sorry, please select workflow status to proceed.", title="Blank Field Found")
@@ -114,13 +122,6 @@ class TechnicianDefectsAndRequestedParts(TechnicianDefectsAndRequestedPartsTempl
             self.btn_Save.enabled = True
             return   
         
-        jobcardref = self.cmbJobCardRef.selected_value['ID']
-        defects = self.txtDefectsList.text
-        requestedParts = self.txtRequestedParts.text
-        status = self.cmbWorkflow.selected_value
-        staffID = self.drop_down_staff.selected_value
-        signature = self.get_signature_image()
-            
         anvil.server.call('saveTecnicianDefectsAndRequestedParts', jobcardref, defects, requestedParts, staffID, signature)
         anvil.server.call_s('updateJobCardStatus', jobcardref, status)
 

@@ -357,7 +357,7 @@
             <button 
                 id="collapse-toggle" 
                 onclick="toggleCollapse()"
-                style="width:100%; padding:1.5rem 2rem; background:#334155; border:none; color:white; font-size:1.8rem; font-weight:bold; cursor:pointer; display:flex; justify-content:space-between; align-items:center; transition:background 0.2s;">
+                style="width:100%; padding:1.5rem 2rem; background:#334155; border:none; color:white; font-size:2.8rem; font-weight:bold; cursor:pointer; display:flex; justify-content:space-between; align-items:center; transition:background 0.2s;">
                 <span>📋 Add Tech Notes / List Of Defects</span>
                 <i id="collapse-icon" data-lucide="chevron-down" style="width:24px; height:24px; transition:transform 0.3s;"></i>
             </button>
@@ -365,23 +365,23 @@
             <div id="collapse-content" style="display:none; padding:2rem;">
                 <!-- Tech Notes Section -->
                 <div style="margin-bottom:2rem;">
-                    <label style="display:block; margin-bottom:0.5rem; font-size:1.6rem; font-weight:bold; color:#facc15;">Tech Notes</label>
+                    <label style="display:block; margin-bottom:0.5rem; font-size:2.2rem; font-weight:bold; color:#facc15;">Tech Notes</label>
                     <textarea 
                         id="tech-notes-textarea" 
                         rows="4" 
                         placeholder="Enter any technical notes or observations..."
-                        style="width:100%; padding:1rem; font-size:1.6rem; border-radius:0.5rem; border:2px solid #475569; background:#0f172a; color:white; resize:vertical;"
+                        style="width:100%; padding:1rem; font-size:2.2rem; border-radius:0.5rem; border:2px solid #475569; background:#0f172a; color:white; resize:vertical;"
                     >${techNotes}</textarea>
                 </div>
                 
                 <!-- List of Defects Section -->
                 <div>
-                    <label style="display:block; margin-bottom:0.5rem; font-size:1.6rem; font-weight:bold; color:#facc15;">List of Defects</label>
+                    <label style="display:block; margin-bottom:0.5rem; font-size:2.2rem; font-weight:bold; color:#facc15;">List of Defects</label>
                     <textarea 
                         id="defects-textarea" 
                         rows="4" 
                         placeholder="List any defects found during inspection..."
-                        style="width:100%; padding:1rem; font-size:1.6rem; border-radius:0.5rem; border:2px solid #475569; background:#0f172a; color:white; resize:vertical;"
+                        style="width:100%; padding:1rem; font-size:2.2rem; border-radius:0.5rem; border:2px solid #475569; background:#0f172a; color:white; resize:vertical;"
                     >${defectList}</textarea>
                 </div>
             </div>
@@ -395,7 +395,7 @@
                 class="search-input" 
                 placeholder="Search parts by name..." 
                 value="${partsSearchQuery}" 
-                style="font-size:1.8rem; padding:1.2rem 1.2rem 1.2rem 4rem; width:100%;">
+                style="font-size:2.2rem; padding:1.2rem 1.2rem 1.2rem 4rem; width:100%;">
             <span style="position:absolute; left:1.2rem; top:1.4rem; color:#94a3b8; font-size:1.8rem;">🔍</span>
         </div>
         

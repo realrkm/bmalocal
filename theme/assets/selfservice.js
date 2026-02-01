@@ -106,7 +106,7 @@
         try {
             // Use anvil.server.call for standalone JavaScript (not anvil.call which requires a Form)
             const serverData = await anvil.call(mainContent, 'getCarPartNamesAndCategory');
-
+            console.log("The server data is", serverData)
             if (!Array.isArray(serverData)) {
                 throw new Error("Server did not return a list. Check server logs.");
             }

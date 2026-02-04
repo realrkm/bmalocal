@@ -482,6 +482,55 @@
             </div>
         </div>
         
+        <!-- Requested Parts Section -->
+        <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); border-radius:1rem; margin-bottom:2rem; border:2px solid rgba(59, 130, 246, 0.2); overflow:hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); padding:2rem;">
+            <h3 style="font-size:2rem; margin-bottom:1.5rem; color:#06b6d4; display:flex; align-items:center; gap:0.5rem;">
+                <span>📦</span> Requested Parts
+            </h3>
+            ${cart.length > 0 ? `
+                <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); border-radius:0.8rem; padding:1.5rem;">
+                    ${cart.map((item, i) => `
+                        <div style="padding:1rem; border-bottom:${i < cart.length - 1 ? '1px solid rgba(59, 130, 246, 0.2)' : 'none'}; display:flex; justify-content:space-between; align-items:center; font-size:1.6rem;">
+                            <div style="flex:1;">
+                                <div style="font-weight:bold; color:#06b6d4; margin-bottom:0.3rem;">${i + 1}. ${item.name}</div>
+                                <div style="color:#94a3b8; font-size:1.4rem;">${item.category}</div>
+                            </div>
+                            <div style="color:#facc15; font-weight:bold; font-size:1.8rem;">
+                                Qty: ${item.quantity}
+                            </div>
+                        </div>
+                    `).join('')}
+                    <div style="margin-top:1rem; padding-top:1rem; border-top:2px solid rgba(59, 130, 246, 0.3); display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:1.8rem; font-weight:bold; color:#06b6d4;">Total Items:</span>
+                        <span style="font-size:2rem; font-weight:bold; color:#facc15;">${cart.length}</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:1.8rem; font-weight:bold; color:#06b6d4;">Total Quantity:</span>
+                        <span style="font-size:2rem; font-weight:bold; color:#facc15;">${totalQuantity.toFixed(2)}</span>
+                    </div>
+                </div>
+            ` : `
+                <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); border-radius:0.8rem; padding:2rem; text-align:center;">
+                    <p style="color:#94a3b8; font-size:1.6rem;">No parts added yet. Use the search below to add parts to your request.</p>
+                </div>
+            `}
+        </div>
+        
+        <!-- Clear and Save Details Buttons -->
+        <div style="display:flex; gap:1rem; justify-content:flex-end; margin-bottom:2rem;">
+            <button 
+                onclick="clearPartsDetails()" 
+                style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:1.2rem 2.5rem; border-radius:0.8rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease;">
+                Clear Details
+            </button>
+            <button 
+                onclick="savePartsDetails()" 
+                style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:1.2rem 2.5rem; border-radius:0.8rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);">
+                <i data-lucide="save" style="width:20px; height:20px; display:inline-block; vertical-align:middle; margin-right:0.5rem;"></i>
+                Save Details
+            </button>
+        </div>
+        
         <div style="position:relative; max-width:600px; margin:0 auto 2rem;">
             <input 
                 type="text" 
@@ -537,21 +586,6 @@
                         style="width:100%; padding:1.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; resize:vertical; line-height:1.6;"
                     >${approvedParts}</textarea>
                     <p style="font-size:1.3rem; color:#94a3b8; margin-top:0.5rem;">Enter each approved part on a new line or separate with commas.</p>
-                </div>
-                
-                <!-- Action Buttons -->
-                <div style="display:flex; gap:1rem; justify-content:flex-end; margin-top:3rem;">
-                    <button 
-                        onclick="clearCustomerFeedback()" 
-                        style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:1.2rem 2.5rem; border-radius:0.8rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease;">
-                        Clear
-                    </button>
-                    <button 
-                        onclick="saveCustomerFeedback()" 
-                        style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:1.2rem 2.5rem; border-radius:0.8rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);">
-                        <i data-lucide="save" style="width:20px; height:20px; display:inline-block; vertical-align:middle; margin-right:0.5rem;"></i>
-                        Save Feedback
-                    </button>
                 </div>
             </div>
         </div>
@@ -961,6 +995,62 @@
                 approvedParts = '';
                 renderRequestParts();
                 await customAlert('Feedback data has been cleared.', 'Cleared');
+            }
+        };
+
+        window.clearPartsDetails = async () => {
+            const confirmed = await customConfirm(
+                'Are you sure you want to clear Tech Notes, List of Defects, and Requested Parts?',
+                'Clear All Details'
+            );
+
+            if (confirmed) {
+                techNotes = '';
+                defectList = '';
+                cart = [];
+                partsSearchQuery = '';
+                renderRequestParts();
+                await customAlert('All details have been cleared.', 'Cleared');
+            }
+        };
+
+        window.savePartsDetails = async () => {
+            if (cart.length === 0 && !techNotes.trim() && !defectList.trim()) {
+                await customAlert('No details to save. Please add parts, tech notes, or defects first.', 'No Data');
+                return;
+            }
+
+            let partsAndQuantities = null;
+            if (cart.length > 0) {
+                partsAndQuantities = cart.map((item, i) => 
+                    `${i + 1}. ${item.name} (${item.category}) - Qty: ${item.quantity}`
+                ).join('\n');
+            }
+
+            const techNotesValue = techNotes.trim() || null;
+            const defectListValue = defectList.trim() || null;
+
+            try {
+                await anvil.call(
+                    mainContent, 
+                    'storeTechDetails', 
+                    activeReg,
+                    techNotesValue, 
+                    defectListValue, 
+                    partsAndQuantities
+                );
+
+                await customAlert(
+                    `Details have been saved successfully for JobCard ${activeReg}`,
+                    '✅ Success'
+                );
+
+            } catch (error) {
+                console.error('Error saving parts details:', error);
+                await customAlert(
+                    'Failed to save details. Please try again.',
+                    '❌ Error'
+                );
             }
         };
 

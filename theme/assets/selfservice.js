@@ -220,8 +220,8 @@
         mainContent.innerHTML = `
         <!-- Hero Section -->
         <div class="hero-section">
-            <h1 class="hero-title">BMA PARTS EXPRESS</h1>
-            <p class="hero-subtitle">${isHistory ? 'Service History' : 'Service & Parts System'}</p>
+            <h1 class="hero-title">Modern Garage System</h1>
+            <p class="hero-subtitle">${isHistory ? 'Service History' : 'Service & Parts Management'}</p>
             
             <div class="status-badges">
                 <span class="badge badge-premium">Premium UI</span>
@@ -427,8 +427,6 @@
         const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
 
         return `
-        
-        
         <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); border-radius:1rem; margin-bottom:2rem; border:2px solid rgba(59, 130, 246, 0.2); overflow:hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
             <button 
                 id="collapse-toggle" 
@@ -988,11 +986,14 @@
                 defectList = '';
                 cart = [];
                 partsSearchQuery = '';
+                
+                // Update cart count in header
+                const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+                cartCount.innerText = Math.round(totalQuantity);
+                cartCount.classList.toggle('hidden', cart.length === 0);
+                
                 renderRequestParts();
                 await customAlert('All details have been cleared.', 'Cleared');
-
-                currentView = 'Request Parts';
-                renderRequestParts()
             }
         };
 
@@ -1141,8 +1142,9 @@
         };
 
         window.openWorkDone = (reg) => {
-            currentWorkDoneReg = reg;
-            currentView = 'workDone';
+            activeReg = reg;
+            activePartsTab = 'workdone';
+            currentView = 'Request Parts';
             render();
         };
 
@@ -1275,6 +1277,65 @@
             renderRequestParts();
         };
 
+        window.confirmPartsOrder = async () => {
+            if (cart.length === 0) {
+                await customAlert('Your cart is empty. Please add parts before confirming.', 'Empty Cart');
+                return;
+            }
+
+            const confirmed = await customConfirm(
+                `You are about to submit an order with ${cart.length} item(s). Do you want to proceed?`,
+                'Confirm Order Submission'
+            );
+
+            if (!confirmed) return;
+
+            let partsAndQuantities = cart.map((item, i) => 
+                `${i + 1}. ${item.name} (${item.category}) - Qty: ${item.quantity}`
+            ).join('\n');
+
+            const techNotesValue = techNotes.trim() || null;
+            const defectListValue = defectList.trim() || null;
+            const partsValue = partsAndQuantities || null;
+
+            try {
+                await anvil.call(
+                    mainContent, 
+                    'storeTechDetails', 
+                    activeReg,
+                    techNotesValue, 
+                    defectListValue, 
+                    partsValue
+                );
+
+                const id = Math.floor(1000 + Math.random() * 9000);
+                const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+                orderHistory.push({
+                    id: id,
+                    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                    itemCount: totalQuantity.toFixed(2)
+                });
+
+                window.lastOrderID = id;
+
+                cart = [];
+                techNotes = '';
+                defectList = '';
+                partsSearchQuery = '';
+
+                currentView = 'success';
+                render();
+
+            } catch (error) {
+                console.error('Error storing tech details:', error);
+                await customAlert(
+                    'Failed to submit order. Please try again.',
+                    '❌ Error'
+                );
+            }
+        };
+
         window.toggleCollapse = () => {
             const content = document.getElementById('collapse-content');
             const icon = document.getElementById('collapse-icon');
@@ -1300,6 +1361,28 @@
         window.viewCart = () => {
             currentView = 'checkout';
             render();
+        };
+
+        window.cancelOrder = async () => {
+            const confirmed = await customConfirm(
+                'Are you sure you want to cancel this order? All items in the cart and entered notes will be cleared.',
+                'Cancel Order'
+            );
+
+            if (confirmed) {
+                cart = [];
+                techNotes = '';
+                defectList = '';
+                partsSearchQuery = '';
+
+                await customAlert(
+                    'Order has been cancelled successfully.',
+                    'Order Cancelled'
+                );
+
+                currentView = 'home';
+                render();
+            }
         };
         
         backToTopBtn.onclick = () => window.scrollTo({top:0, behavior:'smooth'});

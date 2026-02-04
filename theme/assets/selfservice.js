@@ -1085,12 +1085,19 @@
             serviceSearchQuery = '';
             currentStatusFilter = 'all';
             currentWorkDoneReg = null;
+            activeReg = null;
             partsSearchQuery = '';
             techNotes = '';
             defectList = '';
             activePartsTab = 'request';
             customerResponse = '';
             approvedParts = '';
+            cart = [];
+            
+            // Update cart count in header
+            cartCount.innerText = 0;
+            cartCount.classList.add('hidden');
+            
             render(); 
         };
 
@@ -1136,12 +1143,41 @@
         };
 
         window.openParts = (reg) => { 
+            // Reset all data when switching to a different jobcard
+            if (activeReg !== reg) {
+                cart = [];
+                techNotes = '';
+                defectList = '';
+                partsSearchQuery = '';
+                customerResponse = '';
+                approvedParts = '';
+                
+                // Update cart count in header
+                cartCount.innerText = 0;
+                cartCount.classList.add('hidden');
+            }
+            
             activeReg = reg; 
+            activePartsTab = 'request';
             currentView = 'Request Parts'; 
             render(); 
         };
 
         window.openWorkDone = (reg) => {
+            // Reset all data when switching to a different jobcard
+            if (activeReg !== reg) {
+                cart = [];
+                techNotes = '';
+                defectList = '';
+                partsSearchQuery = '';
+                customerResponse = '';
+                approvedParts = '';
+                
+                // Update cart count in header
+                cartCount.innerText = 0;
+                cartCount.classList.add('hidden');
+            }
+            
             activeReg = reg;
             activePartsTab = 'workdone';
             currentView = 'Request Parts';

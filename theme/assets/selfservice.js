@@ -220,8 +220,8 @@
         mainContent.innerHTML = `
         <!-- Hero Section -->
         <div class="hero-section">
-            <h1 class="hero-title">Modern Garage System</h1>
-            <p class="hero-subtitle">${isHistory ? 'Service History' : 'Service & Parts Management'}</p>
+            <h1 class="hero-title">BMA PARTS EXPRESS</h1>
+            <p class="hero-subtitle">${isHistory ? 'Service History' : 'Service & Parts System'}</p>
             
             <div class="status-badges">
                 <span class="badge badge-premium">Premium UI</span>

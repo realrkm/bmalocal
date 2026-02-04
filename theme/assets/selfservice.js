@@ -37,7 +37,6 @@
                 if (e.target === overlay) closeAlert();
             };
 
-            // Focus the button for keyboard accessibility
             setTimeout(() => button.focus(), 100);
         });
     }
@@ -75,14 +74,14 @@
             };
         });
     }
-    
+
     // State Management
     let parts = [], cart = [], currentView = 'home', selectedCategory = null;
     let searchResults = [], activeSearchFilter = 'all', orderHistory = [];
     let adminClicks = 0, adminTimeout;
     let activeReg = null, serviceSearchQuery = '', currentStatusFilter = 'all';
-    let categories = []; // Will be populated from server
-    let currentWorkDoneReg = null; // Track which job is having work done entered
+    let categories = [];
+    let currentWorkDoneReg = null;
     let partsSearchQuery = '';
     let techNotes = ''; 
     let defectList = ''; 
@@ -104,24 +103,20 @@
 
     async function init() {
         try {
-            // Use anvil.server.call for standalone JavaScript (not anvil.call which requires a Form)
             const serverData = await anvil.call(mainContent, 'getCarPartNamesAndCategory');
             console.log("The server data is", serverData)
             if (!Array.isArray(serverData)) {
                 throw new Error("Server did not return a list. Check server logs.");
             }
 
-            // Transform server data into parts array
             parts = serverData.map(item => ({
                 name: item.Name,
                 category: item.Category,
                 partNo: item.PartNo || item.Name
             }));
 
-            // Extract unique categories from server data
             const uniqueCategories = [...new Set(serverData.map(item => item.Category))];
 
-            // Build categories array with config
             categories = uniqueCategories.map(catName => {
                 const config = categoryConfig[catName] || { icon: '📦', color: 'bg-gray' };
                 return {
@@ -132,7 +127,6 @@
                 };
             });
 
-            // **CRITICAL: Load active services from server**
             await loadActiveServices();
 
             setupListeners();
@@ -143,7 +137,7 @@
                     await loadActiveServices();
                     render();
                 }
-            }, 60000); // Refresh every minute (both render AND data)
+            }, 60000);
         } catch (e) { 
             console.error("Initialization Error (raw):", e);
             if (e && e.args) {
@@ -156,12 +150,11 @@
         try {
             const jobcardsData = await anvil.call(mainContent, 'get_technician_jobcards_by_status');
 
-            // Server now returns a flat list, not grouped by status
             activeServices = jobcardsData.map(card => ({
                 no: card.id,
                 date: card.ReceivedDate,
                 tech: card.Technician,
-                jobcardref: card.JobCardRef,  // Changed from 'reg' to 'jobcardref'
+                jobcardref: card.JobCardRef,
                 instruction: card.Instruction,
                 workDone: card.workDone || '',
                 status: card.status === 'Checked In' ? 'Checked-In' : 
@@ -177,13 +170,10 @@
     }
 
     function categorize(p) {
-        // Since category comes from server, just return it directly
         return p.category ? p.category.toLowerCase().replace(/\s+/g, '-') : 'other';
     }
 
-
     function render() {
-        // Show back button for category view to go back to Request Parts
         const showBackBtn = currentView === 'category' || 
             (currentView !== 'home' && currentView !== 'success' && 
              currentView !== 'admin' && currentView !== 'workDone' && 
@@ -218,16 +208,70 @@
             return matchesStatus && matchesSearch;
         });
 
+        // Calculate statistics
+        const totalServices = activeServices.length;
+        const checkedInCount = activeServices.filter(s => s.status === 'Checked-In').length;
+        const inServiceCount = activeServices.filter(s => s.status === 'In-Service').length;
+        const completedCount = activeServices.filter(s => s.status === 'Completed').length;
+
         mainContent.innerHTML = `
-        ${isHistory ? `<div class="summary-card">✅<div><h2>Daily Summary</h2><p>Completed Units Today: ${activeServices.filter(s => s.status === 'Completed').length}</p></div></div>` : ''}
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <h1 class="hero-title">Modern Garage System</h1>
+            <p class="hero-subtitle">${isHistory ? 'Service History' : 'Service & Parts Management'}</p>
+            
+            <div class="status-badges">
+                <span class="badge badge-premium">Premium UI</span>
+                <span class="badge badge-fast">Fast Delivery</span>
+                <span class="badge badge-service">Developing Service</span>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="service-card-grid">
+            <div class="service-card">
+                <div class="service-icon">🔧</div>
+                <div>
+                    <div class="service-card-title">Total Services</div>
+                    <div class="service-card-subtitle">All active services</div>
+                    <div class="service-stat">${totalServices}</div>
+                </div>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon" style="background: linear-gradient(135deg, #facc15 0%, #eab308 100%);">⏳</div>
+                <div>
+                    <div class="service-card-title">Checked In</div>
+                    <div class="service-card-subtitle">Awaiting service</div>
+                    <div class="service-stat">${checkedInCount}</div>
+                </div>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);">🔨</div>
+                <div>
+                    <div class="service-card-title">In Service</div>
+                    <div class="service-card-subtitle">Currently working</div>
+                    <div class="service-stat">${inServiceCount}</div>
+                </div>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon" style="background: linear-gradient(135deg, #64748b 0%, #475569 100%);">✅</div>
+                <div>
+                    <div class="service-card-title">Completed</div>
+                    <div class="service-card-subtitle">Finished today</div>
+                    <div class="service-stat">${completedCount}</div>
+                </div>
+            </div>
+        </div>
         
-        <h1 style="margin-bottom:2rem;">${isHistory ? 'Service History' : 'Service Queue'}</h1>
-        
+        <!-- Filter and Search -->
         <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:2rem; flex-wrap:wrap;">
             <div style="display:flex; gap:1rem;">
-                <button class="btn-status bg-yellow ${currentStatusFilter === 'Checked-In' ? 'active-filter' : ''}" onclick="filterByStatus('Checked-In')">Checked-In</button>
-                <button class="btn-status bg-green ${currentStatusFilter === 'In-Service' ? 'active-filter' : ''}" onclick="filterByStatus('In-Service')">In-Service</button>
-                <button class="btn-status bg-gray ${currentStatusFilter === 'Completed' ? 'active-filter' : ''}" onclick="filterByStatus('Completed')">History</button>
+                <button class="btn-status ${currentStatusFilter === 'Checked-In' ? 'active-filter' : ''}" onclick="filterByStatus('Checked-In')">Checked-In</button>
+                <button class="btn-status ${currentStatusFilter === 'In-Service' ? 'active-filter' : ''}" onclick="filterByStatus('In-Service')">In-Service</button>
+                <button class="btn-status ${currentStatusFilter === 'Completed' ? 'active-filter' : ''}" onclick="filterByStatus('Completed')">History</button>
             </div>
             
             <div style="position:relative; flex:1; max-width:400px; min-width:300px;">
@@ -264,7 +308,6 @@
 
         const sInput = document.getElementById('service-search');
         if(sInput) {
-            // Search when Enter is pressed
             sInput.onkeydown = (e) => {
                 if (e.key === 'Enter') {
                     serviceSearchQuery = e.target.value;
@@ -285,10 +328,10 @@
 
         mainContent.innerHTML = `
                 <div style="max-width:800px; margin:2rem auto;">
-                    <div style="background:#1e293b; padding:3rem; border-radius:2rem; border:4px solid #3b82f6;">
+                    <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); padding:3rem; border-radius:2rem; border:4px solid rgba(59, 130, 246, 0.5); box-shadow: 0 20px 60px rgba(59, 130, 246, 0.3);">
                         <div style="margin-bottom:2rem;">
-                            <h2 style="font-size:2.5rem; margin-bottom:1rem;">Work Done Report</h2>
-                            <div style="background:#334155; padding:1.5rem; border-radius:1rem; margin-bottom:2rem;">
+                            <h2 style="font-size:2.5rem; margin-bottom:1rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Work Done Report</h2>
+                            <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); padding:1.5rem; border-radius:1rem; margin-bottom:2rem; border:2px solid rgba(59, 130, 246, 0.2);">
                                 <p style="font-size:1.8rem;"><strong>Registration:</strong> <span style="color:#facc15;">${service.jobcardref}</span></p>
                                 <p style="font-size:1.8rem;"><strong>Technician:</strong> ${service.tech}</p>
                                 <p style="font-size:1.8rem;"><strong>Instruction:</strong> ${service.instruction}</p>
@@ -296,24 +339,24 @@
                         </div>
                         
                         <div style="margin-bottom:2rem;">
-                            <label style="display:block; margin-bottom:1rem; font-size:1.8rem; font-weight:bold;">Describe the work completed:</label>
+                            <label style="display:block; margin-bottom:1rem; font-size:1.8rem; font-weight:bold; color:#06b6d4;">Describe the work completed:</label>
                             <textarea 
                                 id="work-done-textarea" 
                                 rows="8" 
                                 placeholder="Enter detailed description of work performed..."
-                                style="width:100%; padding:1.5rem; font-size:1.6rem; border-radius:0.5rem; border:2px solid #475569; background:#0f172a; color:white; resize:vertical;"
+                                style="width:100%; padding:1.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; resize:vertical;"
                             >${service.workDone || ''}</textarea>
                         </div>
 
                         <div style="display:flex; gap:1rem; justify-content:flex-end;">
                             <button 
                                 onclick="cancelWorkDone()" 
-                                style="background:#64748b; color:white; padding:1rem 2rem; border-radius:0.5rem; border:none; font-weight:bold; cursor:pointer; font-size:1.8rem;">
+                                style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:1rem 2rem; border-radius:0.8rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease;">
                                 Cancel
                             </button>
                             <button 
                                 onclick="saveWorkDone()" 
-                                style="background:#22c55e; color:white; padding:1rem 2rem; border-radius:0.5rem; border:none; font-weight:bold; cursor:pointer; font-size:1.8rem;">
+                                style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:1rem 2rem; border-radius:0.8rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease;">
                                 <i data-lucide="save" style="width:20px; height:20px; display:inline-block; vertical-align:middle; margin-right:0.5rem;"></i>
                                 Save Work Done
                             </button>
@@ -327,67 +370,62 @@
         const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
 
         mainContent.innerHTML = `
-        <h2 style="margin-bottom:2rem">Requesting Parts for: <span style="color:#facc15">${activeReg}</span></h2>
+        <h2 style="margin-bottom:2rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Requesting Parts for: <span style="color:#facc15">${activeReg}</span></h2>
         
-        <!-- Cart Summary (if items exist) -->
         ${cart.length > 0 ? `
-            <div style="background:#1e293b; padding:2rem; border-radius:1rem; margin-bottom:2rem; border:3px solid #22c55e;">
+            <div style="background:linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(22, 163, 74, 0.2) 100%); backdrop-filter:blur(10px); padding:2rem; border-radius:1rem; margin-bottom:2rem; border:3px solid rgba(34, 197, 94, 0.5); box-shadow: 0 10px 30px rgba(34, 197, 94, 0.2);">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
                     <div>
                         <h3 style="font-size:2rem; margin-bottom:0.5rem;">Cart Summary</h3>
                         <p style="color:#94a3b8; font-size:1.6rem;">${cart.length} item(s) • ${totalQuantity.toFixed(2)} total units</p>
                     </div>
-                    <button onclick="viewCart()" style="background:#3b82f6; color:white; padding:0.8rem 1.5rem; border-radius:0.5rem; border:none; font-weight:bold; cursor:pointer; font-size:1.6rem;">
+                    <button onclick="viewCart()" style="background:linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color:white; padding:0.8rem 1.5rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); font-weight:bold; cursor:pointer; font-size:1.6rem; transition:all 0.3s ease;">
                         View Cart
                     </button>
                 </div>
                 <div style="display:flex; gap:1rem; justify-content:flex-end;">
-                    <button onclick="cancelOrder()" style="background:#64748b; color:white; padding:1rem 2rem; border-radius:0.5rem; border:none; font-weight:bold; cursor:pointer; font-size:1.8rem;">
+                    <button onclick="cancelOrder()" style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:1rem 2rem; border-radius:0.8rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease;">
                         Cancel Order
                     </button>
-                    <button onclick="confirmPartsOrder()" style="background:#22c55e; color:white; padding:1rem 2rem; border-radius:0.5rem; border:none; font-weight:bold; cursor:pointer; font-size:1.8rem;">
+                    <button onclick="confirmPartsOrder()" style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:1rem 2rem; border-radius:0.8rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease;">
                         Confirm Order
                     </button>
                 </div>
             </div>
         ` : ''}
         
-        <!-- Collapsible Tech Notes / Defects Panel -->
-        <div style="background:#1e293b; border-radius:1rem; margin-bottom:2rem; border:2px solid #475569; overflow:hidden;">
+        <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); border-radius:1rem; margin-bottom:2rem; border:2px solid rgba(59, 130, 246, 0.2); overflow:hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
             <button 
                 id="collapse-toggle" 
                 onclick="toggleCollapse()"
-                style="width:100%; padding:1.5rem 2rem; background:#334155; border:none; color:white; font-size:2.8rem; font-weight:bold; cursor:pointer; display:flex; justify-content:space-between; align-items:center; transition:background 0.2s;">
+                style="width:100%; padding:1.5rem 2rem; background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); border:none; color:white; font-size:1.8rem; font-weight:bold; cursor:pointer; display:flex; justify-content:space-between; align-items:center; transition:all 0.3s ease;">
                 <span>📋 Add Tech Notes / List Of Defects</span>
                 <i id="collapse-icon" data-lucide="chevron-down" style="width:24px; height:24px; transition:transform 0.3s;"></i>
             </button>
             
             <div id="collapse-content" style="display:none; padding:2rem;">
-                <!-- Tech Notes Section -->
                 <div style="margin-bottom:2rem;">
-                    <label style="display:block; margin-bottom:0.5rem; font-size:2.2rem; font-weight:bold; color:#facc15;">Tech Notes</label>
+                    <label style="display:block; margin-bottom:0.5rem; font-size:1.8rem; font-weight:bold; color:#06b6d4;">Tech Notes</label>
                     <textarea 
                         id="tech-notes-textarea" 
                         rows="4" 
                         placeholder="Enter any technical notes or observations..."
-                        style="width:100%; padding:1rem; font-size:2.2rem; border-radius:0.5rem; border:2px solid #475569; background:#0f172a; color:white; resize:vertical;"
+                        style="width:100%; padding:1rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; resize:vertical;"
                     >${techNotes}</textarea>
                 </div>
                 
-                <!-- List of Defects Section -->
                 <div>
-                    <label style="display:block; margin-bottom:0.5rem; font-size:2.2rem; font-weight:bold; color:#facc15;">List of Defects</label>
+                    <label style="display:block; margin-bottom:0.5rem; font-size:1.8rem; font-weight:bold; color:#06b6d4;">List of Defects</label>
                     <textarea 
                         id="defects-textarea" 
                         rows="4" 
                         placeholder="List any defects found during inspection..."
-                        style="width:100%; padding:1rem; font-size:2.2rem; border-radius:0.5rem; border:2px solid #475569; background:#0f172a; color:white; resize:vertical;"
+                        style="width:100%; padding:1rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; resize:vertical;"
                     >${defectList}</textarea>
                 </div>
             </div>
         </div>
         
-        <!-- Parts Search -->
         <div style="position:relative; max-width:600px; margin:0 auto 2rem;">
             <input 
                 type="text" 
@@ -395,17 +433,15 @@
                 class="search-input" 
                 placeholder="Search parts by name..." 
                 value="${partsSearchQuery}" 
-                style="font-size:2.2rem; padding:1.2rem 1.2rem 1.2rem 4rem; width:100%;">
+                style="font-size:1.8rem; padding:1.2rem 1.2rem 1.2rem 4rem; width:100%;">
             <span style="position:absolute; left:1.2rem; top:1.4rem; color:#94a3b8; font-size:1.8rem;">🔍</span>
         </div>
         
-        <!-- Categories / Search Results -->
         <div id="parts-results-container">
             ${partsSearchQuery ? renderPartsSearchResults() : renderCategoryGrid()}
         </div>
     `;
 
-        // Save textarea values when they change
         const techNotesTextarea = document.getElementById('tech-notes-textarea');
         const defectsTextarea = document.getElementById('defects-textarea');
 
@@ -436,7 +472,6 @@
     function renderCategory() {
         const filtered = parts.filter(p => categorize(p) === selectedCategory.id);
 
-        // Remove duplicates by part name, keeping first occurrence
         const uniquePartsMap = new Map();
         filtered.forEach(part => {
             if (!uniquePartsMap.has(part.name)) {
@@ -447,7 +482,7 @@
         const uniqueParts = Array.from(uniquePartsMap.values());
 
         mainContent.innerHTML = `
-        <h2 style="font-size:2.5rem; margin-bottom:2rem">${selectedCategory.icon} ${selectedCategory.name}</h2>
+        <h2 style="font-size:2.5rem; margin-bottom:2rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${selectedCategory.icon} ${selectedCategory.name}</h2>
         <div class="category-grid">${renderParts(uniqueParts)}</div>
     `;
     }
@@ -462,7 +497,7 @@
                     <button onclick="selectCategory('${c.id}')" class="category-card ${c.color}">
                         <span class="category-icon">${c.icon}</span>
                         <span class="category-name">${c.name}</span>
-                        <span style="font-size:2rem;">
+                        <span style="font-size:1.6rem; color:#94a3b8;">
                             ${uniqueNames.size} Items
                         </span>
                     </button>
@@ -480,9 +515,8 @@
             p.name.toLowerCase().includes(searchTerm) ||
             (p.category && p.category.toLowerCase().includes(searchTerm)) ||
             (p.partNo && p.partNo.toLowerCase().includes(searchTerm))
-                                         );
+        );
 
-        // Remove duplicates by name
         const uniquePartsMap = new Map();
         matchedParts.forEach(part => {
             const normalizedName = part.name.trim().toLowerCase();
@@ -497,15 +531,15 @@
             return `
             <div style="text-align:center; padding:3rem;">
                 <p style="font-size:2rem; color:#94a3b8;">No parts found matching "${partsSearchQuery}"</p>
-                <button onclick="clearPartsSearch()" style="margin-top:1rem; background:#dc2626; color:white; padding:1rem 2rem; border-radius:0.5rem; border:none; font-weight:bold; cursor:pointer; font-size:1.6rem;">Clear Search</button>
+                <button onclick="clearPartsSearch()" style="margin-top:1rem; background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color:white; padding:1rem 2rem; border-radius:0.8rem; border:2px solid rgba(220, 38, 38, 0.3); font-weight:bold; cursor:pointer; font-size:1.6rem;">Clear Search</button>
             </div>
         `;
         }
 
         return `
         <div style="margin-bottom:2rem; display:flex; justify-content:space-between; align-items:center;">
-            <h3 style="font-size:2rem;">Found ${uniqueMatchedParts.length} part(s) matching "${partsSearchQuery}"</h3>
-            <button onclick="clearPartsSearch()" style="background:#64748b; color:white; padding:0.8rem 1.5rem; border-radius:0.5rem; border:none; font-weight:bold; cursor:pointer; font-size:1.6rem;">Clear Search</button>
+            <h3 style="font-size:2rem; color:#06b6d4;">Found ${uniqueMatchedParts.length} part(s) matching "${partsSearchQuery}"</h3>
+            <button onclick="clearPartsSearch()" style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:0.8rem 1.5rem; border-radius:0.8rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:1.6rem;">Clear Search</button>
         </div>
         <div class="category-grid">${renderParts(uniqueMatchedParts)}</div>
     `;
@@ -526,9 +560,9 @@
 
     function renderParts(arr) {
         return arr.map((p, index) => `
-        <div style="background:#334155; padding:2rem; border-radius:1.5rem; display:flex; flex-direction:column; justify-content:space-between; gap:1.5rem; text-align:center;">
+        <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); backdrop-filter:blur(10px); padding:2rem; border-radius:1.5rem; display:flex; flex-direction:column; justify-content:space-between; gap:1.5rem; text-align:center; border:2px solid rgba(59, 130, 246, 0.2); transition:all 0.3s ease; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='rgba(59, 130, 246, 0.5)'; this.style.boxShadow='0 15px 30px rgba(59, 130, 246, 0.3)';" onmouseout="this.style.transform=''; this.style.borderColor='rgba(59, 130, 246, 0.2)'; this.style.boxShadow='0 10px 20px rgba(0, 0, 0, 0.3)';">
             <div>
-                <h3 style="font-size:2.4rem;">${p.name}</h3>
+                <h3 style="font-size:2rem; color:#06b6d4;">${p.name}</h3>
                 <p style="color:#94a3b8; margin-top:0.5rem">Category: ${p.category || 'N/A'}</p>
             </div>
             <div style="display:flex; flex-direction:column; gap:1rem; align-items:center;">
@@ -541,7 +575,7 @@
                         step="0.01" 
                         value="1" 
                         placeholder="0.00"
-                        style="width:100%; padding:0.8rem; font-size:1.6rem; border-radius:0.5rem; border:2px solid #475569; background:#1e293b; color:white; text-align:center;"
+                        style="width:100%; padding:0.8rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; text-align:center;"
                     >
                 </div>
                 <button onclick="addToCart('${p.name.replace(/'/g, "\\'")}', '${index}')" class="add-btn-circular">+</button>
@@ -553,12 +587,12 @@
         const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
         mainContent.innerHTML = `
-        <div style="background:#1e293b; padding:3rem; border-radius:2rem; border:4px solid #3b82f6; max-width:800px; margin:2rem auto;">
-            <h2 style="text-align:center; margin-bottom:2rem; font-size:2.5rem;">Your Order</h2>
+        <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); padding:3rem; border-radius:2rem; border:4px solid rgba(59, 130, 246, 0.5); max-width:800px; margin:2rem auto; box-shadow: 0 20px 60px rgba(59, 130, 246, 0.3);">
+            <h2 style="text-align:center; margin-bottom:2rem; font-size:2.5rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Your Order</h2>
             <div style="margin-bottom:2rem;">
                 ${cart.length === 0 ? '<p style="text-align:center; font-size:1.8rem;">Your cart is empty.</p>' : cart.map((item, i) => `
-                    <div style="padding:1rem; border-bottom:1px solid #334155; display:flex; justify-content:space-between; align-items:center; font-size:1.8rem; gap:1rem;">
-                        <div style="min-width:40px; font-size:2rem; font-weight:bold; color:#dc2626;">${i + 1}.</div>
+                    <div style="padding:1rem; border-bottom:1px solid rgba(59, 130, 246, 0.2); display:flex; justify-content:space-between; align-items:center; font-size:1.8rem; gap:1rem;">
+                        <div style="min-width:40px; font-size:2rem; font-weight:bold; color:#06b6d4;">${i + 1}.</div>
                         <div style="flex:1;">
                             <strong>${item.name}</strong><br>
                             <small style="color:#94a3b8;">${item.category}</small>
@@ -573,7 +607,7 @@
                                     min="0.01"
                                     step="0.01"
                                     onchange="updateCartQuantity(${i}, this.value)"
-                                    style="width:80px; padding:0.5rem; font-size:1.6rem; border-radius:0.5rem; border:2px solid #475569; background:#0f172a; color:white; text-align:center;"
+                                    style="width:80px; padding:0.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; text-align:center;"
                                 >
                             </div>
                             <button onclick="removeFromCart(${i})" style="color:#ef4444; background:none; border:none; cursor:pointer; font-size:1.5rem;">
@@ -585,7 +619,7 @@
             </div>
             ${cart.length > 0 ? `
                 <div style="text-align:center; padding:2rem 0;">
-                    <h3 style="font-size:2rem; margin-bottom:1rem;">Total: ${totalItems.toFixed(2)} Units</h3>
+                    <h3 style="font-size:2rem; margin-bottom:1rem; color:#06b6d4;">Total: ${totalItems.toFixed(2)} Units</h3>
                     <p style="color:#94a3b8; font-size:1.6rem;">Return to Request Parts to confirm your order</p>
                 </div>
             ` : ''}
@@ -598,14 +632,14 @@
         document.title = `Order_Ticket_${id}`;
 
         mainContent.innerHTML = `
-                <div style="text-align:center; padding:4rem 2rem; background:#1e293b; border-radius:2rem; max-width:600px; margin:2rem auto; border:4px solid #22c55e;">
-                    <div style="background:#22c55e; width:80px; height:80px; border-radius:50%; margin:0 auto 1.5rem; display:flex; align-items:center; justify-content:center; font-size:3rem;">✓</div>
-                    <h2 style="font-size:2.5rem;">Order Confirmed</h2>
-                    <div style="font-size:4rem; color:#facc15; margin:1.5rem 0; border:2px dashed #475569; padding:1rem; border-radius:1rem; display:inline-block;">#${id}</div>
+                <div style="text-align:center; padding:4rem 2rem; background:linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%); backdrop-filter:blur(20px); border-radius:2rem; max-width:600px; margin:2rem auto; border:4px solid rgba(34, 197, 94, 0.5); box-shadow: 0 20px 60px rgba(34, 197, 94, 0.3);">
+                    <div style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); width:80px; height:80px; border-radius:50%; margin:0 auto 1.5rem; display:flex; align-items:center; justify-content:center; font-size:3rem; box-shadow: 0 10px 30px rgba(34, 197, 94, 0.5);">✓</div>
+                    <h2 style="font-size:2.5rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Order Confirmed</h2>
+                    <div style="font-size:4rem; color:#facc15; margin:1.5rem 0; border:2px dashed rgba(59, 130, 246, 0.3); padding:1rem; border-radius:1rem; display:inline-block;">#${id}</div>
                     <div style="margin:2rem 0;"><img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=ORDER-${id}"></div>
                     <div style="display:flex; flex-direction:column; gap:1rem;">
                         <button id="print-ticket-btn" class="btn-print">🖨️ Print Ticket</button>
-                        <button onclick="goToHome()" style="background:#dc2626; color:white; padding:1.2rem; border-radius:0.5rem; border:none; font-weight:bold; cursor:pointer; font-size:2.4rem;">Finish</button>
+                        <button onclick="goToHome()" style="background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color:white; padding:1.2rem; border-radius:0.8rem; border:2px solid rgba(220, 38, 38, 0.3); font-weight:bold; cursor:pointer; font-size:2.4rem; transition:all 0.3s ease;">Finish</button>
                     </div>
                 </div>`;
 
@@ -624,22 +658,22 @@
         mainContent.innerHTML = `
             <div>
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
-                    <h2 style="font-size:3rem;">Admin Dashboard</h2>
-                    <button onclick="goToHome()" style="background:#dc2626; color:white; border:none; padding:1rem 2rem; border-radius:2rem; cursor:pointer; font-weight:bold; font-size:2.4rem;">Exit Admin</button>
+                    <h2 style="font-size:3rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Admin Dashboard</h2>
+                    <button onclick="goToHome()" style="background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color:white; border:2px solid rgba(220, 38, 38, 0.3); padding:1rem 2rem; border-radius:1rem; cursor:pointer; font-weight:bold; font-size:2.4rem; transition:all 0.3s ease;">Exit Admin</button>
                 </div>
                 <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:1.5rem; margin-bottom:2rem;">
-                    <div style="background:#334155; padding:2rem; border-radius:1rem; text-align:center;"><h4 style="color:#94a3b8; font-size:1.5rem;">Orders Today</h4><p style="font-size:2.5rem; font-weight:bold;">${orderHistory.length}</p></div>
-                    <div style="background:#334155; padding:2rem; border-radius:1rem; text-align:center;"><h4 style="color:#94a3b8; font-size:1.5rem;">Total Items</h4><p style="font-size:2.5rem; font-weight:bold;">${totalItems}</p></div>
-                    <div style="background:#334155; padding:2rem; border-radius:1rem; text-align:center;"><h4 style="color:#94a3b8; font-size:1.5rem;">Session Clock</h4><p style="font-size:2.5rem; font-weight:bold;">${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</p></div>
+                    <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); backdrop-filter:blur(10px); padding:2rem; border-radius:1rem; text-align:center; border:2px solid rgba(59, 130, 246, 0.2);"><h4 style="color:#06b6d4; font-size:1.5rem;">Orders Today</h4><p style="font-size:2.5rem; font-weight:bold;">${orderHistory.length}</p></div>
+                    <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); backdrop-filter:blur(10px); padding:2rem; border-radius:1rem; text-align:center; border:2px solid rgba(59, 130, 246, 0.2);"><h4 style="color:#06b6d4; font-size:1.5rem;">Total Items</h4><p style="font-size:2.5rem; font-weight:bold;">${totalItems}</p></div>
+                    <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); backdrop-filter:blur(10px); padding:2rem; border-radius:1rem; text-align:center; border:2px solid rgba(59, 130, 246, 0.2);"><h4 style="color:#06b6d4; font-size:1.5rem;">Session Clock</h4><p style="font-size:2.5rem; font-weight:bold;">${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</p></div>
                 </div>
-                <div style="background:#1e293b; border-radius:1rem; overflow:hidden;">
+                <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); border-radius:1rem; overflow:hidden; border:2px solid rgba(59, 130, 246, 0.2);">
                     <table style="width:100%; border-collapse:collapse; text-align:center;">
-                        <thead style="background:#334155;">
-                            <tr style="font-size:2.4rem;"><th style="padding:1rem; font-size:2.4rem; text-align:center;">Time</th><th style="padding:1rem; font-size:2.4rem; text-align:center;">Order ID</th><th style="padding:1rem; font-size:2.4rem; text-align:center;">Items</th></tr>
+                        <thead style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%);">
+                            <tr style="font-size:2.4rem;"><th style="padding:1rem; font-size:2.4rem; text-align:center; color:#06b6d4;">Time</th><th style="padding:1rem; font-size:2.4rem; text-align:center; color:#06b6d4;">Order ID</th><th style="padding:1rem; font-size:2.4rem; text-align:center; color:#06b6d4;">Items</th></tr>
                         </thead>
                         <tbody>
                             ${orderHistory.map(o => `
-                                <tr style="border-bottom:1px solid #334155; font-size:2.4rem;">
+                                <tr style="border-bottom:1px solid rgba(59, 130, 246, 0.2); font-size:2.4rem;">
                                     <td data-label="Time" style="padding:1rem; text-align:center;">${o.time}</td>
                                     <td data-label="ID" style="padding:1rem; text-align:center;">#${o.id}</td>
                                     <td data-label="Counter" style="padding:1rem; text-align:center;">${o.itemCount} Units</td>
@@ -647,7 +681,7 @@
                         </tbody>
                     </table>
                 </div>
-                <button onclick="clearStats()" style="margin-top:2rem; background:none; border:1px solid #ef4444; color:#ef4444; padding:0.8rem 1.5rem; border-radius:0.5rem; cursor:pointer; font-weight:bold; font-size:2.4rem;">Clear Session Data</button>
+                <button onclick="clearStats()" style="margin-top:2rem; background:none; border:2px solid #ef4444; color:#ef4444; padding:0.8rem 1.5rem; border-radius:0.8rem; cursor:pointer; font-weight:bold; font-size:2.4rem; transition:all 0.3s ease;">Clear Session Data</button>
             </div>`;
     }
 
@@ -658,12 +692,12 @@
         }
         breadcrumbContainer.classList.remove('hidden');
 
-        let breadcrumb = `<span onclick="goToHome()" style="cursor:pointer; color:#dc2626; font-weight:bold;">Home</span>`;
+        let breadcrumb = `<span onclick="goToHome()" style="cursor:pointer; color:#06b6d4; font-weight:bold;">Home</span>`;
 
         if (currentView === 'Request Parts') {
             breadcrumb += ` > Request Parts`;
         } else if (currentView === 'category' || currentView === 'checkout') {
-            breadcrumb += ` > <span onclick="backToPartsRequest()" style="cursor:pointer; color:#dc2626; font-weight:bold;">Request Parts</span>`;
+            breadcrumb += ` > <span onclick="backToPartsRequest()" style="cursor:pointer; color:#06b6d4; font-weight:bold;">Request Parts</span>`;
         }
 
         if (currentView === 'category') {
@@ -701,15 +735,15 @@
             currentStatusFilter = 'all';
             currentWorkDoneReg = null;
             partsSearchQuery = '';
-            techNotes = ''; // Clear tech notes
-            defectList = ''; // Clear defects
+            techNotes = '';
+            defectList = '';
             render(); 
         };
 
         window.backToPartsRequest = () => {
             currentView = 'Request Parts';
             selectedCategory = null;
-            partsSearchQuery = ''; // Clear search but preserve techNotes and defectList
+            partsSearchQuery = '';
             render();
         };
         
@@ -733,7 +767,7 @@
             orderHistory.push({
                 id: id,
                 time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-                itemCount: totalQuantity.toFixed(2) // Store with decimals
+                itemCount: totalQuantity.toFixed(2)
             });
 
             window.lastOrderID = id;
@@ -775,10 +809,8 @@
             }
 
             try {
-                // 1. Call server to save + complete job
                 anvil.call(mainContent, 'save_work_done', currentWorkDoneReg, workDoneText);
 
-                // 2. Update local state immediately (no waiting)
                 const service = activeServices.find(
                     s => s.jobcardref === currentWorkDoneReg
                 );
@@ -788,15 +820,13 @@
                     service.status = 'Completed';
                 }
 
-                // 3. Success feedback
                 customAlert(
                     `Work done has been saved successfully for jobcard reference ${currentWorkDoneReg}`,
                     '✅ Success'
                 );
 
-                // 4. Reset view + go home
                 currentWorkDoneReg = null;
-                currentStatusFilter = 'Completed'; // optional: auto-show history
+                currentStatusFilter = 'Completed';
                 currentView = 'home';
                 render();
 
@@ -808,7 +838,6 @@
                 );
             }
         };
-
 
         window.completeJob = (jobcardref) => { 
             const service = activeServices.find(s => s.jobcardref === jobcardref);
@@ -831,14 +860,11 @@
             const item = parts.find(p => p.name === name);
             if (!item) return;
 
-            // Check if item already exists in cart
             const existingItemIndex = cart.findIndex(c => c.name === item.name);
 
             if (existingItemIndex > -1) {
-                // Add to existing quantity
                 cart[existingItemIndex].quantity += quantity;
             } else {
-                // Add new item with quantity
                 cart.push({
                     name: item.name,
                     category: item.category,
@@ -847,7 +873,6 @@
                 });
             }
 
-            // Reset quantity input to 1
             if (qtyInput) qtyInput.value = '1';
 
             render();
@@ -876,7 +901,6 @@
         cartBtn.onclick = () => { currentView = 'checkout'; render(); };
         homeFooterBtn.onclick = goToHome;
 
-        // Admin Secret Trigger - 5 clicks on logo
         adminTrigger.onclick = () => {
             adminClicks++;
             clearTimeout(adminTimeout);
@@ -904,7 +928,6 @@
                 return;
             }
 
-            // Show confirmation dialog
             const confirmed = await customConfirm(
                 `You are about to submit an order with ${cart.length} item(s). Do you want to proceed?`,
                 'Confirm Order Submission'
@@ -912,18 +935,15 @@
 
             if (!confirmed) return;
 
-            // Prepare parts and quantities as formatted text
             let partsAndQuantities = cart.map((item, i) => 
                 `${i + 1}. ${item.name} (${item.category}) - Qty: ${item.quantity}`
-                                             ).join('\n');
+            ).join('\n');
 
-            // Get textarea values (default to None if empty)
             const techNotesValue = techNotes.trim() || null;
             const defectListValue = defectList.trim() || null;
             const partsValue = partsAndQuantities || null;
 
             try {
-                // Call server function
                 await anvil.call(
                     mainContent, 
                     'storeTechDetails', 
@@ -933,7 +953,6 @@
                     partsValue
                 );
 
-                // Generate order ID and show success
                 const id = Math.floor(1000 + Math.random() * 9000);
                 const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -945,7 +964,6 @@
 
                 window.lastOrderID = id;
 
-                // Clear state
                 cart = [];
                 techNotes = '';
                 defectList = '';
@@ -970,19 +988,18 @@
 
             if (content.style.display === 'none') {
                 content.style.display = 'block';
-                button.style.background = '#475569';
+                button.style.background = 'linear-gradient(135deg, rgba(71, 85, 105, 0.8) 0%, rgba(51, 65, 85, 0.8) 100%)';
                 if (icon) {
                     icon.style.transform = 'rotate(180deg)';
                 }
             } else {
                 content.style.display = 'none';
-                button.style.background = '#334155';
+                button.style.background = 'linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%)';
                 if (icon) {
                     icon.style.transform = 'rotate(0deg)';
                 }
             }
 
-            // Re-initialize lucide icons after DOM change
             lucide.createIcons();
         };
 
@@ -998,7 +1015,6 @@
             );
 
             if (confirmed) {
-                // Clear all order-related data
                 cart = [];
                 techNotes = '';
                 defectList = '';
@@ -1009,7 +1025,6 @@
                     'Order Cancelled'
                 );
 
-                // Return to home
                 currentView = 'home';
                 render();
             }

@@ -427,28 +427,7 @@
         const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
 
         return `
-        <!-- Cart Summary (if items exist) -->
-        ${cart.length > 0 ? `
-            <div style="background:linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(22, 163, 74, 0.2) 100%); backdrop-filter:blur(10px); padding:2rem; border-radius:1rem; margin-bottom:2rem; border:3px solid rgba(34, 197, 94, 0.5); box-shadow: 0 10px 30px rgba(34, 197, 94, 0.2);">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-                    <div>
-                        <h3 style="font-size:2rem; margin-bottom:0.5rem;">Cart Summary</h3>
-                        <p style="color:#94a3b8; font-size:1.6rem;">${cart.length} item(s) • ${totalQuantity.toFixed(2)} total units</p>
-                    </div>
-                    <button onclick="viewCart()" style="background:linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color:white; padding:0.8rem 1.5rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); font-weight:bold; cursor:pointer; font-size:1.6rem; transition:all 0.3s ease;">
-                        View Cart
-                    </button>
-                </div>
-                <div style="display:flex; gap:1rem; justify-content:flex-end;">
-                    <button onclick="cancelOrder()" style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:1rem 2rem; border-radius:0.8rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease;">
-                        Cancel Order
-                    </button>
-                    <button onclick="confirmPartsOrder()" style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:1rem 2rem; border-radius:0.8rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease;">
-                        Confirm Order
-                    </button>
-                </div>
-            </div>
-        ` : ''}
+        
         
         <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); border-radius:1rem; margin-bottom:2rem; border:2px solid rgba(59, 130, 246, 0.2); overflow:hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
             <button 
@@ -1011,6 +990,9 @@
                 partsSearchQuery = '';
                 renderRequestParts();
                 await customAlert('All details have been cleared.', 'Cleared');
+
+                currentView = 'Request Parts';
+                renderRequestParts()
             }
         };
 
@@ -1293,65 +1275,6 @@
             renderRequestParts();
         };
 
-        window.confirmPartsOrder = async () => {
-            if (cart.length === 0) {
-                await customAlert('Your cart is empty. Please add parts before confirming.', 'Empty Cart');
-                return;
-            }
-
-            const confirmed = await customConfirm(
-                `You are about to submit an order with ${cart.length} item(s). Do you want to proceed?`,
-                'Confirm Order Submission'
-            );
-
-            if (!confirmed) return;
-
-            let partsAndQuantities = cart.map((item, i) => 
-                `${i + 1}. ${item.name} (${item.category}) - Qty: ${item.quantity}`
-            ).join('\n');
-
-            const techNotesValue = techNotes.trim() || null;
-            const defectListValue = defectList.trim() || null;
-            const partsValue = partsAndQuantities || null;
-
-            try {
-                await anvil.call(
-                    mainContent, 
-                    'storeTechDetails', 
-                    activeReg,
-                    techNotesValue, 
-                    defectListValue, 
-                    partsValue
-                );
-
-                const id = Math.floor(1000 + Math.random() * 9000);
-                const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
-
-                orderHistory.push({
-                    id: id,
-                    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-                    itemCount: totalQuantity.toFixed(2)
-                });
-
-                window.lastOrderID = id;
-
-                cart = [];
-                techNotes = '';
-                defectList = '';
-                partsSearchQuery = '';
-
-                currentView = 'success';
-                render();
-
-            } catch (error) {
-                console.error('Error storing tech details:', error);
-                await customAlert(
-                    'Failed to submit order. Please try again.',
-                    '❌ Error'
-                );
-            }
-        };
-
         window.toggleCollapse = () => {
             const content = document.getElementById('collapse-content');
             const icon = document.getElementById('collapse-icon');
@@ -1377,28 +1300,6 @@
         window.viewCart = () => {
             currentView = 'checkout';
             render();
-        };
-
-        window.cancelOrder = async () => {
-            const confirmed = await customConfirm(
-                'Are you sure you want to cancel this order? All items in the cart and entered notes will be cleared.',
-                'Cancel Order'
-            );
-
-            if (confirmed) {
-                cart = [];
-                techNotes = '';
-                defectList = '';
-                partsSearchQuery = '';
-
-                await customAlert(
-                    'Order has been cancelled successfully.',
-                    'Order Cancelled'
-                );
-
-                currentView = 'home';
-                render();
-            }
         };
         
         backToTopBtn.onclick = () => window.scrollTo({top:0, behavior:'smooth'});

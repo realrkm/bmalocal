@@ -84,7 +84,10 @@
     let currentWorkDoneReg = null;
     let partsSearchQuery = '';
     let techNotes = ''; 
-    let defectList = ''; 
+    let defectList = '';
+    let activePartsTab = 'request'; // 'request', 'feedback', or 'workdone'
+    let customerResponse = '';
+    let approvedParts = ''; 
 
     // Category display configuration (icons and colors)
     const categoryConfig = {
@@ -372,6 +375,59 @@
         mainContent.innerHTML = `
         <h2 style="margin-bottom:2rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Requesting Parts for: <span style="color:#facc15">${activeReg}</span></h2>
         
+        <!-- Tab Navigation -->
+        <div style="display:flex; gap:1rem; margin-bottom:2rem; background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); padding:1rem; border-radius:1.5rem; border:2px solid rgba(59, 130, 246, 0.2); overflow-x:auto;">
+            <button 
+                onclick="switchPartsTab('request')" 
+                class="parts-tab-btn ${activePartsTab === 'request' ? 'active' : ''}"
+                style="flex:1; min-width:180px; padding:1.2rem 2rem; border-radius:1rem; font-size:1.8rem; font-weight:bold; cursor:pointer; transition:all 0.3s ease; border:2px solid ${activePartsTab === 'request' ? 'rgba(59, 130, 246, 0.5)' : 'transparent'}; background:${activePartsTab === 'request' ? 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' : 'transparent'}; color:white;">
+                📦 Parts Request
+            </button>
+            <button 
+                onclick="switchPartsTab('feedback')" 
+                class="parts-tab-btn ${activePartsTab === 'feedback' ? 'active' : ''}"
+                style="flex:1; min-width:180px; padding:1.2rem 2rem; border-radius:1rem; font-size:1.8rem; font-weight:bold; cursor:pointer; transition:all 0.3s ease; border:2px solid ${activePartsTab === 'feedback' ? 'rgba(59, 130, 246, 0.5)' : 'transparent'}; background:${activePartsTab === 'feedback' ? 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' : 'transparent'}; color:white;">
+                💬 Customer Feedback
+            </button>
+            <button 
+                onclick="switchPartsTab('workdone')" 
+                class="parts-tab-btn ${activePartsTab === 'workdone' ? 'active' : ''}"
+                style="flex:1; min-width:180px; padding:1.2rem 2rem; border-radius:1rem; font-size:1.8rem; font-weight:bold; cursor:pointer; transition:all 0.3s ease; border:2px solid ${activePartsTab === 'workdone' ? 'rgba(59, 130, 246, 0.5)' : 'transparent'}; background:${activePartsTab === 'workdone' ? 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' : 'transparent'}; color:white;">
+                ✅ Work Done
+            </button>
+        </div>
+        
+        <!-- Tab Content -->
+        <div id="parts-tab-content">
+            ${renderPartsTabContent()}
+        </div>
+    `;
+
+        // Attach event listeners based on active tab
+        if (activePartsTab === 'request') {
+            attachPartsRequestListeners();
+        } else if (activePartsTab === 'feedback') {
+            attachFeedbackListeners();
+        } else if (activePartsTab === 'workdone') {
+            attachWorkDoneListeners();
+        }
+    }
+
+    function renderPartsTabContent() {
+        if (activePartsTab === 'request') {
+            return renderPartsRequestTab();
+        } else if (activePartsTab === 'feedback') {
+            return renderCustomerFeedbackTab();
+        } else if (activePartsTab === 'workdone') {
+            return renderWorkDoneTab();
+        }
+    }
+
+    function renderPartsRequestTab() {
+        const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+        return `
+        <!-- Cart Summary (if items exist) -->
         ${cart.length > 0 ? `
             <div style="background:linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(22, 163, 74, 0.2) 100%); backdrop-filter:blur(10px); padding:2rem; border-radius:1rem; margin-bottom:2rem; border:3px solid rgba(34, 197, 94, 0.5); box-shadow: 0 10px 30px rgba(34, 197, 94, 0.2);">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
@@ -440,8 +496,123 @@
         <div id="parts-results-container">
             ${partsSearchQuery ? renderPartsSearchResults() : renderCategoryGrid()}
         </div>
-    `;
+        `;
+    }
 
+    function renderCustomerFeedbackTab() {
+        return `
+        <div style="max-width:900px; margin:0 auto;">
+            <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); padding:3rem; border-radius:2rem; border:2px solid rgba(59, 130, 246, 0.3); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);">
+                <h3 style="font-size:2.5rem; margin-bottom:2rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Customer Feedback</h3>
+                
+                <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); padding:2rem; border-radius:1rem; margin-bottom:2rem; border:2px solid rgba(59, 130, 246, 0.2);">
+                    <p style="font-size:1.6rem; color:#94a3b8; margin-bottom:1rem;">
+                        <strong style="color:#facc15;">JobCard Reference:</strong> ${activeReg}
+                    </p>
+                </div>
+                
+                <!-- Response Section -->
+                <div style="margin-bottom:2rem;">
+                    <label style="display:block; margin-bottom:1rem; font-size:2rem; font-weight:bold; color:#06b6d4;">
+                        📝 Response
+                    </label>
+                    <textarea 
+                        id="customer-response-textarea" 
+                        rows="6" 
+                        placeholder="Enter customer's response or feedback regarding the service..."
+                        style="width:100%; padding:1.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; resize:vertical; line-height:1.6;"
+                    >${customerResponse}</textarea>
+                    <p style="font-size:1.3rem; color:#94a3b8; margin-top:0.5rem;">Document any customer concerns, requests, or approvals here.</p>
+                </div>
+                
+                <!-- Approved Parts Section -->
+                <div style="margin-bottom:2rem;">
+                    <label style="display:block; margin-bottom:1rem; font-size:2rem; font-weight:bold; color:#06b6d4;">
+                        ✅ Approved Parts
+                    </label>
+                    <textarea 
+                        id="approved-parts-textarea" 
+                        rows="6" 
+                        placeholder="List the parts approved by the customer for installation/replacement..."
+                        style="width:100%; padding:1.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; resize:vertical; line-height:1.6;"
+                    >${approvedParts}</textarea>
+                    <p style="font-size:1.3rem; color:#94a3b8; margin-top:0.5rem;">Enter each approved part on a new line or separate with commas.</p>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div style="display:flex; gap:1rem; justify-content:flex-end; margin-top:3rem;">
+                    <button 
+                        onclick="clearCustomerFeedback()" 
+                        style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:1.2rem 2.5rem; border-radius:0.8rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease;">
+                        Clear
+                    </button>
+                    <button 
+                        onclick="saveCustomerFeedback()" 
+                        style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:1.2rem 2.5rem; border-radius:0.8rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);">
+                        <i data-lucide="save" style="width:20px; height:20px; display:inline-block; vertical-align:middle; margin-right:0.5rem;"></i>
+                        Save Feedback
+                    </button>
+                </div>
+            </div>
+        </div>
+        `;
+    }
+
+    function renderWorkDoneTab() {
+        const service = activeServices.find(s => s.jobcardref === activeReg);
+        
+        if (!service) {
+            return `
+            <div style="text-align:center; padding:3rem;">
+                <p style="font-size:2rem; color:#94a3b8;">Service information not found for ${activeReg}</p>
+            </div>
+            `;
+        }
+
+        return `
+        <div style="max-width:900px; margin:0 auto;">
+            <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); padding:3rem; border-radius:2rem; border:2px solid rgba(59, 130, 246, 0.3); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);">
+                <h3 style="font-size:2.5rem; margin-bottom:2rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Work Done Report</h3>
+                
+                <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); padding:2rem; border-radius:1rem; margin-bottom:2rem; border:2px solid rgba(59, 130, 246, 0.2);">
+                    <p style="font-size:1.6rem; color:#94a3b8; margin-bottom:0.8rem;">
+                        <strong style="color:#facc15;">JobCard Reference:</strong> ${service.jobcardref}
+                    </p>
+                    <p style="font-size:1.6rem; color:#94a3b8; margin-bottom:0.8rem;">
+                        <strong style="color:#06b6d4;">Technician:</strong> ${service.tech}
+                    </p>
+                    <p style="font-size:1.6rem; color:#94a3b8;">
+                        <strong style="color:#06b6d4;">Instruction:</strong> ${service.instruction}
+                    </p>
+                </div>
+                
+                <div style="margin-bottom:2rem;">
+                    <label style="display:block; margin-bottom:1rem; font-size:2rem; font-weight:bold; color:#06b6d4;">
+                        📋 Work Completed Description
+                    </label>
+                    <textarea 
+                        id="workdone-textarea" 
+                        rows="8" 
+                        placeholder="Enter detailed description of all work performed on this vehicle..."
+                        style="width:100%; padding:1.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; resize:vertical; line-height:1.6;"
+                    >${service.workDone || ''}</textarea>
+                    <p style="font-size:1.3rem; color:#94a3b8; margin-top:0.5rem;">Include all repairs, replacements, adjustments, and services performed.</p>
+                </div>
+
+                <div style="display:flex; gap:1rem; justify-content:flex-end; margin-top:3rem;">
+                    <button 
+                        onclick="saveWorkDoneFromTab()" 
+                        style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:1.2rem 2.5rem; border-radius:0.8rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);">
+                        <i data-lucide="save" style="width:20px; height:20px; display:inline-block; vertical-align:middle; margin-right:0.5rem;"></i>
+                        Save Work Done
+                    </button>
+                </div>
+            </div>
+        </div>
+        `;
+    }
+
+    function attachPartsRequestListeners() {
         const techNotesTextarea = document.getElementById('tech-notes-textarea');
         const defectsTextarea = document.getElementById('defects-textarea');
 
@@ -467,6 +638,29 @@
             };
             partsInput.onclick = (e) => e.target.focus();
         }
+    }
+
+    function attachFeedbackListeners() {
+        const responseTextarea = document.getElementById('customer-response-textarea');
+        const approvedPartsTextarea = document.getElementById('approved-parts-textarea');
+
+        if (responseTextarea) {
+            responseTextarea.oninput = (e) => {
+                customerResponse = e.target.value;
+            };
+        }
+
+        if (approvedPartsTextarea) {
+            approvedPartsTextarea.oninput = (e) => {
+                approvedParts = e.target.value;
+            };
+        }
+
+        lucide.createIcons();
+    }
+
+    function attachWorkDoneListeners() {
+        lucide.createIcons();
     }
 
     function renderCategory() {
@@ -718,6 +912,90 @@
             render(); 
         };
 
+        window.switchPartsTab = (tabName) => {
+            activePartsTab = tabName;
+            renderRequestParts();
+        };
+
+        window.saveCustomerFeedback = async () => {
+            const responseText = customerResponse.trim();
+            const approvedPartsText = approvedParts.trim();
+
+            if (!responseText && !approvedPartsText) {
+                await customAlert('Please enter either a response or approved parts before saving.', 'Feedback Required');
+                return;
+            }
+
+            try {
+                // Call server function to save customer feedback
+                await anvil.call(
+                    mainContent,
+                    'save_customer_feedback',
+                    activeReg,
+                    responseText || null,
+                    approvedPartsText || null
+                );
+
+                await customAlert(
+                    `Customer feedback has been saved successfully for JobCard ${activeReg}`,
+                    '✅ Success'
+                );
+
+            } catch (error) {
+                console.error('Error saving customer feedback:', error);
+                await customAlert(
+                    'Failed to save customer feedback. Please try again.',
+                    '❌ Error'
+                );
+            }
+        };
+
+        window.clearCustomerFeedback = async () => {
+            const confirmed = await customConfirm(
+                'Are you sure you want to clear all feedback data?',
+                'Clear Feedback'
+            );
+
+            if (confirmed) {
+                customerResponse = '';
+                approvedParts = '';
+                renderRequestParts();
+                await customAlert('Feedback data has been cleared.', 'Cleared');
+            }
+        };
+
+        window.saveWorkDoneFromTab = async () => {
+            const textarea = document.getElementById('workdone-textarea');
+            const workDoneText = textarea ? textarea.value.trim() : '';
+
+            if (!workDoneText) {
+                await customAlert('Please enter the work done details before saving.', 'Work Done Required');
+                return;
+            }
+
+            try {
+                await anvil.call(mainContent, 'save_work_done', activeReg, workDoneText);
+
+                const service = activeServices.find(s => s.jobcardref === activeReg);
+                if (service) {
+                    service.workDone = workDoneText;
+                    service.status = 'Completed';
+                }
+
+                await customAlert(
+                    `Work done has been saved successfully for JobCard ${activeReg}`,
+                    '✅ Success'
+                );
+
+            } catch (err) {
+                console.error(err);
+                await customAlert(
+                    'Failed to save work done. Please try again.',
+                    '❌ Error'
+                );
+            }
+        };
+
         window.addToCart = (name) => { 
             const item = parts.find(p => p.name === name); 
             if(item) cart.push(item); 
@@ -737,6 +1015,9 @@
             partsSearchQuery = '';
             techNotes = '';
             defectList = '';
+            activePartsTab = 'request';
+            customerResponse = '';
+            approvedParts = '';
             render(); 
         };
 

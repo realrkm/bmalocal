@@ -44,6 +44,7 @@
         approvedParts: '',
         selectedTechnician: '',
         signatureData: '',
+        collapseOpen: false,
 
         // Admin state
         adminClicks: 0,
@@ -179,8 +180,14 @@
             this.lastX = 0;
             this.lastY = 0;
 
-            // Set canvas dimensions properly
+            this.resize();
+
+            this.init();
+        }
+
+        resize() {
             const rect = this.canvas.getBoundingClientRect();
+            if (!rect.width) return;
             this.canvas.width = rect.width;
             this.canvas.height = 200;
 
@@ -188,7 +195,13 @@
             this.ctx.fillStyle = '#ffffff';
             this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-            this.init();
+            if (this.isSigned && state.signatureData) {
+                const img = new Image();
+                img.onload = () => {
+                    this.ctx.drawImage(img, 0, 0, this.canvas.width, this.canvas.height);
+                };
+                img.src = state.signatureData;
+            }
         }
 
         init() {
@@ -282,6 +295,9 @@
         stopDrawing() {
             if (this.isDrawing) {
                 this.isDrawing = false;
+                if (this.isSigned) {
+                    state.signatureData = this.getSignatureData();
+                }
                 console.log('Stopped drawing');
             }
         }
@@ -330,14 +346,22 @@
                     return;
                 }
 
-                signaturePadInstance = new SignaturePad('signature-canvas');
+                if (!signaturePadInstance || signaturePadInstance.canvas !== canvas) {
+                    signaturePadInstance = new SignaturePad('signature-canvas');
+                } else {
+                    signaturePadInstance.resize();
+                }
 
                 if (state.signatureData && signaturePadInstance) {
                     const img = new Image();
                     img.onload = () => {
-                        signaturePadInstance.ctx.drawImage(img, 0, 0, 
-                                                           signaturePadInstance.canvas.width, 
-                                                           signaturePadInstance.canvas.height);
+                        signaturePadInstance.ctx.drawImage(
+                            img,
+                            0,
+                            0,
+                            signaturePadInstance.canvas.width,
+                            signaturePadInstance.canvas.height
+                        );
                         signaturePadInstance.isSigned = true;
                     };
                     img.src = state.signatureData;
@@ -371,6 +395,9 @@
 
     function pushNavigation(view, newState = {}) {
         if (state.currentView === view) return;
+
+        // Persist signature before leaving the request parts view
+        getSignatureData();
 
         state.navigationHistory.push({
             view: state.currentView,
@@ -583,7 +610,6 @@
         const totalServices = state.activeServices.length;
         const checkedInCount = state.activeServices.filter(s => s.status === 'Checked-In').length;
         const inServiceCount = state.activeServices.filter(s => s.status === 'In-Service').length;
-        const completedCount = state.activeServices.filter(s => s.status === 'Completed').length;
 
         mainContent.innerHTML = `
         <!-- Hero Section -->
@@ -627,14 +653,6 @@
                 </div>
             </div>
             
-            <div class="service-card">
-                <div class="service-icon" style="background: linear-gradient(135deg, #64748b 0%, #475569 100%);">✅</div>
-                <div>
-                    <div class="service-card-title">Completed</div>
-                    <div class="service-card-subtitle">Finished today</div>
-                    <div class="service-stat">${completedCount}</div>
-                </div>
-            </div>
         </div>
         
         <!-- Filter and Search -->
@@ -786,6 +804,10 @@
         } else if (state.activePartsTab === 'workdone') {
             attachWorkDoneListeners();
         }
+
+        if (state.activePartsTab === 'request' && (state.collapseOpen || state.signatureData)) {
+            initSignaturePad();
+        }
     }
 
     function renderPartsTabContent() {
@@ -803,6 +825,7 @@
 
     function renderPartsRequestTab() {
         const totalQuantity = state.cart.reduce((sum, item) => sum + item.quantity, 0);
+        const shouldShowCollapse = state.collapseOpen || !!state.signatureData;
 
         return `
         <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); border-radius:1rem; margin-bottom:2rem; border:2px solid rgba(59, 130, 246, 0.2); overflow:hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
@@ -814,7 +837,7 @@
                 <i id="collapse-icon" data-lucide="chevron-down" style="width:24px; height:24px; transition:transform 0.3s;" aria-hidden="true"></i>
             </button>
             
-            <div id="collapse-content" style="display:none; padding:2rem;">
+            <div id="collapse-content" style="display:${shouldShowCollapse ? 'block' : 'none'}; padding:2rem;">
                 <div style="margin-bottom:2rem;">
                     <label for="tech-notes-textarea" style="display:block; margin-bottom:0.5rem; font-size:1.8rem; font-weight:bold; color:#06b6d4;">Tech Notes</label>
                     <textarea 
@@ -1051,7 +1074,9 @@
         }
 
         console.log('Scheduling signature pad initialization...');
-        initSignaturePad();
+        if (state.collapseOpen || state.signatureData) {
+            initSignaturePad();
+        }
 
         const partsInput = document.getElementById('parts-search');
         if (partsInput) {
@@ -1669,12 +1694,16 @@ function setupListeners() {
 
         if (content.style.display === 'none') {
             content.style.display = 'block';
+            state.collapseOpen = true;
             button.style.background = 'linear-gradient(135deg, rgba(71, 85, 105, 0.8) 0%, rgba(51, 65, 85, 0.8) 100%)';
             if (icon) {
                 icon.style.transform = 'rotate(180deg)';
             }
+            initSignaturePad();
         } else {
+            getSignatureData();
             content.style.display = 'none';
+            state.collapseOpen = false;
             button.style.background = 'linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%)';
             if (icon) {
                 icon.style.transform = 'rotate(0deg)';
@@ -1714,6 +1743,12 @@ function setupListeners() {
     };
 
     backToTopBtn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    window.addEventListener('resize', () => {
+        if (signaturePadInstance) {
+            signaturePadInstance.resize();
+        }
+    });
 }
 
 // ===========================

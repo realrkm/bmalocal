@@ -232,85 +232,161 @@
         navigationHistory = [];
     }
 
-    // Signature Pad Functions
-    function initSignaturePad() {
-        const canvas = document.getElementById('signature-canvas');
-        if (!canvas) return;
-
-        const ctx = canvas.getContext('2d');
-        const dpi = window.devicePixelRatio || 1;
-        
-        // Set canvas size
-        const parent = canvas.parentElement;
-        canvas.width = parent.clientWidth * dpi;
-        canvas.height = 200 * dpi;
-        canvas.style.width = parent.clientWidth + 'px';
-        canvas.style.height = '200px';
-        
-        ctx.scale(dpi, dpi);
-        ctx.lineWidth = 2;
-        ctx.lineCap = 'round';
-        ctx.strokeStyle = '#06b6d4';
-
-        // Restore saved signature
-        if (signatureData) {
-            const img = new Image();
-            img.onload = () => ctx.drawImage(img, 0, 0, parent.clientWidth, 200);
-            img.src = signatureData;
-        }
-
-        function getCoordinates(e) {
-            const rect = canvas.getBoundingClientRect();
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            return {
-                x: clientX - rect.left,
-                y: clientY - rect.top
-            };
-        }
-
-        function startDrawing(e) {
-            e.preventDefault();
-            isDrawing = true;
-            const { x, y } = getCoordinates(e);
-            ctx.beginPath();
-            ctx.moveTo(x, y);
-        }
-
-        function draw(e) {
-            if (!isDrawing) return;
-            e.preventDefault();
-            const { x, y } = getCoordinates(e);
-            ctx.lineTo(x, y);
-            ctx.stroke();
-        }
-
-        function stopDrawing() {
-            if (isDrawing) {
-                isDrawing = false;
-                ctx.closePath();
-                signatureData = canvas.toDataURL('image/png');
+    // Signature Pad Class (Based on working implementation)
+    class SignaturePad {
+        constructor(canvasId) {
+            this.canvas = document.getElementById(canvasId);
+            if (!this.canvas) {
+                console.error('Canvas not found:', canvasId);
+                return;
             }
+            this.ctx = this.canvas.getContext('2d');
+            this.isSigned = false;
+            this.isDrawing = false;
+            this.lastX = 0;
+            this.lastY = 0;
+            
+            // Set canvas dimensions properly
+            const rect = this.canvas.getBoundingClientRect();
+            this.canvas.width = rect.width;
+            this.canvas.height = 200;
+            
+            this.init();
         }
+        
+        init() {
+            console.log('Initializing signature pad...');
+            
+            // Mouse events
+            this.canvas.addEventListener('mousedown', (e) => {
+                console.log('Mouse down detected');
+                this.startDrawing(e);
+            });
+            this.canvas.addEventListener('mousemove', (e) => this.draw(e));
+            this.canvas.addEventListener('mouseup', () => {
+                console.log('Mouse up detected');
+                this.stopDrawing();
+            });
+            this.canvas.addEventListener('mouseout', () => this.stopDrawing());
+            
+            // Touch events
+            this.canvas.addEventListener('touchstart', (e) => {
+                console.log('Touch start detected');
+                this.startDrawing(e);
+            }, { passive: false });
+            this.canvas.addEventListener('touchmove', (e) => this.draw(e), { passive: false });
+            this.canvas.addEventListener('touchend', () => {
+                console.log('Touch end detected');
+                this.stopDrawing();
+            });
+            
+            console.log('Signature pad initialized successfully');
+        }
+        
+        startDrawing(event) {
+            this.isDrawing = true;
+            const pos = this.getMousePos(event);
+            this.lastX = pos.x;
+            this.lastY = pos.y;
+            console.log('Started drawing at:', pos);
+        }
+        
+        draw(event) {
+            if (!this.isDrawing) return;
+            
+            event.preventDefault();
+            const pos = this.getMousePos(event);
+            
+            this.ctx.beginPath();
+            this.ctx.moveTo(this.lastX, this.lastY);
+            this.ctx.lineTo(pos.x, pos.y);
+            this.ctx.strokeStyle = '#06b6d4';
+            this.ctx.lineWidth = 2;
+            this.ctx.lineCap = 'round';
+            this.ctx.lineJoin = 'round';
+            this.ctx.stroke();
+            
+            this.lastX = pos.x;
+            this.lastY = pos.y;
+            this.isSigned = true;
+        }
+        
+        stopDrawing() {
+            this.isDrawing = false;
+        }
+        
+        getMousePos(event) {
+            const rect = this.canvas.getBoundingClientRect();
+            let x, y;
+            
+            if (event.touches && event.touches.length > 0) {
+                x = event.touches[0].clientX - rect.left;
+                y = event.touches[0].clientY - rect.top;
+            } else {
+                x = event.clientX - rect.left;
+                y = event.clientY - rect.top;
+            }
+            
+            return { x, y };
+        }
+        
+        clear() {
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.isSigned = false;
+            console.log('Signature cleared');
+        }
+        
+        getSignatureData() {
+            if (this.isSigned) {
+                return this.canvas.toDataURL('image/png');
+            }
+            return '';
+        }
+    }
 
-        // Event listeners
-        canvas.addEventListener('mousedown', startDrawing);
-        canvas.addEventListener('mousemove', draw);
-        canvas.addEventListener('mouseup', stopDrawing);
-        canvas.addEventListener('mouseout', stopDrawing);
-        canvas.addEventListener('touchstart', startDrawing);
-        canvas.addEventListener('touchmove', draw);
-        canvas.addEventListener('touchend', stopDrawing);
-        canvas.addEventListener('touchcancel', stopDrawing);
+    // Global signature pad instance
+    let signaturePadInstance = null;
+
+    function initSignaturePad() {
+        setTimeout(() => {
+            const canvas = document.getElementById('signature-canvas');
+            if (!canvas) {
+                console.error('Signature canvas not found');
+                return;
+            }
+
+            // Create new signature pad instance
+            signaturePadInstance = new SignaturePad('signature-canvas');
+            
+            // Restore saved signature if exists
+            if (signatureData && signaturePadInstance) {
+                const img = new Image();
+                img.onload = () => {
+                    signaturePadInstance.ctx.drawImage(img, 0, 0, signaturePadInstance.canvas.width, signaturePadInstance.canvas.height);
+                    signaturePadInstance.isSigned = true;
+                };
+                img.src = signatureData;
+            }
+
+            console.log('Signature pad setup complete');
+        }, 300);
     }
 
     function clearSignature() {
-        const canvas = document.getElementById('signature-canvas');
-        if (!canvas) return;
-        
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        signatureData = '';
+        if (signaturePadInstance) {
+            signaturePadInstance.clear();
+            signatureData = '';
+        } else {
+            console.warn('Signature pad instance not found');
+        }
+    }
+
+    function getSignatureData() {
+        if (signaturePadInstance && signaturePadInstance.isSigned) {
+            signatureData = signaturePadInstance.getSignatureData();
+            return signatureData;
+        }
+        return '';
     }
 
     function render() {
@@ -594,9 +670,9 @@
                     <label style="display:block; margin-bottom:0.5rem; font-size:1.8rem; font-weight:bold; color:#06b6d4;">Select Technician</label>
                     <select 
                         id="technician-dropdown" 
-                        style="width:100%; padding:1rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; cursor:pointer;">
-                        <option value="">-- Select Technician --</option>
-                        ${technicians.map(tech => `<option value="${tech}" ${selectedTechnician === tech ? 'selected' : ''}>${tech}</option>`).join('')}
+                        style="width:100%; padding:1rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; cursor:pointer; appearance:none; -webkit-appearance:none; -moz-appearance:none; background-image:url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2724%27 height=%2724%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%2306b6d4%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27/%3e%3c/svg%3e'); background-repeat:no-repeat; background-position:right 1rem center; background-size:20px; padding-right:3rem;">
+                        <option value="" style="background:#1e293b; color:#94a3b8;">-- Select Technician --</option>
+                        ${technicians.map(tech => `<option value="${tech}" ${selectedTechnician === tech ? 'selected' : ''} style="background:#1e293b; color:white; padding:1rem;">${tech}</option>`).join('')}
                     </select>
                 </div>
 
@@ -610,9 +686,9 @@
                             Clear Signature
                         </button>
                     </div>
-                    <div style="background:white; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); overflow:hidden; position:relative;">
+                    <div style="background:white; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); overflow:hidden; position:relative; width:100%;">
                         <canvas 
-                            id="signature-canvas" 
+                            id="signature-canvas"
                             style="display:block; width:100%; height:200px; touch-action:none; cursor:crosshair;">
                         </canvas>
                     </div>
@@ -808,8 +884,9 @@
             };
         }
 
-        // Initialize signature pad
-        setTimeout(() => initSignaturePad(), 100);
+        // Initialize signature pad with delay
+        console.log('Scheduling signature pad initialization...');
+        initSignaturePad();
 
         const partsInput = document.getElementById('parts-search');
         if(partsInput) {
@@ -1181,7 +1258,9 @@
                 return;
             }
 
-            if (!signatureData) {
+            // Get signature data from the signature pad instance
+            const signature = getSignatureData();
+            if (!signature) {
                 await customAlert('Please provide your signature before saving.', 'Signature Required');
                 return;
             }
@@ -1205,7 +1284,7 @@
                     defectListValue, 
                     partsAndQuantities,
                     selectedTechnician,
-                    signatureData
+                    signature
                 );
 
                 await customAlert(

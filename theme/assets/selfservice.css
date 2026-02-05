@@ -741,6 +741,7 @@ footer button:hover {
     color: white;
     margin-bottom: 2rem;
     line-height: 1.6;
+    white-space: pre-line;
 }
 
 .custom-alert-button {
@@ -780,14 +781,14 @@ input[type="number"]:focus {
     box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.2);
 }
 
-textarea {
+textarea, select {
     background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%);
     border: 2px solid rgba(59, 130, 246, 0.3);
     color: white;
     border-radius: 0.8rem;
 }
 
-textarea:focus {
+textarea:focus, select:focus {
     outline: none;
     border-color: #06b6d4;
     box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.2);
@@ -805,7 +806,36 @@ textarea:focus {
     border-color: rgba(59, 130, 246, 0.4);
 }
 
+/* Better focus indicators for accessibility */
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    outline: 3px solid #06b6d4;
+    outline-offset: 2px;
+}
 
+/* Improve canvas touch targets */
+#signature-canvas {
+    background: #ffffff !important;
+    min-height: 200px;
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+    display: block;
+    width: 100%;
+    cursor: crosshair;
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
 
 /* ===============================
 RESPONSIVE BREAKPOINTS

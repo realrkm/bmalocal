@@ -1,4 +1,9 @@
 (() => {
+    'use strict';
+
+    // ===========================
+    // DOM ELEMENT REFERENCES
+    // ===========================
     const mainContent = document.getElementById('main-content');
     const backBtn = document.getElementById('back-btn');
     const cartBtn = document.getElementById('cart-btn');
@@ -8,7 +13,90 @@
     const homeFooterBtn = document.getElementById('home-footer-btn');
     const adminTrigger = document.getElementById('admin-trigger');
 
-    // Custom Alert Function
+    // ===========================
+    // STATE MANAGEMENT
+    // ===========================
+    const state = {
+        parts: [],
+        cart: [],
+        currentView: 'home',
+        selectedCategory: null,
+        searchResults: [],
+        activeSearchFilter: 'all',
+        orderHistory: [],
+        activeServices: [],
+        categories: [],
+        navigationHistory: [],
+        technicians: [],
+
+        // Service-specific state
+        activeReg: null,
+        serviceSearchQuery: '',
+        currentStatusFilter: 'all',
+        currentWorkDoneReg: null,
+
+        // Parts request state
+        partsSearchQuery: '',
+        techNotes: '',
+        defectList: '',
+        activePartsTab: 'request',
+        customerResponse: '',
+        approvedParts: '',
+        selectedTechnician: '',
+        signatureData: '',
+
+        // Admin state
+        adminClicks: 0,
+        adminTimeout: null,
+
+        // Auto-refresh
+        autoRefreshInterval: null
+    };
+
+    // Category display configuration
+    const categoryConfig = {
+        'Body & Exterior': { icon: '🚗', color: 'bg-indigo' },
+        'Brake System': { icon: '🛑', color: 'bg-orange' },
+        'Cooling System': { icon: '❄️', color: 'bg-cyan' },
+        'Electrical & Lighting': { icon: '💡', color: 'bg-yellow' },
+        'Engine Components': { icon: '⚙️', color: 'bg-red' },
+        'Exhaust System': { icon: '💨', color: 'bg-gray' },
+        'Filters & Fluids': { icon: '🔍', color: 'bg-green' },
+        'Suspension & Steering': { icon: '🔧', color: 'bg-blue' },
+        'Transmission': { icon: '⚡', color: 'bg-purple' }
+    };
+
+    // ===========================
+    // UTILITY FUNCTIONS
+    // ===========================
+
+    function sanitizeHTML(str) {
+        if (!str) return '';
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    function categorize(part) {
+        return part.category ? part.category.toLowerCase().replace(/\s+/g, '-') : 'other';
+    }
+
+    // ===========================
+    // CUSTOM ALERT/CONFIRM
+    // ===========================
+
     function customAlert(message, title = 'BMA Parts Express') {
         return new Promise((resolve) => {
             const overlay = document.createElement('div');
@@ -17,9 +105,9 @@
             overlay.innerHTML = `
                 <div class="custom-alert-box">
                     <div class="custom-alert-title">
-                        ${title}
+                        ${sanitizeHTML(title)}
                     </div>
-                    <div class="custom-alert-message">${message}</div>
+                    <div class="custom-alert-message">${sanitizeHTML(message)}</div>
                     <button class="custom-alert-button">OK</button>
                 </div>
             `;
@@ -41,7 +129,6 @@
         });
     }
 
-    // Custom Confirm Function
     function customConfirm(message, title = 'Confirm Action') {
         return new Promise((resolve) => {
             const overlay = document.createElement('div');
@@ -50,9 +137,9 @@
             overlay.innerHTML = `
                 <div class="custom-alert-box">
                     <div class="custom-alert-title">
-                        ❓ ${title}
+                        ❓ ${sanitizeHTML(title)}
                     </div>
-                    <div class="custom-alert-message">${message}</div>
+                    <div class="custom-alert-message">${sanitizeHTML(message)}</div>
                     <div style="display:flex; gap:1rem;">
                         <button class="custom-alert-button" style="background:#64748b;" data-action="cancel">Cancel</button>
                         <button class="custom-alert-button" data-action="confirm">Confirm</button>
@@ -75,164 +162,10 @@
         });
     }
 
-    // State Management
-    let parts = [], cart = [], currentView = 'home', selectedCategory = null;
-    let searchResults = [], activeSearchFilter = 'all', orderHistory = [];
-    let adminClicks = 0, adminTimeout;
-    let activeReg = null, serviceSearchQuery = '', currentStatusFilter = 'all';
-    let categories = [];
-    let currentWorkDoneReg = null;
-    let partsSearchQuery = '';
-    let techNotes = ''; 
-    let defectList = '';
-    let activePartsTab = 'request'; // 'request', 'feedback', or 'workdone'
-    let customerResponse = '';
-    let approvedParts = '';
-    let navigationHistory = []; // Track navigation history
-    let technicians = []; // List of technicians from server
-    let selectedTechnician = ''; // Selected technician
-    let signatureData = ''; // Signature image data
-    let isDrawing = false; // Signature drawing state
+    // ===========================
+    // SIGNATURE PAD CLASS
+    // ===========================
 
-    // Category display configuration (icons and colors)
-    const categoryConfig = {
-        'Body & Exterior': { icon: '🚗', color: 'bg-indigo' },
-        'Brake System': { icon: '🛑', color: 'bg-orange' },
-        'Cooling System': { icon: '❄️', color: 'bg-cyan' },
-        'Electrical & Lighting': { icon: '💡', color: 'bg-yellow' },
-        'Engine Components': { icon: '⚙️', color: 'bg-red' },
-        'Exhaust System': { icon: '💨', color: 'bg-gray' },
-        'Filters & Fluids': { icon: '🔍', color: 'bg-green' },
-        'Suspension & Steering': { icon: '🔧', color: 'bg-blue' },
-        'Transmission': { icon: '⚡', color: 'bg-purple' }
-    };
-
-    let activeServices = [];
-
-    async function init() {
-        try {
-            const serverData = await anvil.call(mainContent, 'getCarPartNamesAndCategory');
-            console.log("The server data is", serverData)
-            if (!Array.isArray(serverData)) {
-                throw new Error("Server did not return a list. Check server logs.");
-            }
-
-            parts = serverData.map(item => ({
-                name: item.Name,
-                category: item.Category,
-                partNo: item.PartNo || item.Name
-            }));
-
-            const uniqueCategories = [...new Set(serverData.map(item => item.Category))];
-
-            categories = uniqueCategories.map(catName => {
-                const config = categoryConfig[catName] || { icon: '📦', color: 'bg-gray' };
-                return {
-                    id: catName.toLowerCase().replace(/\s+/g, '-'),
-                    name: catName,
-                    icon: config.icon,
-                    color: config.color
-                };
-            });
-
-            await loadActiveServices();
-
-            // Load technicians list
-            await loadTechnicians();
-
-            setupListeners();
-            render();
-
-            setInterval(async () => { 
-                if(currentView === 'home') {
-                    await loadActiveServices();
-                    render();
-                }
-            }, 60000);
-        } catch (e) { 
-            console.error("Initialization Error (raw):", e);
-            if (e && e.args) {
-                console.error("Python args:", e.args);
-            }
-        }
-    }
-
-    async function loadActiveServices() {
-        try {
-            const jobcardsData = await anvil.call(mainContent, 'get_technician_jobcards_by_status');
-
-            activeServices = jobcardsData.map(card => ({
-                no: card.id,
-                date: card.ReceivedDate,
-                tech: card.Technician,
-                jobcardref: card.JobCardRef,
-                instruction: card.Instruction,
-                workDone: card.workDone || '',
-                status: card.status === 'Checked In' ? 'Checked-In' : 
-                    card.status === 'In Service' ? 'In-Service' : 
-                    card.status
-            }));
-
-            console.log('Loaded active services:', activeServices.length);
-        } catch (error) {
-            console.error('Error loading active services:', error);
-            activeServices = [];
-        }
-    }
-
-    async function loadTechnicians() {
-        try {
-            const techData = await anvil.call(mainContent, 'get_technicians_list');
-            technicians = techData || [];
-            console.log('Loaded technicians:', technicians.length);
-        } catch (error) {
-            console.error('Error loading technicians:', error);
-            technicians = [];
-        }
-    }
-
-    function categorize(p) {
-        return p.category ? p.category.toLowerCase().replace(/\s+/g, '-') : 'other';
-    }
-
-    // Navigation History Management
-    function pushNavigation(view, state = {}) {
-        navigationHistory.push({
-            view: currentView,
-            state: {
-                selectedCategory,
-                activeReg,
-                activePartsTab,
-                partsSearchQuery
-            }
-        });
-        currentView = view;
-        if (state.selectedCategory !== undefined) selectedCategory = state.selectedCategory;
-        if (state.activeReg !== undefined) activeReg = state.activeReg;
-        if (state.activePartsTab !== undefined) activePartsTab = state.activePartsTab;
-        if (state.partsSearchQuery !== undefined) partsSearchQuery = state.partsSearchQuery;
-    }
-
-    function popNavigation() {
-        if (navigationHistory.length === 0) {
-            goToHome();
-            return;
-        }
-        
-        const previous = navigationHistory.pop();
-        currentView = previous.view;
-        selectedCategory = previous.state.selectedCategory;
-        activeReg = previous.state.activeReg;
-        activePartsTab = previous.state.activePartsTab;
-        partsSearchQuery = previous.state.partsSearchQuery;
-        render();
-    }
-
-    function clearNavigationHistory() {
-        navigationHistory = [];
-    }
-
-    // Signature Pad Class (Based on working implementation)
     class SignaturePad {
         constructor(canvasId) {
             this.canvas = document.getElementById(canvasId);
@@ -245,58 +178,91 @@
             this.isDrawing = false;
             this.lastX = 0;
             this.lastY = 0;
-            
+
             // Set canvas dimensions properly
             const rect = this.canvas.getBoundingClientRect();
             this.canvas.width = rect.width;
             this.canvas.height = 200;
-            
+
+            // Fill canvas with white background
+            this.ctx.fillStyle = '#ffffff';
+            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
             this.init();
         }
-        
+
         init() {
             console.log('Initializing signature pad...');
-            
+
             // Mouse events
             this.canvas.addEventListener('mousedown', (e) => {
+                e.preventDefault();
                 console.log('Mouse down detected');
                 this.startDrawing(e);
             });
-            this.canvas.addEventListener('mousemove', (e) => this.draw(e));
-            this.canvas.addEventListener('mouseup', () => {
+            this.canvas.addEventListener('mousemove', (e) => {
+                e.preventDefault();
+                this.draw(e);
+            });
+            this.canvas.addEventListener('mouseup', (e) => {
+                e.preventDefault();
                 console.log('Mouse up detected');
                 this.stopDrawing();
             });
-            this.canvas.addEventListener('mouseout', () => this.stopDrawing());
-            
-            // Touch events
+            this.canvas.addEventListener('mouseout', (e) => {
+                e.preventDefault();
+                this.stopDrawing();
+            });
+
+            // Touch events - FIXED
             this.canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
                 console.log('Touch start detected');
                 this.startDrawing(e);
             }, { passive: false });
-            this.canvas.addEventListener('touchmove', (e) => this.draw(e), { passive: false });
-            this.canvas.addEventListener('touchend', () => {
+
+            this.canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                console.log('Touch move detected'); // Added logging
+                this.draw(e);
+            }, { passive: false });
+
+            this.canvas.addEventListener('touchend', (e) => {
+                e.preventDefault();
                 console.log('Touch end detected');
                 this.stopDrawing();
-            });
-            
+            }, { passive: false });
+
+            this.canvas.addEventListener('touchcancel', (e) => {
+                e.preventDefault();
+                console.log('Touch cancel detected');
+                this.stopDrawing();
+            }, { passive: false });
+
             console.log('Signature pad initialized successfully');
         }
-        
+
         startDrawing(event) {
             this.isDrawing = true;
             const pos = this.getMousePos(event);
             this.lastX = pos.x;
             this.lastY = pos.y;
+
+            // Draw a small dot at the starting point
+            this.ctx.beginPath();
+            this.ctx.arc(pos.x, pos.y, 1, 0, Math.PI * 2);
+            this.ctx.fillStyle = '#06b6d4';
+            this.ctx.fill();
+
             console.log('Started drawing at:', pos);
         }
-        
+
         draw(event) {
             if (!this.isDrawing) return;
-            
+
             event.preventDefault();
             const pos = this.getMousePos(event);
-            
+
             this.ctx.beginPath();
             this.ctx.moveTo(this.lastX, this.lastY);
             this.ctx.lineTo(pos.x, pos.y);
@@ -305,20 +271,25 @@
             this.ctx.lineCap = 'round';
             this.ctx.lineJoin = 'round';
             this.ctx.stroke();
-            
+
             this.lastX = pos.x;
             this.lastY = pos.y;
             this.isSigned = true;
+
+            console.log('Drawing to:', pos); // Added logging
         }
-        
+
         stopDrawing() {
-            this.isDrawing = false;
+            if (this.isDrawing) {
+                this.isDrawing = false;
+                console.log('Stopped drawing');
+            }
         }
-        
+
         getMousePos(event) {
             const rect = this.canvas.getBoundingClientRect();
             let x, y;
-            
+
             if (event.touches && event.touches.length > 0) {
                 x = event.touches[0].clientX - rect.left;
                 y = event.touches[0].clientY - rect.top;
@@ -326,16 +297,19 @@
                 x = event.clientX - rect.left;
                 y = event.clientY - rect.top;
             }
-            
+
             return { x, y };
         }
-        
+
         clear() {
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            // Refill with white background
+            this.ctx.fillStyle = '#ffffff';
+            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
             this.isSigned = false;
             console.log('Signature cleared');
         }
-        
+
         getSignatureData() {
             if (this.isSigned) {
                 return this.canvas.toDataURL('image/png');
@@ -344,38 +318,40 @@
         }
     }
 
-    // Global signature pad instance
     let signaturePadInstance = null;
 
     function initSignaturePad() {
-        setTimeout(() => {
-            const canvas = document.getElementById('signature-canvas');
-            if (!canvas) {
-                console.error('Signature canvas not found');
-                return;
-            }
+        // Use requestAnimationFrame for better timing
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                const canvas = document.getElementById('signature-canvas');
+                if (!canvas) {
+                    console.error('Signature canvas not found');
+                    return;
+                }
 
-            // Create new signature pad instance
-            signaturePadInstance = new SignaturePad('signature-canvas');
-            
-            // Restore saved signature if exists
-            if (signatureData && signaturePadInstance) {
-                const img = new Image();
-                img.onload = () => {
-                    signaturePadInstance.ctx.drawImage(img, 0, 0, signaturePadInstance.canvas.width, signaturePadInstance.canvas.height);
-                    signaturePadInstance.isSigned = true;
-                };
-                img.src = signatureData;
-            }
+                signaturePadInstance = new SignaturePad('signature-canvas');
 
-            console.log('Signature pad setup complete');
-        }, 300);
+                if (state.signatureData && signaturePadInstance) {
+                    const img = new Image();
+                    img.onload = () => {
+                        signaturePadInstance.ctx.drawImage(img, 0, 0, 
+                                                           signaturePadInstance.canvas.width, 
+                                                           signaturePadInstance.canvas.height);
+                        signaturePadInstance.isSigned = true;
+                    };
+                    img.src = state.signatureData;
+                }
+
+                console.log('Signature pad setup complete');
+            });
+        });
     }
 
     function clearSignature() {
         if (signaturePadInstance) {
             signaturePadInstance.clear();
-            signatureData = '';
+            state.signatureData = '';
         } else {
             console.warn('Signature pad instance not found');
         }
@@ -383,48 +359,231 @@
 
     function getSignatureData() {
         if (signaturePadInstance && signaturePadInstance.isSigned) {
-            signatureData = signaturePadInstance.getSignatureData();
-            return signatureData;
+            state.signatureData = signaturePadInstance.getSignatureData();
+            return state.signatureData;
         }
         return '';
     }
 
+    // ===========================
+    // NAVIGATION MANAGEMENT
+    // ===========================
+
+    function pushNavigation(view, newState = {}) {
+        if (state.currentView === view) return;
+
+        state.navigationHistory.push({
+            view: state.currentView,
+            state: {
+                selectedCategory: state.selectedCategory,
+                activeReg: state.activeReg,
+                activePartsTab: state.activePartsTab,
+                partsSearchQuery: state.partsSearchQuery
+            }
+        });
+
+        state.currentView = view;
+        if (newState.selectedCategory !== undefined) state.selectedCategory = newState.selectedCategory;
+        if (newState.activeReg !== undefined) state.activeReg = newState.activeReg;
+        if (newState.activePartsTab !== undefined) state.activePartsTab = newState.activePartsTab;
+        if (newState.partsSearchQuery !== undefined) state.partsSearchQuery = newState.partsSearchQuery;
+
+        render();
+    }
+
+    function popNavigation() {
+        if (state.navigationHistory.length === 0) {
+            goToHome();
+            return;
+        }
+
+        const previous = state.navigationHistory.pop();
+        state.currentView = previous.view;
+        state.selectedCategory = previous.state.selectedCategory;
+        state.activeReg = previous.state.activeReg;
+        state.activePartsTab = previous.state.activePartsTab;
+        state.partsSearchQuery = previous.state.partsSearchQuery;
+        render();
+    }
+
+    function clearNavigationHistory() {
+        state.navigationHistory = [];
+    }
+
+    // ===========================
+    // DATA LOADING
+    // ===========================
+
+    async function init() {
+        try {
+            const serverData = await anvil.call(mainContent, 'getCarPartNamesAndCategory');
+            console.log("Server data received:", serverData);
+
+            if (!Array.isArray(serverData)) {
+                throw new Error("Server did not return a list. Check server logs.");
+            }
+
+            state.parts = serverData.map(item => ({
+                name: item.Name,
+                category: item.Category,
+                partNo: item.PartNo || item.Name
+            }));
+
+            const uniqueCategories = [...new Set(serverData.map(item => item.Category))];
+
+            state.categories = uniqueCategories.map(catName => {
+                const config = categoryConfig[catName] || { icon: '📦', color: 'bg-gray' };
+                return {
+                    id: catName.toLowerCase().replace(/\s+/g, '-'),
+                    name: catName,
+                    icon: config.icon,
+                    color: config.color
+                };
+            });
+
+            await loadActiveServices();
+            await loadTechnicians();
+
+            setupListeners();
+            render();
+
+            // Clear any existing interval
+            if (state.autoRefreshInterval) {
+                clearInterval(state.autoRefreshInterval);
+            }
+
+            // Auto-refresh every minute
+            state.autoRefreshInterval = setInterval(async () => { 
+                if (state.currentView === 'home') {
+                    await loadActiveServices();
+                    render();
+                }
+            }, 60000);
+
+        } catch (e) { 
+            console.error("Initialization Error:", e);
+            if (e && e.args) {
+                console.error("Python args:", e.args);
+            }
+            await customAlert(
+                'Failed to initialize application. Please refresh the page.',
+                'Initialization Error'
+            );
+        }
+    }
+
+    async function loadActiveServices() {
+        try {
+            const jobcardsData = await anvil.call(mainContent, 'get_technician_jobcards_by_status');
+
+            if (!Array.isArray(jobcardsData)) {
+                throw new Error('Invalid data format received');
+            }
+
+            state.activeServices = jobcardsData.map(card => ({
+                no: card.id,
+                date: card.ReceivedDate,
+                tech: card.Technician,
+                jobcardref: card.JobCardRef,
+                instruction: card.Instruction,
+                workDone: card.workDone || '',
+                status: card.status === 'Checked In' ? 'Checked-In' : 
+                    card.status === 'In Service' ? 'In-Service' : 
+                    card.status
+            }));
+
+            console.log('Loaded active services:', state.activeServices.length);
+        } catch (error) {
+            console.error('Error loading active services:', error);
+            state.activeServices = [];
+
+            if (state.currentView === 'home') {
+                await customAlert(
+                    'Failed to load services. Please refresh the page.',
+                    'Connection Error'
+                );
+            }
+        }
+    }
+
+    async function loadTechnicians() {
+        try {
+            const techData = await anvil.call(mainContent, 'get_technicians_list');
+            state.technicians = techData || [];
+            console.log('Loaded technicians:', state.technicians.length);
+        } catch (error) {
+            console.error('Error loading technicians:', error);
+            state.technicians = [];
+        }
+    }
+
+    // ===========================
+    // RENDER FUNCTIONS
+    // ===========================
+
     function render() {
-        const showBackBtn = navigationHistory.length > 0 && currentView !== 'home' && currentView !== 'success' && currentView !== 'admin';
+        const showBackBtn = state.navigationHistory.length > 0 && 
+            state.currentView !== 'home' && 
+            state.currentView !== 'success' && 
+            state.currentView !== 'admin';
 
         backBtn.classList.toggle('hidden', !showBackBtn);
 
-        const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+        const totalQuantity = state.cart.reduce((sum, item) => sum + item.quantity, 0);
         cartCount.innerText = Math.round(totalQuantity);
-        cartCount.classList.toggle('hidden', cart.length === 0 || currentView === 'success' || currentView === 'workDone');
+        cartCount.classList.toggle('hidden', state.cart.length === 0 || 
+                                   state.currentView === 'success' || 
+                                   state.currentView === 'workDone');
 
         updateBreadcrumbs();
 
-        if (currentView === 'home') renderHome();
-        else if (currentView === 'Request Parts') renderRequestParts();
-        else if (currentView === 'category') renderCategory();
-        else if (currentView === 'search') renderSearch();
-        else if (currentView === 'checkout') renderCheckout();
-        else if (currentView === 'success') renderSuccess();
-        else if (currentView === 'admin') renderAdmin();
-        else if (currentView === 'workDone') renderWorkDone();
+        switch (state.currentView) {
+            case 'home':
+                renderHome();
+                break;
+            case 'Request Parts':
+                renderRequestParts();
+                break;
+            case 'category':
+                renderCategory();
+                break;
+            case 'search':
+                renderSearch();
+                break;
+            case 'checkout':
+                renderCheckout();
+                break;
+            case 'success':
+                renderSuccess();
+                break;
+            case 'admin':
+                renderAdmin();
+                break;
+            case 'workDone':
+                renderWorkDone();
+                break;
+            default:
+                renderHome();
+        }
 
         window.scrollTo({ top: 0, behavior: 'instant' });
         lucide.createIcons();
     }
 
     function renderHome() {
-        const filtered = activeServices.filter(s => {
-            const matchesStatus = currentStatusFilter === 'all' ? (s.status !== 'Completed') : (s.status === currentStatusFilter);
-            const matchesSearch = s.jobcardref.toLowerCase().includes(serviceSearchQuery.toLowerCase()) || s.tech.toLowerCase().includes(serviceSearchQuery.toLowerCase());
+        const filtered = state.activeServices.filter(s => {
+            const matchesStatus = state.currentStatusFilter === 'all' ? 
+                (s.status !== 'Completed') : 
+                (s.status === state.currentStatusFilter);
+            const matchesSearch = s.jobcardref.toLowerCase().includes(state.serviceSearchQuery.toLowerCase()) || 
+                s.tech.toLowerCase().includes(state.serviceSearchQuery.toLowerCase());
             return matchesStatus && matchesSearch;
         });
 
-        // Calculate statistics
-        const totalServices = activeServices.length;
-        const checkedInCount = activeServices.filter(s => s.status === 'Checked-In').length;
-        const inServiceCount = activeServices.filter(s => s.status === 'In-Service').length;
-        const completedCount = activeServices.filter(s => s.status === 'Completed').length;
+        const totalServices = state.activeServices.length;
+        const checkedInCount = state.activeServices.filter(s => s.status === 'Checked-In').length;
+        const inServiceCount = state.activeServices.filter(s => s.status === 'In-Service').length;
+        const completedCount = state.activeServices.filter(s => s.status === 'Completed').length;
 
         mainContent.innerHTML = `
         <!-- Hero Section -->
@@ -481,12 +640,12 @@
         <!-- Filter and Search -->
         <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:2rem; flex-wrap:wrap;">
             <div style="display:flex; gap:1rem;">
-                <button class="btn-status ${currentStatusFilter === 'Checked-In' ? 'active-filter' : ''}" onclick="filterByStatus('Checked-In')">Checked-In</button>
-                <button class="btn-status ${currentStatusFilter === 'In-Service' ? 'active-filter' : ''}" onclick="filterByStatus('In-Service')">In-Service</button>
+                <button class="btn-status ${state.currentStatusFilter === 'Checked-In' ? 'active-filter' : ''}" onclick="filterByStatus('Checked-In')">Checked-In</button>
+                <button class="btn-status ${state.currentStatusFilter === 'In-Service' ? 'active-filter' : ''}" onclick="filterByStatus('In-Service')">In-Service</button>
             </div>
             
             <div style="position:relative; flex:1; max-width:400px; min-width:300px;">
-                <input type="text" id="service-search" class="search-input" placeholder="Search JobCard or Technician..." value="${serviceSearchQuery}" style="font-size:1.5rem; padding:1rem 1rem 1rem 3.5rem; width:100%;">
+                <input type="text" id="service-search" class="search-input" placeholder="Search JobCard or Technician..." value="${sanitizeHTML(state.serviceSearchQuery)}" style="font-size:1.5rem; padding:1rem 1rem 1rem 3.5rem; width:100%;">
                 <span style="position:absolute; left:1rem; top:1.2rem; color:#94a3b8;">🔍</span>
             </div>
         </div>
@@ -498,16 +657,16 @@
                     ${filtered.map(s => `
                         <tr>
                             <td data-label="No">${s.no}</td>
-                            <td data-label="Received">${s.date}</td>
-                            <td data-label="Technician"><strong>${s.tech}</strong></td>
-                            <td data-label="JobCard Ref" style="color:#facc15; font-weight:bold;">${s.jobcardref}</td>
-                            <td data-label="Instruction">${s.instruction}</td>
+                            <td data-label="Received">${sanitizeHTML(s.date)}</td>
+                            <td data-label="Technician"><strong>${sanitizeHTML(s.tech)}</strong></td>
+                            <td data-label="JobCard Ref" style="color:#facc15; font-weight:bold;">${sanitizeHTML(s.jobcardref)}</td>
+                            <td data-label="Instruction">${sanitizeHTML(s.instruction)}</td>
                             <td data-label="Status"><span class="status-badge ${s.status === 'In-Service' ? 'status-in-service' : s.status === 'Completed' ? 'status-completed' : 'status-checked-in'}">${s.status}</span></td>
                             <td data-label="Action">
                                 ${s.status === 'Completed' ? '✅ Finished' : s.status === 'In-Service' ? `
-                                    <button onclick="openWorkDone('${s.jobcardref}')" style="background:#3b82f6; border:none; color:white; padding:0.8rem 1.2rem; border-radius:0.5rem; cursor:pointer; font-weight:bold;">Work Done</button>
+                                    <button onclick="openWorkDone('${sanitizeHTML(s.jobcardref)}')" style="background:#3b82f6; border:none; color:white; padding:0.8rem 1.2rem; border-radius:0.5rem; cursor:pointer; font-weight:bold;">Work Done</button>
                                 ` : `
-                                    <button onclick="openParts('${s.jobcardref}')" class="btn-issue-parts">Request Parts</button>
+                                    <button onclick="openParts('${sanitizeHTML(s.jobcardref)}')" class="btn-issue-parts">Request Parts</button>
                                 `}
                             </td>
                         </tr>
@@ -518,10 +677,19 @@
     `;
 
         const sInput = document.getElementById('service-search');
-        if(sInput) {
+        if (sInput) {
+            const debouncedSearch = debounce((value) => {
+                state.serviceSearchQuery = value;
+                renderHome();
+            }, 300);
+
+            sInput.oninput = (e) => {
+                debouncedSearch(e.target.value);
+            };
+
             sInput.onkeydown = (e) => {
                 if (e.key === 'Enter') {
-                    serviceSearchQuery = e.target.value;
+                    state.serviceSearchQuery = e.target.value;
                     renderHome();
                 }
             };
@@ -531,76 +699,76 @@
     }
 
     function renderWorkDone() {
-        const service = activeServices.find(s => s.jobcardref === currentWorkDoneReg);
+        const service = state.activeServices.find(s => s.jobcardref === state.currentWorkDoneReg);
         if (!service) {
             goToHome();
             return;
         }
 
         mainContent.innerHTML = `
-                <div style="max-width:800px; margin:2rem auto;">
-                    <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); padding:3rem; border-radius:2rem; border:4px solid rgba(59, 130, 246, 0.5); box-shadow: 0 20px 60px rgba(59, 130, 246, 0.3);">
-                        <div style="margin-bottom:2rem;">
-                            <h2 style="font-size:2.5rem; margin-bottom:1rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Work Done Report</h2>
-                            <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); padding:1.5rem; border-radius:1rem; margin-bottom:2rem; border:2px solid rgba(59, 130, 246, 0.2);">
-                                <p style="font-size:1.8rem;"><strong>Registration:</strong> <span style="color:#facc15;">${service.jobcardref}</span></p>
-                                <p style="font-size:1.8rem;"><strong>Technician:</strong> ${service.tech}</p>
-                                <p style="font-size:1.8rem;"><strong>Instruction:</strong> ${service.instruction}</p>
-                            </div>
-                        </div>
-                        
-                        <div style="margin-bottom:2rem;">
-                            <label style="display:block; margin-bottom:1rem; font-size:1.8rem; font-weight:bold; color:#06b6d4;">Describe the work completed:</label>
-                            <textarea 
-                                id="work-done-textarea" 
-                                rows="8" 
-                                placeholder="Enter detailed description of work performed..."
-                                style="width:100%; padding:1.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; resize:vertical;"
-                            >${service.workDone || ''}</textarea>
-                        </div>
-
-                        <div style="display:flex; gap:1rem; justify-content:flex-end;">
-                            <button 
-                                onclick="cancelWorkDone()" 
-                                style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:1rem 2rem; border-radius:0.8rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease;">
-                                Cancel
-                            </button>
-                            <button 
-                                onclick="saveWorkDone()" 
-                                style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:1rem 2rem; border-radius:0.8rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease;">
-                                <i data-lucide="save" style="width:20px; height:20px; display:inline-block; vertical-align:middle; margin-right:0.5rem;"></i>
-                                Save Work Done
-                            </button>
+            <div style="max-width:800px; margin:2rem auto;">
+                <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); padding:3rem; border-radius:2rem; border:4px solid rgba(59, 130, 246, 0.5); box-shadow: 0 20px 60px rgba(59, 130, 246, 0.3);">
+                    <div style="margin-bottom:2rem;">
+                        <h2 style="font-size:2.5rem; margin-bottom:1rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Work Done Report</h2>
+                        <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); padding:1.5rem; border-radius:1rem; margin-bottom:2rem; border:2px solid rgba(59, 130, 246, 0.2);">
+                            <p style="font-size:1.8rem;"><strong>Registration:</strong> <span style="color:#facc15;">${sanitizeHTML(service.jobcardref)}</span></p>
+                            <p style="font-size:1.8rem;"><strong>Technician:</strong> ${sanitizeHTML(service.tech)}</p>
+                            <p style="font-size:1.8rem;"><strong>Instruction:</strong> ${sanitizeHTML(service.instruction)}</p>
                         </div>
                     </div>
+                    
+                    <div style="margin-bottom:2rem;">
+                        <label style="display:block; margin-bottom:1rem; font-size:1.8rem; font-weight:bold; color:#06b6d4;">Describe the work completed:</label>
+                        <textarea 
+                            id="work-done-textarea" 
+                            rows="8" 
+                            placeholder="Enter detailed description of work performed..."
+                            style="width:100%; padding:1.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; resize:vertical;"
+                        >${sanitizeHTML(service.workDone || '')}</textarea>
+                    </div>
+
+                    <div style="display:flex; gap:1rem; justify-content:flex-end;">
+                        <button 
+                            onclick="cancelWorkDone()" 
+                            style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:1rem 2rem; border-radius:0.8rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease;">
+                            Cancel
+                        </button>
+                        <button 
+                            onclick="saveWorkDone()" 
+                            style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:1rem 2rem; border-radius:0.8rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease;">
+                            <i data-lucide="save" style="width:20px; height:20px; display:inline-block; vertical-align:middle; margin-right:0.5rem;"></i>
+                            Save Work Done
+                        </button>
+                    </div>
                 </div>
-            `;
+            </div>
+        `;
     }
 
     function renderRequestParts() {
-        const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+        const totalQuantity = state.cart.reduce((sum, item) => sum + item.quantity, 0);
 
         mainContent.innerHTML = `
-        <h2 style="margin-bottom:2rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Requesting Parts for: <span style="color:#facc15">${activeReg}</span></h2>
+        <h2 style="margin-bottom:2rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Requesting Parts for: <span style="color:#facc15">${sanitizeHTML(state.activeReg)}</span></h2>
         
         <!-- Tab Navigation -->
         <div style="display:flex; gap:1rem; margin-bottom:2rem; background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); padding:1rem; border-radius:1.5rem; border:2px solid rgba(59, 130, 246, 0.2); overflow-x:auto;">
             <button 
                 onclick="switchPartsTab('request')" 
-                class="parts-tab-btn ${activePartsTab === 'request' ? 'active' : ''}"
-                style="flex:1; min-width:180px; padding:1.2rem 2rem; border-radius:1rem; font-size:1.8rem; font-weight:bold; cursor:pointer; transition:all 0.3s ease; border:2px solid ${activePartsTab === 'request' ? 'rgba(59, 130, 246, 0.5)' : 'transparent'}; background:${activePartsTab === 'request' ? 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' : 'transparent'}; color:white;">
+                class="parts-tab-btn ${state.activePartsTab === 'request' ? 'active' : ''}"
+                style="flex:1; min-width:180px; padding:1.2rem 2rem; border-radius:1rem; font-size:1.8rem; font-weight:bold; cursor:pointer; transition:all 0.3s ease; border:2px solid ${state.activePartsTab === 'request' ? 'rgba(59, 130, 246, 0.5)' : 'transparent'}; background:${state.activePartsTab === 'request' ? 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' : 'transparent'}; color:white;">
                 📦 Parts Request
             </button>
             <button 
                 onclick="switchPartsTab('feedback')" 
-                class="parts-tab-btn ${activePartsTab === 'feedback' ? 'active' : ''}"
-                style="flex:1; min-width:180px; padding:1.2rem 2rem; border-radius:1rem; font-size:1.8rem; font-weight:bold; cursor:pointer; transition:all 0.3s ease; border:2px solid ${activePartsTab === 'feedback' ? 'rgba(59, 130, 246, 0.5)' : 'transparent'}; background:${activePartsTab === 'feedback' ? 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' : 'transparent'}; color:white;">
+                class="parts-tab-btn ${state.activePartsTab === 'feedback' ? 'active' : ''}"
+                style="flex:1; min-width:180px; padding:1.2rem 2rem; border-radius:1rem; font-size:1.8rem; font-weight:bold; cursor:pointer; transition:all 0.3s ease; border:2px solid ${state.activePartsTab === 'feedback' ? 'rgba(59, 130, 246, 0.5)' : 'transparent'}; background:${state.activePartsTab === 'feedback' ? 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' : 'transparent'}; color:white;">
                 💬 Customer Feedback
             </button>
             <button 
                 onclick="switchPartsTab('workdone')" 
-                class="parts-tab-btn ${activePartsTab === 'workdone' ? 'active' : ''}"
-                style="flex:1; min-width:180px; padding:1.2rem 2rem; border-radius:1rem; font-size:1.8rem; font-weight:bold; cursor:pointer; transition:all 0.3s ease; border:2px solid ${activePartsTab === 'workdone' ? 'rgba(59, 130, 246, 0.5)' : 'transparent'}; background:${activePartsTab === 'workdone' ? 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' : 'transparent'}; color:white;">
+                class="parts-tab-btn ${state.activePartsTab === 'workdone' ? 'active' : ''}"
+                style="flex:1; min-width:180px; padding:1.2rem 2rem; border-radius:1rem; font-size:1.8rem; font-weight:bold; cursor:pointer; transition:all 0.3s ease; border:2px solid ${state.activePartsTab === 'workdone' ? 'rgba(59, 130, 246, 0.5)' : 'transparent'}; background:${state.activePartsTab === 'workdone' ? 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' : 'transparent'}; color:white;">
                 ✅ Work Done
             </button>
         </div>
@@ -611,28 +779,30 @@
         </div>
     `;
 
-        // Attach event listeners based on active tab
-        if (activePartsTab === 'request') {
+        if (state.activePartsTab === 'request') {
             attachPartsRequestListeners();
-        } else if (activePartsTab === 'feedback') {
+        } else if (state.activePartsTab === 'feedback') {
             attachFeedbackListeners();
-        } else if (activePartsTab === 'workdone') {
+        } else if (state.activePartsTab === 'workdone') {
             attachWorkDoneListeners();
         }
     }
 
     function renderPartsTabContent() {
-        if (activePartsTab === 'request') {
-            return renderPartsRequestTab();
-        } else if (activePartsTab === 'feedback') {
-            return renderCustomerFeedbackTab();
-        } else if (activePartsTab === 'workdone') {
-            return renderWorkDoneTab();
+        switch (state.activePartsTab) {
+            case 'request':
+                return renderPartsRequestTab();
+            case 'feedback':
+                return renderCustomerFeedbackTab();
+            case 'workdone':
+                return renderWorkDoneTab();
+            default:
+                return '';
         }
     }
 
     function renderPartsRequestTab() {
-        const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+        const totalQuantity = state.cart.reduce((sum, item) => sum + item.quantity, 0);
 
         return `
         <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); border-radius:1rem; margin-bottom:2rem; border:2px solid rgba(59, 130, 246, 0.2); overflow:hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
@@ -641,38 +811,38 @@
                 onclick="toggleCollapse()"
                 style="width:100%; padding:1.5rem 2rem; background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); border:none; color:white; font-size:1.8rem; font-weight:bold; cursor:pointer; display:flex; justify-content:space-between; align-items:center; transition:all 0.3s ease;">
                 <span>📋 Add Tech Notes / List Of Defects</span>
-                <i id="collapse-icon" data-lucide="chevron-down" style="width:24px; height:24px; transition:transform 0.3s;"></i>
+                <i id="collapse-icon" data-lucide="chevron-down" style="width:24px; height:24px; transition:transform 0.3s;" aria-hidden="true"></i>
             </button>
             
             <div id="collapse-content" style="display:none; padding:2rem;">
                 <div style="margin-bottom:2rem;">
-                    <label style="display:block; margin-bottom:0.5rem; font-size:1.8rem; font-weight:bold; color:#06b6d4;">Tech Notes</label>
+                    <label for="tech-notes-textarea" style="display:block; margin-bottom:0.5rem; font-size:1.8rem; font-weight:bold; color:#06b6d4;">Tech Notes</label>
                     <textarea 
                         id="tech-notes-textarea" 
                         rows="4" 
                         placeholder="Enter any technical notes or observations..."
                         style="width:100%; padding:1rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; resize:vertical;"
-                    >${techNotes}</textarea>
+                    >${sanitizeHTML(state.techNotes)}</textarea>
                 </div>
                 
                 <div>
-                    <label style="display:block; margin-bottom:0.5rem; font-size:1.8rem; font-weight:bold; color:#06b6d4;">List of Defects</label>
+                    <label for="defects-textarea" style="display:block; margin-bottom:0.5rem; font-size:1.8rem; font-weight:bold; color:#06b6d4;">List of Defects</label>
                     <textarea 
                         id="defects-textarea" 
                         rows="4" 
                         placeholder="List any defects found during inspection..."
                         style="width:100%; padding:1rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; resize:vertical;"
-                    >${defectList}</textarea>
+                    >${sanitizeHTML(state.defectList)}</textarea>
                 </div>
 
                 <!-- Technician Dropdown -->
                 <div style="margin-top:2rem;">
-                    <label style="display:block; margin-bottom:0.5rem; font-size:1.8rem; font-weight:bold; color:#06b6d4;">Select Technician</label>
+                    <label for="technician-dropdown" style="display:block; margin-bottom:0.5rem; font-size:1.8rem; font-weight:bold; color:#06b6d4;">Select Technician</label>
                     <select 
                         id="technician-dropdown" 
                         style="width:100%; padding:1rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; cursor:pointer; appearance:none; -webkit-appearance:none; -moz-appearance:none; background-image:url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2724%27 height=%2724%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%2306b6d4%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27/%3e%3c/svg%3e'); background-repeat:no-repeat; background-position:right 1rem center; background-size:20px; padding-right:3rem;">
                         <option value="" style="background:#1e293b; color:#94a3b8;">-- Select Technician --</option>
-                        ${technicians.map(tech => `<option value="${tech}" ${selectedTechnician === tech ? 'selected' : ''} style="background:#1e293b; color:white; padding:1rem;">${tech}</option>`).join('')}
+                        ${state.technicians.map(tech => `<option value="${sanitizeHTML(tech)}" ${state.selectedTechnician === tech ? 'selected' : ''} style="background:#1e293b; color:white; padding:1rem;">${sanitizeHTML(tech)}</option>`).join('')}
                     </select>
                 </div>
 
@@ -686,12 +856,10 @@
                             Clear Signature
                         </button>
                     </div>
-                    <div style="background:white; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); overflow:hidden; position:relative; width:100%;">
-                        <canvas 
-                            id="signature-canvas"
-                            style="display:block; width:100%; height:200px; touch-action:none; cursor:crosshair;">
-                        </canvas>
-                    </div>
+                    <canvas 
+                        id="signature-canvas"
+                        style="display:block; width:100%; height:200px; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); touch-action:none; cursor:crosshair; background:#ffffff;">
+                    </canvas>
                     <p style="font-size:1.3rem; color:#94a3b8; margin-top:0.5rem;">Sign above using your mouse or touch screen</p>
                 </div>
             </div>
@@ -702,13 +870,13 @@
             <h3 style="font-size:2rem; margin-bottom:1.5rem; color:#06b6d4; display:flex; align-items:center; gap:0.5rem;">
                 <span>📦</span> Requested Parts
             </h3>
-            ${cart.length > 0 ? `
+            ${state.cart.length > 0 ? `
                 <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); border-radius:0.8rem; padding:1.5rem;">
-                    ${cart.map((item, i) => `
-                        <div style="padding:1rem; border-bottom:${i < cart.length - 1 ? '1px solid rgba(59, 130, 246, 0.2)' : 'none'}; display:flex; justify-content:space-between; align-items:center; font-size:1.6rem;">
+                    ${state.cart.map((item, i) => `
+                        <div style="padding:1rem; border-bottom:${i < state.cart.length - 1 ? '1px solid rgba(59, 130, 246, 0.2)' : 'none'}; display:flex; justify-content:space-between; align-items:center; font-size:1.6rem;">
                             <div style="flex:1;">
-                                <div style="font-weight:bold; color:#06b6d4; margin-bottom:0.3rem;">${i + 1}. ${item.name}</div>
-                                <div style="color:#94a3b8; font-size:1.4rem;">${item.category}</div>
+                                <div style="font-weight:bold; color:#06b6d4; margin-bottom:0.3rem;">${i + 1}. ${sanitizeHTML(item.name)}</div>
+                                <div style="color:#94a3b8; font-size:1.4rem;">${sanitizeHTML(item.category)}</div>
                             </div>
                             <div style="color:#facc15; font-weight:bold; font-size:1.8rem;">
                                 Qty: ${item.quantity}
@@ -717,7 +885,7 @@
                     `).join('')}
                     <div style="margin-top:1rem; padding-top:1rem; border-top:2px solid rgba(59, 130, 246, 0.3); display:flex; justify-content:space-between; align-items:center;">
                         <span style="font-size:1.8rem; font-weight:bold; color:#06b6d4;">Total Items:</span>
-                        <span style="font-size:2rem; font-weight:bold; color:#facc15;">${cart.length}</span>
+                        <span style="font-size:2rem; font-weight:bold; color:#facc15;">${state.cart.length}</span>
                     </div>
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                         <span style="font-size:1.8rem; font-weight:bold; color:#06b6d4;">Total Quantity:</span>
@@ -741,7 +909,7 @@
             <button 
                 onclick="savePartsDetails()" 
                 style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:1.2rem 2.5rem; border-radius:0.8rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);">
-                <i data-lucide="save" style="width:20px; height:20px; display:inline-block; vertical-align:middle; margin-right:0.5rem;"></i>
+                <i data-lucide="save" style="width:20px; height:20px; display:inline-block; vertical-align:middle; margin-right:0.5rem;" aria-hidden="true"></i>
                 Save Details
             </button>
         </div>
@@ -752,13 +920,13 @@
                 id="parts-search" 
                 class="search-input" 
                 placeholder="Search parts by name..." 
-                value="${partsSearchQuery}" 
+                value="${sanitizeHTML(state.partsSearchQuery)}" 
                 style="font-size:1.8rem; padding:1.2rem 1.2rem 1.2rem 4rem; width:100%;">
             <span style="position:absolute; left:1.2rem; top:1.4rem; color:#94a3b8; font-size:1.8rem;">🔍</span>
         </div>
         
         <div id="parts-results-container">
-            ${partsSearchQuery ? renderPartsSearchResults() : renderCategoryGrid()}
+            ${state.partsSearchQuery ? renderPartsSearchResults() : renderCategoryGrid()}
         </div>
         `;
     }
@@ -771,13 +939,13 @@
                 
                 <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); padding:2rem; border-radius:1rem; margin-bottom:2rem; border:2px solid rgba(59, 130, 246, 0.2);">
                     <p style="font-size:1.6rem; color:#94a3b8; margin-bottom:1rem;">
-                        <strong style="color:#facc15;">JobCard Reference:</strong> ${activeReg}
+                        <strong style="color:#facc15;">JobCard Reference:</strong> ${sanitizeHTML(state.activeReg)}
                     </p>
                 </div>
                 
                 <!-- Response Section -->
                 <div style="margin-bottom:2rem;">
-                    <label style="display:block; margin-bottom:1rem; font-size:2rem; font-weight:bold; color:#06b6d4;">
+                    <label for="customer-response-textarea" style="display:block; margin-bottom:1rem; font-size:2rem; font-weight:bold; color:#06b6d4;">
                         📝 Response
                     </label>
                     <textarea 
@@ -785,13 +953,13 @@
                         rows="6" 
                         placeholder="Enter customer's response or feedback regarding the service..."
                         style="width:100%; padding:1.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; resize:vertical; line-height:1.6;"
-                    >${customerResponse}</textarea>
+                    >${sanitizeHTML(state.customerResponse)}</textarea>
                     <p style="font-size:1.3rem; color:#94a3b8; margin-top:0.5rem;">Document any customer concerns, requests, or approvals here.</p>
                 </div>
                 
                 <!-- Approved Parts Section -->
                 <div style="margin-bottom:2rem;">
-                    <label style="display:block; margin-bottom:1rem; font-size:2rem; font-weight:bold; color:#06b6d4;">
+                    <label for="approved-parts-textarea" style="display:block; margin-bottom:1rem; font-size:2rem; font-weight:bold; color:#06b6d4;">
                         ✅ Approved Parts
                     </label>
                     <textarea 
@@ -799,7 +967,7 @@
                         rows="6" 
                         placeholder="List the parts approved by the customer for installation/replacement..."
                         style="width:100%; padding:1.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; resize:vertical; line-height:1.6;"
-                    >${approvedParts}</textarea>
+                    >${sanitizeHTML(state.approvedParts)}</textarea>
                     <p style="font-size:1.3rem; color:#94a3b8; margin-top:0.5rem;">Enter each approved part on a new line or separate with commas.</p>
                 </div>
             </div>
@@ -808,12 +976,12 @@
     }
 
     function renderWorkDoneTab() {
-        const service = activeServices.find(s => s.jobcardref === activeReg);
+        const service = state.activeServices.find(s => s.jobcardref === state.activeReg);
         
         if (!service) {
             return `
             <div style="text-align:center; padding:3rem;">
-                <p style="font-size:2rem; color:#94a3b8;">Service information not found for ${activeReg}</p>
+                <p style="font-size:2rem; color:#94a3b8;">Service information not found for ${sanitizeHTML(state.activeReg)}</p>
             </div>
             `;
         }
@@ -822,43 +990,41 @@
         <div style="max-width:900px; margin:0 auto;">
             <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); padding:3rem; border-radius:2rem; border:2px solid rgba(59, 130, 246, 0.3); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);">
                 <h3 style="font-size:2.5rem; margin-bottom:2rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Work Done Report</h3>
-                
                 <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); padding:2rem; border-radius:1rem; margin-bottom:2rem; border:2px solid rgba(59, 130, 246, 0.2);">
                     <p style="font-size:1.6rem; color:#94a3b8; margin-bottom:0.8rem;">
-                        <strong style="color:#facc15;">JobCard Reference:</strong> ${service.jobcardref}
+                        <strong style="color:#facc15;">JobCard Reference:</strong> ${sanitizeHTML(service.jobcardref)}
                     </p>
                     <p style="font-size:1.6rem; color:#94a3b8; margin-bottom:0.8rem;">
-                        <strong style="color:#06b6d4;">Technician:</strong> ${service.tech}
+                        <strong style="color:#06b6d4;">Technician:</strong> ${sanitizeHTML(service.tech)}
                     </p>
                     <p style="font-size:1.6rem; color:#94a3b8;">
-                        <strong style="color:#06b6d4;">Instruction:</strong> ${service.instruction}
+                        <strong style="color:#06b6d4;">Instruction:</strong> ${sanitizeHTML(service.instruction)}
                     </p>
                 </div>
-                
                 <div style="margin-bottom:2rem;">
-                    <label style="display:block; margin-bottom:1rem; font-size:2rem; font-weight:bold; color:#06b6d4;">
-                        📋 Work Completed Description
-                    </label>
-                    <textarea 
-                        id="workdone-textarea" 
-                        rows="8" 
-                        placeholder="Enter detailed description of all work performed on this vehicle..."
-                        style="width:100%; padding:1.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; resize:vertical; line-height:1.6;"
-                    >${service.workDone || ''}</textarea>
-                    <p style="font-size:1.3rem; color:#94a3b8; margin-top:0.5rem;">Include all repairs, replacements, adjustments, and services performed.</p>
-                </div>
+                <label for="workdone-textarea" style="display:block; margin-bottom:1rem; font-size:2rem; font-weight:bold; color:#06b6d4;">
+                    📋 Work Completed Description
+                </label>
+                <textarea 
+                    id="workdone-textarea" 
+                    rows="8" 
+                    placeholder="Enter detailed description of all work performed on this vehicle..."
+                    style="width:100%; padding:1.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; resize:vertical; line-height:1.6;"
+                >${sanitizeHTML(service.workDone || '')}</textarea>
+                <p style="font-size:1.3rem; color:#94a3b8; margin-top:0.5rem;">Include all repairs, replacements, adjustments, and services performed.</p>
+            </div>
 
-                <div style="display:flex; gap:1rem; justify-content:flex-end; margin-top:3rem;">
-                    <button 
-                        onclick="saveWorkDoneFromTab()" 
-                        style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:1.2rem 2.5rem; border-radius:0.8rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);">
-                        <i data-lucide="save" style="width:20px; height:20px; display:inline-block; vertical-align:middle; margin-right:0.5rem;"></i>
-                        Save Work Done
-                    </button>
-                </div>
+            <div style="display:flex; gap:1rem; justify-content:flex-end; margin-top:3rem;">
+                <button 
+                    onclick="saveWorkDoneFromTab()" 
+                    style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:1.2rem 2.5rem; border-radius:0.8rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);">
+                    <i data-lucide="save" style="width:20px; height:20px; display:inline-block; vertical-align:middle; margin-right:0.5rem;" aria-hidden="true"></i>
+                    Save Work Done
+                </button>
             </div>
         </div>
-        `;
+    </div>
+    `;
     }
 
     function attachPartsRequestListeners() {
@@ -868,34 +1034,43 @@
 
         if (techNotesTextarea) {
             techNotesTextarea.oninput = (e) => {
-                techNotes = e.target.value;
+                state.techNotes = e.target.value;
             };
         }
 
         if (defectsTextarea) {
             defectsTextarea.oninput = (e) => {
-                defectList = e.target.value;
+                state.defectList = e.target.value;
             };
         }
 
         if (technicianDropdown) {
             technicianDropdown.onchange = (e) => {
-                selectedTechnician = e.target.value;
+                state.selectedTechnician = e.target.value;
             };
         }
 
-        // Initialize signature pad with delay
         console.log('Scheduling signature pad initialization...');
         initSignaturePad();
 
         const partsInput = document.getElementById('parts-search');
-        if(partsInput) {
+        if (partsInput) {
+            const debouncedSearch = debounce((value) => {
+                state.partsSearchQuery = value.trim();
+                renderRequestParts();
+            }, 300);
+
+            partsInput.oninput = (e) => {
+                debouncedSearch(e.target.value);
+            };
+
             partsInput.onkeydown = (e) => {
                 if (e.key === 'Enter') {
-                    partsSearchQuery = e.target.value.trim();
+                    state.partsSearchQuery = e.target.value.trim();
                     renderRequestParts();
                 }
             };
+
             partsInput.onclick = (e) => e.target.focus();
         }
     }
@@ -906,13 +1081,13 @@
 
         if (responseTextarea) {
             responseTextarea.oninput = (e) => {
-                customerResponse = e.target.value;
+                state.customerResponse = e.target.value;
             };
         }
 
         if (approvedPartsTextarea) {
             approvedPartsTextarea.oninput = (e) => {
-                approvedParts = e.target.value;
+                state.approvedParts = e.target.value;
             };
         }
 
@@ -924,7 +1099,7 @@
     }
 
     function renderCategory() {
-        const filtered = parts.filter(p => categorize(p) === selectedCategory.id);
+        const filtered = state.parts.filter(p => categorize(p) === state.selectedCategory.id);
 
         const uniquePartsMap = new Map();
         filtered.forEach(part => {
@@ -936,40 +1111,40 @@
         const uniqueParts = Array.from(uniquePartsMap.values());
 
         mainContent.innerHTML = `
-        <h2 style="font-size:2.5rem; margin-bottom:2rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${selectedCategory.icon} ${selectedCategory.name}</h2>
-        <div class="category-grid">${renderParts(uniqueParts)}</div>
-    `;
+    <h2 style="font-size:2.5rem; margin-bottom:2rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${state.selectedCategory.icon} ${sanitizeHTML(state.selectedCategory.name)}</h2>
+    <div class="category-grid">${renderParts(uniqueParts)}</div>
+`;
     }
 
     function renderCategoryGrid() {
         return `
-        <div class="category-grid">
-            ${categories.map(c => {
-                const categoryParts = parts.filter(p => categorize(p) === c.id);
-                const uniqueNames = new Set(categoryParts.map(p => p.name));
-                return `
-                    <button onclick="selectCategory('${c.id}')" class="category-card ${c.color}">
-                        <span class="category-icon">${c.icon}</span>
-                        <span class="category-name">${c.name}</span>
-                        <span style="font-size:1.6rem; color:#94a3b8;">
-                            ${uniqueNames.size} Items
-                        </span>
-                    </button>
-                `;
-            }).join('')}
-        </div>
-    `;
+    <div class="category-grid">
+        ${state.categories.map(c => {
+            const categoryParts = state.parts.filter(p => categorize(p) === c.id);
+            const uniqueNames = new Set(categoryParts.map(p => p.name));
+            return `
+                <button onclick="selectCategory('${c.id}')" class="category-card ${c.color}" aria-label="View ${sanitizeHTML(c.name)} category">
+                    <span class="category-icon">${c.icon}</span>
+                    <span class="category-name">${sanitizeHTML(c.name)}</span>
+                    <span style="font-size:1.6rem; color:#94a3b8;">
+                        ${uniqueNames.size} Items
+                    </span>
+                </button>
+            `;
+        }).join('')}
+    </div>
+`;
     }
 
     function renderPartsSearchResults() {
-        if (!partsSearchQuery) return '';
+        if (!state.partsSearchQuery) return '';
 
-        const searchTerm = partsSearchQuery.toLowerCase();
-        const matchedParts = parts.filter(p => 
+        const searchTerm = state.partsSearchQuery.toLowerCase();
+        const matchedParts = state.parts.filter(p => 
             p.name.toLowerCase().includes(searchTerm) ||
             (p.category && p.category.toLowerCase().includes(searchTerm)) ||
             (p.partNo && p.partNo.toLowerCase().includes(searchTerm))
-        );
+                                               );
 
         const uniquePartsMap = new Map();
         matchedParts.forEach(part => {
@@ -983,713 +1158,567 @@
 
         if (uniqueMatchedParts.length === 0) {
             return `
-            <div style="text-align:center; padding:3rem;">
-                <p style="font-size:2rem; color:#94a3b8;">No parts found matching "${partsSearchQuery}"</p>
-                <button onclick="clearPartsSearch()" style="margin-top:1rem; background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color:white; padding:1rem 2rem; border-radius:0.8rem; border:2px solid rgba(220, 38, 38, 0.3); font-weight:bold; cursor:pointer; font-size:1.6rem;">Clear Search</button>
-            </div>
-        `;
+        <div style="text-align:center; padding:3rem;">
+            <p style="font-size:2rem; color:#94a3b8;">No parts found matching "${sanitizeHTML(state.partsSearchQuery)}"</p>
+            <button onclick="clearPartsSearch()" style="margin-top:1rem; background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color:white; padding:1rem 2rem; border-radius:0.8rem; border:2px solid rgba(220, 38, 38, 0.3); font-weight:bold; cursor:pointer; font-size:1.6rem;">Clear Search</button>
+        </div>
+    `;
         }
 
         return `
-        <div style="margin-bottom:2rem; display:flex; justify-content:space-between; align-items:center;">
-            <h3 style="font-size:2rem; color:#06b6d4;">Found ${uniqueMatchedParts.length} part(s) matching "${partsSearchQuery}"</h3>
-            <button onclick="clearPartsSearch()" style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:0.8rem 1.5rem; border-radius:0.8rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:1.6rem;">Clear Search</button>
+    <div style="margin-bottom:2rem; display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="font-size:2rem; color:#06b6d4;">Found ${uniqueMatchedParts.length} part(s) matching "${sanitizeHTML(state.partsSearchQuery)}"</h3>
+        <button onclick="clearPartsSearch()" style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:0.8rem 1.5rem; border-radius:0.8rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:1.6rem;">Clear Search</button>
+    </div>
+    <div class="category-grid">${renderParts(uniqueMatchedParts)}</div>
+`;
+}
+
+function renderSearch() {
+    const resultCats = [...new Set(state.searchResults.map(p => categorize(p)))].filter(c => c !== 'other');
+    const filtered = state.activeSearchFilter === 'all' ? 
+        state.searchResults : 
+        state.searchResults.filter(p => categorize(p) === state.activeSearchFilter);
+        
+    mainContent.innerHTML = `
+        <h2 style="font-size:2.5rem; margin-bottom:1.5rem;">Results (${filtered.length})</h2>
+        <div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-bottom:2rem;">
+            <button onclick="setSearchFilter('all')" style="padding:0.75rem 1.5rem; border-radius:2rem; border:none; cursor:pointer; font-weight:bold; font-size:1.5rem; ${state.activeSearchFilter === 'all' ? 'background:#dc2626; color:white;' : 'background:#334155; color:#94a3b8;'}">All</button>
+            ${resultCats.map(cid => {
+                const cat = state.categories.find(c => c.id === cid);
+                return `<button onclick="setSearchFilter('${cid}')" style="padding:0.75rem 1.5rem; border-radius:2rem; border:none; cursor:pointer; font-weight:bold; font-size:1.5rem; ${state.activeSearchFilter === cid ? 'background:#dc2626; color:white;' : 'background:#334155; color:#94a3b8;'}">${sanitizeHTML(cat ? cat.name : cid)}</button>`;
+            }).join('')}
         </div>
-        <div class="category-grid">${renderParts(uniqueMatchedParts)}</div>
+        <div class="category-grid">${renderParts(filtered)}</div>
     `;
-    }
-    
-    function renderSearch() {
-        const resultCats = [...new Set(searchResults.map(p => categorize(p)))].filter(c => c !== 'other');
-        const filtered = activeSearchFilter === 'all' ? searchResults : searchResults.filter(p => categorize(p) === activeSearchFilter);
-        mainContent.innerHTML = `
-                <h2 style="font-size:2.5rem; margin-bottom:1.5rem;">Results (${filtered.length})</h2>
-                <div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-bottom:2rem;">
-                    <button onclick="setSearchFilter('all')" style="padding:0.75rem 1.5rem; border-radius:2rem; border:none; cursor:pointer; font-weight:bold; font-size:1.5rem; ${activeSearchFilter === 'all' ? 'background:#dc2626; color:white;' : 'background:#334155; color:#94a3b8;'}">All</button>
-                    ${resultCats.map(cid => `<button onclick="setSearchFilter('${cid}')" style="padding:0.75rem 1.5rem; border-radius:2rem; border:none; cursor:pointer; font-weight:bold; font-size:1.5rem; ${activeSearchFilter === cid ? 'background:#dc2626; color:white;' : 'background:#334155; color:#94a3b8;'}">${categories.find(c => c.id === cid).name}</button>`).join('')}
-                </div>
-                <div class="category-grid">${renderParts(filtered)}</div>
-            `;
-    }
+}
 
-    function renderParts(arr) {
-        return arr.map((p, index) => `
-        <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); backdrop-filter:blur(10px); padding:2rem; border-radius:1.5rem; display:flex; flex-direction:column; justify-content:space-between; gap:1.5rem; text-align:center; border:2px solid rgba(59, 130, 246, 0.2); transition:all 0.3s ease; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='rgba(59, 130, 246, 0.5)'; this.style.boxShadow='0 15px 30px rgba(59, 130, 246, 0.3)';" onmouseout="this.style.transform=''; this.style.borderColor='rgba(59, 130, 246, 0.2)'; this.style.boxShadow='0 10px 20px rgba(0, 0, 0, 0.3)';">
-            <div>
-                <h3 style="font-size:2rem; color:#06b6d4;">${p.name}</h3>
-                <p style="color:#94a3b8; margin-top:0.5rem">Category: ${p.category || 'N/A'}</p>
+function renderParts(arr) {
+    return arr.map((p, index) => `
+    <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); backdrop-filter:blur(10px); padding:2rem; border-radius:1.5rem; display:flex; flex-direction:column; justify-content:space-between; gap:1.5rem; text-align:center; border:2px solid rgba(59, 130, 246, 0.2); transition:all 0.3s ease; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='rgba(59, 130, 246, 0.5)'; this.style.boxShadow='0 15px 30px rgba(59, 130, 246, 0.3)';" onmouseout="this.style.transform=''; this.style.borderColor='rgba(59, 130, 246, 0.2)'; this.style.boxShadow='0 10px 20px rgba(0, 0, 0, 0.3)';">
+        <div>
+            <h3 style="font-size:2rem; color:#06b6d4;">${sanitizeHTML(p.name)}</h3>
+            <p style="color:#94a3b8; margin-top:0.5rem">Category: ${sanitizeHTML(p.category || 'N/A')}</p>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:1rem; align-items:center;">
+            <div style="width:100%;">
+                <label for="qty-${index}" style="display:block; color:#94a3b8; font-size:1.4rem; margin-bottom:0.5rem;">Quantity</label>
+                <input 
+                    type="number" 
+                    id="qty-${index}" 
+                    min="0" 
+                    step="0.01" 
+                    value="1" 
+                    placeholder="0.00"
+                    aria-label="Quantity for ${sanitizeHTML(p.name)}"
+                    style="width:100%; padding:0.8rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; text-align:center;"
+                >
             </div>
-            <div style="display:flex; flex-direction:column; gap:1rem; align-items:center;">
-                <div style="width:100%;">
-                    <label style="display:block; color:#94a3b8; font-size:1.4rem; margin-bottom:0.5rem;">Quantity</label>
-                    <input 
-                        type="number" 
-                        id="qty-${index}" 
-                        min="0" 
-                        step="0.01" 
-                        value="1" 
-                        placeholder="0.00"
-                        style="width:100%; padding:0.8rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; text-align:center;"
-                    >
-                </div>
-                <button onclick="addToCart('${p.name.replace(/'/g, "\\'")}', '${index}')" class="add-btn-circular">+</button>
-            </div>
-        </div>`).join('');
-    }
+            <button onclick="addToCart('${p.name.replace(/'/g, "\\'")}', '${index}')" class="add-btn-circular" aria-label="Add ${sanitizeHTML(p.name)} to cart">+</button>
+        </div>
+    </div>`).join('');
+}
 
-    function renderCheckout() {
-        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+function renderCheckout() {
+    const totalItems = state.cart.reduce((sum, item) => sum + item.quantity, 0);
 
-        mainContent.innerHTML = `
-        <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); padding:3rem; border-radius:2rem; border:4px solid rgba(59, 130, 246, 0.5); max-width:800px; margin:2rem auto; box-shadow: 0 20px 60px rgba(59, 130, 246, 0.3);">
-            <h2 style="text-align:center; margin-bottom:2rem; font-size:2.5rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Your Order</h2>
-            <div style="margin-bottom:2rem;">
-                ${cart.length === 0 ? '<p style="text-align:center; font-size:1.8rem;">Your cart is empty.</p>' : cart.map((item, i) => `
-                    <div style="padding:1rem; border-bottom:1px solid rgba(59, 130, 246, 0.2); display:flex; justify-content:space-between; align-items:center; font-size:1.8rem; gap:1rem;">
-                        <div style="min-width:40px; font-size:2rem; font-weight:bold; color:#06b6d4;">${i + 1}.</div>
-                        <div style="flex:1;">
-                            <strong>${item.name}</strong><br>
-                            <small style="color:#94a3b8;">${item.category}</small>
-                        </div>
-                        <div style="display:flex; align-items:center; gap:1rem;">
-                            <div style="display:flex; flex-direction:column; align-items:center;">
-                                <span style="color:#94a3b8; font-size:1.2rem;">QTY</span>
-                                <input 
-                                    type="number" 
-                                    id="cart-qty-${i}"
-                                    value="${item.quantity}" 
-                                    min="0.01"
-                                    step="0.01"
-                                    onchange="updateCartQuantity(${i}, this.value)"
-                                    style="width:80px; padding:0.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; text-align:center;"
-                                >
-                            </div>
-                            <button onclick="removeFromCart(${i})" style="color:#ef4444; background:none; border:none; cursor:pointer; font-size:1.5rem;">
-                                <i data-lucide="trash-2"></i>
-                            </button>
-                        </div>
+    mainContent.innerHTML = `
+    <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); padding:3rem; border-radius:2rem; border:4px solid rgba(59, 130, 246, 0.5); max-width:800px; margin:2rem auto; box-shadow: 0 20px 60px rgba(59, 130, 246, 0.3);">
+        <h2 style="text-align:center; margin-bottom:2rem; font-size:2.5rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Your Order</h2>
+        <div style="margin-bottom:2rem;">
+            ${state.cart.length === 0 ? '<p style="text-align:center; font-size:1.8rem;">Your cart is empty.</p>' : state.cart.map((item, i) => `
+                <div style="padding:1rem; border-bottom:1px solid rgba(59, 130, 246, 0.2); display:flex; justify-content:space-between; align-items:center; font-size:1.8rem; gap:1rem;">
+                    <div style="min-width:40px; font-size:2rem; font-weight:bold; color:#06b6d4;">${i + 1}.</div>
+                    <div style="flex:1;">
+                        <strong>${sanitizeHTML(item.name)}</strong><br>
+                        <small style="color:#94a3b8;">${sanitizeHTML(item.category)}</small>
                     </div>
-                `).join('')}
-            </div>
-            ${cart.length > 0 ? `
-                <div style="text-align:center; padding:2rem 0;">
-                    <h3 style="font-size:2rem; margin-bottom:1rem; color:#06b6d4;">Total: ${totalItems.toFixed(2)} Units</h3>
-                    <p style="color:#94a3b8; font-size:1.6rem;">Return to Request Parts to confirm your order</p>
+                    <div style="display:flex; align-items:center; gap:1rem;">
+                        <div style="display:flex; flex-direction:column; align-items:center;">
+                            <span style="color:#94a3b8; font-size:1.2rem;">QTY</span>
+                            <input 
+                                type="number" 
+                                id="cart-qty-${i}"
+                                value="${item.quantity}" 
+                                min="0.01"
+                                step="0.01"
+                                onchange="updateCartQuantity(${i}, this.value)"
+                                aria-label="Quantity for ${sanitizeHTML(item.name)}"
+                                style="width:80px; padding:0.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; text-align:center;"
+                            >
+                        </div>
+                        <button onclick="removeFromCart(${i})" aria-label="Remove ${sanitizeHTML(item.name)} from cart" style="color:#ef4444; background:none; border:none; cursor:pointer; font-size:1.5rem;">
+                            <i data-lucide="trash-2" aria-hidden="true"></i>
+                        </button>
+                    </div>
                 </div>
-            ` : ''}
+            `).join('')}
+        </div>
+        ${state.cart.length > 0 ? `
+            <div style="text-align:center; padding:2rem 0;">
+                <h3 style="font-size:2rem; margin-bottom:1rem; color:#06b6d4;">Total: ${totalItems.toFixed(2)} Units</h3>
+                <p style="color:#94a3b8; font-size:1.6rem;">Return to Request Parts to confirm your order</p>
+            </div>
+        ` : ''}
+    </div>`;
+}
+
+function renderSuccess() {
+    const id = window.lastOrderID;
+    const originalTitle = document.title;
+    document.title = `Order_Ticket_${id}`;
+
+    mainContent.innerHTML = `
+        <div style="text-align:center; padding:4rem 2rem; background:linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%); backdrop-filter:blur(20px); border-radius:2rem; max-width:600px; margin:2rem auto; border:4px solid rgba(34, 197, 94, 0.5); box-shadow: 0 20px 60px rgba(34, 197, 94, 0.3);">
+            <div style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); width:80px; height:80px; border-radius:50%; margin:0 auto 1.5rem; display:flex; align-items:center; justify-content:center; font-size:3rem; box-shadow: 0 10px 30px rgba(34, 197, 94, 0.5);">✓</div>
+            <h2 style="font-size:2.5rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Order Confirmed</h2>
+            <div style="font-size:4rem; color:#facc15; margin:1.5rem 0; border:2px dashed rgba(59, 130, 246, 0.3); padding:1rem; border-radius:1rem; display:inline-block;">#${id}</div>
+            <div style="margin:2rem 0;"><img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=ORDER-${id}" alt="QR Code for order ${id}"></div>
+            <div style="display:flex; flex-direction:column; gap:1rem;">
+                <button id="print-ticket-btn" class="btn-print">🖨️ Print Ticket</button>
+                <button onclick="goToHome()" style="background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color:white; padding:1.2rem; border-radius:0.8rem; border:2px solid rgba(220, 38, 38, 0.3); font-weight:bold; cursor:pointer; font-size:2.4rem; transition:all 0.3s ease;">Finish</button>
+            </div>
         </div>`;
+
+    document.getElementById('print-ticket-btn').onclick = () => window.print();
+
+    setTimeout(() => { 
+        if (state.currentView === 'success') { 
+            document.title = originalTitle; 
+            goToHome(); 
+        } 
+    }, 20000);
+}
+
+function renderAdmin() {
+    const totalItems = state.orderHistory.reduce((sum, order) => sum + order.itemCount, 0);
+    
+    mainContent.innerHTML = `
+        <div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+                <h2 style="font-size:3rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Admin Dashboard</h2>
+                <button onclick="goToHome()" style="background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color:white; border:2px solid rgba(220, 38, 38, 0.3); padding:1rem 2rem; border-radius:1rem; cursor:pointer; font-weight:bold; font-size:2.4rem; transition:all 0.3s ease;">Exit Admin</button>
+            </div>
+            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:1.5rem; margin-bottom:2rem;">
+                <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); backdrop-filter:blur(10px); padding:2rem; border-radius:1rem; text-align:center; border:2px solid rgba(59, 130, 246, 0.2);"><h4 style="color:#06b6d4; font-size:1.5rem;">Orders Today</h4><p style="font-size:2.5rem; font-weight:bold;">${state.orderHistory.length}</p></div>
+                <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); backdrop-filter:blur(10px); padding:2rem; border-radius:1rem; text-align:center; border:2px solid rgba(59, 130, 246, 0.2);"><h4 style="color:#06b6d4; font-size:1.5rem;">Total Items</h4><p style="font-size:2.5rem; font-weight:bold;">${totalItems}</p></div>
+                <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); backdrop-filter:blur(10px); padding:2rem; border-radius:1rem; text-align:center; border:2px solid rgba(59, 130, 246, 0.2);"><h4 style="color:#06b6d4; font-size:1.5rem;">Session Clock</h4><p style="font-size:2.5rem; font-weight:bold;">${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</p></div>
+            </div>
+            <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); border-radius:1rem; overflow:hidden; border:2px solid rgba(59, 130, 246, 0.2);">
+                <table style="width:100%; border-collapse:collapse; text-align:center;">
+                    <thead style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%);">
+                        <tr style="font-size:2.4rem;"><th style="padding:1rem; font-size:2.4rem; text-align:center; color:#06b6d4;">Time</th><th style="padding:1rem; font-size:2.4rem; text-align:center; color:#06b6d4;">Order ID</th><th style="padding:1rem; font-size:2.4rem; text-align:center; color:#06b6d4;">Items</th></tr>
+                    </thead>
+                    <tbody>
+                        ${state.orderHistory.map(o => `
+                            <tr style="border-bottom:1px solid rgba(59, 130, 246, 0.2); font-size:2.4rem;">
+                                <td data-label="Time" style="padding:1rem; text-align:center;">${o.time}</td>
+                                <td data-label="ID" style="padding:1rem; text-align:center;">#${o.id}</td>
+                                <td data-label="Counter" style="padding:1rem; text-align:center;">${o.itemCount} Units</td>
+                            </tr>`).reverse().join('')}
+                    </tbody>
+                </table>
+            </div>
+            <button onclick="clearStats()" style="margin-top:2rem; background:none; border:2px solid #ef4444; color:#ef4444; padding:0.8rem 1.5rem; border-radius:0.8rem; cursor:pointer; font-weight:bold; font-size:2.4rem; transition:all 0.3s ease;">Clear Session Data</button>
+        </div>`;
+}
+
+function updateBreadcrumbs() {
+    if (state.currentView === 'home' || state.currentView === 'success' || state.currentView === 'workDone') { 
+        breadcrumbContainer.classList.add('hidden'); 
+        return; 
+    }
+    breadcrumbContainer.classList.remove('hidden');
+
+    let breadcrumb = `<span onclick="goToHome()" style="cursor:pointer; color:#06b6d4; font-weight:bold;">Home</span>`;
+
+    if (state.currentView === 'Request Parts') {
+        breadcrumb += ` > Request Parts`;
+    } else if (state.currentView === 'category' || state.currentView === 'checkout') {
+        breadcrumb += ` > <span style="color:#06b6d4; font-weight:bold;">Request Parts</span>`;
     }
 
-    function renderSuccess() {
-        const id = window.lastOrderID;
-        const originalTitle = document.title;
-        document.title = `Order_Ticket_${id}`;
-
-        mainContent.innerHTML = `
-                <div style="text-align:center; padding:4rem 2rem; background:linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%); backdrop-filter:blur(20px); border-radius:2rem; max-width:600px; margin:2rem auto; border:4px solid rgba(34, 197, 94, 0.5); box-shadow: 0 20px 60px rgba(34, 197, 94, 0.3);">
-                    <div style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); width:80px; height:80px; border-radius:50%; margin:0 auto 1.5rem; display:flex; align-items:center; justify-content:center; font-size:3rem; box-shadow: 0 10px 30px rgba(34, 197, 94, 0.5);">✓</div>
-                    <h2 style="font-size:2.5rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Order Confirmed</h2>
-                    <div style="font-size:4rem; color:#facc15; margin:1.5rem 0; border:2px dashed rgba(59, 130, 246, 0.3); padding:1rem; border-radius:1rem; display:inline-block;">#${id}</div>
-                    <div style="margin:2rem 0;"><img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=ORDER-${id}"></div>
-                    <div style="display:flex; flex-direction:column; gap:1rem;">
-                        <button id="print-ticket-btn" class="btn-print">🖨️ Print Ticket</button>
-                        <button onclick="goToHome()" style="background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color:white; padding:1.2rem; border-radius:0.8rem; border:2px solid rgba(220, 38, 38, 0.3); font-weight:bold; cursor:pointer; font-size:2.4rem; transition:all 0.3s ease;">Finish</button>
-                    </div>
-                </div>`;
-
-        document.getElementById('print-ticket-btn').onclick = () => window.print();
-
-        setTimeout(() => { 
-            if(currentView === 'success') { 
-                document.title = originalTitle; 
-                goToHome(); 
-            } 
-        }, 20000);
+    if (state.currentView === 'category') {
+        breadcrumb += ` > Category`;
+    } else if (state.currentView === 'checkout') {
+        breadcrumb += ` > Checkout`;
+    } else if (state.currentView !== 'Request Parts' && state.currentView !== 'home') {
+        breadcrumb += ` > ${state.currentView.charAt(0).toUpperCase() + state.currentView.slice(1)}`;
     }
 
-    function renderAdmin() {
-        const totalItems = orderHistory.reduce((sum, order) => sum + order.itemCount, 0);
-        mainContent.innerHTML = `
-            <div>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
-                    <h2 style="font-size:3rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Admin Dashboard</h2>
-                    <button onclick="goToHome()" style="background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color:white; border:2px solid rgba(220, 38, 38, 0.3); padding:1rem 2rem; border-radius:1rem; cursor:pointer; font-weight:bold; font-size:2.4rem; transition:all 0.3s ease;">Exit Admin</button>
-                </div>
-                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:1.5rem; margin-bottom:2rem;">
-                    <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); backdrop-filter:blur(10px); padding:2rem; border-radius:1rem; text-align:center; border:2px solid rgba(59, 130, 246, 0.2);"><h4 style="color:#06b6d4; font-size:1.5rem;">Orders Today</h4><p style="font-size:2.5rem; font-weight:bold;">${orderHistory.length}</p></div>
-                    <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); backdrop-filter:blur(10px); padding:2rem; border-radius:1rem; text-align:center; border:2px solid rgba(59, 130, 246, 0.2);"><h4 style="color:#06b6d4; font-size:1.5rem;">Total Items</h4><p style="font-size:2.5rem; font-weight:bold;">${totalItems}</p></div>
-                    <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); backdrop-filter:blur(10px); padding:2rem; border-radius:1rem; text-align:center; border:2px solid rgba(59, 130, 246, 0.2);"><h4 style="color:#06b6d4; font-size:1.5rem;">Session Clock</h4><p style="font-size:2.5rem; font-weight:bold;">${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</p></div>
-                </div>
-                <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); border-radius:1rem; overflow:hidden; border:2px solid rgba(59, 130, 246, 0.2);">
-                    <table style="width:100%; border-collapse:collapse; text-align:center;">
-                        <thead style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%);">
-                            <tr style="font-size:2.4rem;"><th style="padding:1rem; font-size:2.4rem; text-align:center; color:#06b6d4;">Time</th><th style="padding:1rem; font-size:2.4rem; text-align:center; color:#06b6d4;">Order ID</th><th style="padding:1rem; font-size:2.4rem; text-align:center; color:#06b6d4;">Items</th></tr>
-                        </thead>
-                        <tbody>
-                            ${orderHistory.map(o => `
-                                <tr style="border-bottom:1px solid rgba(59, 130, 246, 0.2); font-size:2.4rem;">
-                                    <td data-label="Time" style="padding:1rem; text-align:center;">${o.time}</td>
-                                    <td data-label="ID" style="padding:1rem; text-align:center;">#${o.id}</td>
-                                    <td data-label="Counter" style="padding:1rem; text-align:center;">${o.itemCount} Units</td>
-                                </tr>`).reverse().join('')}
-                        </tbody>
-                    </table>
-                </div>
-                <button onclick="clearStats()" style="margin-top:2rem; background:none; border:2px solid #ef4444; color:#ef4444; padding:0.8rem 1.5rem; border-radius:0.8rem; cursor:pointer; font-weight:bold; font-size:2.4rem; transition:all 0.3s ease;">Clear Session Data</button>
-            </div>`;
-    }
+    breadcrumbContainer.innerHTML = breadcrumb;
+}
 
-    function updateBreadcrumbs() {
-        if (currentView === 'home' || currentView === 'success' || currentView === 'workDone') { 
-            breadcrumbContainer.classList.add('hidden'); 
-            return; 
-        }
-        breadcrumbContainer.classList.remove('hidden');
+// ===========================
+// EVENT HANDLERS
+// ===========================
 
-        let breadcrumb = `<span onclick="goToHome()" style="cursor:pointer; color:#06b6d4; font-weight:bold;">Home</span>`;
+function goToHome() {
+    state.currentView = 'home';
+    state.serviceSearchQuery = '';
+    state.currentStatusFilter = 'all';
+    state.currentWorkDoneReg = null;
+    state.activeReg = null;
+    state.partsSearchQuery = '';
+    state.techNotes = '';
+    state.defectList = '';
+    state.activePartsTab = 'request';
+    state.customerResponse = '';
+    state.approvedParts = '';
+    state.cart = [];
+    state.selectedTechnician = '';
+    state.signatureData = '';
+    
+    clearNavigationHistory();
+    
+    cartCount.innerText = 0;
+    cartCount.classList.add('hidden');
+    
+    render();
+}
 
-        if (currentView === 'Request Parts') {
-            breadcrumb += ` > Request Parts`;
-        } else if (currentView === 'category' || currentView === 'checkout') {
-            breadcrumb += ` > <span style="color:#06b6d4; font-weight:bold;">Request Parts</span>`;
-        }
+function setupListeners() {
+    // Global window functions for onclick handlers
+    window.selectCategory = (id) => { 
+        pushNavigation('category', { 
+            selectedCategory: state.categories.find(c => c.id === id) 
+        });
+    };
 
-        if (currentView === 'category') {
-            breadcrumb += ` > Category`;
-        } else if (currentView === 'checkout') {
-            breadcrumb += ` > Checkout`;
-        } else if (currentView !== 'Request Parts' && currentView !== 'home') {
-            breadcrumb += ` > ${currentView.charAt(0).toUpperCase() + currentView.slice(1)}`;
-        }
+    window.switchPartsTab = (tabName) => {
+        state.activePartsTab = tabName;
+        renderRequestParts();
+    };
 
-        breadcrumbContainer.innerHTML = breadcrumb;
-    }
+    window.clearPartsDetails = async () => {
+        const confirmed = await customConfirm(
+            'Are you sure you want to clear Tech Notes, List of Defects, Requested Parts, Technician, and Signature?',
+            'Clear All Details'
+        );
 
-    function setupListeners() {
-        window.selectCategory = (id) => { 
-            pushNavigation('category', { selectedCategory: categories.find(c => c.id === id) });
-            render(); 
-        };
-
-        window.switchPartsTab = (tabName) => {
-            activePartsTab = tabName;
+        if (confirmed) {
+            state.techNotes = '';
+            state.defectList = '';
+            state.cart = [];
+            state.partsSearchQuery = '';
+            state.selectedTechnician = '';
+            state.signatureData = '';
+            
+            const totalQuantity = state.cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.innerText = Math.round(totalQuantity);
+            cartCount.classList.toggle('hidden', state.cart.length === 0);
+            
             renderRequestParts();
-        };
+            await customAlert('All details have been cleared.', 'Cleared');
+        }
+    };
 
-        window.saveCustomerFeedback = async () => {
-            const responseText = customerResponse.trim();
-            const approvedPartsText = approvedParts.trim();
-
-            if (!responseText && !approvedPartsText) {
-                await customAlert('Please enter either a response or approved parts before saving.', 'Feedback Required');
-                return;
-            }
-
-            try {
-                // Call server function to save customer feedback
-                await anvil.call(
-                    mainContent,
-                    'save_customer_feedback',
-                    activeReg,
-                    responseText || null,
-                    approvedPartsText || null
-                );
-
-                await customAlert(
-                    `Customer feedback has been saved successfully for JobCard ${activeReg}`,
-                    '✅ Success'
-                );
-
-            } catch (error) {
-                console.error('Error saving customer feedback:', error);
-                await customAlert(
-                    'Failed to save customer feedback. Please try again.',
-                    '❌ Error'
-                );
-            }
-        };
-
-        window.clearCustomerFeedback = async () => {
-            const confirmed = await customConfirm(
-                'Are you sure you want to clear all feedback data?',
-                'Clear Feedback'
-            );
-
-            if (confirmed) {
-                customerResponse = '';
-                approvedParts = '';
-                renderRequestParts();
-                await customAlert('Feedback data has been cleared.', 'Cleared');
-            }
-        };
-
-        window.clearPartsDetails = async () => {
-            const confirmed = await customConfirm(
-                'Are you sure you want to clear Tech Notes, List of Defects, Requested Parts, Technician, and Signature?',
-                'Clear All Details'
-            );
-
-            if (confirmed) {
-                techNotes = '';
-                defectList = '';
-                cart = [];
-                partsSearchQuery = '';
-                selectedTechnician = '';
-                signatureData = '';
-                
-                // Update cart count in header
-                const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
-                cartCount.innerText = Math.round(totalQuantity);
-                cartCount.classList.toggle('hidden', cart.length === 0);
-                
-                renderRequestParts();
-                await customAlert('All details have been cleared.', 'Cleared');
-            }
-        };
-
-        window.savePartsDetails = async () => {
-            if (cart.length === 0 && !techNotes.trim() && !defectList.trim()) {
-                await customAlert('No details to save. Please add parts, tech notes, or defects first.', 'No Data');
-                return;
-            }
-
-            if (!selectedTechnician) {
-                await customAlert('Please select a technician before saving.', 'Technician Required');
-                return;
-            }
-
-            // Get signature data from the signature pad instance
-            const signature = getSignatureData();
-            if (!signature) {
-                await customAlert('Please provide your signature before saving.', 'Signature Required');
-                return;
-            }
-
-            let partsAndQuantities = null;
-            if (cart.length > 0) {
-                partsAndQuantities = cart.map((item, i) => 
-                    `${i + 1}. ${item.name} (${item.category}) - Qty: ${item.quantity}`
-                ).join('\n');
-            }
-
-            const techNotesValue = techNotes.trim() || null;
-            const defectListValue = defectList.trim() || null;
-
-            try {
-                await anvil.call(
-                    mainContent, 
-                    'storeTechDetails', 
-                    activeReg,
-                    techNotesValue, 
-                    defectListValue, 
-                    partsAndQuantities,
-                    selectedTechnician,
-                    signature
-                );
-
-                await customAlert(
-                    `Details have been saved successfully for JobCard ${activeReg}`,
-                    '✅ Success'
-                );
-
-            } catch (error) {
-                console.error('Error saving parts details:', error);
-                await customAlert(
-                    'Failed to save details. Please try again.',
-                    '❌ Error'
-                );
-            }
-        };
-
-        window.saveWorkDoneFromTab = async () => {
-            const textarea = document.getElementById('workdone-textarea');
-            const workDoneText = textarea ? textarea.value.trim() : '';
-
-            if (!workDoneText) {
-                await customAlert('Please enter the work done details before saving.', 'Work Done Required');
-                return;
-            }
-
-            try {
-                await anvil.call(mainContent, 'save_work_done', activeReg, workDoneText);
-
-                const service = activeServices.find(s => s.jobcardref === activeReg);
-                if (service) {
-                    service.workDone = workDoneText;
-                    service.status = 'Completed';
-                }
-
-                await customAlert(
-                    `Work done has been saved successfully for JobCard ${activeReg}`,
-                    '✅ Success'
-                );
-
-            } catch (err) {
-                console.error(err);
-                await customAlert(
-                    'Failed to save work done. Please try again.',
-                    '❌ Error'
-                );
-            }
-        };
-
-        window.addToCart = (name) => { 
-            const item = parts.find(p => p.name === name); 
-            if(item) cart.push(item); 
-            render(); 
-        };
-
-        window.removeFromCart = (i) => { 
-            cart.splice(i,1); 
-            render(); 
-        };
-
-        window.goToHome = () => { 
-            currentView = 'home'; 
-            serviceSearchQuery = '';
-            currentStatusFilter = 'all';
-            currentWorkDoneReg = null;
-            activeReg = null;
-            partsSearchQuery = '';
-            techNotes = '';
-            defectList = '';
-            activePartsTab = 'request';
-            customerResponse = '';
-            approvedParts = '';
-            cart = [];
-            selectedTechnician = '';
-            signatureData = '';
-            
-            // Clear navigation history when going home
-            clearNavigationHistory();
-            
-            // Update cart count in header
-            cartCount.innerText = 0;
-            cartCount.classList.add('hidden');
-            
-            render(); 
-        };
-
-        window.setSearchFilter = (f) => { 
-            activeSearchFilter = f; 
-            render(); 
-        };
-
-        window.clearStats = async () => {
-            const confirmed = await customConfirm('Are you sure you want to clear all session data? This cannot be undone.', 'Clear Session Data');
-            if(confirmed) {
-                orderHistory = [];
-                renderAdmin();
-            }
-        };
-
-        window.confirmOrder = () => {
-            const id = Math.floor(1000 + Math.random() * 9000);
-            const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
-
-            orderHistory.push({
-                id: id,
-                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-                itemCount: totalQuantity.toFixed(2)
-            });
-
-            window.lastOrderID = id;
-            cart = []; 
-            currentView = 'success'; 
-            render(); 
-        };
-
-        window.filterByStatus = (s) => { 
-            currentStatusFilter = (currentStatusFilter === s) ? 'all' : s; 
-            render(); 
-        };
-
-        window.openParts = (reg) => { 
-            // Reset all data when switching to a different jobcard
-            if (activeReg !== reg) {
-                cart = [];
-                techNotes = '';
-                defectList = '';
-                partsSearchQuery = '';
-                customerResponse = '';
-                approvedParts = '';
-                selectedTechnician = '';
-                signatureData = '';
-                
-                // Update cart count in header
-                cartCount.innerText = 0;
-                cartCount.classList.add('hidden');
-            }
-            
-            pushNavigation('Request Parts', { activeReg: reg, activePartsTab: 'request' });
-            render(); 
-        };
-
-        window.openWorkDone = (reg) => {
-            // Reset all data when switching to a different jobcard
-            if (activeReg !== reg) {
-                cart = [];
-                techNotes = '';
-                defectList = '';
-                partsSearchQuery = '';
-                customerResponse = '';
-                approvedParts = '';
-                selectedTechnician = '';
-                signatureData = '';
-                
-                // Update cart count in header
-                cartCount.innerText = 0;
-                cartCount.classList.add('hidden');
-            }
-            
-            pushNavigation('Request Parts', { activeReg: reg, activePartsTab: 'workdone' });
-            render();
-        };
-
-        window.cancelWorkDone = () => {
-            currentWorkDoneReg = null;
-            currentView = 'home';
-            render();
-        };
-
-        window.saveWorkDone = async () => {
-            const textarea = document.getElementById('work-done-textarea');
-            const workDoneText = textarea.value.trim();
-
-            if (!workDoneText) {
-                customAlert('Please enter the work done details before saving.', 'Work Done Required');
-                return;
-            }
-
-            try {
-                anvil.call(mainContent, 'save_work_done', currentWorkDoneReg, workDoneText);
-
-                const service = activeServices.find(
-                    s => s.jobcardref === currentWorkDoneReg
-                );
-
-                if (service) {
-                    service.workDone = workDoneText;
-                    service.status = 'Completed';
-                }
-
-                customAlert(
-                    `Work done has been saved successfully for jobcard reference ${currentWorkDoneReg}`,
-                    '✅ Success'
-                );
-
-                currentWorkDoneReg = null;
-                clearNavigationHistory();
-                currentView = 'home';
-                render();
-
-            } catch (err) {
-                console.error(err);
-                await customAlert(
-                    'Failed to save work done. Please try again.',
-                    '❌ Error'
-                );
-            }
-        };
-
-        window.completeJob = (jobcardref) => { 
-            const service = activeServices.find(s => s.jobcardref === jobcardref);
-            if(service) {
-                service.status = 'Completed';
-                service.statusChangedAt = new Date();
-            }
-            render(); 
-        };
+    window.savePartsDetails = async () => {
+        // Validation
+        const errors = [];
         
-        window.addToCart = (name, index) => {
-            const qtyInput = document.getElementById(`qty-${index}`);
-            const quantity = parseFloat(qtyInput?.value) || 1;
-
-            if (quantity <= 0) {
-                customAlert('Please enter a valid quantity greater than 0.', 'Invalid Quantity');
-                return;
-            }
-
-            const item = parts.find(p => p.name === name);
-            if (!item) return;
-
-            const existingItemIndex = cart.findIndex(c => c.name === item.name);
-
-            if (existingItemIndex > -1) {
-                cart[existingItemIndex].quantity += quantity;
-            } else {
-                cart.push({
-                    name: item.name,
-                    category: item.category,
-                    partNo: item.partNo,
-                    quantity: quantity
-                });
-            }
-
-            if (qtyInput) qtyInput.value = '1';
-
-            render();
-        };
-
-        window.updateCartQuantity = (index, newQuantity) => {
-            const qty = parseFloat(newQuantity);
-
-            if (isNaN(qty) || qty <= 0) {
-                customAlert('Please enter a valid quantity greater than 0.', 'Invalid Quantity');
-                document.getElementById(`cart-qty-${index}`).value = cart[index].quantity;
-                return;
-            }
-
-            cart[index].quantity = qty;
-            render();
-        };
+        if (state.cart.length === 0 && !state.techNotes.trim() && !state.defectList.trim()) {
+            errors.push('No details to save. Please add parts, tech notes, or defects first.');
+        }
         
-        backBtn.onclick = () => {
-            popNavigation();
-        };
-        cartBtn.onclick = () => { 
-            pushNavigation('checkout');
-            render(); 
-        };
-        homeFooterBtn.onclick = goToHome;
+        if (!state.selectedTechnician) {
+            errors.push('Please select a technician before saving.');
+        }
+        
+        const signature = getSignatureData();
+        if (!signature) {
+            errors.push('Please provide your signature before saving.');
+        }
+        
+        if (errors.length > 0) {
+            await customAlert(errors.join('\n'), 'Validation Error');
+            return;
+        }
 
-        adminTrigger.onclick = () => {
-            adminClicks++;
-            clearTimeout(adminTimeout);
-            if (adminClicks === 5) {
-                adminClicks = 0;
-                currentView = 'admin';
-                render();
-            } else {
-                adminTimeout = setTimeout(() => { adminClicks = 0; }, 2000);
-            }
-        };
-
-        window.onscroll = () => {
-            backToTopBtn.className = window.scrollY > 300 ? 'visible-fade' : 'hidden-fade';
-        };
-
-        window.clearPartsSearch = () => {
-            partsSearchQuery = '';
-            renderRequestParts();
-        };
-
-        window.clearSignaturePad = () => {
-            clearSignature();
-        };
-
-        window.confirmPartsOrder = async () => {
-            if (cart.length === 0) {
-                await customAlert('Your cart is empty. Please add parts before confirming.', 'Empty Cart');
-                return;
-            }
-
-            const confirmed = await customConfirm(
-                `You are about to submit an order with ${cart.length} item(s). Do you want to proceed?`,
-                'Confirm Order Submission'
-            );
-
-            if (!confirmed) return;
-
-            let partsAndQuantities = cart.map((item, i) => 
+        let partsAndQuantities = null;
+        if (state.cart.length > 0) {
+            partsAndQuantities = state.cart.map((item, i) => 
                 `${i + 1}. ${item.name} (${item.category}) - Qty: ${item.quantity}`
             ).join('\n');
+        }
 
-            const techNotesValue = techNotes.trim() || null;
-            const defectListValue = defectList.trim() || null;
-            const partsValue = partsAndQuantities || null;
+        const techNotesValue = state.techNotes.trim() || null;
+        const defectListValue = state.defectList.trim() || null;
 
-            try {
-                await anvil.call(
-                    mainContent, 
-                    'storeTechDetails', 
-                    activeReg,
-                    techNotesValue, 
-                    defectListValue, 
-                    partsValue
-                );
-
-                const id = Math.floor(1000 + Math.random() * 9000);
-                const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
-
-                orderHistory.push({
-                    id: id,
-                    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-                    itemCount: totalQuantity.toFixed(2)
-                });
-
-                window.lastOrderID = id;
-
-                cart = [];
-                techNotes = '';
-                defectList = '';
-                partsSearchQuery = '';
-
-                clearNavigationHistory();
-                currentView = 'success';
-                render();
-
-            } catch (error) {
-                console.error('Error storing tech details:', error);
-                await customAlert(
-                    'Failed to submit order. Please try again.',
-                    '❌ Error'
-                );
-            }
-        };
-
-        window.toggleCollapse = () => {
-            const content = document.getElementById('collapse-content');
-            const icon = document.getElementById('collapse-icon');
-            const button = document.getElementById('collapse-toggle');
-
-            if (content.style.display === 'none') {
-                content.style.display = 'block';
-                button.style.background = 'linear-gradient(135deg, rgba(71, 85, 105, 0.8) 0%, rgba(51, 65, 85, 0.8) 100%)';
-                if (icon) {
-                    icon.style.transform = 'rotate(180deg)';
-                }
-            } else {
-                content.style.display = 'none';
-                button.style.background = 'linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%)';
-                if (icon) {
-                    icon.style.transform = 'rotate(0deg)';
-                }
-            }
-
-            lucide.createIcons();
-        };
-
-        window.viewCart = () => {
-            pushNavigation('checkout');
-            render();
-        };
-
-        window.cancelOrder = async () => {
-            const confirmed = await customConfirm(
-                'Are you sure you want to cancel this order? All items in the cart and entered notes will be cleared.',
-                'Cancel Order'
+        try {
+            await anvil.call(
+                mainContent, 
+                'storeTechDetails', 
+                state.activeReg,
+                techNotesValue, 
+                defectListValue, 
+                partsAndQuantities,
+                state.selectedTechnician,
+                signature
             );
 
-            if (confirmed) {
-                cart = [];
-                techNotes = '';
-                defectList = '';
-                partsSearchQuery = '';
+            await customAlert(
+                `Details have been saved successfully for JobCard ${state.activeReg}`,
+                '✅ Success'
+            );
 
-                await customAlert(
-                    'Order has been cancelled successfully.',
-                    'Order Cancelled'
-                );
+        } catch (error) {
+            console.error('Error saving parts details:', error);
+            await customAlert(
+                'Failed to save details. Please try again.',
+                '❌ Error'
+            );
+        }
+    };
 
-                clearNavigationHistory();
-                currentView = 'home';
-                render();
+    window.saveWorkDoneFromTab = async () => {
+        const textarea = document.getElementById('workdone-textarea');
+        const workDoneText = textarea ? textarea.value.trim() : '';
+
+        if (!workDoneText) {
+            await customAlert('Please enter the work done details before saving.', 'Work Done Required');
+            return;
+        }
+
+        try {
+            await anvil.call(mainContent, 'save_work_done', state.activeReg, workDoneText);
+
+            const service = state.activeServices.find(s => s.jobcardref === state.activeReg);
+            if (service) {
+                service.workDone = workDoneText;
+                service.status = 'Completed';
             }
-        };
-        
-        backToTopBtn.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
-    }
 
-    init();
+            await customAlert(
+                `Work done has been saved successfully for JobCard ${state.activeReg}`,
+                '✅ Success'
+            );
+
+        } catch (err) {
+            console.error(err);
+            await customAlert(
+                'Failed to save work done. Please try again.',
+                '❌ Error'
+            );
+        }
+    };
+
+    window.addToCart = (name, index) => {
+        const qtyInput = document.getElementById(`qty-${index}`);
+        const quantity = parseFloat(qtyInput?.value) || 1;
+
+        if (quantity <= 0) {
+            customAlert('Please enter a valid quantity greater than 0.', 'Invalid Quantity');
+            return;
+        }
+
+        const item = state.parts.find(p => p.name === name);
+        if (!item) return;
+
+        const existingItemIndex = state.cart.findIndex(c => c.name === item.name);
+
+        if (existingItemIndex > -1) {
+            state.cart[existingItemIndex].quantity += quantity;
+        } else {
+            state.cart.push({
+                name: item.name,
+                category: item.category,
+                partNo: item.partNo,
+                quantity: quantity
+            });
+        }
+
+        if (qtyInput) qtyInput.value = '1';
+
+        render();
+    };
+
+    window.updateCartQuantity = (index, newQuantity) => {
+        const qty = parseFloat(newQuantity);
+
+        if (isNaN(qty) || qty <= 0) {
+            customAlert('Please enter a valid quantity greater than 0.', 'Invalid Quantity');
+            document.getElementById(`cart-qty-${index}`).value = state.cart[index].quantity;
+            return;
+        }
+
+        state.cart[index].quantity = qty;
+        render();
+    };
+
+    window.removeFromCart = (i) => { 
+        state.cart.splice(i, 1); 
+        render(); 
+    };
+
+    window.goToHome = goToHome;
+
+    window.setSearchFilter = (f) => { 
+        state.activeSearchFilter = f; 
+        render(); 
+    };
+
+    window.clearStats = async () => {
+        const confirmed = await customConfirm(
+            'Are you sure you want to clear all session data? This cannot be undone.',
+            'Clear Session Data'
+        );
+        if (confirmed) {
+            state.orderHistory = [];
+            renderAdmin();
+        }
+    };
+
+    window.filterByStatus = (s) => { 
+        state.currentStatusFilter = (state.currentStatusFilter === s) ? 'all' : s; 
+        render(); 
+    };
+
+    window.openParts = (reg) => { 
+        if (state.activeReg !== reg) {
+            state.cart = [];
+            state.techNotes = '';
+            state.defectList = '';
+            state.partsSearchQuery = '';
+            state.customerResponse = '';
+            state.approvedParts = '';
+            state.selectedTechnician = '';
+            state.signatureData = '';
+            
+            cartCount.innerText = 0;
+            cartCount.classList.add('hidden');
+        }
+        
+        pushNavigation('Request Parts', { activeReg: reg, activePartsTab: 'request' });
+    };
+
+    window.openWorkDone = (reg) => {
+        if (state.activeReg !== reg) {
+            state.cart = [];
+            state.techNotes = '';
+            state.defectList = '';
+            state.partsSearchQuery = '';
+            state.customerResponse = '';
+            state.approvedParts = '';
+            state.selectedTechnician = '';
+            state.signatureData = '';
+            
+            cartCount.innerText = 0;
+            cartCount.classList.add('hidden');
+        }
+        
+        pushNavigation('Request Parts', { activeReg: reg, activePartsTab: 'workdone' });
+    };
+
+    window.cancelWorkDone = () => {
+        state.currentWorkDoneReg = null;
+        state.currentView = 'home';
+        render();
+    };
+
+    window.saveWorkDone = async () => {
+        const textarea = document.getElementById('work-done-textarea');
+        const workDoneText = textarea.value.trim();
+
+        if (!workDoneText) {
+            await customAlert('Please enter the work done details before saving.', 'Work Done Required');
+            return;
+        }
+
+        try {
+            await anvil.call(mainContent, 'save_work_done', state.currentWorkDoneReg, workDoneText);
+
+            const service = state.activeServices.find(s => s.jobcardref === state.currentWorkDoneReg);
+            if (service) {
+                service.workDone = workDoneText;
+                service.status = 'Completed';
+            }
+
+            await customAlert(
+                `Work done has been saved successfully for jobcard reference ${state.currentWorkDoneReg}`,
+                '✅ Success'
+            );
+
+            state.currentWorkDoneReg = null;
+            clearNavigationHistory();
+            state.currentView = 'home';
+            render();
+
+        } catch (err) {
+            console.error(err);
+            await customAlert(
+                'Failed to save work done. Please try again.',
+                '❌ Error'
+            );
+        }
+    };
+
+    window.clearPartsSearch = () => {
+        state.partsSearchQuery = '';
+        renderRequestParts();
+    };
+
+    window.clearSignaturePad = () => {
+        clearSignature();
+    };
+
+    window.toggleCollapse = () => {
+        const content = document.getElementById('collapse-content');
+        const icon = document.getElementById('collapse-icon');
+        const button = document.getElementById('collapse-toggle');
+
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            button.style.background = 'linear-gradient(135deg, rgba(71, 85, 105, 0.8) 0%, rgba(51, 65, 85, 0.8) 100%)';
+            if (icon) {
+                icon.style.transform = 'rotate(180deg)';
+            }
+        } else {
+            content.style.display = 'none';
+            button.style.background = 'linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%)';
+            if (icon) {
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        lucide.createIcons();
+    };
+
+    // Button listeners
+    backBtn.onclick = () => {
+        popNavigation();
+    };
+    
+    cartBtn.onclick = () => { 
+        pushNavigation('checkout');
+    };
+    
+    homeFooterBtn.onclick = goToHome;
+
+    adminTrigger.onclick = () => {
+        state.adminClicks++;
+        clearTimeout(state.adminTimeout);
+        if (state.adminClicks === 5) {
+            state.adminClicks = 0;
+            state.currentView = 'admin';
+            render();
+        } else {
+            state.adminTimeout = setTimeout(() => { 
+                state.adminClicks = 0; 
+            }, 2000);
+        }
+    };
+
+    window.onscroll = () => {
+        backToTopBtn.className = window.scrollY > 300 ? 'visible-fade' : 'hidden-fade';
+    };
+
+    backToTopBtn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ===========================
+// INITIALIZATION
+// ===========================
+
+init();
 })();

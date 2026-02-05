@@ -89,6 +89,10 @@
     let customerResponse = '';
     let approvedParts = '';
     let navigationHistory = []; // Track navigation history
+    let technicians = []; // List of technicians from server
+    let selectedTechnician = ''; // Selected technician
+    let signatureData = ''; // Signature image data
+    let isDrawing = false; // Signature drawing state
 
     // Category display configuration (icons and colors)
     const categoryConfig = {
@@ -133,6 +137,9 @@
 
             await loadActiveServices();
 
+            // Load technicians list
+            await loadTechnicians();
+
             setupListeners();
             render();
 
@@ -148,7 +155,7 @@
                 console.error("Python args:", e.args);
             }
         }
-            }
+    }
 
     async function loadActiveServices() {
         try {
@@ -170,6 +177,17 @@
         } catch (error) {
             console.error('Error loading active services:', error);
             activeServices = [];
+        }
+    }
+
+    async function loadTechnicians() {
+        try {
+            const techData = await anvil.call(mainContent, 'get_technicians_list');
+            technicians = techData || [];
+            console.log('Loaded technicians:', technicians.length);
+        } catch (error) {
+            console.error('Error loading technicians:', error);
+            technicians = [];
         }
     }
 
@@ -214,6 +232,87 @@
         navigationHistory = [];
     }
 
+    // Signature Pad Functions
+    function initSignaturePad() {
+        const canvas = document.getElementById('signature-canvas');
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        const dpi = window.devicePixelRatio || 1;
+        
+        // Set canvas size
+        const parent = canvas.parentElement;
+        canvas.width = parent.clientWidth * dpi;
+        canvas.height = 200 * dpi;
+        canvas.style.width = parent.clientWidth + 'px';
+        canvas.style.height = '200px';
+        
+        ctx.scale(dpi, dpi);
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = '#06b6d4';
+
+        // Restore saved signature
+        if (signatureData) {
+            const img = new Image();
+            img.onload = () => ctx.drawImage(img, 0, 0, parent.clientWidth, 200);
+            img.src = signatureData;
+        }
+
+        function getCoordinates(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
+        }
+
+        function startDrawing(e) {
+            e.preventDefault();
+            isDrawing = true;
+            const { x, y } = getCoordinates(e);
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            e.preventDefault();
+            const { x, y } = getCoordinates(e);
+            ctx.lineTo(x, y);
+            ctx.stroke();
+        }
+
+        function stopDrawing() {
+            if (isDrawing) {
+                isDrawing = false;
+                ctx.closePath();
+                signatureData = canvas.toDataURL('image/png');
+            }
+        }
+
+        // Event listeners
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+        canvas.addEventListener('touchstart', startDrawing);
+        canvas.addEventListener('touchmove', draw);
+        canvas.addEventListener('touchend', stopDrawing);
+        canvas.addEventListener('touchcancel', stopDrawing);
+    }
+
+    function clearSignature() {
+        const canvas = document.getElementById('signature-canvas');
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        signatureData = '';
+    }
+
     function render() {
         const showBackBtn = navigationHistory.length > 0 && currentView !== 'home' && currentView !== 'success' && currentView !== 'admin';
 
@@ -249,18 +348,18 @@
         const totalServices = activeServices.length;
         const checkedInCount = activeServices.filter(s => s.status === 'Checked-In').length;
         const inServiceCount = activeServices.filter(s => s.status === 'In-Service').length;
-        
+        const completedCount = activeServices.filter(s => s.status === 'Completed').length;
 
         mainContent.innerHTML = `
         <!-- Hero Section -->
         <div class="hero-section">
-            <h1 class="hero-title">BMA PARTS EXPRESS</h1>
-            <p class="hero-subtitle">A comprehensive, operational, and centralized hub for technical excellence.</p>
+            <h1 class="hero-title">Modern Garage System</h1>
+            <p class="hero-subtitle">Service & Parts Management</p>
             
             <div class="status-badges">
-                <span class="badge badge-premium">Comprehensive</span>
-                <span class="badge badge-fast">Operational</span>
-                <span class="badge badge-service">Centralized</span>
+                <span class="badge badge-premium">Premium UI</span>
+                <span class="badge badge-fast">Fast Delivery</span>
+                <span class="badge badge-service">Developing Service</span>
             </div>
         </div>
 
@@ -290,6 +389,15 @@
                     <div class="service-card-title">In Service</div>
                     <div class="service-card-subtitle">Currently working</div>
                     <div class="service-stat">${inServiceCount}</div>
+                </div>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon" style="background: linear-gradient(135deg, #64748b 0%, #475569 100%);">✅</div>
+                <div>
+                    <div class="service-card-title">Completed</div>
+                    <div class="service-card-subtitle">Finished today</div>
+                    <div class="service-stat">${completedCount}</div>
                 </div>
             </div>
         </div>
@@ -480,6 +588,36 @@
                         style="width:100%; padding:1rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; resize:vertical;"
                     >${defectList}</textarea>
                 </div>
+
+                <!-- Technician Dropdown -->
+                <div style="margin-top:2rem;">
+                    <label style="display:block; margin-bottom:0.5rem; font-size:1.8rem; font-weight:bold; color:#06b6d4;">Select Technician</label>
+                    <select 
+                        id="technician-dropdown" 
+                        style="width:100%; padding:1rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; cursor:pointer;">
+                        <option value="">-- Select Technician --</option>
+                        ${technicians.map(tech => `<option value="${tech}" ${selectedTechnician === tech ? 'selected' : ''}>${tech}</option>`).join('')}
+                    </select>
+                </div>
+
+                <!-- Signature Pad -->
+                <div style="margin-top:2rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                        <label style="font-size:1.8rem; font-weight:bold; color:#06b6d4;">Technician Signature</label>
+                        <button 
+                            onclick="clearSignaturePad()" 
+                            style="background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color:white; padding:0.5rem 1rem; border-radius:0.5rem; border:2px solid rgba(220, 38, 38, 0.3); font-weight:bold; cursor:pointer; font-size:1.4rem; transition:all 0.3s ease;">
+                            Clear Signature
+                        </button>
+                    </div>
+                    <div style="background:white; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); overflow:hidden; position:relative;">
+                        <canvas 
+                            id="signature-canvas" 
+                            style="display:block; width:100%; height:200px; touch-action:none; cursor:crosshair;">
+                        </canvas>
+                    </div>
+                    <p style="font-size:1.3rem; color:#94a3b8; margin-top:0.5rem;">Sign above using your mouse or touch screen</p>
+                </div>
             </div>
         </div>
         
@@ -650,6 +788,7 @@
     function attachPartsRequestListeners() {
         const techNotesTextarea = document.getElementById('tech-notes-textarea');
         const defectsTextarea = document.getElementById('defects-textarea');
+        const technicianDropdown = document.getElementById('technician-dropdown');
 
         if (techNotesTextarea) {
             techNotesTextarea.oninput = (e) => {
@@ -662,6 +801,15 @@
                 defectList = e.target.value;
             };
         }
+
+        if (technicianDropdown) {
+            technicianDropdown.onchange = (e) => {
+                selectedTechnician = e.target.value;
+            };
+        }
+
+        // Initialize signature pad
+        setTimeout(() => initSignaturePad(), 100);
 
         const partsInput = document.getElementById('parts-search');
         if(partsInput) {
@@ -1000,7 +1148,7 @@
 
         window.clearPartsDetails = async () => {
             const confirmed = await customConfirm(
-                'Are you sure you want to clear Tech Notes, List of Defects, and Requested Parts?',
+                'Are you sure you want to clear Tech Notes, List of Defects, Requested Parts, Technician, and Signature?',
                 'Clear All Details'
             );
 
@@ -1009,6 +1157,8 @@
                 defectList = '';
                 cart = [];
                 partsSearchQuery = '';
+                selectedTechnician = '';
+                signatureData = '';
                 
                 // Update cart count in header
                 const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -1023,6 +1173,16 @@
         window.savePartsDetails = async () => {
             if (cart.length === 0 && !techNotes.trim() && !defectList.trim()) {
                 await customAlert('No details to save. Please add parts, tech notes, or defects first.', 'No Data');
+                return;
+            }
+
+            if (!selectedTechnician) {
+                await customAlert('Please select a technician before saving.', 'Technician Required');
+                return;
+            }
+
+            if (!signatureData) {
+                await customAlert('Please provide your signature before saving.', 'Signature Required');
                 return;
             }
 
@@ -1043,7 +1203,9 @@
                     activeReg,
                     techNotesValue, 
                     defectListValue, 
-                    partsAndQuantities
+                    partsAndQuantities,
+                    selectedTechnician,
+                    signatureData
                 );
 
                 await customAlert(
@@ -1116,6 +1278,8 @@
             customerResponse = '';
             approvedParts = '';
             cart = [];
+            selectedTechnician = '';
+            signatureData = '';
             
             // Clear navigation history when going home
             clearNavigationHistory();
@@ -1170,6 +1334,8 @@
                 partsSearchQuery = '';
                 customerResponse = '';
                 approvedParts = '';
+                selectedTechnician = '';
+                signatureData = '';
                 
                 // Update cart count in header
                 cartCount.innerText = 0;
@@ -1189,6 +1355,8 @@
                 partsSearchQuery = '';
                 customerResponse = '';
                 approvedParts = '';
+                selectedTechnician = '';
+                signatureData = '';
                 
                 // Update cart count in header
                 cartCount.innerText = 0;
@@ -1325,6 +1493,10 @@
         window.clearPartsSearch = () => {
             partsSearchQuery = '';
             renderRequestParts();
+        };
+
+        window.clearSignaturePad = () => {
+            clearSignature();
         };
 
         window.confirmPartsOrder = async () => {

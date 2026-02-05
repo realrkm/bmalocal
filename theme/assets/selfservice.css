@@ -289,7 +289,7 @@ header {
     background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%);
     backdrop-filter: blur(10px);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4),
-                0 0 40px rgba(59, 130, 246, 0.1);
+        0 0 40px rgba(59, 130, 246, 0.1);
     display: flex; 
     flex-direction: column; 
     align-items: center; 
@@ -323,7 +323,7 @@ header {
     transform: translateY(-15px);
     border-color: rgba(59, 130, 246, 0.5);
     box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5),
-                0 0 80px rgba(59, 130, 246, 0.3);
+        0 0 80px rgba(59, 130, 246, 0.3);
 }
 
 .category-icon { 
@@ -672,6 +672,28 @@ footer button:hover {
 .hidden { display: none !important; }
 .hidden-fade { opacity: 0; pointer-events: none; transform: translateY(20px); transition: all 0.3s; }
 .visible-fade { opacity: 1; pointer-events: auto; transform: translateY(0); transition: all 0.3s; }
+
+/* Voice indicator */
+.voice-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6);
+    opacity: 0;
+    align-self: center;
+}
+
+.voice-indicator--active {
+    opacity: 1;
+    animation: voicePulse 1s ease-out infinite;
+}
+
+@keyframes voicePulse {
+    0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6); }
+    70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+    100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+}
 
 /* Category Backgrounds - Enhanced with gradients */
 .bg-red { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }

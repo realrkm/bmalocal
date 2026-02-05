@@ -839,7 +839,14 @@
             
             <div id="collapse-content" style="display:${shouldShowCollapse ? 'block' : 'none'}; padding:2rem;">
                 <div style="margin-bottom:2rem;">
-                    <label for="tech-notes-textarea" style="display:block; margin-bottom:0.5rem; font-size:1.8rem; font-weight:bold; color:#06b6d4;">Tech Notes</label>
+                    <label for="tech-notes-textarea" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.5rem; font-size:1.8rem; font-weight:bold; color:#06b6d4;">
+                        <span>Tech Notes</span>
+                        <div style="display:flex; gap:0.5rem;">
+                            <span id="tech-notes-voice-indicator" class="voice-indicator" aria-hidden="true"></span>
+                            <button id="tech-notes-voice-start" type="button" style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:1.2rem;">Start Voice</button>
+                            <button id="tech-notes-voice-stop" type="button" disabled style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:1.2rem; opacity:0.6;">Stop</button>
+                        </div>
+                    </label>
                     <textarea 
                         id="tech-notes-textarea" 
                         rows="4" 
@@ -849,7 +856,14 @@
                 </div>
                 
                 <div>
-                    <label for="defects-textarea" style="display:block; margin-bottom:0.5rem; font-size:1.8rem; font-weight:bold; color:#06b6d4;">List of Defects</label>
+                    <label for="defects-textarea" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.5rem; font-size:1.8rem; font-weight:bold; color:#06b6d4;">
+                        <span>List of Defects</span>
+                        <div style="display:flex; gap:0.5rem;">
+                            <span id="defects-voice-indicator" class="voice-indicator" aria-hidden="true"></span>
+                            <button id="defects-voice-start" type="button" style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:1.2rem;">Start Voice</button>
+                            <button id="defects-voice-stop" type="button" disabled style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:1.2rem; opacity:0.6;">Stop</button>
+                        </div>
+                    </label>
                     <textarea 
                         id="defects-textarea" 
                         rows="4" 
@@ -1054,6 +1068,12 @@
         const techNotesTextarea = document.getElementById('tech-notes-textarea');
         const defectsTextarea = document.getElementById('defects-textarea');
         const technicianDropdown = document.getElementById('technician-dropdown');
+        const techNotesVoiceStart = document.getElementById('tech-notes-voice-start');
+        const techNotesVoiceStop = document.getElementById('tech-notes-voice-stop');
+        const techNotesVoiceIndicator = document.getElementById('tech-notes-voice-indicator');
+        const defectsVoiceStart = document.getElementById('defects-voice-start');
+        const defectsVoiceStop = document.getElementById('defects-voice-stop');
+        const defectsVoiceIndicator = document.getElementById('defects-voice-indicator');
 
         if (techNotesTextarea) {
             techNotesTextarea.oninput = (e) => {
@@ -1072,6 +1092,107 @@
                 state.selectedTechnician = e.target.value;
             };
         }
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const supportsSpeech = !!SpeechRecognition;
+
+        function bindSpeechToTextarea(textarea, startBtn, stopBtn, indicator, onText) {
+            if (!textarea || !startBtn || !stopBtn) return;
+            if (!supportsSpeech) {
+                startBtn.disabled = true;
+                stopBtn.disabled = true;
+                startBtn.textContent = 'Voice Unsupported';
+                return;
+            }
+
+            let recognition = null;
+            let isListening = false;
+            let indicatorTimeout = null;
+
+            const setButtons = (listening) => {
+                isListening = listening;
+                startBtn.disabled = listening;
+                stopBtn.disabled = !listening;
+                stopBtn.style.opacity = listening ? '1' : '0.6';
+            };
+
+            const showIndicator = () => {
+                if (!indicator) return;
+                indicator.classList.add('voice-indicator--active');
+                if (indicatorTimeout) clearTimeout(indicatorTimeout);
+                indicatorTimeout = setTimeout(() => {
+                    indicator.classList.remove('voice-indicator--active');
+                }, 1200);
+            };
+
+            const startListening = () => {
+                if (isListening) return;
+                recognition = new SpeechRecognition();
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = 'en-US';
+
+                recognition.onresult = (event) => {
+                    let transcript = '';
+                    let hasSpeech = false;
+                    for (let i = event.resultIndex; i < event.results.length; ++i) {
+                        const chunk = event.results[i][0].transcript || '';
+                        if (chunk.trim()) hasSpeech = true;
+                        if (event.results[i].isFinal) {
+                            transcript += event.results[i][0].transcript;
+                        }
+                    }
+                    if (hasSpeech) {
+                        showIndicator();
+                    }
+                    if (transcript) {
+                        textarea.value += (textarea.value ? '\n' : '') + transcript.trim();
+                        textarea.scrollTop = textarea.scrollHeight;
+                        if (onText) onText(textarea.value);
+                    }
+                };
+
+                recognition.onend = () => {
+                    setButtons(false);
+                    if (indicatorTimeout) clearTimeout(indicatorTimeout);
+                    if (indicator) indicator.classList.remove('voice-indicator--active');
+                };
+
+                recognition.onerror = () => {
+                    setButtons(false);
+                    if (indicatorTimeout) clearTimeout(indicatorTimeout);
+                    if (indicator) indicator.classList.remove('voice-indicator--active');
+                };
+
+                recognition.start();
+                setButtons(true);
+            };
+
+            const stopListening = () => {
+                if (!recognition) return;
+                recognition.stop();
+                setButtons(false);
+            };
+
+            startBtn.onclick = startListening;
+            stopBtn.onclick = stopListening;
+        }
+
+        bindSpeechToTextarea(
+            techNotesTextarea,
+            techNotesVoiceStart,
+            techNotesVoiceStop,
+            techNotesVoiceIndicator,
+            (value) => { state.techNotes = value; }
+        );
+
+        bindSpeechToTextarea(
+            defectsTextarea,
+            defectsVoiceStart,
+            defectsVoiceStop,
+            defectsVoiceIndicator,
+            (value) => { state.defectList = value; }
+        );
 
         console.log('Scheduling signature pad initialization...');
         if (state.collapseOpen || state.signatureData) {
@@ -1428,6 +1549,7 @@ function setupListeners() {
             state.partsSearchQuery = '';
             state.selectedTechnician = '';
             state.signatureData = '';
+            state.collapseOpen = false;
             
             const totalQuantity = state.cart.reduce((sum, item) => sum + item.quantity, 0);
             cartCount.innerText = Math.round(totalQuantity);

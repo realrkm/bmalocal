@@ -87,7 +87,8 @@
     let defectList = '';
     let activePartsTab = 'request'; // 'request', 'feedback', or 'workdone'
     let customerResponse = '';
-    let approvedParts = ''; 
+    let approvedParts = '';
+    let navigationHistory = []; // Track navigation history
 
     // Category display configuration (icons and colors)
     const categoryConfig = {
@@ -147,7 +148,7 @@
                 console.error("Python args:", e.args);
             }
         }
-    }
+            }
 
     async function loadActiveServices() {
         try {
@@ -176,11 +177,45 @@
         return p.category ? p.category.toLowerCase().replace(/\s+/g, '-') : 'other';
     }
 
+    // Navigation History Management
+    function pushNavigation(view, state = {}) {
+        navigationHistory.push({
+            view: currentView,
+            state: {
+                selectedCategory,
+                activeReg,
+                activePartsTab,
+                partsSearchQuery
+            }
+        });
+        currentView = view;
+        if (state.selectedCategory !== undefined) selectedCategory = state.selectedCategory;
+        if (state.activeReg !== undefined) activeReg = state.activeReg;
+        if (state.activePartsTab !== undefined) activePartsTab = state.activePartsTab;
+        if (state.partsSearchQuery !== undefined) partsSearchQuery = state.partsSearchQuery;
+    }
+
+    function popNavigation() {
+        if (navigationHistory.length === 0) {
+            goToHome();
+            return;
+        }
+        
+        const previous = navigationHistory.pop();
+        currentView = previous.view;
+        selectedCategory = previous.state.selectedCategory;
+        activeReg = previous.state.activeReg;
+        activePartsTab = previous.state.activePartsTab;
+        partsSearchQuery = previous.state.partsSearchQuery;
+        render();
+    }
+
+    function clearNavigationHistory() {
+        navigationHistory = [];
+    }
+
     function render() {
-        const showBackBtn = currentView === 'category' || 
-            (currentView !== 'home' && currentView !== 'success' && 
-             currentView !== 'admin' && currentView !== 'workDone' && 
-             currentView !== 'Request Parts');
+        const showBackBtn = navigationHistory.length > 0 && currentView !== 'home' && currentView !== 'success' && currentView !== 'admin';
 
         backBtn.classList.toggle('hidden', !showBackBtn);
 
@@ -214,18 +249,18 @@
         const totalServices = activeServices.length;
         const checkedInCount = activeServices.filter(s => s.status === 'Checked-In').length;
         const inServiceCount = activeServices.filter(s => s.status === 'In-Service').length;
-        const completedCount = activeServices.filter(s => s.status === 'Completed').length;
+        
 
         mainContent.innerHTML = `
         <!-- Hero Section -->
         <div class="hero-section">
-            <h1 class="hero-title">Modern Garage System</h1>
-            <p class="hero-subtitle">Service & Parts Management</p>
+            <h1 class="hero-title">BMA PARTS EXPRESS</h1>
+            <p class="hero-subtitle">A comprehensive, operational, and centralized hub for technical excellence.</p>
             
             <div class="status-badges">
-                <span class="badge badge-premium">Premium UI</span>
-                <span class="badge badge-fast">Fast Delivery</span>
-                <span class="badge badge-service">Developing Service</span>
+                <span class="badge badge-premium">Comprehensive</span>
+                <span class="badge badge-fast">Operational</span>
+                <span class="badge badge-service">Centralized</span>
             </div>
         </div>
 
@@ -255,15 +290,6 @@
                     <div class="service-card-title">In Service</div>
                     <div class="service-card-subtitle">Currently working</div>
                     <div class="service-stat">${inServiceCount}</div>
-                </div>
-            </div>
-            
-            <div class="service-card">
-                <div class="service-icon" style="background: linear-gradient(135deg, #64748b 0%, #475569 100%);">✅</div>
-                <div>
-                    <div class="service-card-title">Completed</div>
-                    <div class="service-card-subtitle">Finished today</div>
-                    <div class="service-stat">${completedCount}</div>
                 </div>
             </div>
         </div>
@@ -900,7 +926,7 @@
         if (currentView === 'Request Parts') {
             breadcrumb += ` > Request Parts`;
         } else if (currentView === 'category' || currentView === 'checkout') {
-            breadcrumb += ` > <span onclick="backToPartsRequest()" style="cursor:pointer; color:#06b6d4; font-weight:bold;">Request Parts</span>`;
+            breadcrumb += ` > <span style="color:#06b6d4; font-weight:bold;">Request Parts</span>`;
         }
 
         if (currentView === 'category') {
@@ -916,8 +942,7 @@
 
     function setupListeners() {
         window.selectCategory = (id) => { 
-            selectedCategory = categories.find(c => c.id === id); 
-            currentView = 'category'; 
+            pushNavigation('category', { selectedCategory: categories.find(c => c.id === id) });
             render(); 
         };
 
@@ -1092,6 +1117,9 @@
             approvedParts = '';
             cart = [];
             
+            // Clear navigation history when going home
+            clearNavigationHistory();
+            
             // Update cart count in header
             cartCount.innerText = 0;
             cartCount.classList.add('hidden');
@@ -1099,13 +1127,6 @@
             render(); 
         };
 
-        window.backToPartsRequest = () => {
-            currentView = 'Request Parts';
-            selectedCategory = null;
-            partsSearchQuery = '';
-            render();
-        };
-        
         window.setSearchFilter = (f) => { 
             activeSearchFilter = f; 
             render(); 
@@ -1155,9 +1176,7 @@
                 cartCount.classList.add('hidden');
             }
             
-            activeReg = reg; 
-            activePartsTab = 'request';
-            currentView = 'Request Parts'; 
+            pushNavigation('Request Parts', { activeReg: reg, activePartsTab: 'request' });
             render(); 
         };
 
@@ -1176,9 +1195,7 @@
                 cartCount.classList.add('hidden');
             }
             
-            activeReg = reg;
-            activePartsTab = 'workdone';
-            currentView = 'Request Parts';
+            pushNavigation('Request Parts', { activeReg: reg, activePartsTab: 'workdone' });
             render();
         };
 
@@ -1215,6 +1232,7 @@
                 );
 
                 currentWorkDoneReg = null;
+                clearNavigationHistory();
                 currentView = 'home';
                 render();
 
@@ -1280,13 +1298,12 @@
         };
         
         backBtn.onclick = () => {
-            if (currentView === 'category') {
-                backToPartsRequest();
-            } else {
-                goToHome();
-            }
+            popNavigation();
         };
-        cartBtn.onclick = () => { currentView = 'checkout'; render(); };
+        cartBtn.onclick = () => { 
+            pushNavigation('checkout');
+            render(); 
+        };
         homeFooterBtn.onclick = goToHome;
 
         adminTrigger.onclick = () => {
@@ -1357,6 +1374,7 @@
                 defectList = '';
                 partsSearchQuery = '';
 
+                clearNavigationHistory();
                 currentView = 'success';
                 render();
 
@@ -1392,7 +1410,7 @@
         };
 
         window.viewCart = () => {
-            currentView = 'checkout';
+            pushNavigation('checkout');
             render();
         };
 
@@ -1413,6 +1431,7 @@
                     'Order Cancelled'
                 );
 
+                clearNavigationHistory();
                 currentView = 'home';
                 render();
             }

@@ -31,7 +31,7 @@ class DefectsForm(DefectsFormTemplate):
 
         items = anvil.server.call("getStaff")
         # Convert to a list of (display_text, value) tuples
-        self.drop_down_staff.items = [(s['Staff'], s['ID']) for s in items]
+        self.drop_down_staff.items = [(s['Staff'], s['Staff']) for s in items]
 
         #Store JobcardID 
         self.jobcardid = defects_data[0]["ID"]
@@ -57,7 +57,7 @@ class DefectsForm(DefectsFormTemplate):
         self.txtRequestedParts.text = anvil.server.call('getRequestedParts',defects_data[0]["ID"])
         result = anvil.server.call("getDefectsStaffAndSignature",defects_data[0]["ID"])
         if result: #Return existing details
-            self.drop_down_staff.selected_value = result[0]["PreparedByStaffID"]
+            self.drop_down_staff.selected_value = result[0]["PreparedByStaff"]
             self.image_1.source = result[0]["Signature"]
 
     
@@ -171,7 +171,7 @@ class DefectsForm(DefectsFormTemplate):
 
     def drop_down_staff_change(self, **event_args):
         """This method is called when an item is selected"""
-        if self.drop_down_staff.selected_value > 0:
+        if self.drop_down_staff.selected_value:
             self.label_staffchanged.text = "Yes"
             alert("Update Signature", title="Staff Name Changed")
 

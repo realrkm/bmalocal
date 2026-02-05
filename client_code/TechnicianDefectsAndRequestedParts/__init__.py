@@ -32,7 +32,7 @@ class TechnicianDefectsAndRequestedParts(TechnicianDefectsAndRequestedPartsTempl
 
         items = anvil.server.call_s("getStaff")
         # Convert to a list of (display_text, value) tuples
-        self.drop_down_staff.items = [(s['Staff'], s['ID']) for s in items]
+        self.drop_down_staff.items = [(s['Staff'], s['Staff']) for s in items]
         
     def handle_server_errors(self, exc):
         if isinstance(exc, anvil.server.UplinkDisconnectedError):

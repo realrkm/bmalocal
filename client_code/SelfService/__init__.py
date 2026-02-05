@@ -42,4 +42,6 @@ class SelfService(SelfServiceTemplate):
 
     def storeTechDetails(self, jobcard_ref, tech_notes, defect_list, parts_and_quantities ):
         anvil.server.call("storeTechDetails", jobcard_ref, tech_notes, defect_list, parts_and_quantities)
+        #anvil.server.call('saveTecnicianDefectsAndRequestedParts', jobcardref, defects, requestedParts, staffID, signature)
+        #anvil.server.call_s('updateJobCardStatus', jobcardref, status)
         return None

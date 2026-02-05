@@ -204,7 +204,6 @@
     }
 
     function renderHome() {
-        const isHistory = currentStatusFilter === 'Completed';
         const filtered = activeServices.filter(s => {
             const matchesStatus = currentStatusFilter === 'all' ? (s.status !== 'Completed') : (s.status === currentStatusFilter);
             const matchesSearch = s.jobcardref.toLowerCase().includes(serviceSearchQuery.toLowerCase()) || s.tech.toLowerCase().includes(serviceSearchQuery.toLowerCase());
@@ -221,7 +220,7 @@
         <!-- Hero Section -->
         <div class="hero-section">
             <h1 class="hero-title">Modern Garage System</h1>
-            <p class="hero-subtitle">${isHistory ? 'Service History' : 'Service & Parts Management'}</p>
+            <p class="hero-subtitle">Service & Parts Management</p>
             
             <div class="status-badges">
                 <span class="badge badge-premium">Premium UI</span>
@@ -274,7 +273,6 @@
             <div style="display:flex; gap:1rem;">
                 <button class="btn-status ${currentStatusFilter === 'Checked-In' ? 'active-filter' : ''}" onclick="filterByStatus('Checked-In')">Checked-In</button>
                 <button class="btn-status ${currentStatusFilter === 'In-Service' ? 'active-filter' : ''}" onclick="filterByStatus('In-Service')">In-Service</button>
-                <button class="btn-status ${currentStatusFilter === 'Completed' ? 'active-filter' : ''}" onclick="filterByStatus('Completed')">History</button>
             </div>
             
             <div style="position:relative; flex:1; max-width:400px; min-width:300px;">
@@ -1217,7 +1215,6 @@
                 );
 
                 currentWorkDoneReg = null;
-                currentStatusFilter = 'Completed';
                 currentView = 'home';
                 render();
 

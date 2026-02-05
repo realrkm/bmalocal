@@ -736,7 +736,14 @@
                     </div>
                     
                     <div style="margin-bottom:2rem;">
-                        <label style="display:block; margin-bottom:1rem; font-size:1.8rem; font-weight:bold; color:#06b6d4;">Describe the work completed:</label>
+                        <label style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; font-size:1.8rem; font-weight:bold; color:#06b6d4;">
+                            <span>Describe the work completed:</span>
+                            <div style="display:flex; gap:0.5rem;">
+                                <span id="work-done-voice-indicator" class="voice-indicator" aria-hidden="true"></span>
+                                <button id="work-done-voice-start" type="button" style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:2.2rem;"><i data-lucide="mic"></i></button>
+                                <button id="work-done-voice-stop" type="button" disabled style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:2.2rem; opacity:0.6;"><i data-lucide="mic-off"></i></button>
+                            </div>
+                        </label>
                         <textarea 
                             id="work-done-textarea" 
                             rows="8" 
@@ -843,8 +850,8 @@
                         <span>Tech Notes</span>
                         <div style="display:flex; gap:0.5rem;">
                             <span id="tech-notes-voice-indicator" class="voice-indicator" aria-hidden="true"></span>
-                            <button id="tech-notes-voice-start" type="button" style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:1.2rem;">Start Voice</button>
-                            <button id="tech-notes-voice-stop" type="button" disabled style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:1.2rem; opacity:0.6;">Stop</button>
+                            <button id="tech-notes-voice-start" type="button" style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:2.2rem;"><i data-lucide="mic"></i></button>
+                            <button id="tech-notes-voice-stop" type="button" disabled style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:2.2rem; opacity:0.6;"><i data-lucide="mic-off"></i></button>
                         </div>
                     </label>
                     <textarea 
@@ -860,8 +867,8 @@
                         <span>List of Defects</span>
                         <div style="display:flex; gap:0.5rem;">
                             <span id="defects-voice-indicator" class="voice-indicator" aria-hidden="true"></span>
-                            <button id="defects-voice-start" type="button" style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:1.2rem;">Start Voice</button>
-                            <button id="defects-voice-stop" type="button" disabled style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:1.2rem; opacity:0.6;">Stop</button>
+                            <button id="defects-voice-start" type="button" style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:2.2rem;"><i data-lucide="mic"></i></button>
+                            <button id="defects-voice-stop" type="button" disabled style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:2.2rem; opacity:0.6;"><i data-lucide="mic-off"></i></button>
                         </div>
                     </label>
                     <textarea 
@@ -1039,8 +1046,13 @@
                     </p>
                 </div>
                 <div style="margin-bottom:2rem;">
-                <label for="workdone-textarea" style="display:block; margin-bottom:1rem; font-size:2rem; font-weight:bold; color:#06b6d4;">
-                    📋 Work Completed Description
+                <label for="workdone-textarea" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; font-size:2rem; font-weight:bold; color:#06b6d4;">
+                    <span>📋 Work Completed Description</span>
+                    <div style="display:flex; gap:0.5rem;">
+                        <span id="workdone-voice-indicator" class="voice-indicator" aria-hidden="true"></span>
+                        <button id="workdone-voice-start" type="button" style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:2.2rem;"><i data-lucide="mic"></i></i>Start Voice</button>
+                        <button id="workdone-voice-stop" type="button" disabled style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:2.2rem; opacity:0.6;"><i data-lucide="mic-off"></i></button>
+                    </div>
                 </label>
                 <textarea 
                     id="workdone-textarea" 
@@ -1108,12 +1120,17 @@
             let recognition = null;
             let isListening = false;
             let indicatorTimeout = null;
+            let lastFinalTranscript = '';
+            let pendingLine = '';
+            let pendingTimer = null;
+            const PAUSE_MS = 800;
 
             const setButtons = (listening) => {
                 isListening = listening;
                 startBtn.disabled = listening;
                 stopBtn.disabled = !listening;
                 stopBtn.style.opacity = listening ? '1' : '0.6';
+                stopBtn.style.color = listening ? '#ef4444' : 'white';
             };
 
             const showIndicator = () => {
@@ -1125,12 +1142,30 @@
                 }, 1200);
             };
 
+            const flushPendingLine = () => {
+                if (!pendingLine.trim()) return;
+                const needsNewLine = textarea.value && !textarea.value.endsWith('\n');
+                textarea.value += (needsNewLine ? '\n' : '') + pendingLine.trim();
+                textarea.scrollTop = textarea.scrollHeight;
+                if (onText) onText(textarea.value);
+                pendingLine = '';
+            };
+
             const startListening = () => {
                 if (isListening) return;
                 recognition = new SpeechRecognition();
                 recognition.continuous = true;
                 recognition.interimResults = true;
                 recognition.lang = 'en-US';
+
+                recognition.onstart = () => {
+                    lastFinalTranscript = '';
+                    pendingLine = '';
+                    if (pendingTimer) {
+                        clearTimeout(pendingTimer);
+                        pendingTimer = null;
+                    }
+                };
 
                 recognition.onresult = (event) => {
                     let transcript = '';
@@ -1139,16 +1174,30 @@
                         const chunk = event.results[i][0].transcript || '';
                         if (chunk.trim()) hasSpeech = true;
                         if (event.results[i].isFinal) {
-                            transcript += event.results[i][0].transcript;
+                            const finalChunk = event.results[i][0].transcript || '';
+                            if (finalChunk) {
+                                if (finalChunk.startsWith(lastFinalTranscript)) {
+                                    transcript += finalChunk.slice(lastFinalTranscript.length);
+                                } else {
+                                    transcript += finalChunk;
+                                }
+                                lastFinalTranscript = finalChunk;
+                            }
                         }
                     }
                     if (hasSpeech) {
                         showIndicator();
                     }
                     if (transcript) {
-                        textarea.value += (textarea.value ? '\n' : '') + transcript.trim();
-                        textarea.scrollTop = textarea.scrollHeight;
-                        if (onText) onText(textarea.value);
+                        const cleaned = transcript.trim();
+                        if (cleaned) {
+                            pendingLine = pendingLine ? `${pendingLine} ${cleaned}` : cleaned;
+                            if (pendingTimer) clearTimeout(pendingTimer);
+                            pendingTimer = setTimeout(() => {
+                                flushPendingLine();
+                                pendingTimer = null;
+                            }, PAUSE_MS);
+                        }
                     }
                 };
 
@@ -1156,12 +1205,24 @@
                     setButtons(false);
                     if (indicatorTimeout) clearTimeout(indicatorTimeout);
                     if (indicator) indicator.classList.remove('voice-indicator--active');
+                    lastFinalTranscript = '';
+                    if (pendingTimer) {
+                        clearTimeout(pendingTimer);
+                        pendingTimer = null;
+                    }
+                    flushPendingLine();
                 };
 
                 recognition.onerror = () => {
                     setButtons(false);
                     if (indicatorTimeout) clearTimeout(indicatorTimeout);
                     if (indicator) indicator.classList.remove('voice-indicator--active');
+                    lastFinalTranscript = '';
+                    if (pendingTimer) {
+                        clearTimeout(pendingTimer);
+                        pendingTimer = null;
+                    }
+                    flushPendingLine();
                 };
 
                 recognition.start();
@@ -1241,6 +1302,172 @@
     }
 
     function attachWorkDoneListeners() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const supportsSpeech = !!SpeechRecognition;
+
+        function bindSpeechToTextarea(textarea, startBtn, stopBtn, indicator, onText) {
+            if (!textarea || !startBtn || !stopBtn) return;
+            if (!supportsSpeech) {
+                startBtn.disabled = true;
+                stopBtn.disabled = true;
+                startBtn.textContent = 'Voice Unsupported';
+                return;
+            }
+
+            let recognition = null;
+            let isListening = false;
+            let indicatorTimeout = null;
+            let lastFinalTranscript = '';
+            let pendingLine = '';
+            let pendingTimer = null;
+            const PAUSE_MS = 800;
+
+            const setButtons = (listening) => {
+                isListening = listening;
+                startBtn.disabled = listening;
+                stopBtn.disabled = !listening;
+                stopBtn.style.opacity = listening ? '1' : '0.6';
+                stopBtn.style.color = listening ? '#ef4444' : 'white';
+            };
+
+            const showIndicator = () => {
+                if (!indicator) return;
+                indicator.classList.add('voice-indicator--active');
+                if (indicatorTimeout) clearTimeout(indicatorTimeout);
+                indicatorTimeout = setTimeout(() => {
+                    indicator.classList.remove('voice-indicator--active');
+                }, 1200);
+            };
+
+            const flushPendingLine = () => {
+                if (!pendingLine.trim()) return;
+                const needsNewLine = textarea.value && !textarea.value.endsWith('\n');
+                textarea.value += (needsNewLine ? '\n' : '') + pendingLine.trim();
+                textarea.scrollTop = textarea.scrollHeight;
+                if (onText) onText(textarea.value);
+                pendingLine = '';
+            };
+
+            const startListening = () => {
+                if (isListening) return;
+                recognition = new SpeechRecognition();
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = 'en-US';
+
+                recognition.onstart = () => {
+                    lastFinalTranscript = '';
+                    pendingLine = '';
+                    if (pendingTimer) {
+                        clearTimeout(pendingTimer);
+                        pendingTimer = null;
+                    }
+                };
+
+                recognition.onresult = (event) => {
+                    let transcript = '';
+                    let hasSpeech = false;
+                    for (let i = event.resultIndex; i < event.results.length; ++i) {
+                        const chunk = event.results[i][0].transcript || '';
+                        if (chunk.trim()) hasSpeech = true;
+                        if (event.results[i].isFinal) {
+                            const finalChunk = event.results[i][0].transcript || '';
+                            if (finalChunk) {
+                                if (finalChunk.startsWith(lastFinalTranscript)) {
+                                    transcript += finalChunk.slice(lastFinalTranscript.length);
+                                } else {
+                                    transcript += finalChunk;
+                                }
+                                lastFinalTranscript = finalChunk;
+                            }
+                        }
+                    }
+                    if (hasSpeech) {
+                        showIndicator();
+                    }
+                    if (transcript) {
+                        const cleaned = transcript.trim();
+                        if (cleaned) {
+                            pendingLine = pendingLine ? `${pendingLine} ${cleaned}` : cleaned;
+                            if (pendingTimer) clearTimeout(pendingTimer);
+                            pendingTimer = setTimeout(() => {
+                                flushPendingLine();
+                                pendingTimer = null;
+                            }, PAUSE_MS);
+                        }
+                    }
+                };
+
+                recognition.onend = () => {
+                    setButtons(false);
+                    if (indicatorTimeout) clearTimeout(indicatorTimeout);
+                    if (indicator) indicator.classList.remove('voice-indicator--active');
+                    lastFinalTranscript = '';
+                    if (pendingTimer) {
+                        clearTimeout(pendingTimer);
+                        pendingTimer = null;
+                    }
+                    flushPendingLine();
+                };
+
+                recognition.onerror = () => {
+                    setButtons(false);
+                    if (indicatorTimeout) clearTimeout(indicatorTimeout);
+                    if (indicator) indicator.classList.remove('voice-indicator--active');
+                    lastFinalTranscript = '';
+                    if (pendingTimer) {
+                        clearTimeout(pendingTimer);
+                        pendingTimer = null;
+                    }
+                    flushPendingLine();
+                };
+
+                recognition.start();
+                setButtons(true);
+            };
+
+            const stopListening = () => {
+                if (!recognition) return;
+                recognition.stop();
+                setButtons(false);
+            };
+
+            startBtn.onclick = startListening;
+            stopBtn.onclick = stopListening;
+        }
+
+        const workDoneTextarea = document.getElementById('work-done-textarea');
+        const workDoneStart = document.getElementById('work-done-voice-start');
+        const workDoneStop = document.getElementById('work-done-voice-stop');
+        const workDoneIndicator = document.getElementById('work-done-voice-indicator');
+
+        const workdoneTextarea = document.getElementById('workdone-textarea');
+        const workdoneStart = document.getElementById('workdone-voice-start');
+        const workdoneStop = document.getElementById('workdone-voice-stop');
+        const workdoneIndicator = document.getElementById('workdone-voice-indicator');
+
+        bindSpeechToTextarea(
+            workDoneTextarea,
+            workDoneStart,
+            workDoneStop,
+            workDoneIndicator,
+            (value) => {
+                const service = state.activeServices.find(s => s.jobcardref === state.currentWorkDoneReg);
+                if (service) service.workDone = value;
+            }
+        );
+
+        bindSpeechToTextarea(
+            workdoneTextarea,
+            workdoneStart,
+            workdoneStop,
+            workdoneIndicator,
+            (value) => {
+                const service = state.activeServices.find(s => s.jobcardref === state.activeReg);
+                if (service) service.workDone = value;
+            }
+        );
+
         lucide.createIcons();
     }
 

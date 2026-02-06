@@ -740,8 +740,8 @@
                             <span>Describe the work completed:</span>
                             <div style="display:flex; gap:0.5rem;">
                                 <span id="work-done-voice-indicator" class="voice-indicator" aria-hidden="true"></span>
-                                <button id="work-done-voice-start" type="button" style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:2.2rem;"><i data-lucide="mic"></i></button>
-                                <button id="work-done-voice-stop" type="button" disabled style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:2.2rem; opacity:0.6;"><i data-lucide="mic-off"></i></button>
+                                <button id="work-done-voice-start" type="button" style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:2.2rem;"><i data-lucide="mic"></i>Start Voice</button>
+                                <button id="work-done-voice-stop" type="button" disabled style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:2.2rem; opacity:0.6;"><i data-lucide="mic-off"></i>Stop Voice</button>
                             </div>
                         </label>
                         <textarea 
@@ -850,8 +850,8 @@
                         <span>Tech Notes</span>
                         <div style="display:flex; gap:0.5rem;">
                             <span id="tech-notes-voice-indicator" class="voice-indicator" aria-hidden="true"></span>
-                            <button id="tech-notes-voice-start" type="button" style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:2.2rem;"><i data-lucide="mic"></i></button>
-                            <button id="tech-notes-voice-stop" type="button" disabled style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:2.2rem; opacity:0.6;"><i data-lucide="mic-off"></i></button>
+                            <button id="tech-notes-voice-start" type="button" style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:2.2rem;"><i data-lucide="mic"></i>Start Voice</button>
+                            <button id="tech-notes-voice-stop" type="button" disabled style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:2.2rem; opacity:0.6;"><i data-lucide="mic-off"></i>Stop Voice</button>
                         </div>
                     </label>
                     <textarea 
@@ -867,8 +867,8 @@
                         <span>List of Defects</span>
                         <div style="display:flex; gap:0.5rem;">
                             <span id="defects-voice-indicator" class="voice-indicator" aria-hidden="true"></span>
-                            <button id="defects-voice-start" type="button" style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:2.2rem;"><i data-lucide="mic"></i></button>
-                            <button id="defects-voice-stop" type="button" disabled style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:2.2rem; opacity:0.6;"><i data-lucide="mic-off"></i></button>
+                            <button id="defects-voice-start" type="button" style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:2.2rem;"><i data-lucide="mic"></i>Start Voice</button>
+                            <button id="defects-voice-stop" type="button" disabled style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:2.2rem; opacity:0.6;"><i data-lucide="mic-off"></i>Stop Voice</button>
                         </div>
                     </label>
                     <textarea 
@@ -1050,8 +1050,8 @@
                     <span>📋 Work Completed Description</span>
                     <div style="display:flex; gap:0.5rem;">
                         <span id="workdone-voice-indicator" class="voice-indicator" aria-hidden="true"></span>
-                        <button id="workdone-voice-start" type="button" style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:2.2rem;"><i data-lucide="mic"></i></i>Start Voice</button>
-                        <button id="workdone-voice-stop" type="button" disabled style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:2.2rem; opacity:0.6;"><i data-lucide="mic-off"></i></button>
+                        <button id="workdone-voice-start" type="button" style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:2.2rem;"><i data-lucide="mic"></i></i>Start</button>
+                        <button id="workdone-voice-stop" type="button" disabled style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:2.2rem; opacity:0.6;"><i data-lucide="mic-off"></i>Stop Voice</button>
                     </div>
                 </label>
                 <textarea 

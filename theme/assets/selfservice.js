@@ -868,7 +868,7 @@
                         <div style="display:flex; gap:0.5rem;">
                             <span id="defects-voice-indicator" class="voice-indicator" aria-hidden="true"></span>
                             <button id="defects-voice-start" type="button" style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:2.2rem;"><i data-lucide="mic"></i></button>
-                            <button id="defects-voice-stop" type="button" disabled style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:2.2rem; opacity:0.6;"><i data-lucide="mic-off"></i></button>
+                            <button id="defects-voice-stop" type="button" disabled style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:2.2rem; opacity:0.6;"><i data-lucide="mic-off">Stop Voice</i></button>
                         </div>
                     </label>
                     <textarea 

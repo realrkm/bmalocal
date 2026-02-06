@@ -30,9 +30,9 @@ class TechnicianDefectsAndRequestedParts(TechnicianDefectsAndRequestedPartsTempl
             # Manually call the change handler
             self.cmbJobCardRef_change()
 
-        items = anvil.server.call_s("getStaff")
+        items = anvil.server.call_s("getStaffAndTechnicianNames")
         # Convert to a list of (display_text, value) tuples
-        self.drop_down_staff.items = [(s['Staff'], s['Staff']) for s in items]
+        self.drop_down_staff.items =items
         
     def handle_server_errors(self, exc):
         if isinstance(exc, anvil.server.UplinkDisconnectedError):
@@ -147,6 +147,8 @@ class TechnicianDefectsAndRequestedParts(TechnicianDefectsAndRequestedPartsTempl
             self.text_area_1.visible=True
         else:
             self.text_area_1.visible = False
+
+    
         
 
  

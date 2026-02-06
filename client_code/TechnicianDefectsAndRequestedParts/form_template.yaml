@@ -110,7 +110,8 @@ components:
     name: label_Workflow_copy
     properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Defects Prepared By *}
     type: Label
-  - layout_properties: {grid_position: 'VDONPR,TWLYOS'}
+  - event_bindings: {}
+    layout_properties: {grid_position: 'VDONPR,TWLYOS'}
     name: drop_down_staff
     properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Staff *}
     type: DropDown

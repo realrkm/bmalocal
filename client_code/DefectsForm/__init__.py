@@ -29,9 +29,9 @@ class DefectsForm(DefectsFormTemplate):
         # Store defects_data for later use
         self.defects_data = defects_data
 
-        items = anvil.server.call("getStaff")
+        items = anvil.server.call("getStaffAndTechnicianNames")
         # Convert to a list of (display_text, value) tuples
-        self.drop_down_staff.items = [(s['Staff'], s['Staff']) for s in items]
+        self.drop_down_staff.items = items
 
         #Store JobcardID 
         self.jobcardid = defects_data[0]["ID"]

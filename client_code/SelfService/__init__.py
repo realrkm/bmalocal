@@ -47,8 +47,8 @@ class SelfService(SelfServiceTemplate):
     def storeTechDetails(self, jobcard_ref, tech_notes, defects, parts, technician, signature_data):
         signature = self.get_signature_image(signature_data)
         JobCardID = anvil.server.call_s("getJobCardID", jobcard_ref)
-        anvil.server.call_s('saveTecnicianDefectsAndRequestedParts', JobCardID, defects, parts, technician, signature)
-        anvil.server.call_s('updateJobCardStatus', JobCardID, "Create Quote")
+        anvil.server.call('saveTecnicianDefectsAndRequestedParts', JobCardID, defects, parts, technician, signature)
+        anvil.server.call('updateJobCardStatus', JobCardID, "Create Quote")
         return None
 
     def get_signature_image(self, signature_data):

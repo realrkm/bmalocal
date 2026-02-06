@@ -614,13 +614,13 @@
         mainContent.innerHTML = `
         <!-- Hero Section -->
         <div class="hero-section">
-            <h1 class="hero-title">Modern Garage System</h1>
-            <p class="hero-subtitle">Service & Parts Management</p>
+            <h1 class="hero-title">BMA PARTS EXPRESS</h1>
+            <p class="hero-subtitle">A comprehensive, operational, and centralized hub for technical excellence.</p>
             
             <div class="status-badges">
-                <span class="badge badge-premium">Premium UI</span>
-                <span class="badge badge-fast">Fast Delivery</span>
-                <span class="badge badge-service">Developing Service</span>
+                <span class="badge badge-premium">Comprehensive</span>
+                <span class="badge badge-fast">Operational</span>
+                <span class="badge badge-service">Centralized</span>
             </div>
         </div>
 
@@ -884,7 +884,7 @@
                     <label for="technician-dropdown" style="display:block; margin-bottom:0.5rem; font-size:1.8rem; font-weight:bold; color:#06b6d4;">Select Technician</label>
                     <select 
                         id="technician-dropdown" 
-                        style="width:100%; padding:1rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; cursor:pointer; appearance:none; -webkit-appearance:none; -moz-appearance:none; background-image:url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2724%27 height=%2724%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%2306b6d4%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27/%3e%3c/svg%3e'); background-repeat:no-repeat; background-position:right 1rem center; background-size:20px; padding-right:3rem;">
+                        style="width:100%; padding:1rem; font-size:1.8rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; cursor:pointer; appearance:none; -webkit-appearance:none; -moz-appearance:none; background-image:url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2724%27 height=%2724%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%2306b6d4%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27/%3e%3c/svg%3e'); background-repeat:no-repeat; background-position:right 1rem center; background-size:20px; padding-right:3rem;">
                         <option value="" style="background:#1e293b; color:#94a3b8;">-- Select Technician --</option>
                         ${state.technicians.map(tech => `<option value="${sanitizeHTML(tech)}" ${state.selectedTechnician === tech ? 'selected' : ''} style="background:#1e293b; color:white; padding:1rem;">${sanitizeHTML(tech)}</option>`).join('')}
                     </select>
@@ -896,7 +896,7 @@
                         <label style="font-size:1.8rem; font-weight:bold; color:#06b6d4;">Technician Signature</label>
                         <button 
                             onclick="clearSignaturePad()" 
-                            style="background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color:white; padding:0.5rem 1rem; border-radius:0.5rem; border:2px solid rgba(220, 38, 38, 0.3); font-weight:bold; cursor:pointer; font-size:1.4rem; transition:all 0.3s ease;">
+                            style="background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color:white; padding:0.5rem 1rem; border-radius:0.5rem; border:2px solid rgba(220, 38, 38, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease;">
                             Clear Signature
                         </button>
                     </div>
@@ -917,8 +917,7 @@
                 </h3>
                 <button 
                     onclick="openPartsModal()"
-                    style="background:linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color:white; padding:1rem 2rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); font-weight:bold; cursor:pointer; font-size:1.6rem; transition:all 0.3s ease; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); display:flex; align-items:center; gap:0.5rem;">
-                    <i data-lucide="plus-circle" style="width:20px; height:20px;"></i>
+                    style="background:linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color:white; padding:1rem 2rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); display:flex; align-items:center; gap:0.5rem;">
                     Add Parts
                 </button>
             </div>
@@ -928,7 +927,6 @@
                         <div style="padding:1rem; border-bottom:${i < state.cart.length - 1 ? '1px solid rgba(59, 130, 246, 0.2)' : 'none'}; display:flex; justify-content:space-between; align-items:center; font-size:1.6rem;">
                             <div style="flex:1;">
                                 <div style="font-weight:bold; color:#06b6d4; margin-bottom:0.3rem;">${i + 1}. ${sanitizeHTML(item.name)}</div>
-                                <div style="color:#94a3b8; font-size:1.4rem;">${sanitizeHTML(item.category)}</div>
                             </div>
                             <div style="color:#facc15; font-weight:bold; font-size:1.8rem;">
                                 Qty: ${item.quantity}
@@ -961,7 +959,6 @@
             <button 
                 onclick="savePartsDetails()" 
                 style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:1.2rem 2.5rem; border-radius:0.8rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);">
-                <i data-lucide="save" style="width:20px; height:20px; display:inline-block; vertical-align:middle; margin-right:0.5rem;" aria-hidden="true"></i>
                 Save Details
             </button>
         </div>

@@ -2127,8 +2127,7 @@ function setupListeners() {
             await customAlert(
                 `Details have been saved successfully for JobCard ${state.activeReg}`,
                 '✅ Success'
-            );
-
+            );            
         } catch (error) {
             console.error('Error saving parts details:', error);
             

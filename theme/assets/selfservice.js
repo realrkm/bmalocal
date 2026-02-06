@@ -444,7 +444,8 @@
     async function init() {
         try {
             const serverData = await anvil.call(mainContent, 'getCarPartNamesAndCategory');
-           
+            console.log("Server data received:", serverData);
+
             if (!Array.isArray(serverData)) {
                 throw new Error("Server did not return a list. Check server logs.");
             }
@@ -536,6 +537,7 @@
         try {
             const techData = await anvil.call(mainContent, 'get_technicians_list');
             state.technicians = techData || [];
+            console.log('Loaded technicians:', state.technicians.length);
         } catch (error) {
             console.error('Error loading technicians:', error);
             state.technicians = [];
@@ -2074,7 +2076,7 @@ function setupListeners() {
         const errors = [];
         
         if (state.cart.length === 0 && !state.techNotes.trim() && !state.defectList.trim()) {
-            errors.push('No details to save. Please add parts, tech notes, or defects first.');
+            errors.push('No details to save. Please add tech notes,defects or parts first.');
         }
         
         if (!state.selectedTechnician) {
@@ -2127,7 +2129,35 @@ function setupListeners() {
             await customAlert(
                 `Details have been saved successfully for JobCard ${state.activeReg}`,
                 '✅ Success'
-            );            
+            );
+
+            // Clear state
+            state.activeReg = null;
+            state.cart = [];
+            state.techNotes = '';
+            state.defectList = '';
+            state.partsSearchQuery = '';
+            state.customerResponse = '';
+            state.approvedParts = '';
+            state.selectedTechnician = '';
+            state.signatureData = '';
+            state.collapseOpen = false;
+            
+            // Update cart display
+            cartCount.innerText = 0;
+            cartCount.classList.add('hidden');
+            
+            // Reload active services to get updated data
+            await loadActiveServices();
+            
+            // Clear navigation history and go home
+            clearNavigationHistory();
+
+            // Clear signature pad
+            clearSignature();
+            state.currentView = 'home';
+            render();
+
         } catch (error) {
             console.error('Error saving parts details:', error);
             
@@ -2330,6 +2360,10 @@ function setupListeners() {
             );
 
             state.currentWorkDoneReg = null;
+            
+            // Reload active services to get updated data
+            await loadActiveServices();
+            
             clearNavigationHistory();
             state.currentView = 'home';
             render();

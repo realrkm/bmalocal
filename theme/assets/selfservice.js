@@ -911,9 +911,17 @@
         
         <!-- Requested Parts Section -->
         <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); border-radius:1rem; margin-bottom:2rem; border:2px solid rgba(59, 130, 246, 0.2); overflow:hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); padding:2rem;">
-            <h3 style="font-size:2rem; margin-bottom:1.5rem; color:#06b6d4; display:flex; align-items:center; gap:0.5rem;">
-                <span>📦</span> Requested Parts
-            </h3>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                <h3 style="font-size:2rem; color:#06b6d4; display:flex; align-items:center; gap:0.5rem;">
+                    <span>📦</span> Requested Parts
+                </h3>
+                <button 
+                    onclick="openPartsModal()"
+                    style="background:linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color:white; padding:1rem 2rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); font-weight:bold; cursor:pointer; font-size:1.6rem; transition:all 0.3s ease; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); display:flex; align-items:center; gap:0.5rem;">
+                    <i data-lucide="plus-circle" style="width:20px; height:20px;"></i>
+                    Add Parts
+                </button>
+            </div>
             ${state.cart.length > 0 ? `
                 <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); border-radius:0.8rem; padding:1.5rem;">
                     ${state.cart.map((item, i) => `
@@ -938,7 +946,7 @@
                 </div>
             ` : `
                 <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); border-radius:0.8rem; padding:2rem; text-align:center;">
-                    <p style="color:#94a3b8; font-size:1.6rem;">No parts added yet. Use the search below to add parts to your request.</p>
+                    <p style="color:#94a3b8; font-size:1.6rem;">No parts added yet. Click "Add Parts" to add parts to your request.</p>
                 </div>
             `}
         </div>
@@ -957,23 +965,246 @@
                 Save Details
             </button>
         </div>
-        
-        <div style="position:relative; max-width:600px; margin:0 auto 2rem;">
-            <input 
-                type="text" 
-                id="parts-search" 
-                class="search-input" 
-                placeholder="Search parts by name..." 
-                value="${sanitizeHTML(state.partsSearchQuery)}" 
-                style="font-size:1.8rem; padding:1.2rem 1.2rem 1.2rem 4rem; width:100%;">
-            <span style="position:absolute; left:1.2rem; top:1.4rem; color:#94a3b8; font-size:1.8rem;">🔍</span>
-        </div>
-        
-        <div id="parts-results-container">
-            ${state.partsSearchQuery ? renderPartsSearchResults() : renderCategoryGrid()}
-        </div>
         `;
     }
+
+    // Add these new functions after your existing functions
+
+    function openPartsModal() {
+        // Create modal overlay
+        const modalOverlay = document.createElement('div');
+        modalOverlay.className = 'modal-overlay';
+        modalOverlay.id = 'parts-modal-overlay';
+
+        const totalQuantity = state.cart.reduce((sum, item) => sum + item.quantity, 0);
+
+        modalOverlay.innerHTML = `
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2 class="modal-title">Add Parts to Request</h2>
+                <button class="modal-close-btn" onclick="closePartsModal()" aria-label="Close modal">
+                    ✕
+                </button>
+            </div>
+            <div class="modal-body">
+                <div style="position:relative; max-width:600px; margin:0 auto 2rem;">
+                    <input 
+                        type="text" 
+                        id="modal-parts-search" 
+                        class="search-input" 
+                        placeholder="Search parts by name..." 
+                        value="${sanitizeHTML(state.partsSearchQuery)}" 
+                        style="font-size:1.8rem; padding:1.2rem 1.2rem 1.2rem 4rem; width:100%;">
+                    <span style="position:absolute; left:1.2rem; top:1.4rem; color:#94a3b8; font-size:1.8rem;">🔍</span>
+                </div>
+                
+                <div id="modal-parts-results">
+                    ${state.partsSearchQuery ? renderModalPartsSearchResults() : renderModalCategoryGrid()}
+                </div>
+            </div>
+            <div class="modal-cart-summary">
+                <div class="modal-cart-info">
+                    Items in Cart: <span class="modal-cart-count">${state.cart.length}</span>
+                    <span style="margin-left:2rem;">Total Quantity: <span class="modal-cart-count">${totalQuantity.toFixed(2)}</span></span>
+                </div>
+                <button 
+                    onclick="closePartsModal()"
+                    style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:1rem 2rem; border-radius:0.8rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:1.6rem; transition:all 0.3s ease;">
+                    Done
+                </button>
+            </div>
+        </div>
+    `;
+
+        document.body.appendChild(modalOverlay);
+
+        // Trigger animation
+        setTimeout(() => {
+            modalOverlay.classList.add('active');
+        }, 10);
+
+        // Attach search listener
+        const modalSearchInput = document.getElementById('modal-parts-search');
+        if (modalSearchInput) {
+            const debouncedSearch = debounce((value) => {
+                state.partsSearchQuery = value.trim();
+                updateModalPartsResults();
+            }, 300);
+
+            modalSearchInput.oninput = (e) => {
+                debouncedSearch(e.target.value);
+            };
+
+            modalSearchInput.onkeydown = (e) => {
+                if (e.key === 'Enter') {
+                    state.partsSearchQuery = e.target.value.trim();
+                    updateModalPartsResults();
+                }
+            };
+
+            modalSearchInput.focus();
+        }
+
+        // Close on overlay click
+        modalOverlay.onclick = (e) => {
+            if (e.target === modalOverlay) {
+                closePartsModal();
+            }
+        };
+
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
+
+        lucide.createIcons();
+    }
+
+    function closePartsModal() {
+        const modalOverlay = document.getElementById('parts-modal-overlay');
+        if (modalOverlay) {
+            modalOverlay.classList.remove('active');
+            setTimeout(() => {
+                modalOverlay.remove();
+                document.body.style.overflow = '';
+            }, 300);
+        }
+
+        // Update the main view to show updated cart
+        renderRequestParts();
+    }
+
+    function updateModalPartsResults() {
+        const resultsContainer = document.getElementById('modal-parts-results');
+        if (resultsContainer) {
+            resultsContainer.innerHTML = state.partsSearchQuery ? 
+                renderModalPartsSearchResults() : 
+                renderModalCategoryGrid();
+            lucide.createIcons();
+        }
+    }
+
+    function updateModalCartSummary() {
+        const totalQuantity = state.cart.reduce((sum, item) => sum + item.quantity, 0);
+        const cartCounts = document.querySelectorAll('.modal-cart-count');
+        if (cartCounts.length >= 2) {
+            cartCounts[0].textContent = state.cart.length;
+            cartCounts[1].textContent = totalQuantity.toFixed(2);
+        }
+    }
+
+    function renderModalCategoryGrid() {
+        return `
+        <div class="category-grid">
+            ${state.categories.map(c => {
+                const categoryParts = state.parts.filter(p => categorize(p) === c.id);
+                const uniqueNames = new Set(categoryParts.map(p => p.name));
+                return `
+                    <button onclick="selectModalCategory('${c.id}')" class="category-card ${c.color}" aria-label="View ${sanitizeHTML(c.name)} category">
+                        <span class="category-icon">${c.icon}</span>
+                        <span class="category-name">${sanitizeHTML(c.name)}</span>
+                        <span style="font-size:1.6rem; color:#94a3b8;">
+                            ${uniqueNames.size} Items
+                        </span>
+                    </button>
+                `;
+            }).join('')}
+        </div>
+    `;
+    }
+
+    function renderModalPartsSearchResults() {
+        if (!state.partsSearchQuery) return '';
+
+        const searchTerm = state.partsSearchQuery.toLowerCase();
+        const matchedParts = state.parts.filter(p => 
+            p.name.toLowerCase().includes(searchTerm) ||
+            (p.category && p.category.toLowerCase().includes(searchTerm)) ||
+            (p.partNo && p.partNo.toLowerCase().includes(searchTerm))
+                                               );
+
+        const uniquePartsMap = new Map();
+        matchedParts.forEach(part => {
+            const normalizedName = part.name.trim().toLowerCase();
+        if (!uniquePartsMap.has(normalizedName)) {
+            uniquePartsMap.set(normalizedName, part);
+        }
+    });
+
+    const uniqueMatchedParts = Array.from(uniquePartsMap.values());
+
+    if (uniqueMatchedParts.length === 0) {
+        return `
+            <div style="text-align:center; padding:3rem;">
+                <p style="font-size:2rem; color:#94a3b8;">No parts found matching "${sanitizeHTML(state.partsSearchQuery)}"</p>
+                <button onclick="clearModalPartsSearch()" style="margin-top:1rem; background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color:white; padding:1rem 2rem; border-radius:0.8rem; border:2px solid rgba(220, 38, 38, 0.3); font-weight:bold; cursor:pointer; font-size:1.6rem;">Clear Search</button>
+            </div>
+        `;
+    }
+
+    return `
+        <div style="margin-bottom:2rem; display:flex; justify-content:space-between; align-items:center;">
+            <h3 style="font-size:2rem; color:#06b6d4;">Found ${uniqueMatchedParts.length} part(s) matching "${sanitizeHTML(state.partsSearchQuery)}"</h3>
+            <button onclick="clearModalPartsSearch()" style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:0.8rem 1.5rem; border-radius:0.8rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:1.6rem;">Clear Search</button>
+        </div>
+        <div class="category-grid">${renderModalParts(uniqueMatchedParts)}</div>
+        `;
+    }
+
+    function renderModalCategoryParts(categoryId) {
+        const filtered = state.parts.filter(p => categorize(p) === categoryId);
+    
+        const uniquePartsMap = new Map();
+        filtered.forEach(part => {
+            if (!uniquePartsMap.has(part.name)) {
+                uniquePartsMap.set(part.name, part);
+            }
+        });
+    
+        const uniqueParts = Array.from(uniquePartsMap.values());
+        const category = state.categories.find(c => c.id === categoryId);
+    
+        return `
+            <div style="margin-bottom:2rem;">
+                <button 
+                    onclick="backToModalCategories()" 
+                    style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:0.8rem 1.5rem; border-radius:0.8rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:1.6rem; display:flex; align-items:center; gap:0.5rem;">
+                    <i data-lucide="arrow-left" style="width:18px; height:18px;"></i>
+                    Back to Categories
+                </button>
+            </div>
+            <h3 style="font-size:2.5rem; margin-bottom:2rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                ${category ? category.icon : '📦'} ${category ? sanitizeHTML(category.name) : 'Parts'}
+            </h3>
+            <div class="category-grid">${renderModalParts(uniqueParts)}</div>
+        `;
+    }
+    
+    function renderModalParts(arr) {
+        return arr.map((p, index) => `
+            <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); backdrop-filter:blur(10px); padding:2rem; border-radius:1.5rem; display:flex; flex-direction:column; justify-content:space-between; gap:1.5rem; text-align:center; border:2px solid rgba(59, 130, 246, 0.2); transition:all 0.3s ease; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='rgba(59, 130, 246, 0.5)'; this.style.boxShadow='0 15px 30px rgba(59, 130, 246, 0.3)';" onmouseout="this.style.transform=''; this.style.borderColor='rgba(59, 130, 246, 0.2)'; this.style.boxShadow='0 10px 20px rgba(0, 0, 0, 0.3)';">
+                <div>
+                    <h3 style="font-size:2rem; color:#06b6d4;">${sanitizeHTML(p.name)}</h3>
+                    <p style="color:#94a3b8; margin-top:0.5rem">Category: ${sanitizeHTML(p.category || 'N/A')}</p>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:1rem; align-items:center;">
+                    <div style="width:100%;">
+                        <label for="modal-qty-${index}" style="display:block; color:#94a3b8; font-size:1.4rem; margin-bottom:0.5rem;">Quantity</label>
+                        <input 
+                            type="number" 
+                            id="modal-qty-${index}" 
+                            min="0" 
+                            step="0.01" 
+                            value="1" 
+                            placeholder="0.00"
+                            aria-label="Quantity for ${sanitizeHTML(p.name)}"
+                            style="width:100%; padding:0.8rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; text-align:center;"
+                        >
+                    </div>
+                    <button onclick="addToCartFromModal('${p.name.replace(/'/g, "\\'")}', 'modal-qty-${index}')" class="add-btn-circular" aria-label="Add ${sanitizeHTML(p.name)} to cart">+</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
 
     function renderCustomerFeedbackTab() {
         return `
@@ -2098,6 +2329,67 @@ function setupListeners() {
             signaturePadInstance.resize();
         }
     });
+
+    window.openPartsModal = openPartsModal;
+    window.closePartsModal = closePartsModal;
+
+    window.selectModalCategory = (id) => {
+        const resultsContainer = document.getElementById('modal-parts-results');
+        if (resultsContainer) {
+            resultsContainer.innerHTML = renderModalCategoryParts(id);
+            lucide.createIcons();
+        }
+    };
+
+    window.backToModalCategories = () => {
+        state.partsSearchQuery = '';
+        const searchInput = document.getElementById('modal-parts-search');
+        if (searchInput) searchInput.value = '';
+        updateModalPartsResults();
+    };
+
+    window.clearModalPartsSearch = () => {
+        state.partsSearchQuery = '';
+        const searchInput = document.getElementById('modal-parts-search');
+        if (searchInput) searchInput.value = '';
+        updateModalPartsResults();
+    };
+
+    window.addToCartFromModal = (name, inputId) => {
+        const qtyInput = document.getElementById(inputId);
+        const quantity = parseFloat(qtyInput?.value) || 1;
+
+        if (quantity <= 0) {
+            customAlert('Please enter a valid quantity greater than 0.', 'Invalid Quantity');
+            return;
+        }
+
+        const item = state.parts.find(p => p.name === name);
+        if (!item) return;
+
+        const existingItemIndex = state.cart.findIndex(c => c.name === item.name);
+
+        if (existingItemIndex > -1) {
+            state.cart[existingItemIndex].quantity += quantity;
+        } else {
+            state.cart.push({
+                name: item.name,
+                category: item.category,
+                partNo: item.partNo,
+                quantity: quantity
+            });
+        }
+
+        if (qtyInput) qtyInput.value = '1';
+
+        // Update cart count display
+        const totalQuantity = state.cart.reduce((sum, item) => sum + item.quantity, 0);
+        cartCount.innerText = Math.round(totalQuantity);
+        cartCount.classList.remove('hidden');
+
+        // Update modal cart summary
+        updateModalCartSummary();
+    };
 }
 
 // ===========================

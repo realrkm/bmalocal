@@ -444,8 +444,7 @@
     async function init() {
         try {
             const serverData = await anvil.call(mainContent, 'getCarPartNamesAndCategory');
-            console.log("Server data received:", serverData);
-
+           
             if (!Array.isArray(serverData)) {
                 throw new Error("Server did not return a list. Check server logs.");
             }
@@ -537,7 +536,6 @@
         try {
             const techData = await anvil.call(mainContent, 'get_technicians_list');
             state.technicians = techData || [];
-            console.log('Loaded technicians:', state.technicians.length);
         } catch (error) {
             console.error('Error loading technicians:', error);
             state.technicians = [];
@@ -602,8 +600,20 @@
             const matchesStatus = state.currentStatusFilter === 'all' ? 
                 (s.status !== 'Completed') : 
                 (s.status === state.currentStatusFilter);
-            const matchesSearch = s.jobcardref.toLowerCase().includes(state.serviceSearchQuery.toLowerCase()) || 
-                s.tech.toLowerCase().includes(state.serviceSearchQuery.toLowerCase());
+            
+            // Enhanced search - similar to modal parts search
+            if (!state.serviceSearchQuery.trim()) {
+                return matchesStatus;
+            }
+            
+            const searchTerm = state.serviceSearchQuery.toLowerCase();
+            const matchesSearch = 
+                s.jobcardref.toLowerCase().includes(searchTerm) || 
+                s.tech.toLowerCase().includes(searchTerm) ||
+                (s.instruction && s.instruction.toLowerCase().includes(searchTerm)) ||
+                (s.date && s.date.toLowerCase().includes(searchTerm)) ||
+                (s.status && s.status.toLowerCase().includes(searchTerm));
+            
             return matchesStatus && matchesSearch;
         });
 
@@ -614,13 +624,13 @@
         mainContent.innerHTML = `
         <!-- Hero Section -->
         <div class="hero-section">
-            <h1 class="hero-title">Modern Garage System</h1>
-            <p class="hero-subtitle">Service & Parts Management</p>
+            <h1 class="hero-title">BMA PARTS EXPRESS</h1>
+            <p class="hero-subtitle">A comprehensive, operational, and centralized hub for technical excellence.</p>
             
             <div class="status-badges">
-                <span class="badge badge-premium">Premium UI</span>
-                <span class="badge badge-fast">Fast Delivery</span>
-                <span class="badge badge-service">Developing Service</span>
+                <span class="badge badge-premium">Comprehensive</span>
+                <span class="badge badge-fast">Operational</span>
+                <span class="badge badge-service">Centralized</span>
             </div>
         </div>
 
@@ -663,7 +673,7 @@
             </div>
             
             <div style="position:relative; flex:1; max-width:400px; min-width:300px;">
-                <input type="text" id="service-search" class="search-input" placeholder="Search JobCard or Technician..." value="${sanitizeHTML(state.serviceSearchQuery)}" style="font-size:1.5rem; padding:1rem 1rem 1rem 3.5rem; width:100%;">
+                <input type="text" id="service-search" class="search-input" placeholder="Search by JobCard, Technician, Status..." value="${sanitizeHTML(state.serviceSearchQuery)}" style="font-size:1.5rem; padding:1rem 1rem 1rem 3.5rem; width:100%;">
                 <span style="position:absolute; left:1rem; top:1.2rem; color:#94a3b8;">🔍</span>
             </div>
         </div>
@@ -698,7 +708,7 @@
         if (sInput) {
             const debouncedSearch = debounce((value) => {
                 state.serviceSearchQuery = value;
-                renderHome();
+                updateServiceTable();
             }, 300);
 
             sInput.oninput = (e) => {
@@ -708,11 +718,55 @@
             sInput.onkeydown = (e) => {
                 if (e.key === 'Enter') {
                     state.serviceSearchQuery = e.target.value;
-                    renderHome();
+                    updateServiceTable();
                 }
             };
 
             sInput.onclick = (e) => e.target.focus();
+        }
+    }
+
+    function updateServiceTable() {
+        const filtered = state.activeServices.filter(s => {
+            const matchesStatus = state.currentStatusFilter === 'all' ? 
+                (s.status !== 'Completed') : 
+                (s.status === state.currentStatusFilter);
+            
+            // Enhanced search - similar to modal parts search
+            if (!state.serviceSearchQuery.trim()) {
+                return matchesStatus;
+            }
+            
+            const searchTerm = state.serviceSearchQuery.toLowerCase();
+            const matchesSearch = 
+                s.jobcardref.toLowerCase().includes(searchTerm) || 
+                s.tech.toLowerCase().includes(searchTerm) ||
+                (s.instruction && s.instruction.toLowerCase().includes(searchTerm)) ||
+                (s.date && s.date.toLowerCase().includes(searchTerm)) ||
+                (s.status && s.status.toLowerCase().includes(searchTerm));
+            
+            return matchesStatus && matchesSearch;
+        });
+
+        const tbody = document.querySelector('.kiosk-table tbody');
+        if (tbody) {
+            tbody.innerHTML = filtered.map(s => `
+                <tr>
+                    <td data-label="No">${s.no}</td>
+                    <td data-label="Received">${sanitizeHTML(s.date)}</td>
+                    <td data-label="Technician"><strong>${sanitizeHTML(s.tech)}</strong></td>
+                    <td data-label="JobCard Ref" style="color:#facc15; font-weight:bold;">${sanitizeHTML(s.jobcardref)}</td>
+                    <td data-label="Instruction">${sanitizeHTML(s.instruction)}</td>
+                    <td data-label="Status"><span class="status-badge ${s.status === 'In-Service' ? 'status-in-service' : s.status === 'Completed' ? 'status-completed' : 'status-checked-in'}">${s.status}</span></td>
+                    <td data-label="Action">
+                        ${s.status === 'Completed' ? '✅ Finished' : s.status === 'In-Service' ? `
+                            <button onclick="openWorkDone('${sanitizeHTML(s.jobcardref)}')" style="background:#3b82f6; border:none; color:white; padding:0.8rem 1.2rem; border-radius:0.5rem; cursor:pointer; font-weight:bold;">Work Done</button>
+                        ` : `
+                            <button onclick="openParts('${sanitizeHTML(s.jobcardref)}')" class="btn-issue-parts">Request Parts</button>
+                        `}
+                    </td>
+                </tr>
+            `).join('');
         }
     }
 
@@ -884,7 +938,7 @@
                     <label for="technician-dropdown" style="display:block; margin-bottom:0.5rem; font-size:1.8rem; font-weight:bold; color:#06b6d4;">Select Technician</label>
                     <select 
                         id="technician-dropdown" 
-                        style="width:100%; padding:1rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; cursor:pointer; appearance:none; -webkit-appearance:none; -moz-appearance:none; background-image:url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2724%27 height=%2724%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%2306b6d4%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27/%3e%3c/svg%3e'); background-repeat:no-repeat; background-position:right 1rem center; background-size:20px; padding-right:3rem;">
+                        style="width:100%; padding:1rem; font-size:1.8rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; cursor:pointer; appearance:none; -webkit-appearance:none; -moz-appearance:none; background-image:url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2724%27 height=%2724%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%2306b6d4%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27/%3e%3c/svg%3e'); background-repeat:no-repeat; background-position:right 1rem center; background-size:20px; padding-right:3rem;">
                         <option value="" style="background:#1e293b; color:#94a3b8;">-- Select Technician --</option>
                         ${state.technicians.map(tech => `<option value="${sanitizeHTML(tech)}" ${state.selectedTechnician === tech ? 'selected' : ''} style="background:#1e293b; color:white; padding:1rem;">${sanitizeHTML(tech)}</option>`).join('')}
                     </select>
@@ -896,7 +950,7 @@
                         <label style="font-size:1.8rem; font-weight:bold; color:#06b6d4;">Technician Signature</label>
                         <button 
                             onclick="clearSignaturePad()" 
-                            style="background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color:white; padding:0.5rem 1rem; border-radius:0.5rem; border:2px solid rgba(220, 38, 38, 0.3); font-weight:bold; cursor:pointer; font-size:1.4rem; transition:all 0.3s ease;">
+                            style="background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color:white; padding:0.5rem 1rem; border-radius:0.5rem; border:2px solid rgba(220, 38, 38, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease;">
                             Clear Signature
                         </button>
                     </div>
@@ -917,8 +971,7 @@
                 </h3>
                 <button 
                     onclick="openPartsModal()"
-                    style="background:linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color:white; padding:1rem 2rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); font-weight:bold; cursor:pointer; font-size:1.6rem; transition:all 0.3s ease; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); display:flex; align-items:center; gap:0.5rem;">
-                    <i data-lucide="plus-circle" style="width:20px; height:20px;"></i>
+                    style="background:linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color:white; padding:1rem 2rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); display:flex; align-items:center; gap:0.5rem;">
                     Add Parts
                 </button>
             </div>
@@ -928,7 +981,6 @@
                         <div style="padding:1rem; border-bottom:${i < state.cart.length - 1 ? '1px solid rgba(59, 130, 246, 0.2)' : 'none'}; display:flex; justify-content:space-between; align-items:center; font-size:1.6rem;">
                             <div style="flex:1;">
                                 <div style="font-weight:bold; color:#06b6d4; margin-bottom:0.3rem;">${i + 1}. ${sanitizeHTML(item.name)}</div>
-                                <div style="color:#94a3b8; font-size:1.4rem;">${sanitizeHTML(item.category)}</div>
                             </div>
                             <div style="color:#facc15; font-weight:bold; font-size:1.8rem;">
                                 Qty: ${item.quantity}
@@ -961,7 +1013,6 @@
             <button 
                 onclick="savePartsDetails()" 
                 style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:1.2rem 2.5rem; border-radius:0.8rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);">
-                <i data-lucide="save" style="width:20px; height:20px; display:inline-block; vertical-align:middle; margin-right:0.5rem;" aria-hidden="true"></i>
                 Save Details
             </button>
         </div>
@@ -2031,7 +2082,9 @@ function setupListeners() {
         }
         
         const signature = getSignatureData();
-        if (!signature) {
+        console.log('Signature check:', { hasSignature: !!signature, signatureLength: signature ? signature.length : 0 });
+        
+        if (!signature || signature.length === 0) {
             errors.push('Please provide your signature before saving.');
         }
         
@@ -2049,6 +2102,15 @@ function setupListeners() {
 
         const techNotesValue = state.techNotes.trim() || null;
         const defectListValue = state.defectList.trim() || null;
+
+        console.log('Saving parts details with:', {
+            activeReg: state.activeReg,
+            techNotes: techNotesValue,
+            defectList: defectListValue,
+            partsAndQuantities,
+            technician: state.selectedTechnician,
+            hasSignature: !!signature
+        });
 
         try {
             await anvil.call(
@@ -2069,8 +2131,19 @@ function setupListeners() {
 
         } catch (error) {
             console.error('Error saving parts details:', error);
+            
+            // Extract meaningful error message
+            let errorMessage = 'Failed to save details. Please try again.';
+            if (error && error.message) {
+                errorMessage = error.message;
+            } else if (error && error.args && error.args.length > 0) {
+                errorMessage = error.args.join(' ');
+            } else if (typeof error === 'string') {
+                errorMessage = error;
+            }
+            
             await customAlert(
-                'Failed to save details. Please try again.',
+                errorMessage,
                 '❌ Error'
             );
         }
@@ -2176,7 +2249,20 @@ function setupListeners() {
 
     window.filterByStatus = (s) => { 
         state.currentStatusFilter = (state.currentStatusFilter === s) ? 'all' : s; 
-        render(); 
+        
+        // Update button states
+        const buttons = document.querySelectorAll('.btn-status');
+        buttons.forEach(btn => {
+            const btnText = btn.textContent.trim();
+            if (btnText === s) {
+                btn.classList.toggle('active-filter');
+            } else {
+                btn.classList.remove('active-filter');
+            }
+        });
+        
+        // Update the table
+        updateServiceTable();
     };
 
     window.openParts = (reg) => { 

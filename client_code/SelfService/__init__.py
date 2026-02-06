@@ -6,6 +6,7 @@ import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
 import anvil.js
+import base64
 
 class SelfService(SelfServiceTemplate):
     def __init__(self, **properties):
@@ -44,7 +45,22 @@ class SelfService(SelfServiceTemplate):
         return None
 
     def storeTechDetails(self, jobcard_ref, tech_notes, defects, parts, technician, signature_data):
-        anvil.server.call("storeTechDetails", jobcard_ref, tech_notes, defect_list, parts_and_quantities)
-        anvil.server.call('saveTecnicianDefectsAndRequestedParts', jobcard_ref, defects, parts, technician, signature_data)
-        anvil.server.call_s('updateJobCardStatus', jobcard_ref, "Create Quote")
+        signature = self.get_signature_image(signature_data)
+        JobCardID = anvil.server.call_s("getJobCardID", jobcard_ref)
+        anvil.server.call_s('saveTecnicianDefectsAndRequestedParts', JobCardID, defects, parts, technician, signature)
+        anvil.server.call_s('updateJobCardStatus', JobCardID, "Create Quote")
         return None
+
+    def get_signature_image(self, signature_data):
+        
+        data_url = signature_data
+
+        # Split data URL to get the base64 content
+        header, encoded = data_url.split(",", 1)
+        binary_data = base64.b64decode(encoded)
+
+        # Create an Anvil Media object
+        media = BlobMedia("image/png", binary_data, name="signature.png")
+
+        # Return or store the media for further use
+        return media

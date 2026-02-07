@@ -444,8 +444,7 @@
     async function init() {
         try {
             const serverData = await anvil.call(mainContent, 'getCarPartNamesAndCategory');
-            console.log("Server data received:", serverData);
-
+           
             if (!Array.isArray(serverData)) {
                 throw new Error("Server did not return a list. Check server logs.");
             }
@@ -518,8 +517,6 @@
                     card.status === 'In Service' ? 'In-Service' : 
                     card.status
             }));
-
-            console.log('Loaded active services:', state.activeServices.length);
         } catch (error) {
             console.error('Error loading active services:', error);
             state.activeServices = [];
@@ -537,7 +534,6 @@
         try {
             const techData = await anvil.call(mainContent, 'get_technicians_list');
             state.technicians = techData || [];
-            console.log('Loaded technicians:', state.technicians.length);
         } catch (error) {
             console.error('Error loading technicians:', error);
             state.technicians = [];

@@ -66,3 +66,6 @@ class SelfService(SelfServiceTemplate):
 
         # Return or store the media for further use
         return media
+
+    def get_jobcard_and_defect_details(self, jobcardref):
+        return anvil.server.call("get_jobcard_and_defect_details", jobcardref)

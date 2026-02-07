@@ -2071,8 +2071,8 @@ function setupListeners() {
         // Validation
         const errors = [];
         
-        if (state.cart.length === 0 && !state.techNotes.trim() && !state.defectList.trim()) {
-            errors.push('No details to save. Please add tech notes,defects or parts first.');
+        if (!state.techNotes.trim() && !state.defectList.trim()) {
+            errors.push('No details to save. Please add tech notes and defects first.');
         }
         
         if (!state.selectedTechnician) {
@@ -2100,15 +2100,6 @@ function setupListeners() {
 
         const techNotesValue = state.techNotes.trim() || null;
         const defectListValue = state.defectList.trim() || null;
-
-        console.log('Saving parts details with:', {
-            activeReg: state.activeReg,
-            techNotes: techNotesValue,
-            defectList: defectListValue,
-            partsAndQuantities,
-            technician: state.selectedTechnician,
-            hasSignature: !!signature
-        });
 
         try {
             await anvil.call(

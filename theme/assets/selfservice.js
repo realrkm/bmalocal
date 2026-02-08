@@ -51,9 +51,11 @@
         adminTimeout: null,
 
         // Auto-refresh
-        autoRefreshInterval: null
-    };
+        autoRefreshInterval: null,
 
+        // Data population flag (prevents infinite loop)
+        isPopulatingData: false
+    };
     // Category display configuration
     const categoryConfig = {
         'Body & Exterior': { icon: '🚗', color: 'bg-indigo' },
@@ -902,7 +904,7 @@
                         <span>Tech Notes</span>
                         <div style="display:flex; gap:0.5rem;">
                             <span id="tech-notes-voice-indicator" class="voice-indicator" aria-hidden="true"></span>
-                            <button id="tech-notes-voice-start" type="button" style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:2.2rem;"><i data-lucide="mic"></i> </button>
+                            <button id="tech-notes-voice-start" type="button" style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:2.2rem;"><i data-lucide="mic"></i>  </button>
                             <button id="tech-notes-voice-stop" type="button" disabled style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:2.2rem; opacity:0.6;"><i data-lucide="mic-off"></i>  </button>
                         </div>
                     </label>
@@ -1358,7 +1360,7 @@
 
 
     // ===========================
-    // DATA POPULATION FUNCTIONS
+    // DATA POPULATION FUNCTIONS (FIXED - NO INFINITE LOOP)
     // ===========================
 
     /**
@@ -1373,6 +1375,13 @@
                 return;
             }
 
+            // Prevent multiple simultaneous population calls (PREVENTS INFINITE LOOP)
+            if (state.isPopulatingData) {
+                console.log('Already populating data - skipping duplicate call');
+                return;
+            }
+
+            state.isPopulatingData = true;
             console.log(`Loading existing data for job card: ${state.activeReg}`);
 
             // Fetch data from server
@@ -1385,6 +1394,7 @@
             // Handle empty results
             if (!jobCardData || jobCardData.length === 0) {
                 console.log('No existing data found for this job card');
+                state.isPopulatingData = false;
                 return;
             }
 
@@ -1423,7 +1433,6 @@
                 state.selectedTechnician = latestRecord.PreparedByStaff;
                 const technicianDropdown = document.getElementById('technician-dropdown');
                 if (technicianDropdown) {
-                    // Verify the technician exists in the dropdown options
                     const optionExists = Array.from(technicianDropdown.options).some(
                         opt => opt.value === latestRecord.PreparedByStaff
                     );
@@ -1441,16 +1450,12 @@
             // POPULATE SIGNATURE CANVAS
             // ============================================
             if (latestRecord.Signature) {
-                // Convert base64 string to data URL
-                // The server returns just the base64 string, we need to add the prefix
                 const signatureDataURL = `data:image/png;base64,${latestRecord.Signature}`;
                 state.signatureData = signatureDataURL;
                 
-                // Load signature onto canvas
                 await loadSignatureFromBase64(signatureDataURL);
                 console.log('✓ Signature loaded');
                 
-                // Ensure collapse section is open if signature exists
                 if (!state.collapseOpen) {
                     state.collapseOpen = true;
                     const collapseContent = document.getElementById('collapse-content');
@@ -1465,22 +1470,31 @@
             // ============================================
             if (latestRecord.RequestedParts) {
                 try {
-                    // Parse the RequestedParts JSON string
                     let requestedParts;
                     
-                    // Handle if it's already an object vs a string
+                    // Check if it's JSON format or plain text format
                     if (typeof latestRecord.RequestedParts === 'string') {
-                        requestedParts = JSON.parse(latestRecord.RequestedParts);
-                    } else {
+                        const trimmed = latestRecord.RequestedParts.trim();
+                        
+                        // Try JSON parse first
+                        if (trimmed.startsWith('[') || trimmed.startsWith('{')) {
+                            try {
+                                requestedParts = JSON.parse(trimmed);
+                            } catch (jsonError) {
+                                // Not valid JSON, treat as text format
+                                requestedParts = parseRequestedPartsText(trimmed);
+                            }
+                        } else {
+                            // Plain text format - parse it
+                            requestedParts = parseRequestedPartsText(trimmed);
+                        }
+                    } else if (Array.isArray(latestRecord.RequestedParts)) {
                         requestedParts = latestRecord.RequestedParts;
                     }
                     
-                    // Clear existing cart
                     state.cart = [];
 
-                    // Populate cart if parts exist
                     if (Array.isArray(requestedParts) && requestedParts.length > 0) {
-                        // Map parts to cart format, handling different property name cases
                         state.cart = requestedParts.map(part => ({
                             name: part.name || part.Name || '',
                             category: part.category || part.Category || '',
@@ -1488,11 +1502,12 @@
                             quantity: parseFloat(part.quantity || part.Quantity || 0)
                         }));
 
-                        // Update cart display
-                        updateCartDisplay();
                         console.log(`✓ ${state.cart.length} parts loaded into cart`);
+                        
+                        // Update ONLY cart badge (no re-render)
+                        updateCartBadgeOnly();
                     } else {
-                        console.log('No parts found in RequestedParts array');
+                        console.log('No parts found in RequestedParts');
                     }
                 } catch (parseError) {
                     console.error('Error parsing RequestedParts:', parseError);
@@ -1501,15 +1516,76 @@
             }
 
             console.log('✅ Job card data population complete');
+            state.isPopulatingData = false;
+
+            // NOW update the parts display section
+            setTimeout(() => {
+                updatePartsListDisplay();
+            }, 100);
 
         } catch (error) {
             console.error('❌ Error loading job card data:', error);
+            state.isPopulatingData = false;
         }
     }
 
     /**
+     * Parses plain text RequestedParts format into array of part objects
+     * Expected format: "1. Part Name (Category) - Qty: X"
+     */
+    function parseRequestedPartsText(text) {
+        if (!text || typeof text !== 'string') {
+            return [];
+        }
+
+        const parts = [];
+        const lines = text.split('\n');
+
+        for (const line of lines) {
+            const trimmedLine = line.trim();
+            if (!trimmedLine) continue;
+
+            // Parse format: "1. Abs Module E70 (Brake System) - Qty: 1"
+            // or: "Abs Module E70 (Brake System) - Qty: 1"
+            
+            // Remove leading number and dot if present
+            let workingLine = trimmedLine.replace(/^\d+\.\s*/, '');
+            
+            // Extract quantity (e.g., "- Qty: 1")
+            const qtyMatch = workingLine.match(/[–-]\s*Qty:\s*(\d+(?:\.\d+)?)/i);
+            const quantity = qtyMatch ? parseFloat(qtyMatch[1]) : 1;
+            
+            // Remove quantity part from the line
+            if (qtyMatch) {
+                workingLine = workingLine.substring(0, qtyMatch.index).trim();
+            }
+            
+            // Extract category (text in parentheses)
+            const categoryMatch = workingLine.match(/\(([^)]+)\)/);
+            const category = categoryMatch ? categoryMatch[1].trim() : '';
+            
+            // Remove category part to get the part name
+            let name = workingLine;
+            if (categoryMatch) {
+                name = workingLine.replace(/\s*\([^)]+\)\s*$/, '').trim();
+            }
+            
+            if (name) {
+                parts.push({
+                    name: name,
+                    category: category,
+                    partNo: '', // Not available in text format
+                    quantity: quantity
+                });
+            }
+        }
+
+        console.log(`Parsed ${parts.length} parts from text format`);
+        return parts;
+    }
+
+    /**
      * Loads a base64 signature image onto the signature canvas
-     * @param {string} dataURL - The data URL (data:image/png;base64,...)
      */
     function loadSignatureFromBase64(dataURL) {
         return new Promise((resolve, reject) => {
@@ -1525,14 +1601,10 @@
 
             img.onload = function() {
                 try {
-                    // Fill canvas with white background first
                     ctx.fillStyle = '#ffffff';
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                    // Draw the signature image scaled to canvas size
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-                    // Mark signature pad as signed (if signature pad instance exists)
                     if (typeof signaturePadInstance !== 'undefined' && signaturePadInstance) {
                         signaturePadInstance.isSigned = true;
                     }
@@ -1550,19 +1622,16 @@
                 reject(error);
             };
 
-            // Set the source to trigger loading
             img.src = dataURL;
         });
     }
 
     /**
-     * Updates the cart count display and re-renders the parts list
+     * Updates ONLY the cart badge (prevents infinite loop)
      */
-    function updateCartDisplay() {
-        // Calculate total quantity
+    function updateCartBadgeOnly() {
         const totalQuantity = state.cart.reduce((sum, item) => sum + item.quantity, 0);
         
-        // Update cart count badge in header
         if (typeof cartCount !== 'undefined' && cartCount) {
             cartCount.innerText = Math.round(totalQuantity);
             
@@ -1572,10 +1641,243 @@
                 cartCount.classList.add('hidden');
             }
         }
+    }
 
-        // Re-render the request parts tab to show updated cart
-        if (state.activePartsTab === 'request') {
-            renderRequestParts();
+    /**
+     * Updates just the parts list HTML in the DOM (not entire page)
+     */
+    function updatePartsListDisplay() {
+        // Find the parts tab content
+        const partsTabContent = document.getElementById('parts-tab-content');
+        if (!partsTabContent || state.activePartsTab !== 'request') {
+            return;
+        }
+
+        // Re-render just the tab content
+        partsTabContent.innerHTML = renderPartsTabContent();
+        
+        // Re-attach event listeners WITHOUT calling populate again
+        attachPartsListenersOnly();
+
+        // Re-init signature if needed
+        if (state.collapseOpen || state.signatureData) {
+            initSignaturePad();
+        }
+
+        // Re-init icons
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    }
+
+    /**
+     * Attaches event listeners WITHOUT population (prevents loop)
+     */
+    function attachPartsListenersOnly() {
+        const techNotesTextarea = document.getElementById('tech-notes-textarea');
+        const defectsTextarea = document.getElementById('defects-textarea');
+        const technicianDropdown = document.getElementById('technician-dropdown');
+        const techNotesVoiceStart = document.getElementById('tech-notes-voice-start');
+        const techNotesVoiceStop = document.getElementById('tech-notes-voice-stop');
+        const techNotesVoiceIndicator = document.getElementById('tech-notes-voice-indicator');
+        const defectsVoiceStart = document.getElementById('defects-voice-start');
+        const defectsVoiceStop = document.getElementById('defects-voice-stop');
+        const defectsVoiceIndicator = document.getElementById('defects-voice-indicator');
+
+        // NOTE: Do NOT call populateExistingJobCardData() here!
+
+        if (techNotesTextarea) {
+            techNotesTextarea.oninput = (e) => {
+                state.techNotes = e.target.value;
+            };
+        }
+
+        if (defectsTextarea) {
+            defectsTextarea.oninput = (e) => {
+                state.defectList = e.target.value;
+            };
+        }
+
+        if (technicianDropdown) {
+            technicianDropdown.onchange = (e) => {
+                state.selectedTechnician = e.target.value;
+            };
+        }
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const supportsSpeech = !!SpeechRecognition;
+
+        function bindSpeechToTextarea(textarea, startBtn, stopBtn, indicator, onText) {
+            if (!textarea || !startBtn || !stopBtn) return;
+            if (!supportsSpeech) {
+                startBtn.disabled = true;
+                stopBtn.disabled = true;
+                startBtn.textContent = 'Voice Unsupported';
+                return;
+            }
+
+            let recognition = null;
+            let isListening = false;
+            let indicatorTimeout = null;
+            let lastFinalTranscript = '';
+            let pendingLine = '';
+            let pendingTimer = null;
+            const PAUSE_MS = 800;
+
+            const setButtons = (listening) => {
+                isListening = listening;
+                startBtn.disabled = listening;
+                stopBtn.disabled = !listening;
+                stopBtn.style.opacity = listening ? '1' : '0.6';
+                stopBtn.style.color = listening ? '#ef4444' : 'white';
+            };
+
+            const showIndicator = () => {
+                if (!indicator) return;
+                indicator.classList.add('voice-indicator--active');
+                if (indicatorTimeout) clearTimeout(indicatorTimeout);
+                indicatorTimeout = setTimeout(() => {
+                    indicator.classList.remove('voice-indicator--active');
+                }, 1200);
+            };
+
+            const flushPendingLine = () => {
+                if (!pendingLine.trim()) return;
+                const needsNewLine = textarea.value && !textarea.value.endsWith('\n');
+                textarea.value += (needsNewLine ? '\n' : '') + pendingLine.trim();
+                textarea.scrollTop = textarea.scrollHeight;
+                if (onText) onText(textarea.value);
+                pendingLine = '';
+            };
+
+            const startListening = () => {
+                if (isListening) return;
+                recognition = new SpeechRecognition();
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = 'en-US';
+
+                recognition.onstart = () => {
+                    lastFinalTranscript = '';
+                    pendingLine = '';
+                    if (pendingTimer) {
+                        clearTimeout(pendingTimer);
+                        pendingTimer = null;
+                    }
+                };
+
+                recognition.onresult = (event) => {
+                    let transcript = '';
+                    let hasSpeech = false;
+                    for (let i = event.resultIndex; i < event.results.length; ++i) {
+                        const chunk = event.results[i][0].transcript || '';
+                        if (chunk.trim()) hasSpeech = true;
+                        if (event.results[i].isFinal) {
+                            const finalChunk = event.results[i][0].transcript || '';
+                            if (finalChunk) {
+                                if (finalChunk.startsWith(lastFinalTranscript)) {
+                                    transcript += finalChunk.slice(lastFinalTranscript.length);
+                                } else {
+                                    transcript += finalChunk;
+                                }
+                                lastFinalTranscript = finalChunk;
+                            }
+                        }
+                    }
+                    if (hasSpeech) {
+                        showIndicator();
+                    }
+                    if (transcript) {
+                        const cleaned = transcript.trim();
+                        if (cleaned) {
+                            pendingLine = pendingLine ? `${pendingLine} ${cleaned}` : cleaned;
+                            if (pendingTimer) clearTimeout(pendingTimer);
+                            pendingTimer = setTimeout(() => {
+                                flushPendingLine();
+                                pendingTimer = null;
+                            }, PAUSE_MS);
+                        }
+                    }
+                };
+
+                recognition.onend = () => {
+                    setButtons(false);
+                    if (indicatorTimeout) clearTimeout(indicatorTimeout);
+                    if (indicator) indicator.classList.remove('voice-indicator--active');
+                    lastFinalTranscript = '';
+                    if (pendingTimer) {
+                        clearTimeout(pendingTimer);
+                        pendingTimer = null;
+                    }
+                    flushPendingLine();
+                };
+
+                recognition.onerror = () => {
+                    setButtons(false);
+                    if (indicatorTimeout) clearTimeout(indicatorTimeout);
+                    if (indicator) indicator.classList.remove('voice-indicator--active');
+                    lastFinalTranscript = '';
+                    if (pendingTimer) {
+                        clearTimeout(pendingTimer);
+                        pendingTimer = null;
+                    }
+                    flushPendingLine();
+                };
+
+                recognition.start();
+                setButtons(true);
+            };
+
+            const stopListening = () => {
+                if (!recognition) return;
+                recognition.stop();
+                setButtons(false);
+            };
+
+            startBtn.onclick = startListening;
+            stopBtn.onclick = stopListening;
+        }
+
+        bindSpeechToTextarea(
+            techNotesTextarea,
+            techNotesVoiceStart,
+            techNotesVoiceStop,
+            techNotesVoiceIndicator,
+            (value) => { state.techNotes = value; }
+        );
+
+        bindSpeechToTextarea(
+            defectsTextarea,
+            defectsVoiceStart,
+            defectsVoiceStop,
+            defectsVoiceIndicator,
+            (value) => { state.defectList = value; }
+        );
+
+        console.log('Scheduling signature pad initialization...');
+        if (state.collapseOpen || state.signatureData) {
+            initSignaturePad();
+        }
+
+        const partsInput = document.getElementById('parts-search');
+        if (partsInput) {
+            const debouncedSearch = debounce((value) => {
+                state.partsSearchQuery = value.trim();
+                renderRequestParts();
+            }, 300);
+
+            partsInput.oninput = (e) => {
+                debouncedSearch(e.target.value);
+            };
+
+            partsInput.onkeydown = (e) => {
+                if (e.key === 'Enter') {
+                    state.partsSearchQuery = e.target.value.trim();
+                    renderRequestParts();
+                }
+            };
+
+            partsInput.onclick = (e) => e.target.focus();
         }
     }
 
@@ -1590,7 +1892,7 @@
         const defectsVoiceStop = document.getElementById('defects-voice-stop');
         const defectsVoiceIndicator = document.getElementById('defects-voice-indicator');
 
-        // ⭐⭐⭐ POPULATE EXISTING DATA ⭐⭐⭐
+        // ⭐ POPULATE EXISTING DATA (only on first call, prevented by flag)
         populateExistingJobCardData();
 
         if (techNotesTextarea) {

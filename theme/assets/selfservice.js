@@ -1356,6 +1356,229 @@
     `;
     }
 
+
+    // ===========================
+    // DATA POPULATION FUNCTIONS
+    // ===========================
+
+    /**
+     * Populates form fields with existing job card data from the server
+     * Called when the parts request form is initialized
+     */
+    async function populateExistingJobCardData() {
+        try {
+            // Validate we have a job card reference
+            if (!state.activeReg) {
+                console.log('No active job card reference - skipping data population');
+                return;
+            }
+
+            console.log(`Loading existing data for job card: ${state.activeReg}`);
+
+            // Fetch data from server
+            const jobCardData = await anvil.call(
+                mainContent,
+                'get_jobcard_and_defect_details',
+                state.activeReg
+            );
+
+            // Handle empty results
+            if (!jobCardData || jobCardData.length === 0) {
+                console.log('No existing data found for this job card');
+                return;
+            }
+
+            // Get the most recent record (server orders by ID DESC)
+            const latestRecord = jobCardData[0];
+            console.log('Retrieved data:', latestRecord);
+
+            // ============================================
+            // POPULATE TECH NOTES
+            // ============================================
+            if (latestRecord.Notes) {
+                state.techNotes = latestRecord.Notes;
+                const techNotesTextarea = document.getElementById('tech-notes-textarea');
+                if (techNotesTextarea) {
+                    techNotesTextarea.value = latestRecord.Notes;
+                    console.log('✓ Tech Notes populated');
+                }
+            }
+
+            // ============================================
+            // POPULATE DEFECTS
+            // ============================================
+            if (latestRecord.Defects) {
+                state.defectList = latestRecord.Defects;
+                const defectsTextarea = document.getElementById('defects-textarea');
+                if (defectsTextarea) {
+                    defectsTextarea.value = latestRecord.Defects;
+                    console.log('✓ Defects populated');
+                }
+            }
+
+            // ============================================
+            // POPULATE TECHNICIAN DROPDOWN
+            // ============================================
+            if (latestRecord.PreparedByStaff) {
+                state.selectedTechnician = latestRecord.PreparedByStaff;
+                const technicianDropdown = document.getElementById('technician-dropdown');
+                if (technicianDropdown) {
+                    // Verify the technician exists in the dropdown options
+                    const optionExists = Array.from(technicianDropdown.options).some(
+                        opt => opt.value === latestRecord.PreparedByStaff
+                    );
+                    
+                    if (optionExists) {
+                        technicianDropdown.value = latestRecord.PreparedByStaff;
+                        console.log('✓ Technician selected:', latestRecord.PreparedByStaff);
+                    } else {
+                        console.warn('Technician not found in dropdown:', latestRecord.PreparedByStaff);
+                    }
+                }
+            }
+
+            // ============================================
+            // POPULATE SIGNATURE CANVAS
+            // ============================================
+            if (latestRecord.Signature) {
+                // Convert base64 string to data URL
+                // The server returns just the base64 string, we need to add the prefix
+                const signatureDataURL = `data:image/png;base64,${latestRecord.Signature}`;
+                state.signatureData = signatureDataURL;
+                
+                // Load signature onto canvas
+                await loadSignatureFromBase64(signatureDataURL);
+                console.log('✓ Signature loaded');
+                
+                // Ensure collapse section is open if signature exists
+                if (!state.collapseOpen) {
+                    state.collapseOpen = true;
+                    const collapseContent = document.getElementById('collapse-content');
+                    if (collapseContent) {
+                        collapseContent.style.display = 'block';
+                    }
+                }
+            }
+
+            // ============================================
+            // POPULATE REQUESTED PARTS
+            // ============================================
+            if (latestRecord.RequestedParts) {
+                try {
+                    // Parse the RequestedParts JSON string
+                    let requestedParts;
+                    
+                    // Handle if it's already an object vs a string
+                    if (typeof latestRecord.RequestedParts === 'string') {
+                        requestedParts = JSON.parse(latestRecord.RequestedParts);
+                    } else {
+                        requestedParts = latestRecord.RequestedParts;
+                    }
+                    
+                    // Clear existing cart
+                    state.cart = [];
+
+                    // Populate cart if parts exist
+                    if (Array.isArray(requestedParts) && requestedParts.length > 0) {
+                        // Map parts to cart format, handling different property name cases
+                        state.cart = requestedParts.map(part => ({
+                            name: part.name || part.Name || '',
+                            category: part.category || part.Category || '',
+                            partNo: part.partNo || part.PartNo || part.part_no || '',
+                            quantity: parseFloat(part.quantity || part.Quantity || 0)
+                        }));
+
+                        // Update cart display
+                        updateCartDisplay();
+                        console.log(`✓ ${state.cart.length} parts loaded into cart`);
+                    } else {
+                        console.log('No parts found in RequestedParts array');
+                    }
+                } catch (parseError) {
+                    console.error('Error parsing RequestedParts:', parseError);
+                    console.log('RequestedParts value:', latestRecord.RequestedParts);
+                }
+            }
+
+            console.log('✅ Job card data population complete');
+
+        } catch (error) {
+            console.error('❌ Error loading job card data:', error);
+        }
+    }
+
+    /**
+     * Loads a base64 signature image onto the signature canvas
+     * @param {string} dataURL - The data URL (data:image/png;base64,...)
+     */
+    function loadSignatureFromBase64(dataURL) {
+        return new Promise((resolve, reject) => {
+            const canvas = document.getElementById('signature-canvas');
+            if (!canvas) {
+                console.error('Signature canvas not found');
+                reject(new Error('Canvas not found'));
+                return;
+            }
+
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+
+            img.onload = function() {
+                try {
+                    // Fill canvas with white background first
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                    // Draw the signature image scaled to canvas size
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                    // Mark signature pad as signed (if signature pad instance exists)
+                    if (typeof signaturePadInstance !== 'undefined' && signaturePadInstance) {
+                        signaturePadInstance.isSigned = true;
+                    }
+
+                    console.log('Signature image loaded successfully');
+                    resolve();
+                } catch (error) {
+                    console.error('Error drawing signature:', error);
+                    reject(error);
+                }
+            };
+
+            img.onerror = function(error) {
+                console.error('Failed to load signature image');
+                reject(error);
+            };
+
+            // Set the source to trigger loading
+            img.src = dataURL;
+        });
+    }
+
+    /**
+     * Updates the cart count display and re-renders the parts list
+     */
+    function updateCartDisplay() {
+        // Calculate total quantity
+        const totalQuantity = state.cart.reduce((sum, item) => sum + item.quantity, 0);
+        
+        // Update cart count badge in header
+        if (typeof cartCount !== 'undefined' && cartCount) {
+            cartCount.innerText = Math.round(totalQuantity);
+            
+            if (totalQuantity > 0) {
+                cartCount.classList.remove('hidden');
+            } else {
+                cartCount.classList.add('hidden');
+            }
+        }
+
+        // Re-render the request parts tab to show updated cart
+        if (state.activePartsTab === 'request') {
+            renderRequestParts();
+        }
+    }
+
     function attachPartsRequestListeners() {
         const techNotesTextarea = document.getElementById('tech-notes-textarea');
         const defectsTextarea = document.getElementById('defects-textarea');
@@ -1366,6 +1589,9 @@
         const defectsVoiceStart = document.getElementById('defects-voice-start');
         const defectsVoiceStop = document.getElementById('defects-voice-stop');
         const defectsVoiceIndicator = document.getElementById('defects-voice-indicator');
+
+        // ⭐⭐⭐ POPULATE EXISTING DATA ⭐⭐⭐
+        populateExistingJobCardData();
 
         if (techNotesTextarea) {
             techNotesTextarea.oninput = (e) => {

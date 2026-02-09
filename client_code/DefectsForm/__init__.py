@@ -51,10 +51,17 @@ class DefectsForm(DefectsFormTemplate):
 
     def populateForm(self, defects_data, **event_args):
         """This method is called when an item is selected"""   
-        self.txtClientInstructions.text = ModGetData.getJobCardInstructions(defects_data[0]["ID"])
-        self.txtTechNotes.text = ModGetData.getJobCardTechNotes(defects_data[0]["ID"])
-        self.txtDefectsList.text = anvil.server.call('getJobCardDefects',defects_data[0]["ID"])
-        self.txtRequestedParts.text = anvil.server.call('getRequestedParts',defects_data[0]["ID"])
+        defectListData=anvil.server.call("getDefectsList", defects_data[0]["ID"])
+        #self.txtClientInstructions.text = ModGetData.getJobCardInstructions(defects_data[0]["ID"])
+        #self.txtTechNotes.text = ModGetData.getJobCardTechNotes(defects_data[0]["ID"])
+        #self.txtDefectsList.text = anvil.server.call('getJobCardDefects',defects_data[0]["ID"])
+        #self.txtRequestedParts.text = anvil.server.call('getRequestedParts',defects_data[0]["ID"])
+        if defectListData:
+            self.txtClientInstructions.text = defectListData[0]['Instruction']
+            self.txtTechNotes.text = defectListData[0]['Notes']
+            self.txtDefectsList.text = defectListData[0]['Defects']
+            self.txtTechnicianPortalRequestedParts.text=defectListData[0]["TechnicianPortalRequestedParts"]
+            self.txtRequestedParts.text = defectListData[0]['RequestedParts']
         result = anvil.server.call("getDefectsStaffAndSignature",defects_data[0]["ID"])
         if result: #Return existing details
             self.drop_down_staff.selected_value = result[0]["PreparedByStaff"]

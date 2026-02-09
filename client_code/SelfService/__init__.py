@@ -49,7 +49,7 @@ class SelfService(SelfServiceTemplate):
         JobCardID = anvil.server.call_s("getJobCardID", jobcard_ref)
         if parts is None:
             parts = "None"
-        anvil.server.call('saveTecnicianPortalDefectsAndRequestedParts', JobCardID, defects, parts, technician, signature)
+        anvil.server.call('saveTecnicianPortalDefectsAndRequestedParts', JobCardID, tech_notes, defects, parts, technician, signature)
         anvil.server.call('updateJobCardStatus', JobCardID, "Create Quote")
         return None
 

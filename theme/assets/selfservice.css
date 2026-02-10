@@ -212,7 +212,7 @@ header {
     position: absolute;
     top: -50%;
     left: -50%;
-    width: 200%;
+    width: 100%;
     height: 200%;
     background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
     transform: scale(0);

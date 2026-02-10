@@ -11,6 +11,7 @@ from anvil.js.window import navigator
 from ..FAQ import FAQ
 from ..Alerts import Alerts
 from ..IncompleteDefectsInfo import IncompleteDefectsInfo
+from ..UpdatedRequestedParts import UpdatedRequestedParts
 
 class Main(MainTemplate):
     def __init__(self, **properties):
@@ -218,10 +219,10 @@ class Main(MainTemplate):
         alert(content=IncompleteDefectsInfo(), dismissible=False,large=True)
         self.btn_IncompleteDefectsInfo.enabled=True
 
-    def btn_SelfService_click(self, **event_args):
+    def btn_UpdatedRequestedParts_click(self, **event_args):
         """This method is called when the button is clicked"""
-        self.highlight_active_button("SELF SERVICE")
-        ModNavigation.go_SelfService()
-        #Now hide sidebar after clicking link. 
-        #Additional function in standard-page.html
-        self.call_js('hideSidebarIfModal')
+        self.btn_UpdatedRequestedParts.enabled=False
+        alert(content=UpdatedRequestedParts(), dismissible=False,large=True)
+        self.btn_UpdatedRequestedParts.enabled=True
+
+    

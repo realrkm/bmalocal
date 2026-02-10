@@ -7,6 +7,7 @@ import anvil.tables.query as q
 from anvil.tables import app_tables
 import anvil.js
 import base64
+from .. import ModNavigation
 
 class SelfService(SelfServiceTemplate):
     def __init__(self, **properties):

@@ -16,7 +16,6 @@ from ..ProgressTracker import ProgressTracker
 from ..ProgressTrackerMobileView import ProgressTrackerMobileView
 from ..Inventory import Inventory
 from ..PartsHub import PartsHub
-from ..SelfService import SelfService
 
 
 home_form = None
@@ -84,10 +83,6 @@ def go_Settings(permissions):
     form = get_form()
     form.load_component(Settings(permissions))
 
-#Load PartsHub Form
-def go_SelfService():
-    form = get_form()
-    form.load_component(SelfService())
     
 #Load Notification
 def go_Notification():
@@ -97,6 +92,15 @@ def go_Notification():
 
 #Load Incomplete Defects Button
 def go_Disable_Incomplete_Defects_Info():
+    form = get_open_form()
+    form.btn_IncompleteDefectsInfo.enabled = False
+
+def go_Enable_Incomplete_Defects_Info():
+    form = get_open_form()
+    form.btn_IncompleteDefectsInfo.enabled = True
+
+#Load View Update Parts Button
+def go_Disable_Requested_Info():
     form = get_open_form()
     form.btn_IncompleteDefectsInfo.enabled = False
 

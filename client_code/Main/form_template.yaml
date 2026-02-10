@@ -34,6 +34,11 @@ components:
     name: btn_IncompleteDefectsInfo
     properties: {background: '#0056D6', border: '', enabled: false, foreground: 'theme:White', icon: '', role: raised, spacing_above: none, text: View Incomplete DEFECTS, visible: true}
     type: Button
+  - event_bindings: {}
+    layout_properties: {grid_position: 'FBKMZC,ATVYDK'}
+    name: btn_UpdatedRequestedParts
+    properties: {background: '#0056D6', border: '', enabled: false, foreground: 'theme:White', icon: '', role: raised, spacing_above: none, text: View Updated PARTS, visible: true}
+    type: Button
   - components:
     - components:
       - layout_properties: {grid_position: 'ORTKHD,HEZLEL OUINEK,OUAOZU'}
@@ -137,11 +142,6 @@ components:
     layout_properties: {grid_position: 'OETNOG,VUTIGC'}
     name: btn_Settings
     properties: {align: full, background: '#0056D6', enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:wrench', role: raised, text: SETTINGS, visible: true}
-    type: Button
-  - event_bindings: {click: btn_SelfService_click}
-    layout_properties: {grid_position: 'XOBTVA,NVOVPZ'}
-    name: btn_SelfService
-    properties: {align: full, background: '#0056D6', enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:desktop', role: raised, text: Self Service, visible: false}
     type: Button
   - event_bindings: {click: btn_ResetPassword_click}
     layout_properties: {grid_position: 'XGYGHI,OAJOVS'}

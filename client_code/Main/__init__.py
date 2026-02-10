@@ -201,10 +201,13 @@ class Main(MainTemplate):
                 self.btn_IncompleteDefectsInfo.enabled=True
             else:
                 self.btn_IncompleteDefectsInfo.enabled=False
+            if anvil.server.call_s("fetch_active_requested_parts_info",anvil.users.get_user()):
+                self.btn_UpdatedRequestedParts.enabled=True
+            else:
+                self.btn_UpdatedRequestedParts.enabled=False
             for n in notifications:
                 self.notification_label.text = (f"{n['jobcard']} - {n['message']}")
-                #self.notification_label.visible=True
-                
+                                
                 self.refresh()
 
     def btn_alerts_click(self, **event_args):
@@ -219,6 +222,7 @@ class Main(MainTemplate):
         alert(content=IncompleteDefectsInfo(), dismissible=False,large=True)
         self.btn_IncompleteDefectsInfo.enabled=True
 
+    
     def btn_UpdatedRequestedParts_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.btn_UpdatedRequestedParts.enabled=False

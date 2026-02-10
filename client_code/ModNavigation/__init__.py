@@ -100,10 +100,10 @@ def go_Enable_Incomplete_Defects_Info():
     form.btn_IncompleteDefectsInfo.enabled = True
 
 #Load View Update Parts Button
-def go_Disable_Requested_Info():
+def go_Disable_Requested_Parts_Info():
     form = get_open_form()
-    form.btn_IncompleteDefectsInfo.enabled = False
+    form.btn_UpdatedRequestedParts.enabled = False
 
-def go_Enable_Incomplete_Defects_Info():
+def go_Enable_Requested_Parts_Info():
     form = get_open_form()
-    form.btn_IncompleteDefectsInfo.enabled = True
+    form.btn_UpdatedRequestedParts.enabled = True

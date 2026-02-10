@@ -1,4 +1,4 @@
-from ._anvil_designer import UpdatedRequestedPartsTemplate
+from ._anvil_designer import ViewTechnicianPortalDetailsTemplate
 from anvil import *
 import anvil.server
 import anvil.users
@@ -9,7 +9,7 @@ import anvil.js
 from .. import ModNavigation
 
 
-class UpdatedRequestedParts(UpdatedRequestedPartsTemplate):
+class ViewTechnicianPortalDetails(ViewTechnicianPortalDetailsTemplate):
     def __init__(self, **properties):
         # Set Form properties and Data Bindings.
         self.init_components(**properties)
@@ -20,7 +20,7 @@ class UpdatedRequestedParts(UpdatedRequestedPartsTemplate):
             anvil.users.login_with_form()
         self.user = anvil.users.get_user()
         self.repeating_panel_1.items = anvil.server.call_s(
-            "fetch_active_requested_parts_info", self.user
+            "fetch_active_technician_portal_info", self.user
         )
 
     def btn_UpdateStatus_click(self, **event_args):

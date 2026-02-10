@@ -11,7 +11,7 @@ from anvil.js.window import navigator
 from ..FAQ import FAQ
 from ..Alerts import Alerts
 from ..IncompleteDefectsInfo import IncompleteDefectsInfo
-from ..UpdatedRequestedParts import UpdatedRequestedParts
+from ..ViewTechnicianPortalDetails import ViewTechnicianPortalDetails
 
 class Main(MainTemplate):
     def __init__(self, **properties):
@@ -201,10 +201,10 @@ class Main(MainTemplate):
                 self.btn_IncompleteDefectsInfo.enabled=True
             else:
                 self.btn_IncompleteDefectsInfo.enabled=False
-            if anvil.server.call_s("fetch_active_requested_parts_info",anvil.users.get_user()):
-                self.btn_UpdatedRequestedParts.enabled=True
+            if anvil.server.call_s("fetch_active_technician_portal_info",anvil.users.get_user()):
+                self.btn_ViewTechnicianPortalDetails.enabled=True
             else:
-                self.btn_UpdatedRequestedParts.enabled=False
+                self.btn_ViewTechnicianPortalDetails.enabled=False
             for n in notifications:
                 self.notification_label.text = (f"{n['jobcard']} - {n['message']}")
                                 
@@ -223,10 +223,10 @@ class Main(MainTemplate):
         self.btn_IncompleteDefectsInfo.enabled=True
 
     
-    def btn_UpdatedRequestedParts_click(self, **event_args):
+    def btn_ViewTechnicianPortalDetails_click(self, **event_args):
         """This method is called when the button is clicked"""
-        self.btn_UpdatedRequestedParts.enabled=False
-        alert(content=UpdatedRequestedParts(), dismissible=False,large=True)
-        self.btn_UpdatedRequestedParts.enabled=True
+        self.btn_ViewTechnicianPortalDetails.enabled=False
+        alert(content=ViewTechnicianPortalDetails(), dismissible=False,large=True)
+        self.btn_ViewTechnicianPortalDetails.enabled=True
 
     

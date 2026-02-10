@@ -54,7 +54,10 @@
         autoRefreshInterval: null,
 
         // Data population flag (prevents infinite loop)
-        isPopulatingData: false
+        isPopulatingData: false,
+
+        // Pending display update timeout
+        pendingDisplayUpdate: null
     };
     // Category display configuration
     const categoryConfig = {
@@ -446,7 +449,7 @@
     async function init() {
         try {
             const serverData = await anvil.call(mainContent, 'getCarPartNamesAndCategory');
-           
+
             if (!Array.isArray(serverData)) {
                 throw new Error("Server did not return a list. Check server logs.");
             }
@@ -600,12 +603,12 @@
             const matchesStatus = state.currentStatusFilter === 'all' ? 
                 (s.status !== 'Completed') : 
                 (s.status === state.currentStatusFilter);
-            
+
             // Enhanced search - similar to modal parts search
             if (!state.serviceSearchQuery.trim()) {
                 return matchesStatus;
             }
-            
+
             const searchTerm = state.serviceSearchQuery.toLowerCase();
             const matchesSearch = 
                 s.jobcardref.toLowerCase().includes(searchTerm) || 
@@ -613,7 +616,7 @@
                 (s.instruction && s.instruction.toLowerCase().includes(searchTerm)) ||
                 (s.date && s.date.toLowerCase().includes(searchTerm)) ||
                 (s.status && s.status.toLowerCase().includes(searchTerm));
-            
+
             return matchesStatus && matchesSearch;
         });
 
@@ -622,7 +625,6 @@
         const inServiceCount = state.activeServices.filter(s => s.status === 'In-Service').length;
 
         mainContent.innerHTML = `
-        <!-- Hero Section -->
         <div class="hero-section">
             <h1 class="hero-title">BMA PARTS EXPRESS</h1>
             <p class="hero-subtitle">A comprehensive, operational, and centralized hub for technical excellence.</p>
@@ -634,7 +636,6 @@
             </div>
         </div>
 
-        <!-- Stats Cards -->
         <div class="service-card-grid">
             <div class="service-card">
                 <div class="service-icon">🔧</div>
@@ -665,7 +666,6 @@
             
         </div>
         
-        <!-- Filter and Search -->
         <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:2rem; flex-wrap:wrap;">
             <div style="display:flex; gap:1rem;">
                 <button class="btn-status ${state.currentStatusFilter === 'Checked-In' ? 'active-filter' : ''}" onclick="filterByStatus('Checked-In')">Checked-In</button>
@@ -731,12 +731,12 @@
             const matchesStatus = state.currentStatusFilter === 'all' ? 
                 (s.status !== 'Completed') : 
                 (s.status === state.currentStatusFilter);
-            
+
             // Enhanced search - similar to modal parts search
             if (!state.serviceSearchQuery.trim()) {
                 return matchesStatus;
             }
-            
+
             const searchTerm = state.serviceSearchQuery.toLowerCase();
             const matchesSearch = 
                 s.jobcardref.toLowerCase().includes(searchTerm) || 
@@ -744,7 +744,7 @@
                 (s.instruction && s.instruction.toLowerCase().includes(searchTerm)) ||
                 (s.date && s.date.toLowerCase().includes(searchTerm)) ||
                 (s.status && s.status.toLowerCase().includes(searchTerm));
-            
+
             return matchesStatus && matchesSearch;
         });
 
@@ -830,7 +830,6 @@
         mainContent.innerHTML = `
         <h2 style="margin-bottom:2rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Requesting Parts for: <span style="color:#facc15">${sanitizeHTML(state.activeReg)}</span></h2>
         
-        <!-- Tab Navigation -->
         <div style="display:flex; gap:1rem; margin-bottom:2rem; background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); padding:1rem; border-radius:1.5rem; border:2px solid rgba(59, 130, 246, 0.2); overflow-x:auto;">
             <button 
                 onclick="switchPartsTab('request')" 
@@ -852,7 +851,6 @@
             </button>
         </div>
         
-        <!-- Tab Content -->
         <div id="parts-tab-content">
             ${renderPartsTabContent()}
         </div>
@@ -933,7 +931,6 @@
                     >${sanitizeHTML(state.defectList)}</textarea>
                 </div>
 
-                <!-- Technician Dropdown -->
                 <div style="margin-top:2rem;">
                     <label for="technician-dropdown" style="display:block; margin-bottom:0.5rem; font-size:1.8rem; font-weight:bold; color:#06b6d4;">Select Technician</label>
                     <select 
@@ -944,7 +941,6 @@
                     </select>
                 </div>
 
-                <!-- Signature Pad -->
                 <div style="margin-top:2rem;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
                         <label style="font-size:1.8rem; font-weight:bold; color:#06b6d4;">Technician Signature</label>
@@ -963,7 +959,6 @@
             </div>
         </div>
         
-        <!-- Requested Parts Section -->
         <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); border-radius:1rem; margin-bottom:2rem; border:2px solid rgba(59, 130, 246, 0.2); overflow:hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); padding:2rem;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
                 <h3 style="font-size:2rem; color:#06b6d4; display:flex; align-items:center; gap:0.5rem;">
@@ -981,9 +976,21 @@
                         <div style="padding:1rem; border-bottom:${i < state.cart.length - 1 ? '1px solid rgba(59, 130, 246, 0.2)' : 'none'}; display:flex; justify-content:space-between; align-items:center; font-size:1.6rem;">
                             <div style="flex:1;">
                                 <div style="font-weight:bold; color:#06b6d4; margin-bottom:0.3rem;">${i + 1}. ${sanitizeHTML(item.name)}</div>
+                                ${item.category ? `<div style="color:#94a3b8; font-size:1.4rem;">${sanitizeHTML(item.category)}</div>` : ''}
                             </div>
-                            <div style="color:#facc15; font-weight:bold; font-size:1.8rem;">
-                                Qty: ${item.quantity}
+                            <div style="display:flex; align-items:center; gap:1.5rem;">
+                                <div style="color:#facc15; font-weight:bold; font-size:1.8rem;">
+                                    Qty: ${item.quantity}
+                                </div>
+                                <button 
+                                    onclick="removeFromCart(${i})" 
+                                    aria-label="Remove ${sanitizeHTML(item.name)} from cart"
+                                    style="background:linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color:white; border:none; border-radius:0.5rem; padding:0.5rem 1rem; cursor:pointer; font-size:1.4rem; font-weight:bold; transition:all 0.3s ease; display:flex; align-items:center; gap:0.3rem;"
+                                    onmouseover="this.style.transform='scale(1.05)'"
+                                    onmouseout="this.style.transform='scale(1)'">
+                                    <i data-lucide="trash-2" style="width:16px; height:16px;"></i>
+                                    Remove
+                                </button>
                             </div>
                         </div>
                     `).join('')}
@@ -1003,7 +1010,6 @@
             `}
         </div>
         
-        <!-- Clear and Save Details Buttons -->
         <div style="display:flex; gap:1rem; justify-content:flex-end; margin-bottom:2rem;">
             <button 
                 onclick="clearPartsDetails()" 
@@ -1269,7 +1275,6 @@
                     </p>
                 </div>
                 
-                <!-- Response Section -->
                 <div style="margin-bottom:2rem;">
                     <label for="customer-response-textarea" style="display:block; margin-bottom:1rem; font-size:2rem; font-weight:bold; color:#06b6d4;">
                         📝 Response
@@ -1283,7 +1288,6 @@
                     <p style="font-size:1.3rem; color:#94a3b8; margin-top:0.5rem;">Document any customer concerns, requests, or approvals here.</p>
                 </div>
                 
-                <!-- Approved Parts Section -->
                 <div style="margin-bottom:2rem;">
                     <label for="approved-parts-textarea" style="display:block; margin-bottom:1rem; font-size:2rem; font-weight:bold; color:#06b6d4;">
                         ✅ Approved Parts
@@ -1518,8 +1522,14 @@
             console.log('✅ Job card data population complete');
             state.isPopulatingData = false;
 
-            // NOW update the parts display section
-            setTimeout(() => {
+            // Clear any pending display updates
+            if (state.pendingDisplayUpdate) {
+                clearTimeout(state.pendingDisplayUpdate);
+            }
+
+            // Schedule display update
+            state.pendingDisplayUpdate = setTimeout(() => {
+                state.pendingDisplayUpdate = null;
                 updatePartsListDisplay();
             }, 100);
 
@@ -1647,6 +1657,12 @@
      * Updates just the parts list HTML in the DOM (not entire page)
      */
     function updatePartsListDisplay() {
+        // Clear any pending display updates to prevent race conditions
+        if (state.pendingDisplayUpdate) {
+            clearTimeout(state.pendingDisplayUpdate);
+            state.pendingDisplayUpdate = null;
+        }
+
         // Find the parts tab content
         const partsTabContent = document.getElementById('parts-tab-content');
         if (!partsTabContent || state.activePartsTab !== 'request') {
@@ -2752,7 +2768,15 @@ function setupListeners() {
 
         if (qtyInput) qtyInput.value = '1';
 
-        render();
+        // Update badge and display without full re-render
+        updateCartBadgeOnly();
+        
+        // Correct view check: 'Request Parts' instead of 'request-parts'
+        if (state.currentView === 'Request Parts' && state.activePartsTab === 'request') {
+            updatePartsListDisplay();
+        } else {
+            render();
+        }
     };
 
     window.updateCartQuantity = (index, newQuantity) => {
@@ -2769,8 +2793,18 @@ function setupListeners() {
     };
 
     window.removeFromCart = (i) => { 
-        state.cart.splice(i, 1); 
-        render(); 
+        state.cart.splice(i, 1);
+        
+        // Update the badge count immediately
+        updateCartBadgeOnly();
+
+        // Update UI without a refresh if we are on the Request Parts tab
+        // FIXED: Corrected view name from 'request-parts' to 'Request Parts'
+        if (state.currentView === 'Request Parts' && state.activePartsTab === 'request') {
+            updatePartsListDisplay();
+        } else {
+            render();
+        }
     };
 
     window.goToHome = goToHome;
@@ -3023,6 +3057,12 @@ function setupListeners() {
 
         // Update modal cart summary
         updateModalCartSummary();
+        
+        // If we're on the parts request tab, update the main display in real-time
+        // FIXED: Corrected view name from 'request-parts' to 'Request Parts'
+        if (state.currentView === 'Request Parts' && state.activePartsTab === 'request') {
+            updatePartsListDisplay();
+        }
     };
 }
 

@@ -49,8 +49,7 @@ class SelfService(SelfServiceTemplate):
         JobCardID = anvil.server.call_s("getJobCardID", jobcard_ref)
         if parts is None:
             parts = "None"
-        anvil.server.call('saveTecnicianPortalDefectsAndRequestedParts', JobCardID, tech_notes, defects, parts, technician, signature)
-        anvil.server.call('updateJobCardStatus', JobCardID, "Create Quote")
+        anvil.server.call('saveOrUpdateTechnicianPortalDefectsAndRequestedParts', JobCardID, tech_notes, defects, parts, technician, signature)
         return None
 
     def get_signature_image(self, signature_data):

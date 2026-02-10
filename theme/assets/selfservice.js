@@ -2638,10 +2638,11 @@ function setupListeners() {
         let partsAndQuantities = null;
         if (state.cart.length > 0) {
             partsAndQuantities = state.cart.map((item, i) => 
-                `${i + 1}. ${item.name} (${item.category}) - Qty: ${item.quantity}`
+                `${i + 1}. ${item.name} - Qty: ${item.quantity}`
             ).join('\n');
         }
 
+        await customAlert(partsAndQuantities);
         const techNotesValue = state.techNotes.trim() || null;
         const defectListValue = state.defectList.trim() || null;
 
@@ -2853,7 +2854,7 @@ function setupListeners() {
             state.approvedParts = '';
             state.selectedTechnician = '';
             state.signatureData = '';
-            
+            clearSignaturePad()
             cartCount.innerText = 0;
             cartCount.classList.add('hidden');
         }

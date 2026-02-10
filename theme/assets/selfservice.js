@@ -57,7 +57,11 @@
         isPopulatingData: false,
 
         // Pending display update timeout
-        pendingDisplayUpdate: null
+        pendingDisplayUpdate: null,
+
+        // ⭐ NEW: Track if data has been loaded for current reg and navigation source
+        dataLoadedForReg: null,
+        cameFromWorkDone: false
     };
     // Category display configuration
     const categoryConfig = {
@@ -1011,11 +1015,13 @@
         </div>
         
         <div style="display:flex; gap:1rem; justify-content:flex-end; margin-bottom:2rem;">
+            ${!state.cameFromWorkDone ? `
             <button 
                 onclick="clearPartsDetails()" 
                 style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:1.2rem 2.5rem; border-radius:0.8rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease;">
                 Clear Details
             </button>
+            ` : ''}
             <button 
                 onclick="savePartsDetails()" 
                 style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:1.2rem 2.5rem; border-radius:0.8rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);">
@@ -1379,6 +1385,12 @@
                 return;
             }
 
+            // ⭐ SKIP if data was already loaded for this jobcard reference
+            if (state.dataLoadedForReg === state.activeReg) {
+                console.log(`Data already loaded for ${state.activeReg} - skipping reload`);
+                return;
+            }
+
             // Prevent multiple simultaneous population calls (PREVENTS INFINITE LOOP)
             if (state.isPopulatingData) {
                 console.log('Already populating data - skipping duplicate call');
@@ -1521,6 +1533,9 @@
 
             console.log('✅ Job card data population complete');
             state.isPopulatingData = false;
+            
+            // ⭐ Mark data as loaded for this jobcard
+            state.dataLoadedForReg = state.activeReg;
 
             // Clear any pending display updates
             if (state.pendingDisplayUpdate) {
@@ -2565,6 +2580,8 @@ function goToHome() {
     state.cart = [];
     state.selectedTechnician = '';
     state.signatureData = '';
+    state.dataLoadedForReg = null; // ⭐ Reset data loaded flag
+    state.cameFromWorkDone = false; // ⭐ Reset work done flag
     
     clearNavigationHistory();
     
@@ -2601,6 +2618,7 @@ function setupListeners() {
             state.selectedTechnician = '';
             state.signatureData = '';
             state.collapseOpen = false;
+            state.dataLoadedForReg = null; // ⭐ Reset to allow re-loading data if needed
             
             const totalQuantity = state.cart.reduce((sum, item) => sum + item.quantity, 0);
             cartCount.innerText = Math.round(totalQuantity);
@@ -2612,6 +2630,21 @@ function setupListeners() {
     };
 
     window.savePartsDetails = async () => {
+        // ⭐ Get current values from DOM elements (in case they were changed but not synced to state)
+        const techNotesTextarea = document.getElementById('tech-notes-textarea');
+        const defectsTextarea = document.getElementById('defects-textarea');
+        const technicianDropdown = document.getElementById('technician-dropdown');
+        
+        if (techNotesTextarea) {
+            state.techNotes = techNotesTextarea.value;
+        }
+        if (defectsTextarea) {
+            state.defectList = defectsTextarea.value;
+        }
+        if (technicianDropdown) {
+            state.selectedTechnician = technicianDropdown.value;
+        }
+        
         // Validation
         const errors = [];
         
@@ -2635,6 +2668,7 @@ function setupListeners() {
             return;
         }
 
+        // ⭐ Use CURRENT cart state (not server values)
         let partsAndQuantities = null;
         if (state.cart.length > 0) {
             partsAndQuantities = state.cart.map((item, i) => 
@@ -2642,7 +2676,6 @@ function setupListeners() {
             ).join('\n');
         }
 
-        await customAlert(partsAndQuantities);
         const techNotesValue = state.techNotes.trim() || null;
         const defectListValue = state.defectList.trim() || null;
 
@@ -2674,6 +2707,8 @@ function setupListeners() {
             state.selectedTechnician = '';
             state.signatureData = '';
             state.collapseOpen = false;
+            state.dataLoadedForReg = null; // ⭐ Reset data loaded flag
+            state.cameFromWorkDone = false; // ⭐ Reset work done flag
             
             // Update cart display
             cartCount.innerText = 0;
@@ -2857,7 +2892,13 @@ function setupListeners() {
             clearSignaturePad()
             cartCount.innerText = 0;
             cartCount.classList.add('hidden');
+            
+            // ⭐ Reset data loaded flag to allow fresh data load
+            state.dataLoadedForReg = null;
         }
+        
+        // ⭐ Mark that we're NOT coming from Work Done
+        state.cameFromWorkDone = false;
         
         pushNavigation('Request Parts', { activeReg: reg, activePartsTab: 'request' });
     };
@@ -2875,7 +2916,13 @@ function setupListeners() {
             
             cartCount.innerText = 0;
             cartCount.classList.add('hidden');
+            
+            // ⭐ Reset data loaded flag to allow fresh data load
+            state.dataLoadedForReg = null;
         }
+        
+        // ⭐ Mark that we're coming from Work Done
+        state.cameFromWorkDone = true;
         
         pushNavigation('Request Parts', { activeReg: reg, activePartsTab: 'workdone' });
     };

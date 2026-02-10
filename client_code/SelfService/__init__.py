@@ -49,7 +49,6 @@ class SelfService(SelfServiceTemplate):
         JobCardID = anvil.server.call_s("getJobCardID", jobcard_ref)
         if parts is None:
             parts = "None"
-        alert(parts)
         anvil.server.call('saveOrUpdateTechnicianPortalDefectsAndRequestedParts', JobCardID, tech_notes, defects, parts, technician, signature)
         return None
 

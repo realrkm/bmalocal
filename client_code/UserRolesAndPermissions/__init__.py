@@ -157,7 +157,6 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
             return
 
         # Send to server
-        alert(f"the role is {role_id} and the permissions are {selected_permissions}")
         anvil.server.call("save_user_permissions", role_id, selected_permissions)
         alert("Permissions saved successfully", title="Success")
 

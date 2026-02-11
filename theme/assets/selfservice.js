@@ -215,12 +215,10 @@
         }
 
         init() {
-            console.log('Initializing signature pad...');
-
+            
             // Mouse events
             this.canvas.addEventListener('mousedown', (e) => {
                 e.preventDefault();
-                console.log('Mouse down detected');
                 this.startDrawing(e);
             });
             this.canvas.addEventListener('mousemove', (e) => {
@@ -229,7 +227,6 @@
             });
             this.canvas.addEventListener('mouseup', (e) => {
                 e.preventDefault();
-                console.log('Mouse up detected');
                 this.stopDrawing();
             });
             this.canvas.addEventListener('mouseout', (e) => {
@@ -240,29 +237,24 @@
             // Touch events - FIXED
             this.canvas.addEventListener('touchstart', (e) => {
                 e.preventDefault();
-                console.log('Touch start detected');
                 this.startDrawing(e);
             }, { passive: false });
 
             this.canvas.addEventListener('touchmove', (e) => {
                 e.preventDefault();
-                console.log('Touch move detected'); // Added logging
                 this.draw(e);
             }, { passive: false });
 
             this.canvas.addEventListener('touchend', (e) => {
                 e.preventDefault();
-                console.log('Touch end detected');
                 this.stopDrawing();
             }, { passive: false });
 
             this.canvas.addEventListener('touchcancel', (e) => {
                 e.preventDefault();
-                console.log('Touch cancel detected');
                 this.stopDrawing();
             }, { passive: false });
 
-            console.log('Signature pad initialized successfully');
         }
 
         startDrawing(event) {
@@ -277,7 +269,6 @@
             this.ctx.fillStyle = '#06b6d4';
             this.ctx.fill();
 
-            console.log('Started drawing at:', pos);
         }
 
         draw(event) {
@@ -299,7 +290,6 @@
             this.lastY = pos.y;
             this.isSigned = true;
 
-            console.log('Drawing to:', pos); // Added logging
         }
 
         stopDrawing() {
@@ -308,7 +298,7 @@
                 if (this.isSigned) {
                     state.signatureData = this.getSignatureData();
                 }
-                console.log('Stopped drawing');
+              
             }
         }
 
@@ -333,7 +323,7 @@
             this.ctx.fillStyle = '#ffffff';
             this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
             this.isSigned = false;
-            console.log('Signature cleared');
+            
         }
 
         getSignatureData() {
@@ -377,7 +367,6 @@
                     img.src = state.signatureData;
                 }
 
-                console.log('Signature pad setup complete');
             });
         });
     }
@@ -1383,24 +1372,20 @@
         try {
             // Validate we have a job card reference
             if (!state.activeReg) {
-                console.log('No active job card reference - skipping data population');
                 return;
             }
 
             // ⭐ SKIP if data was already loaded for this jobcard reference
             if (state.dataLoadedForReg === state.activeReg) {
-                console.log(`Data already loaded for ${state.activeReg} - skipping reload`);
                 return;
             }
 
             // Prevent multiple simultaneous population calls (PREVENTS INFINITE LOOP)
             if (state.isPopulatingData) {
-                console.log('Already populating data - skipping duplicate call');
                 return;
             }
 
             state.isPopulatingData = true;
-            console.log(`Loading existing data for job card: ${state.activeReg}`);
 
             // Fetch data from server
             const jobCardData = await anvil.call(
@@ -1411,14 +1396,12 @@
 
             // Handle empty results
             if (!jobCardData || jobCardData.length === 0) {
-                console.log('No existing data found for this job card');
                 state.isPopulatingData = false;
                 return;
             }
 
             // Get the most recent record (server orders by ID DESC)
             const latestRecord = jobCardData[0];
-            console.log('Retrieved data:', latestRecord);
 
             // ============================================
             // POPULATE TECH NOTES
@@ -1428,7 +1411,6 @@
                 const techNotesTextarea = document.getElementById('tech-notes-textarea');
                 if (techNotesTextarea) {
                     techNotesTextarea.value = latestRecord.Notes;
-                    console.log('✓ Tech Notes populated');
                 }
             }
 
@@ -1440,7 +1422,6 @@
                 const defectsTextarea = document.getElementById('defects-textarea');
                 if (defectsTextarea) {
                     defectsTextarea.value = latestRecord.Defects;
-                    console.log('✓ Defects populated');
                 }
             }
 
@@ -1457,7 +1438,6 @@
                     
                     if (optionExists) {
                         technicianDropdown.value = latestRecord.PreparedByStaff;
-                        console.log('✓ Technician selected:', latestRecord.PreparedByStaff);
                     } else {
                         console.warn('Technician not found in dropdown:', latestRecord.PreparedByStaff);
                     }
@@ -1472,7 +1452,6 @@
                 state.signatureData = signatureDataURL;
                 
                 await loadSignatureFromBase64(signatureDataURL);
-                console.log('✓ Signature loaded');
                 
                 if (!state.collapseOpen) {
                     state.collapseOpen = true;
@@ -1519,8 +1498,6 @@
                             partNo: part.partNo || part.PartNo || part.part_no || '',
                             quantity: parseFloat(part.quantity || part.Quantity || 0)
                         }));
-
-                        console.log(`✓ ${state.cart.length} parts loaded into cart`);
                         
                         // Update ONLY cart badge (no re-render)
                         updateCartBadgeOnly();
@@ -1533,7 +1510,6 @@
                 }
             }
 
-            console.log('✅ Job card data population complete');
             state.isPopulatingData = false;
             
             // ⭐ Mark data as loaded for this jobcard
@@ -1607,7 +1583,6 @@
             }
         }
 
-        console.log(`Parsed ${parts.length} parts from text format`);
         return parts;
     }
 
@@ -1635,8 +1610,6 @@
                     if (typeof signaturePadInstance !== 'undefined' && signaturePadInstance) {
                         signaturePadInstance.isSigned = true;
                     }
-
-                    console.log('Signature image loaded successfully');
                     resolve();
                 } catch (error) {
                     console.error('Error drawing signature:', error);
@@ -1887,7 +1860,6 @@
             (value) => { state.defectList = value; }
         );
 
-        console.log('Scheduling signature pad initialization...');
         if (state.collapseOpen || state.signatureData) {
             initSignaturePad();
         }
@@ -2096,7 +2068,6 @@
             (value) => { state.defectList = value; }
         );
 
-        console.log('Scheduling signature pad initialization...');
         if (state.collapseOpen || state.signatureData) {
             initSignaturePad();
         }
@@ -2615,17 +2586,14 @@ function setupListeners() {
     // ⭐ NEW FUNCTION: Fetch parts and feedback data from server
     async function loadPartsAndFeedback() {
         try {
-            console.log('Fetching parts and feedback for JobCard:', state.activeReg);
-            
+                        
             // Call the Anvil server function
             const data = await anvil.call(
                 mainContent, 
                 'getCustomerFeedback', 
                 state.activeReg
             );
-            
-            console.log('Received data:', data);
-            
+                        
             if (data && data.length > 0) {
                 // Build approved parts list (formatted string with parts and quantities)
                 const approvedPartsList = data
@@ -2639,13 +2607,8 @@ function setupListeners() {
                 state.approvedParts = approvedPartsList;
                 state.customerResponse = customerRemarks;
                 
-                console.log('Updated state:', {
-                    approvedParts: state.approvedParts,
-                    customerResponse: state.customerResponse
-                });
                 
             } else {
-                console.log('No parts and feedback data found for this JobCard');
                 // Clear the textareas if no data found
                 state.approvedParts = '';
                 state.customerResponse = '';

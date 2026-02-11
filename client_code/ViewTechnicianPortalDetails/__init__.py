@@ -28,4 +28,4 @@ class ViewTechnicianPortalDetails(ViewTechnicianPortalDetailsTemplate):
         anvil.server.call_s("deactivate_technician_portal_info")
         alert("Pending technician portal info is updated successfully", title="Success")
         self.raise_event("x-close-alert", value=True)
-        ModNavigation.go_Disable_Requested_Parts_Info()
+        

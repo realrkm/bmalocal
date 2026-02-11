@@ -102,7 +102,7 @@ def go_Enable_Incomplete_Defects_Info():
 #Load View Update Parts Button
 def go_Disable_Requested_Parts_Info():
     form = get_open_form()
-    form.btn_UpdatedRequestedParts.enabled = False
+    form.btn_ViewTechnicianPortalDetails.enabled = False
 
 def go_Enable_Requested_Parts_Info():
     form = get_open_form()

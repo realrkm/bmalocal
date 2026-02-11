@@ -2686,11 +2686,11 @@ function setupListeners() {
     };
 
     window.savePartsDetails = async () => {
-        // ⭐ Get current values from DOM elements (in case they were changed but not synced to state)
+        // Get current values from DOM elements
         const techNotesTextarea = document.getElementById('tech-notes-textarea');
         const defectsTextarea = document.getElementById('defects-textarea');
         const technicianDropdown = document.getElementById('technician-dropdown');
-        
+
         if (techNotesTextarea) {
             state.techNotes = techNotesTextarea.value;
         }
@@ -2700,39 +2700,38 @@ function setupListeners() {
         if (technicianDropdown) {
             state.selectedTechnician = technicianDropdown.value;
         }
-        
-        // Validation
+
+        // ⭐ IMPROVED VALIDATION - Collect all errors
         const errors = [];
-        
+
         if (!state.techNotes.trim() && !state.defectList.trim()) {
-            errors.push('No details to save. Please add tech notes and defects first.');
-            return;
-        }
-        
-        if (!state.selectedTechnician) {
-            errors.push('Please select a technician before saving.');
-            return;
-        }
-        
-        const signature = getSignatureData();
-        console.log('Signature check:', { hasSignature: !!signature, signatureLength: signature ? signature.length : 0 });
-        
-        if (!signature || signature.length === 0) {
-            errors.push('Please provide your signature before saving.');
-            return;
-        }
-        
-        if (errors.length > 0) {
-            await customAlert(errors.join('\n'), 'Validation Error');
-            return;
+            errors.push('• Tech notes and defects are required');
         }
 
-        // ⭐ Use CURRENT cart state (not server values)
+        if (!state.selectedTechnician) {
+            errors.push('• Please select a technician');
+        }
+
+        const signature = getSignatureData();
+        if (!signature || signature.length === 0) {
+            errors.push('• Signature is required');
+        }
+
+        // ⭐ Show alert if ANY validation fails
+        if (errors.length > 0) {
+            await customAlert(
+                'Please complete the following:\n\n' + errors.join('\n'),
+                '⚠️ Missing Required Fields'
+            );
+            return; // Stop execution
+        }
+
+        // Rest of your save logic...
         let partsAndQuantities = null;
         if (state.cart.length > 0) {
             partsAndQuantities = state.cart.map((item, i) => 
                 `${i + 1}. ${item.name} - Qty: ${item.quantity}`
-            ).join('\n');
+                                               ).join('\n');
         }
 
         const techNotesValue = state.techNotes.trim() || null;
@@ -2766,28 +2765,21 @@ function setupListeners() {
             state.selectedTechnician = '';
             state.signatureData = '';
             state.collapseOpen = false;
-            state.dataLoadedForReg = null; // ⭐ Reset data loaded flag
-            state.cameFromWorkDone = false; // ⭐ Reset work done flag
-            
-            // Update cart display
+            state.dataLoadedForReg = null;
+            state.cameFromWorkDone = false;
+
             cartCount.innerText = 0;
             cartCount.classList.add('hidden');
-            
-            // Reload active services to get updated data
-            await loadActiveServices();
-            
-            // Clear navigation history and go home
-            clearNavigationHistory();
 
-            // Clear signature pad
+            await loadActiveServices();
+            clearNavigationHistory();
             clearSignature();
             state.currentView = 'home';
             render();
 
         } catch (error) {
             console.error('Error saving parts details:', error);
-            
-            // Extract meaningful error message
+
             let errorMessage = 'Failed to save details. Please try again.';
             if (error && error.message) {
                 errorMessage = error.message;
@@ -2796,11 +2788,8 @@ function setupListeners() {
             } else if (typeof error === 'string') {
                 errorMessage = error;
             }
-            
-            await customAlert(
-                errorMessage,
-                '❌ Error'
-            );
+
+            await customAlert(errorMessage, '❌ Error');
         }
     };
 

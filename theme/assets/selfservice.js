@@ -2599,10 +2599,64 @@ function setupListeners() {
         });
     };
 
-    window.switchPartsTab = (tabName) => {
+    window.switchPartsTab = async (tabName) => {
         state.activePartsTab = tabName;
+        
+        // ⭐ When switching to feedback tab, fetch parts and feedback data
+        if (tabName === 'feedback' && state.activeReg) {
+            await loadPartsAndFeedback();
+        }
+        
         renderRequestParts();
     };
+    
+    // ⭐ NEW FUNCTION: Fetch parts and feedback data from server
+    async function loadPartsAndFeedback() {
+        try {
+            console.log('Fetching parts and feedback for JobCard:', state.activeReg);
+            
+            // Call the Anvil server function
+            const data = await anvil.call(
+                mainContent, 
+                'getCustomerFeedback', 
+                state.activeReg
+            );
+            
+            console.log('Received data:', data);
+            
+            if (data && data.length > 0) {
+                // Build approved parts list (formatted string with parts and quantities)
+                const approvedPartsList = data
+                    .map((row, index) => `${index + 1}. ${row.Item} - Qty: ${row.QuantityIssued}`)
+                    .join('\n');
+                
+                // Get customer remarks (assuming all rows have the same Remarks)
+                const customerRemarks = data[0].Remarks || '';
+                
+                // Update state
+                state.approvedParts = approvedPartsList;
+                state.customerResponse = customerRemarks;
+                
+                console.log('Updated state:', {
+                    approvedParts: state.approvedParts,
+                    customerResponse: state.customerResponse
+                });
+                
+            } else {
+                console.log('No parts and feedback data found for this JobCard');
+                // Clear the textareas if no data found
+                state.approvedParts = '';
+                state.customerResponse = '';
+            }
+            
+        } catch (err) {
+            console.error('Error fetching parts and feedback:', err);
+            await customAlert(
+                'Failed to load parts and feedback data. Please try again.',
+                '❌ Error'
+            );
+        }
+    }
 
     window.clearPartsDetails = async () => {
         const confirmed = await customConfirm(

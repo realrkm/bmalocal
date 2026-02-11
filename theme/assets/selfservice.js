@@ -148,7 +148,7 @@
             overlay.innerHTML = `
                 <div class="custom-alert-box">
                     <div class="custom-alert-title">
-                        ❓ ${sanitizeHTML(title)}
+                        ${sanitizeHTML(title)}
                     </div>
                     <div class="custom-alert-message">${sanitizeHTML(message)}</div>
                     <div style="display:flex; gap:1rem;">

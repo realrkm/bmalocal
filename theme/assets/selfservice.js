@@ -107,7 +107,7 @@
     // CUSTOM ALERT/CONFIRM
     // ===========================
 
-    function customAlert(message, title = 'BMA Parts Express') {
+    function customAlert(message, title = 'BMA Auto Express') {
         return new Promise((resolve) => {
             const overlay = document.createElement('div');
             overlay.className = 'custom-alert-overlay';
@@ -630,7 +630,7 @@
 
         mainContent.innerHTML = `
         <div class="hero-section">
-            <h1 class="hero-title">BMA PARTS EXPRESS</h1>
+            <h1 class="hero-title">BMA AUTO EXPRESS</h1>
             <p class="hero-subtitle">A comprehensive, operational, and centralized hub for technical excellence.</p>
             
             <div class="status-badges">
@@ -696,7 +696,7 @@
                             <td data-label="Status"><span class="status-badge ${s.status === 'In-Service' ? 'status-in-service' : s.status === 'Completed' ? 'status-completed' : 'status-checked-in'}">${s.status}</span></td>
                             <td data-label="Action">
                                 ${s.status === 'Completed' ? '✅ Finished' : s.status === 'In-Service' ? `
-                                    <button onclick="openWorkDone('${sanitizeHTML(s.jobcardref)}')" style="background:#3b82f6; border:none; color:white; padding:0.8rem 1.2rem; border-radius:0.5rem; cursor:pointer; font-weight:bold;">Work Done</button>
+                                    <button onclick="openWorkDone('${sanitizeHTML(s.jobcardref)}')" class="btn-work-done">Work Done</button>
                                 ` : `
                                     <button onclick="openParts('${sanitizeHTML(s.jobcardref)}')" class="btn-issue-parts">Request Parts</button>
                                 `}
@@ -764,7 +764,7 @@
                     <td data-label="Status"><span class="status-badge ${s.status === 'In-Service' ? 'status-in-service' : s.status === 'Completed' ? 'status-completed' : 'status-checked-in'}">${s.status}</span></td>
                     <td data-label="Action">
                         ${s.status === 'Completed' ? '✅ Finished' : s.status === 'In-Service' ? `
-                            <button onclick="openWorkDone('${sanitizeHTML(s.jobcardref)}')" style="background:#3b82f6; border:none; color:white; padding:0.8rem 1.2rem; border-radius:0.5rem; cursor:pointer; font-weight:bold;">Work Done</button>
+                            <button onclick="openWorkDone('${sanitizeHTML(s.jobcardref)}')" class="btn-work-done">Work Done</button>
                         ` : `
                             <button onclick="openParts('${sanitizeHTML(s.jobcardref)}')" class="btn-issue-parts">Request Parts</button>
                         `}
@@ -1342,8 +1342,8 @@
                     <span>📋 Work Completed Description</span>
                     <div style="display:flex; gap:0.5rem;">
                         <span id="workdone-voice-indicator" class="voice-indicator" aria-hidden="true"></span>
-                        <button id="workdone-voice-start" type="button" style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:2.2rem;"><i data-lucide="mic"></i></i>Start</button>
-                        <button id="workdone-voice-stop" type="button" disabled style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:2.2rem; opacity:0.6;"><i data-lucide="mic-off"></i>Stop Voice</button>
+                        <button id="workdone-voice-start" type="button" style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:2.2rem;"><i data-lucide="mic"></i></i> </button>
+                        <button id="workdone-voice-stop" type="button" disabled style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:0.4rem 0.8rem; border-radius:0.5rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:2.2rem; opacity:0.6;"><i data-lucide="mic-off"></i> </button>
                     </div>
                 </label>
                 <textarea 
@@ -2676,6 +2676,7 @@ function setupListeners() {
             ).join('\n');
         }
 
+        await customAlert(partsAndQuantities);
         const techNotesValue = state.techNotes.trim() || null;
         const defectListValue = state.defectList.trim() || null;
 

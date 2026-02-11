@@ -190,7 +190,7 @@ header {
 /* --- Enhanced Service Cards --- */
 .service-card-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 2rem;
     margin-bottom: 3rem;
 }
@@ -212,7 +212,7 @@ header {
     position: absolute;
     top: -50%;
     left: -50%;
-    width: 100%;
+    width: 200%;
     height: 200%;
     background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
     transform: scale(0);
@@ -360,6 +360,27 @@ header {
     overflow-y: visible;
     border: 2px solid rgba(59, 130, 246, 0.2);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    scrollbar-width: thin;
+    scrollbar-color: rgba(59, 130, 246, 0.5) rgba(30, 41, 59, 0.3);
+}
+
+/* Webkit scrollbar styling for better mobile experience */
+.service-table-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+.service-table-container::-webkit-scrollbar-track {
+    background: rgba(30, 41, 59, 0.3);
+    border-radius: 10px;
+}
+
+.service-table-container::-webkit-scrollbar-thumb {
+    background: rgba(59, 130, 246, 0.5);
+    border-radius: 10px;
+}
+
+.service-table-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(59, 130, 246, 0.7);
 }
 
 .kiosk-table {
@@ -402,9 +423,9 @@ header {
 .kiosk-table th:nth-child(2), .kiosk-table td:nth-child(2) { width: 10%; white-space: nowrap; }
 .kiosk-table th:nth-child(3), .kiosk-table td:nth-child(3) { width: 12%; }
 .kiosk-table th:nth-child(4), .kiosk-table td:nth-child(4) { width: 15%; white-space: nowrap; }
-.kiosk-table th:nth-child(5), .kiosk-table td:nth-child(5) { width: 35%; white-space: normal; word-wrap: break-word; }
+.kiosk-table th:nth-child(5), .kiosk-table td:nth-child(5) { width: 30%; white-space: normal; word-wrap: break-word; }
 .kiosk-table th:nth-child(6), .kiosk-table td:nth-child(6) { width: 12%; text-align: center; }
-.kiosk-table th:nth-child(7), .kiosk-table td:nth-child(7) { width: 12%; text-align: center; }
+.kiosk-table th:nth-child(7), .kiosk-table td:nth-child(7) { width: 17%; text-align: center; } /* Increased from 12% to 17% */
 
 /* Enhanced status badges */
 .status-badge {
@@ -471,11 +492,34 @@ header {
     font-size: 1.6rem;
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+    min-width: 150px; /* Ensures consistent button width */
+    text-align: center;
 }
 
 .btn-issue-parts:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(220, 38, 38, 0.5);
+}
+
+/* Work Done button - same size as Request Parts */
+.btn-work-done {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    border: 2px solid rgba(59, 130, 246, 0.3);
+    border-radius: 0.8rem;
+    cursor: pointer;
+    font-weight: bold;
+    padding: 0.7rem 1.2rem;
+    font-size: 1.6rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+    min-width: 150px; /* Same as btn-issue-parts */
+    text-align: center;
+}
+
+.btn-work-done:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
 }
 
 /* Circular Add Button */
@@ -878,11 +922,33 @@ RESPONSIVE BREAKPOINTS
     .category-grid { grid-template-columns: repeat(2, 1fr); }
     .search-container { max-width: 100%; margin-bottom: 2rem; }
     .hero-title { font-size: 2.5rem; }
+    
+    /* Keep service cards in a row */
+    .service-card-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+    }
+    .service-card {
+        padding: 1.5rem;
+    }
+    .service-card-title {
+        font-size: 1.6rem;
+    }
+    .service-card-subtitle {
+        font-size: 1rem;
+    }
+    .service-stat {
+        font-size: 2.5rem;
+    }
+    .service-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.8rem;
+    }
 }
 
 @media (max-width: 768px) {
     body { padding-bottom: 180px; }
-    .header-container { flex-direction: column; gap: 1rem; }
     .category-grid { grid-template-columns: 1fr; }
     .category-card { min-height: 280px; border-radius: 1.5rem; }
     .category-icon { font-size: 5rem; }
@@ -890,40 +956,68 @@ RESPONSIVE BREAKPOINTS
     .hero-title { font-size: 2rem; }
     .hero-subtitle { font-size: 1.6rem; }
     
-    /* Table → Card layout */
-    .kiosk-table thead { display: none; }
-    .kiosk-table, .kiosk-table tbody, .kiosk-table tr, .kiosk-table td {
-        display: block;
-        width: 100%;
+    /* Keep header items on same row */
+    .header-container {
+        gap: 0.5rem;
     }
-    .kiosk-table tr {
-        margin-bottom: 1.5rem;
-        background: linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%);
-        border-radius: 1rem;
-        overflow: hidden;
-        border: 2px solid rgba(59, 130, 246, 0.2);
-    }
-    .kiosk-table td {
-        padding: 1rem;
-        font-size: 1.4rem;
-        border-radius: 0;
-        border-bottom: 1px solid rgba(59, 130, 246, 0.1);
-    }
-    .kiosk-table tr td:last-child { border-bottom: none; }
-    .kiosk-table tr td:first-child, .kiosk-table tr td:last-child { border-radius: 0; }
-    .kiosk-table td::before {
-        content: attr(data-label);
-        display: block;
-        font-size: 1.1rem;
-        color: #06b6d4;
-        margin-bottom: 0.3rem;
-        text-transform: uppercase;
-        font-weight: bold;
-        letter-spacing: 1px;
+    .header-left h1 {
+        font-size: 1.6rem;
     }
     
-    .btn-issue-parts { font-size: 1.3rem; padding: 0.7rem 1.2rem; width: 100%; margin-top: 0.5rem; }
-    .btn-status { font-size: 1.4rem; padding: 0.8rem 1.5rem; }
+    /* Keep service cards in a row on portrait/mobile */
+    .service-card-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+    }
+    .service-card {
+        padding: 1.2rem;
+        border-radius: 1rem;
+    }
+    .service-card-title {
+        font-size: 1.4rem;
+    }
+    .service-card-subtitle {
+        font-size: 0.9rem;
+    }
+    .service-stat {
+        font-size: 2rem;
+    }
+    .service-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 1.6rem;
+    }
+    
+    /* Keep table in table format with horizontal scroll */
+    .service-table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 1rem;
+    }
+    
+    .kiosk-table {
+        min-width: 900px; /* Increased from 800px to give more space for buttons */
+    }
+    
+    .kiosk-table th {
+        font-size: 1.3rem;
+        padding: 0.6rem 0.4rem;
+    }
+    
+    .kiosk-table td {
+        font-size: 1.3rem;
+        padding: 0.8rem 0.6rem;
+    }
+    
+    /* Maintain proper button sizes - don't squeeze them */
+    .btn-issue-parts { 
+        font-size: 1.5rem; 
+        padding: 0.8rem 1.5rem; 
+        width: auto; 
+        margin-top: 0;
+        white-space: nowrap; /* Prevent text wrapping */
+    }
+    .btn-status { font-size: 1.4rem; padding: 0.8rem 1.5rem; white-space: nowrap; }
     .search-input { font-size: 1.4rem !important; padding: 1rem 1rem 1rem 3rem !important; }
     footer { bottom: 10px; padding: 0.8rem 1.5rem; }
     footer button { font-size: 1.4rem; }
@@ -934,11 +1028,68 @@ RESPONSIVE BREAKPOINTS
     .category-card { padding: 2.5rem 1.5rem; }
     .category-icon { font-size: 4rem; }
     .category-name { font-size: 1.4rem; }
-    .btn-status, .btn-print { font-size: 1.4rem; padding: 0.8rem 1.2rem; }
+    .btn-status, .btn-print { font-size: 1.4rem; padding: 0.8rem 1.5rem; white-space: nowrap; }
     .status-badge { font-size: 1.1rem; }
-    .kiosk-table td { font-size: 1.2rem; padding: 0.8rem; }
-    .btn-issue-parts { font-size: 1.2rem; padding: 0.6rem 1rem; }
+    .btn-issue-parts { 
+        font-size: 1.4rem; 
+        padding: 0.7rem 1.3rem;
+        white-space: nowrap; /* Prevent text wrapping */
+    }
     .hero-title { font-size: 1.8rem; }
+    
+    /* Smaller header */
+    .header-left h1 {
+        font-size: 1.3rem;
+    }
+    .header-action-btn {
+        width: 50px;
+        height: 50px;
+    }
+    #cart-count {
+        font-size: 1.2rem;
+        width: 26px;
+        height: 26px;
+    }
+    
+    /* Keep service cards in a row even on very small screens */
+    .service-card-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.8rem;
+    }
+    .service-card {
+        padding: 0.8rem;
+        border-radius: 0.8rem;
+    }
+    .service-card-title {
+        font-size: 1.2rem;
+        margin-bottom: 0.3rem;
+    }
+    .service-card-subtitle {
+        font-size: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+    .service-stat {
+        font-size: 1.8rem;
+    }
+    .service-icon {
+        width: 35px;
+        height: 35px;
+        font-size: 1.4rem;
+    }
+    
+    /* Keep table scrollable */
+    .kiosk-table {
+        min-width: 900px; /* Ensures buttons don't get squeezed */
+    }
+    
+    .kiosk-table th {
+        font-size: 1.2rem;
+    }
+    
+    .kiosk-table td {
+        font-size: 1.2rem;
+        padding: 0.6rem 0.5rem;
+    }
 }
 
 /* Popup Modal Styles */

@@ -30,6 +30,10 @@ class Main(MainTemplate):
             self.permissions = anvil.server.call("get_user_permissions", user["role_id"])
             if self.permissions['TECHNICIAN PORTAL']['main']:
                 open_form('SelfService')
+                user_agent = navigator.userAgent
+                # Now call your server function and pass the user_agent
+                anvil.server.call_s('get_stats', user_agent)
+                return
             else:
                 self.apply_permissions()
                 

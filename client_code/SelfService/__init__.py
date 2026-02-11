@@ -68,3 +68,6 @@ class SelfService(SelfServiceTemplate):
 
     def get_jobcard_and_defect_details(self, jobcardref):
         return anvil.server.call("get_jobcard_and_defect_details", jobcardref)
+
+    def getCustomerFeedback(self, jobcardref):
+        return anvil.server.call("get_parts_and_feedback_by_jobcardref", jobcardref)

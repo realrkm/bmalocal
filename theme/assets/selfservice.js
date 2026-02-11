@@ -215,7 +215,7 @@
         }
 
         init() {
-            
+
             // Mouse events
             this.canvas.addEventListener('mousedown', (e) => {
                 e.preventDefault();
@@ -298,7 +298,7 @@
                 if (this.isSigned) {
                     state.signatureData = this.getSignatureData();
                 }
-              
+
             }
         }
 
@@ -323,7 +323,7 @@
             this.ctx.fillStyle = '#ffffff';
             this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
             this.isSigned = false;
-            
+
         }
 
         getSignatureData() {
@@ -1124,6 +1124,99 @@
 
         // Update the main view to show updated cart
         renderRequestParts();
+    }
+
+    function openCheckoutModal() {
+        // Create modal overlay
+        const modalOverlay = document.createElement('div');
+        modalOverlay.className = 'modal-overlay';
+        modalOverlay.id = 'checkout-modal-overlay';
+
+        const totalItems = state.cart.reduce((sum, item) => sum + item.quantity, 0);
+
+        modalOverlay.innerHTML = `
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2 class="modal-title">🛒 Checkout</h2>
+                <button class="modal-close-btn" onclick="closeCheckoutModal()" aria-label="Close modal">
+                    ✕
+                </button>
+            </div>
+            <div class="modal-body" style="padding:2rem;">
+                ${state.cart.length === 0 ? `
+                    <div style="text-align:center; padding:4rem 2rem;">
+                        <div style="font-size:6rem; margin-bottom:1rem;">🛒</div>
+                        <h3 style="font-size:2.5rem; color:#94a3b8; margin-bottom:1rem;">Your cart is empty</h3>
+                        <p style="color:#64748b; font-size:1.6rem;">Add parts from the Request Parts page to continue</p>
+                    </div>
+                ` : `
+                    <div style="margin-bottom:2rem;">
+                        <h3 style="font-size:2rem; color:#06b6d4; margin-bottom:1.5rem;">Cart Items</h3>
+                        ${state.cart.map((item, i) => `
+                            <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); border-radius:0.8rem; padding:1.5rem; margin-bottom:1rem; display:flex; justify-content:space-between; align-items:center; border:2px solid rgba(59, 130, 246, 0.2);">
+                                <div>
+                                    <p style="font-size:1.8rem; font-weight:bold; color:white; margin-bottom:0.5rem;">${sanitizeHTML(item.name)}</p>
+                                    <p style="color:#94a3b8; font-size:1.4rem;">${sanitizeHTML(item.category || 'N/A')} ${item.partNo ? `• ${sanitizeHTML(item.partNo)}` : ''}</p>
+                                </div>
+                                <div style="display:flex; align-items:center; gap:1rem;">
+                                    <div style="display:flex; flex-direction:column; align-items:center;">
+                                        <span style="color:#94a3b8; font-size:1.2rem;">QTY</span>
+                                        <input 
+                                            type="number" 
+                                            id="modal-cart-qty-${i}"
+                                            value="${item.quantity}" 
+                                            min="0.01"
+                                            step="0.01"
+                                            onchange="updateCartQuantityFromModal(${i}, this.value)"
+                                            aria-label="Quantity for ${sanitizeHTML(item.name)}"
+                                            style="width:80px; padding:0.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; text-align:center;"
+                                        >
+                                    </div>
+                                    <button onclick="removeFromCartFromModal(${i})" aria-label="Remove ${sanitizeHTML(item.name)} from cart" style="color:#ef4444; background:none; border:none; cursor:pointer; font-size:1.5rem;">
+                                        <i data-lucide="trash-2" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); border-radius:1rem; padding:2rem; text-align:center; border:2px solid rgba(59, 130, 246, 0.3);">
+                        <h3 style="font-size:2.5rem; margin-bottom:1rem; color:#06b6d4;">Total: ${totalItems.toFixed(2)} Units</h3>
+                        <p style="color:#94a3b8; font-size:1.6rem;">Return to Request Parts to confirm your order</p>
+                    </div>
+                `}
+            </div>
+        </div>
+    `;
+
+        document.body.appendChild(modalOverlay);
+
+        // Trigger animation
+        setTimeout(() => {
+            modalOverlay.classList.add('active');
+        }, 10);
+
+        // Close on overlay click
+        modalOverlay.onclick = (e) => {
+            if (e.target === modalOverlay) {
+                closeCheckoutModal();
+            }
+        };
+
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
+
+        lucide.createIcons();
+    }
+
+    function closeCheckoutModal() {
+        const modalOverlay = document.getElementById('checkout-modal-overlay');
+        if (modalOverlay) {
+            modalOverlay.classList.remove('active');
+            setTimeout(() => {
+                modalOverlay.remove();
+                document.body.style.overflow = '';
+            }, 300);
+        }
     }
 
     function updateModalPartsResults() {
@@ -3035,7 +3128,7 @@ function setupListeners() {
     };
     
     cartBtn.onclick = () => { 
-        pushNavigation('checkout');
+        openCheckoutModal();
     };
     
     logoutBtn.onclick = async () => {
@@ -3089,6 +3182,45 @@ function setupListeners() {
 
     window.openPartsModal = openPartsModal;
     window.closePartsModal = closePartsModal;
+    window.openCheckoutModal = openCheckoutModal;
+    window.closeCheckoutModal = closeCheckoutModal;
+
+    window.updateCartQuantityFromModal = (index, value) => {
+        const qty = parseFloat(value);
+        if (qty > 0) {
+            state.cart[index].quantity = qty;
+            
+            // Update cart count display
+            const totalQuantity = state.cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.innerText = Math.round(totalQuantity);
+            
+            // Refresh modal to show updated total
+            const currentModal = document.getElementById('checkout-modal-overlay');
+            if (currentModal) {
+                closeCheckoutModal();
+                setTimeout(() => openCheckoutModal(), 50);
+            }
+        }
+    };
+
+    window.removeFromCartFromModal = (index) => {
+        state.cart.splice(index, 1);
+        
+        // Update cart count display
+        if (state.cart.length === 0) {
+            cartCount.classList.add('hidden');
+        } else {
+            const totalQuantity = state.cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.innerText = Math.round(totalQuantity);
+        }
+        
+        // Refresh modal
+        const currentModal = document.getElementById('checkout-modal-overlay');
+        if (currentModal) {
+            closeCheckoutModal();
+            setTimeout(() => openCheckoutModal(), 50);
+        }
+    };
 
     window.selectModalCategory = (id) => {
         const resultsContainer = document.getElementById('modal-parts-results');

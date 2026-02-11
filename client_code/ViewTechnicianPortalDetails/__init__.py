@@ -26,6 +26,6 @@ class ViewTechnicianPortalDetails(ViewTechnicianPortalDetailsTemplate):
     def btn_UpdateStatus_click(self, **event_args):
         """This method is called when the button is clicked"""
         anvil.server.call_s("deactivate_technician_portal_info")
-        alert("Pending requested parts info is updated successfully", title="Success")
+        alert("Pending technician portal info is updated successfully", title="Success")
         self.raise_event("x-close-alert", value=True)
         ModNavigation.go_Disable_Requested_Parts_Info()

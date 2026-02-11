@@ -71,3 +71,7 @@ class SelfService(SelfServiceTemplate):
 
     def getCustomerFeedback(self, jobcardref):
         return anvil.server.call("get_parts_and_feedback_by_jobcardref", jobcardref)
+
+    def logoutUser(self):
+        open_form('LogoutBackground')
+        anvil.users.logout()

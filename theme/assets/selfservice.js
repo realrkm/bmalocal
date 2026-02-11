@@ -8,6 +8,7 @@
     const backBtn = document.getElementById('back-btn');
     const cartBtn = document.getElementById('cart-btn');
     const cartCount = document.getElementById('cart-count');
+    const logoutBtn = document.getElementById('logout-btn');
     const breadcrumbContainer = document.getElementById('breadcrumb-container');
     const backToTopBtn = document.getElementById('back-to-top');
     const homeFooterBtn = document.getElementById('home-footer-btn');
@@ -3072,6 +3073,27 @@ function setupListeners() {
     
     cartBtn.onclick = () => { 
         pushNavigation('checkout');
+    };
+    
+    logoutBtn.onclick = async () => {
+        const confirmed = await customConfirm(
+            'Are you sure you want to logout? Any unsaved changes will be lost.',
+            'Logout Confirmation'
+        );
+        
+        if (confirmed) {
+            try {
+                await anvil.call(mainContent, 'logoutUser');
+                // Optionally reload the page or redirect after logout
+                window.location.reload();
+            } catch (err) {
+                console.error('Logout error:', err);
+                await customAlert(
+                    'Failed to logout. Please try again.',
+                    '❌ Error'
+                );
+            }
+        }
     };
     
     homeFooterBtn.onclick = goToHome;

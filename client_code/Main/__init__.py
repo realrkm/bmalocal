@@ -28,7 +28,11 @@ class Main(MainTemplate):
         if user:
             # Fetch permissions from server
             self.permissions = anvil.server.call("get_user_permissions", user["role_id"])
-            self.apply_permissions()
+            if self.permissions['TECHNICIAN PORTAL']['main']:
+                open_form('SelfService')
+            else:
+                self.apply_permissions()
+                
             if user['role_id']==1:
                 self.refresh()
             else:
@@ -63,7 +67,6 @@ class Main(MainTemplate):
     
         for section, button in section_map.items():
             section_perms = self.permissions.get(section, {})
-            print(section_perms)
             # Hide main button if no access at all
             if not (section_perms.get("main") or any(section_perms.get("subs", {}).values())):
                 button.visible = False

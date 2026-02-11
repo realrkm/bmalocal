@@ -2706,10 +2706,12 @@ function setupListeners() {
         
         if (!state.techNotes.trim() && !state.defectList.trim()) {
             errors.push('No details to save. Please add tech notes and defects first.');
+            return;
         }
         
         if (!state.selectedTechnician) {
             errors.push('Please select a technician before saving.');
+            return;
         }
         
         const signature = getSignatureData();
@@ -2717,6 +2719,7 @@ function setupListeners() {
         
         if (!signature || signature.length === 0) {
             errors.push('Please provide your signature before saving.');
+            return;
         }
         
         if (errors.length > 0) {
@@ -2732,7 +2735,6 @@ function setupListeners() {
             ).join('\n');
         }
 
-        await customAlert(partsAndQuantities);
         const techNotesValue = state.techNotes.trim() || null;
         const defectListValue = state.defectList.trim() || null;
 

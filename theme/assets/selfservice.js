@@ -1290,7 +1290,7 @@
                     <textarea 
                         id="customer-response-textarea" 
                         rows="6" 
-                        placeholder="Enter customer's response or feedback regarding the service..."
+                        placeholder="Customer's response or feedback regarding the service will appear here..."
                         style="width:100%; padding:1.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; resize:vertical; line-height:1.6;"
                     >${sanitizeHTML(state.customerResponse)}</textarea>
                     <p style="font-size:1.3rem; color:#94a3b8; margin-top:0.5rem;">Document any customer concerns, requests, or approvals here.</p>
@@ -1303,7 +1303,7 @@
                     <textarea 
                         id="approved-parts-textarea" 
                         rows="6" 
-                        placeholder="List the parts approved by the customer for installation/replacement..."
+                        placeholder="Parts approved by the customer for installation/replacement will appear here..."
                         style="width:100%; padding:1.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; resize:vertical; line-height:1.6;"
                     >${sanitizeHTML(state.approvedParts)}</textarea>
                     <p style="font-size:1.3rem; color:#94a3b8; margin-top:0.5rem;">Enter each approved part on a new line or separate with commas.</p>
@@ -2824,6 +2824,15 @@ function setupListeners() {
                 `Work done has been saved successfully for JobCard ${state.activeReg}`,
                 '✅ Success'
             );
+
+            state.currentWorkDoneReg = null;
+
+            // Reload active services to get updated data
+            await loadActiveServices();
+
+            clearNavigationHistory();
+            state.currentView = 'home';
+            render();    
 
         } catch (err) {
             console.error(err);

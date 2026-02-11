@@ -439,6 +439,7 @@
         state.activeReg = previous.state.activeReg;
         state.activePartsTab = previous.state.activePartsTab;
         state.partsSearchQuery = previous.state.partsSearchQuery;
+        state.cart=[];
         render();
     }
 

@@ -37,17 +37,17 @@ class Main(MainTemplate):
             else:
                 self.apply_permissions()
                 
-            if user['role_id']==1:
-                self.refresh()
-            else:
-                self.notification_label.visible=False
-                self.btn_alerts.visible=False
-                self.btn_IncompleteDefectsInfo.visible=False
-        user_agent = navigator.userAgent
-        # Now call your server function and pass the user_agent
-        anvil.server.call_s('get_stats', user_agent)
-                
-        ModNavigation.home_form = self
+                if user['role_id']==1:
+                    self.refresh()
+                else:
+                    self.notification_label.visible=False
+                    self.btn_alerts.visible=False
+                    self.btn_IncompleteDefectsInfo.visible=False
+                user_agent = navigator.userAgent
+                # Now call your server function and pass the user_agent
+                anvil.server.call_s('get_stats', user_agent)
+                        
+                ModNavigation.home_form = self
 
         
     def refresh(self, **event_args):

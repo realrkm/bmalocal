@@ -443,30 +443,8 @@
 
     async function init() {
         try {
-            const serverData = await anvil.call(mainContent, 'getCarPartNamesAndCategory');
-
-            if (!Array.isArray(serverData)) {
-                throw new Error("Server did not return a list. Check server logs.");
-            }
-
-            state.parts = serverData.map(item => ({
-                name: item.Name,
-                category: item.Category,
-                partNo: item.PartNo || item.Name
-            }));
-
-            const uniqueCategories = [...new Set(serverData.map(item => item.Category))];
-
-            state.categories = uniqueCategories.map(catName => {
-                const config = categoryConfig[catName] || { icon: '📦', color: 'bg-gray' };
-                return {
-                    id: catName.toLowerCase().replace(/\s+/g, '-'),
-                    name: catName,
-                    icon: config.icon,
-                    color: config.color
-                };
-            });
-
+            
+            await loadCarPartCategories();
             await loadActiveServices();
             await loadTechnicians();
 
@@ -498,6 +476,43 @@
         }
     }
 
+    async function loadCarPartCategories(){
+        try {
+            const serverData = await anvil.call(mainContent, 'getCarPartNamesAndCategory');
+
+            if (!Array.isArray(serverData)) {
+                throw new Error("Server did not return a list. Check server logs.");
+            }
+
+            state.parts = serverData.map(item => ({
+                name: item.Name,
+                category: item.Category,
+                partNo: item.PartNo || item.Name
+            }));
+
+            const uniqueCategories = [...new Set(serverData.map(item => item.Category))];
+
+            state.categories = uniqueCategories.map(catName => {
+                const config = categoryConfig[catName] || { icon: '📦', color: 'bg-gray' };
+                return {
+                    id: catName.toLowerCase().replace(/\s+/g, '-'),
+                    name: catName,
+                    icon: config.icon,
+                    color: config.color
+                };
+            });
+        } catch (e) { 
+            console.error("Car Part Categorization Error:", e);
+            if (e && e.args) {
+                console.error("Python args:", e.args);
+            }
+            await customAlert(
+                'Failed to load car part categories. Please refresh the page.',
+                'Car Part Categorization Error'
+            );
+        }
+        
+    }
     async function loadActiveServices() {
         try {
             const jobcardsData = await anvil.call(mainContent, 'get_technician_jobcards_by_status');
@@ -1025,6 +1040,9 @@
     // Add these new functions after your existing functions
 
     function openPartsModal() {
+        //load car part categories
+        loadCarPartCategories();
+        
         // Create modal overlay
         const modalOverlay = document.createElement('div');
         modalOverlay.className = 'modal-overlay';

@@ -9,6 +9,7 @@ from ..AddLocation import AddLocation
 from ..AddSupplier import AddSupplier
 from ..EditAddNewParts import EditAddNewParts
 import anvil.js
+from ..ViewAndUpdateCarPartCategoriesForTechnicianPortal import  ViewAndUpdateCarPartCategoriesForTechnicianPortal
 
 class AddNewParts(AddNewPartsTemplate):
     def __init__(self, isPopup= False, **properties):
@@ -159,3 +160,7 @@ class AddNewParts(AddNewPartsTemplate):
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.raise_event('x-close-alert', value = True)
+
+    def btn_ViewCarPartCategories_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        alert(content=ViewAndUpdateCarPartCategoriesForTechnicianPortal(),buttons=[], dismissible=False, large=True)

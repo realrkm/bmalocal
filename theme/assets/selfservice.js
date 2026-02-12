@@ -772,7 +772,7 @@
                         ${s.status === 'Completed' ? '✅ Finished' : s.status === 'In-Service' ? `
                             <button onclick="openWorkDone('${sanitizeHTML(s.jobcardref)}')" class="btn-work-done">Work Done</button>
                         ` : `
-                            <button onclick="openParts('${sanitizeHTML(s.jobcardref)}')" class="btn-issue-parts">Request Parts</button>
+                            <button onclick="openParts('${sanitizeHTML(s.jobcardref)}')" class="btn-issue-parts">Review</button>
                         `}
                     </td>
                 </tr>

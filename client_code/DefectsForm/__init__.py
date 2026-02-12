@@ -165,7 +165,6 @@ class DefectsForm(DefectsFormTemplate):
         self.downloadDefectsPdf(jobcardID)
               
     def downloadDefectsPdf(self, job_card_id):
-        print(job_card_id)
         media_object = anvil.server.call('downloadDefectsPdfForm', job_card_id, "DefectsList")
         anvil.media.download(media_object)
         self.deleteFile(job_card_id, "DefectsList")

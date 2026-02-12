@@ -40,21 +40,15 @@ class ViewAndUpdateCarPartCategoriesForTechnicianPortal(ViewAndUpdateCarPartCate
         data_to_save = self.repeating_panel_1.items
     
         # Show a loading notification
-        n = Notification("Saving changes...")
+        n = Notification("Saving changes in the background...",title="Background Task Started",timeout=None)
         n.show()
     
         # Call the server function
         result = anvil.server.call('update_carpart_taxonomy', data_to_save)
 
-        # Create an instance of the loading spinner and store it in a variable
-        self.loading_indicator = anvil.server.loading_indicator()
+        n = Notification(result,style="success",title="Background Task Completed", timeout=None)
+        n.show()
         
-        # Start and stop the indicator however you wish
-        self.loading_indicator.start()
-        
-        # Alert the result (e.g., "Taxonomy updated successfully!")
-        alert(result)
-        self.loading_indicator.stop()
 
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""

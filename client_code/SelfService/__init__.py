@@ -15,8 +15,8 @@ class SelfService(SelfServiceTemplate):
 
         # Any code you write here will run before the form opens.
         anvil.js.call('replaceBanner')
-        while anvil.users.get_user() is None:
-            anvil.users.login_with_form()
+        #while anvil.users.get_user() is None:
+         #   anvil.users.login_with_form()
         
         set_default_error_handling(self.handle_server_errors) #Set global server error handler
 

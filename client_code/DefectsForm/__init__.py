@@ -157,8 +157,15 @@ class DefectsForm(DefectsFormTemplate):
 
     def downloadTechNotesPdf(self, job_card_id):
         media_object = anvil.server.call('downloadTechNotesPdfForm', job_card_id, "TechNotes")
-        anvil.media.download(media_object)
-        self.deleteFile(job_card_id, "TechNotes")
+        if media_object is None:
+            anvil.alert(
+                "No data was returned from the server. Please confirm the Job Card exists.",
+                title="Data Error",
+                large=False
+            )
+        else:
+            anvil.media.download(media_object)
+            self.deleteFile(job_card_id, "TechNotes")
 
 
     def btn_DownloadDefectsList_click(self, **event_args):
@@ -168,8 +175,15 @@ class DefectsForm(DefectsFormTemplate):
               
     def downloadDefectsPdf(self, job_card_id):
         media_object = anvil.server.call('downloadDefectsPdfForm', job_card_id, "DefectsList")
-        anvil.media.download(media_object)
-        self.deleteFile(job_card_id, "DefectsList")
+        if media_object is None:
+            anvil.alert(
+                "No data was returned from the server. Please confirm the Job Card exists.",
+                title="Data Error",
+                large=False
+            )
+        else:
+            anvil.media.download(media_object)
+            self.deleteFile(job_card_id, "DefectsList")
 
     def deleteFile(self, jobCardID, docType):
         anvil.server.call("deleteFile", jobCardID, docType)

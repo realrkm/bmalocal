@@ -46,6 +46,7 @@ class DefectsForm(DefectsFormTemplate):
             anvil.js.window.location.reload()  # Reload the app on session timeout
         elif isinstance(exc, anvil.server.AppOfflineError):
             anvil.alert("Please connect to the internet to proceed.",title="No Internet",large=False)
+        
         else:
             anvil.alert(f"Unexpected error: {exc}", title="Error", large=False)
 

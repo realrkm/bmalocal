@@ -156,14 +156,15 @@ class DefectsForm(DefectsFormTemplate):
         self.btn_DownloadTechNotes.enabled=True 
 
     def downloadTechNotesPdf(self, job_card_id):
-        media_object = anvil.server.call('downloadTechNotesPdfForm', job_card_id, "TechNotes")
-        if media_object is None:
+        result = anvil.server.call("get_tech_notes_details_by_job_id", job_card_id)
+        if result is None:
             anvil.alert(
-                "No data was returned from the server. Please confirm the Job Card exists.",
+                "No data was returned from the server. Please confirm the tech notes data exists.",
                 title="Data Error",
                 large=False
             )
         else:
+            media_object = anvil.server.call('downloadTechNotesPdfForm', job_card_id, "TechNotes")
             anvil.media.download(media_object)
             self.deleteFile(job_card_id, "TechNotes")
 
@@ -174,14 +175,16 @@ class DefectsForm(DefectsFormTemplate):
         self.downloadDefectsPdf(jobcardID)
               
     def downloadDefectsPdf(self, job_card_id):
-        media_object = anvil.server.call('downloadDefectsPdfForm', job_card_id, "DefectsList")
-        if media_object is None:
+        #Check for existing data first
+        result = anvil.server.call("get_defects_list_details_by_job_id", job_card_id)
+        if result is None:
             anvil.alert(
-                "No data was returned from the server. Please confirm the Job Card exists.",
+                "No data was returned from the server. Please confirm the defects data exists.",
                 title="Data Error",
                 large=False
             )
         else:
+            media_object = anvil.server.call('downloadDefectsPdfForm', job_card_id, "DefectsList")
             anvil.media.download(media_object)
             self.deleteFile(job_card_id, "DefectsList")
 

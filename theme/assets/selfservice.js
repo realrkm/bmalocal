@@ -443,7 +443,7 @@
 
     async function init() {
         try {
-            
+
             await loadCarPartCategories();
             await loadActiveServices();
             await loadTechnicians();
@@ -511,7 +511,7 @@
                 'Car Part Categorization Error'
             );
         }
-        
+
     }
     async function loadActiveServices() {
         try {
@@ -847,18 +847,22 @@
                 style="flex:1; min-width:180px; padding:1.2rem 2rem; border-radius:1rem; font-size:1.8rem; font-weight:bold; cursor:pointer; transition:all 0.3s ease; border:2px solid ${state.activePartsTab === 'request' ? 'rgba(59, 130, 246, 0.5)' : 'transparent'}; background:${state.activePartsTab === 'request' ? 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' : 'transparent'}; color:white;">
                 📦 Parts Request
             </button>
+            ${!state.cameFromWorkDone ? '' : `
             <button 
                 onclick="switchPartsTab('feedback')" 
                 class="parts-tab-btn ${state.activePartsTab === 'feedback' ? 'active' : ''}"
                 style="flex:1; min-width:180px; padding:1.2rem 2rem; border-radius:1rem; font-size:1.8rem; font-weight:bold; cursor:pointer; transition:all 0.3s ease; border:2px solid ${state.activePartsTab === 'feedback' ? 'rgba(59, 130, 246, 0.5)' : 'transparent'}; background:${state.activePartsTab === 'feedback' ? 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' : 'transparent'}; color:white;">
                 💬 Customer Feedback
             </button>
+            `}
+            ${!state.cameFromWorkDone ? '' : `
             <button 
                 onclick="switchPartsTab('workdone')" 
                 class="parts-tab-btn ${state.activePartsTab === 'workdone' ? 'active' : ''}"
                 style="flex:1; min-width:180px; padding:1.2rem 2rem; border-radius:1rem; font-size:1.8rem; font-weight:bold; cursor:pointer; transition:all 0.3s ease; border:2px solid ${state.activePartsTab === 'workdone' ? 'rgba(59, 130, 246, 0.5)' : 'transparent'}; background:${state.activePartsTab === 'workdone' ? 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' : 'transparent'}; color:white;">
                 ✅ Work Done
             </button>
+            `}
         </div>
         
         <div id="parts-tab-content">

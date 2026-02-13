@@ -52,7 +52,8 @@ class DefectsForm(DefectsFormTemplate):
             anvil.alert(f"Unexpected error: {exc}", title="Error", large=False)
 
     def populateForm(self, defects_data, **event_args):
-        """This method is called when an item is selected"""   
+        """This method is called when an item is selected"""  
+        print(defects_data[0]["ID"])
         defectListData=anvil.server.call("getDefectsList", defects_data[0]["ID"])
         #self.txtClientInstructions.text = ModGetData.getJobCardInstructions(defects_data[0]["ID"])
         #self.txtTechNotes.text = ModGetData.getJobCardTechNotes(defects_data[0]["ID"])
@@ -64,6 +65,9 @@ class DefectsForm(DefectsFormTemplate):
             self.txtDefectsList.text = defectListData[0]['Defects']
             self.txtTechnicianPortalRequestedParts.text=defectListData[0]["TechnicianPortalRequestedParts"]
             self.txtRequestedParts.text = defectListData[0]['RequestedParts']
+            #self.drop_down_staff.selected_value = defectListData[0]["PreparedByStaff"]
+            #self.image_1.source = defectListData[0]["Signature"]
+            
         result = anvil.server.call("getDefectsStaffAndSignature",defects_data[0]["ID"])
         if result: #Return existing details
             self.drop_down_staff.selected_value = result[0]["PreparedByStaff"]

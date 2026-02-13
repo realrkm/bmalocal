@@ -21,20 +21,15 @@ class DefectsForm(DefectsFormTemplate):
 
         # Any code you write here will run before the form opens.
         anvil.js.call('replaceBanner')
-        while anvil.users.get_user() is None:
-            anvil.users.login_with_form()
         set_default_error_handling(self.handle_server_errors)  # Set global server error handler
-
+        
         self.populateForm(defects_data)
         # Store defects_data for later use
         self.defects_data = defects_data
-
+    
         items = anvil.server.call("getStaffAndTechnicianNames")
         # Convert to a list of (display_text, value) tuples
         self.drop_down_staff.items = items
-
-        #Store JobcardID 
-        self.jobcardid = defects_data[0]["ID"]
          
     def refresh(self, **event_args):
         self.set_event_handler("x-refresh", self.refresh)
@@ -52,8 +47,7 @@ class DefectsForm(DefectsFormTemplate):
             anvil.alert(f"Unexpected error: {exc}", title="Error", large=False)
 
     def populateForm(self, defects_data, **event_args):
-        """This method is called when an item is selected"""  
-        print(defects_data[0]["ID"])
+        """This method is called when an item is selected""" 
         defectListData=anvil.server.call("getDefectsList", defects_data[0]["ID"])
         #self.txtClientInstructions.text = ModGetData.getJobCardInstructions(defects_data[0]["ID"])
         #self.txtTechNotes.text = ModGetData.getJobCardTechNotes(defects_data[0]["ID"])
@@ -65,12 +59,11 @@ class DefectsForm(DefectsFormTemplate):
             self.txtDefectsList.text = defectListData[0]['Defects']
             self.txtTechnicianPortalRequestedParts.text=defectListData[0]["TechnicianPortalRequestedParts"]
             self.txtRequestedParts.text = defectListData[0]['RequestedParts']
-            #self.drop_down_staff.selected_value = defectListData[0]["PreparedByStaff"]
-            #self.image_1.source = defectListData[0]["Signature"]
+            self.drop_down_staff.selected_value = defectListData[0]["PreparedByStaff"]
+            
             
         result = anvil.server.call("getDefectsStaffAndSignature",defects_data[0]["ID"])
         if result: #Return existing details
-            self.drop_down_staff.selected_value = result[0]["PreparedByStaff"]
             self.image_1.source = result[0]["Signature"]
 
     
@@ -231,14 +224,14 @@ class DefectsForm(DefectsFormTemplate):
     def btn_IssueInvoice_click(self, **event_args):
         """This method is called when the button is clicked"""
         now_str = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-        anvil.server.call("publish_role_notification",self.jobcardid, f"ready for invoicing - {now_str}" )
+        anvil.server.call("publish_role_notification",self.defects_data[0]["ID"], f"ready for invoicing - {now_str}" )
         ModNavigation.go_Notification()
         alert("Alert has been sent successfully", title="Issue Invoice")
 
 
     def btn_IncompleteDefectsInfo_click(self, **event_args):
         """This method is called when the button is clicked"""
-        anvil.server.call("publish_defects_notification",self.jobcardid, "defects list incomplete" )
+        anvil.server.call("publish_defects_notification",self.defects_data[0]["ID"], "defects list incomplete" )
         alert("Incomplete defects list updated ", title="Success")
         ModNavigation.go_Enable_Incomplete_Defects_Info()
     

@@ -89,7 +89,7 @@ dependencies: []
 metadata: {logo_img: 'asset:BMAAutoAccessories.ico', title: BMA Auto Accessories}
 name: BMALocal
 native_deps:
-  head_html: |-
+  head_html: |+
     <script>
         function replaceBanner(){
             var els = [].slice.apply(document.getElementsByClassName("anvil-show-banner"));
@@ -101,7 +101,7 @@ native_deps:
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Mozilla+Headline:wght@200..700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Eczar:wght@400;600&family=Roboto+Condensed:wght@300;400;700&display=swap" rel="stylesheet" rel="preload" as="font" crossorigin="anonymous">
+
 package_name: BMALocal
 runtime_options:
   client_version: '3'

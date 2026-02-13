@@ -15,10 +15,7 @@ class CarPartsUsed(CarPartsUsedTemplate):
 
         # Any code you write here will run before the form opens.
         anvil.js.call('replaceBanner')
-        while anvil.users.get_user() is None:
-            anvil.users.login_with_form()
-
-        anvil.js.call('replaceBanner')
+        
         set_default_error_handling(self.handle_server_errors) #Set global server error handler
         #self.repeating_panel_1.items = anvil.server.call('get_car_parts_used', None)
 

@@ -16,9 +16,7 @@ class PartsHub(PartsHubTemplate):
         # Set Form properties and Data Bindings
         self.init_components(**properties)
         anvil.js.call("replaceBanner")
-        while anvil.users.get_user() is None:
-            anvil.users.login_with_form()
-
+        
         # Store permissions
         self.permissions = permissions
 

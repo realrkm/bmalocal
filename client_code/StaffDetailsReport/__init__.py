@@ -13,8 +13,6 @@ class StaffDetailsReport(StaffDetailsReportTemplate):
         # Set Form properties and Data Bindings.
         self.init_components(**properties)
         anvil.js.call('replaceBanner')
-        while anvil.users.get_user() is None:
-            anvil.users.login_with_form()
         self.refresh_staff_table(staffID)
         set_default_error_handling(
             self.handle_server_errors

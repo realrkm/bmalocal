@@ -125,17 +125,4 @@
 
     // Expose globally
     window.getSignatureData = () => signatureData;
-    window.setSignatureData = (base64) => {
-        if (!base64) return;
-
-        signatureData = "data:image/png;base64," + base64;
-
-        const img = new Image();
-        img.onload = () => {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        };
-        img.src = signatureData;
-    };
-
 })();

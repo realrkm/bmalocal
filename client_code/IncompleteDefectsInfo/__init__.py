@@ -15,8 +15,6 @@ class IncompleteDefectsInfo(IncompleteDefectsInfoTemplate):
 
         # Any code you write here will run before the form opens.
         anvil.js.call("replaceBanner")
-        while anvil.users.get_user() is None:
-            anvil.users.login_with_form()
         self.user = anvil.users.get_user()
         self.repeating_panel_1.items = anvil.server.call_s(
             "fetch_active_incomplete_defects_info", self.user

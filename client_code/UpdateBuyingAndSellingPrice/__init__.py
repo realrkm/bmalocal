@@ -14,9 +14,7 @@ class UpdateBuyingAndSellingPrice(UpdateBuyingAndSellingPriceTemplate):
 
         # Any code you write here will run before the form opens.
         anvil.js.call('replaceBanner')
-        while anvil.users.get_user() is None:
-            anvil.users.login_with_form()
-      
+              
         self.txt_Supplier.text = items["Supplier"]
         self.txt_PartName.text = items["Name"]
         self.txt_PartNo.text = items["PartNo"]

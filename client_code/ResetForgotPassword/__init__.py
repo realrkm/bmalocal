@@ -15,9 +15,7 @@ class ResetForgotPassword(ResetForgotPasswordTemplate):
 
         # Any code you write here will run before the form opens.
         anvil.js.call("replaceBanner")
-        while anvil.users.get_user() is None:
-            anvil.users.login_with_form()
-        
+                
         self.txt_email.text = items["email"]
         
     def btn_Update_click(self, **event_args):

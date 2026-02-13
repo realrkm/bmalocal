@@ -13,9 +13,7 @@ class AssignedJobCards(AssignedJobCardsTemplate):
         # Set Form properties and Data Bindings.
         self.init_components(**properties)
         anvil.js.call('replaceBanner')
-        while anvil.users.get_user() is None:
-            anvil.users.login_with_form()
-
+        
         # Any code you write here will run before the form opens.
         self.repeating_panel_1.items = anvil.server.call('get_assigned_jobs', None, None, None)
         grandTotalInvoices = 0

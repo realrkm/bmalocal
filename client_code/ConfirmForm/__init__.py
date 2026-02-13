@@ -13,8 +13,6 @@ class ConfirmForm(ConfirmFormTemplate):
         # Set Form properties and Data Bindings.
         self.init_components(**properties)
         anvil.js.call("replaceBanner")
-        while anvil.users.get_user() is None:
-            anvil.users.login_with_form()
         self.label_JobCardID.text = job_id
         set_default_error_handling(self.handle_server_errors)
         

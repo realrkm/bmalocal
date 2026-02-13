@@ -18,8 +18,7 @@ class Inventory(InventoryTemplate):
 
         # Any code you write here will run before the form opens.
         anvil.js.call('replaceBanner')
-        while anvil.users.get_user() is None:
-            anvil.users.login_with_form()
+        
         self.permissions = permissions
 
         # Apply permissions to buttons and load the first available subform

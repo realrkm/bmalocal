@@ -14,8 +14,6 @@ class PeriodicPayment(PeriodicPaymentTemplate):
 
         # Any code you write here will run before the form opens.
         anvil.js.call('replaceBanner')
-        while anvil.users.get_user() is None:
-            anvil.users.login_with_form()
         self.repeating_panel_1.items = anvil.server.call("get_client_payment_summary")
 
     def btn_Search_click(self, **event_args):

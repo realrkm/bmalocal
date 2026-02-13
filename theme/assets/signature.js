@@ -125,4 +125,5 @@
 
     // Expose globally
     window.getSignatureData = () => signatureData;
+   
 })();

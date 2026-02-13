@@ -60,11 +60,11 @@ class DefectsForm(DefectsFormTemplate):
             self.txtTechnicianPortalRequestedParts.text=defectListData[0]["TechnicianPortalRequestedParts"]
             self.txtRequestedParts.text = defectListData[0]['RequestedParts']
             self.drop_down_staff.selected_value = defectListData[0]["PreparedByStaff"]
-            
-            
-        result = anvil.server.call("getDefectsStaffAndSignature",defects_data[0]["ID"])
-        if result: #Return existing details
-            self.image_1.source = result[0]["Signature"]
+            self.image_1.source = defectListData[0]["Signature"]
+                    
+        #result = anvil.server.call("getDefectsStaffAndSignature",defects_data[0]["ID"])
+        #if result: #Return existing details
+        #    self.image_1.source = result[0]["Signature"]
 
     
     def get_signature_image(self):

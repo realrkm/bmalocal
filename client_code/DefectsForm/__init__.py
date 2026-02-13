@@ -46,6 +46,8 @@ class DefectsForm(DefectsFormTemplate):
             anvil.js.window.location.reload()  # Reload the app on session timeout
         elif isinstance(exc, anvil.server.AppOfflineError):
             anvil.alert("Please connect to the internet to proceed.",title="No Internet",large=False)
+        elif isinstance(exc, TypeError) and "NoneType" in str(exc):
+            anvil.alert("The system attempted to read data that doesn't exist. Please refresh the page or populate required data.", title="Data Error", large=False)
         else:
             anvil.alert(f"Unexpected error: {exc}", title="Error", large=False)
 

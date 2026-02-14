@@ -33,20 +33,47 @@ class ViewAndUpdateCarPartCategoriesForTechnicianPortal(ViewAndUpdateCarPartCate
         # 4. Assign to the repeating panel
         self.repeating_panel_1.items = formatted_items
 
-    
     def btn_UpdatePartsCategories_click(self, **event_args):
         """This method is called when the button is clicked"""
         data_to_save = self.repeating_panel_1.items
     
-        n = Notification("Saving changes in the background...", title="Background Task Started", style="success")
-        n.show()
+        # 1. Show a notification that it started
+        Notification("Saving changes in the background...", title="Task Started", style="info").show()
     
-        # Launch the background task instead of waiting for it to finish
-        task = anvil.server.call("launch_taxonomy_update", data_to_save)
+        # 2. Launch the background task
+        self.current_task = anvil.server.call("launch_taxonomy_update", data_to_save)
     
-        # Optional: Save the task object if you want to check its status later
-        self.current_task = task
+        # 3. Start the timer to check on the task every 1 second (1 second = 1)
+        self.timer_1.interval = 1
 
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.raise_event('x-close-alert', value = True)
+
+    def timer_1_tick(self, **event_args):
+        """This method is called Every 1 seconds. Does not trigger if interval is 0."""
+        
+        # Ensure we actually have a task running
+        if hasattr(self, 'current_task') and self.current_task is not None:
+    
+            # We use no_loading_indicator so the screen doesn't flash a spinner every second
+            with anvil.server.no_loading_indicator:
+    
+                # Check if the background task has finished
+                if self.current_task.is_completed():
+    
+                    # 1. Stop the timer immediately so it doesn't keep ticking
+                    self.timer_1.interval = 0
+    
+                    # 2. Try to get the result of the task
+                    try:
+                        result = self.current_task.get_return_value()
+                        # Show success notification
+                        Notification(result, title="Task Complete", style="success", timeout=5).show()
+    
+                    except Exception as e:
+                        # If the server code crashed, it throws the error here
+                        Notification(f"An error occurred: {str(e)}", title="Task Failed", style="danger").show()
+    
+                    # 3. Clear the task from memory
+                    self.current_task = None

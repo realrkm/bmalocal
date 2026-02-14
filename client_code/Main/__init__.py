@@ -28,26 +28,20 @@ class Main(MainTemplate):
         if user:
             # Fetch permissions from server
             self.permissions = anvil.server.call("get_user_permissions", user["role_id"])
-            if self.permissions['TECHNICIAN PORTAL']['main']:
-                open_form('SelfService')
-                user_agent = navigator.userAgent
-                # Now call your server function and pass the user_agent
-                anvil.server.call_s('get_stats', user_agent)
-                return
+            self.apply_permissions()
+
+            if user['role_id']==1:
+                self.refresh()
             else:
-                self.apply_permissions()
+                self.notification_label.visible=False
+                self.btn_alerts.visible=False
+                self.btn_IncompleteDefectsInfo.visible=False
+            user_agent = navigator.userAgent
+            # Now call your server function and pass the user_agent
+            anvil.server.call_s('get_stats', user_agent)
+
+            ModNavigation.home_form = self
                 
-                if user['role_id']==1:
-                    self.refresh()
-                else:
-                    self.notification_label.visible=False
-                    self.btn_alerts.visible=False
-                    self.btn_IncompleteDefectsInfo.visible=False
-                user_agent = navigator.userAgent
-                # Now call your server function and pass the user_agent
-                anvil.server.call_s('get_stats', user_agent)
-                        
-                ModNavigation.home_form = self
 
         
     def refresh(self, **event_args):
@@ -177,8 +171,7 @@ class Main(MainTemplate):
         self.highlight_active_button("LOGOUT")
         open_form('LogoutBackground')
         anvil.users.logout()
-        self.__init__()
-        open_form('Main') 
+        open_form("Launcher")
 
     def link_1_click(self, **event_args):
         """This method is called when the link is clicked"""

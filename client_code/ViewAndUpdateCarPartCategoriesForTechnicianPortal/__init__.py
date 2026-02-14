@@ -37,13 +37,10 @@ class ViewAndUpdateCarPartCategoriesForTechnicianPortal(ViewAndUpdateCarPartCate
         """This method is called when the button is clicked"""
         data_to_save = self.repeating_panel_1.items
     
-        # 1. Show a notification that it started
-        Notification("Saving changes in the background...", title="Task Started", style="info").show()
-    
-        # 2. Launch the background task
+        # 1. Launch the background task
         self.current_task = anvil.server.call("launch_taxonomy_update", data_to_save)
     
-        # 3. Start the timer to check on the task every 1 second (1 second = 1)
+        # 2. Start the timer to check on the task every 1 second (1 second = 1)
         self.timer_1.interval = 1
 
     def btn_Close_click(self, **event_args):

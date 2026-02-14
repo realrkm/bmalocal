@@ -45,9 +45,6 @@ class ViewAndUpdateCarPartCategoriesForTechnicianPortal(ViewAndUpdateCarPartCate
 
         # Call the server function
         anvil.server.call("update_carpart_taxonomy", data_to_save)
-        
-        
-
 
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""

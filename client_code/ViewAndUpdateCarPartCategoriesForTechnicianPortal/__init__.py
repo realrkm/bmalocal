@@ -40,14 +40,15 @@ class ViewAndUpdateCarPartCategoriesForTechnicianPortal(ViewAndUpdateCarPartCate
         data_to_save = self.repeating_panel_1.items
     
         # Show a loading notification
-        n = Notification("Saving changes in the background...",title="Background Task Started",timeout=None)
+        n = Notification("Saving changes in the background...",title="Background Task Started",style="success")
         n.show()
-    
+
         # Call the server function
         result = anvil.server.call('update_carpart_taxonomy', data_to_save)
-
-        n = Notification(result,style="success",title="Background Task Completed", timeout=None)
-        n.show()
+        if isinstance(result, dict):
+            alert(result.get("message", str(result)))
+        else:
+            alert(str(result))
         
 
     def btn_Close_click(self, **event_args):

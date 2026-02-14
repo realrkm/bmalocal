@@ -1,4 +1,9 @@
 components:
+- event_bindings: {tick: timer_1_tick}
+  layout_properties: {grid_position: 'BZVAYL,BEJRKN'}
+  name: timer_1
+  properties: {interval: 10}
+  type: Timer
 - layout_properties: {grid_position: 'RSTOSR,HUSVFU'}
   name: spacer_2
   properties: {height: 32}

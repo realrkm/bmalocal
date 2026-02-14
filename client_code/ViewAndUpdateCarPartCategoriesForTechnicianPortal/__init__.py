@@ -36,15 +36,16 @@ class ViewAndUpdateCarPartCategoriesForTechnicianPortal(ViewAndUpdateCarPartCate
     
     def btn_UpdatePartsCategories_click(self, **event_args):
         """This method is called when the button is clicked"""
-        # self.repeating_panel_1.items contains the list of dictionaries
         data_to_save = self.repeating_panel_1.items
     
-        # Show a loading notification
-        n = Notification("Saving changes in the background...",title="Background Task Started",style="success")
+        n = Notification("Saving changes in the background...", title="Background Task Started", style="success")
         n.show()
-
-        # Call the server function
-        anvil.server.call("update_carpart_taxonomy", data_to_save)
+    
+        # Launch the background task instead of waiting for it to finish
+        task = anvil.server.call("launch_taxonomy_update", data_to_save)
+    
+        # Optional: Save the task object if you want to check its status later
+        self.current_task = task
 
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""

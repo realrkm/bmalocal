@@ -184,39 +184,46 @@ class Main(MainTemplate):
         """This method is called when the link is clicked"""
         alert(content=FAQ(), dismissible=False,large=True)
 
-    # #Avoid constant session refresh
-    # def timer_keepalive_tick(self, **event_args):
-    #     """This method is called Every [interval] seconds. Does not trigger if [interval] is 0."""
-    #     self.timer_keepalive.interval= 0
-    #     result=anvil.server.call('fe_keepalive')
-    #     if result == "ok":
-    #         self.timer_keepalive.interval = 300
+    #Avoid constant session refresh
+    def timer_keepalive_tick(self, **event_args):
+        """This method is called Every [interval] seconds. Does not trigger if [interval] is 0."""
+        self.timer_keepalive.interval= 0
+        result=anvil.server.call('fe_keepalive')
+        if result == "ok":
+            self.timer_keepalive.interval = 300
 
     def btn_ResetPassword_click(self, **event_args):
         """This method is called when the button is clicked"""
         anvil.users.change_password_with_form()
         
-    # def notification_timer_tick(self, **event_args):
-    #     """This method is called Every [interval] seconds. Does not trigger if [interval] is 0."""
-    #     with anvil.server.no_loading_indicator:
-    #         self.notification_label.text=""
-    #         notifications = anvil.server.call('fetch_role_notifications',anvil.users.get_user())
-    #         if notifications:
-    #             self.btn_alerts.enabled=True
-    #         else:
-    #             self.btn_alerts.enabled=False
-    #         if anvil.server.call_s("fetch_active_incomplete_defects_info",anvil.users.get_user()):
-    #             self.btn_IncompleteDefectsInfo.enabled=True
-    #         else:
-    #             self.btn_IncompleteDefectsInfo.enabled=False
-    #         if anvil.server.call_s("fetch_active_technician_portal_info",anvil.users.get_user()):
-    #             self.btn_ViewTechnicianPortalDetails.enabled=True
-    #         else:
-    #             self.btn_ViewTechnicianPortalDetails.enabled=False
-    #         for n in notifications:
-    #             self.notification_label.text = (f"{n['jobcard']} - {n['message']}")
-                                
-    #             self.refresh()
+    def notification_timer_tick(self, **event_args):
+        """This method is called Every [interval] seconds. Does not trigger if [interval] is 0."""
+
+        # Call get_user() once to save local database checks
+        user = anvil.users.get_user()
+        if not user:
+            return
+
+        with anvil.server.no_loading_indicator:
+            self.notification_label.text = ""
+
+            # Make ONE server call to get all data
+            data = anvil.server.call_s('fetch_all_dashboard_notifications', user)
+
+            # Extract the lists from the returned dictionary
+            notifications = data.get("notifications", [])
+            incomplete_defects = data.get("incomplete_defects", [])
+            tech_portal_info = data.get("technician_portal", [])
+
+            # Simplify boolean logic (if list has items, bool() is True, else False)
+            self.btn_alerts.enabled = bool(notifications)
+            self.btn_IncompleteDefectsInfo.enabled = bool(incomplete_defects)
+            self.btn_ViewTechnicianPortalDetails.enabled = bool(tech_portal_info)
+
+            # Handle the notification label text
+            for n in notifications:
+                self.notification_label.text = f"{n['jobcard']} - {n['message']}"
+                self.refresh()
 
     def btn_alerts_click(self, **event_args):
         """This method is called when the button is clicked"""

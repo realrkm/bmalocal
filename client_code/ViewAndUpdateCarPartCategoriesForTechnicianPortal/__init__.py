@@ -44,17 +44,9 @@ class ViewAndUpdateCarPartCategoriesForTechnicianPortal(ViewAndUpdateCarPartCate
         n.show()
 
         # Call the server function
+        anvil.server.call("update_carpart_taxonomy", data_to_save)
         
-        start = anvil.server.call("update_carpart_taxonomy", data_to_save)
-        self._task_id = start["task_id"]
-        self.timer_1.interval = 2
-        self.timer_1.enabled = True
         
-    def timer_1_tick(self, **event_args):
-        status = anvil.server.call("get_carpart_update_task_status", self._task_id)
-        if status["state"] == "completed":
-            self.timer_1.enabled = False
-            alert(f'Categorization complete. Updated rows: {status["updated_rows"]}')
 
 
     def btn_Close_click(self, **event_args):

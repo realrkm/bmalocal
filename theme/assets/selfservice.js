@@ -1270,7 +1270,7 @@
                     <button onclick="selectModalCategory('${c.id}')" class="category-card ${c.color}" aria-label="View ${sanitizeHTML(c.name)} category">
                         <span class="category-icon">${c.icon}</span>
                         <span class="category-name">${sanitizeHTML(c.name)}</span>
-                        <span style="font-size:1.6rem; color:#94a3b8;">
+                        <span style="font-size:2.0rem; color:#000000;">
                             ${uniqueNames.size} Items
                         </span>
                     </button>
@@ -1382,7 +1382,7 @@
                 <h3 style="font-size:2.5rem; margin-bottom:2rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Customer Feedback</h3>
                 
                 <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); padding:2rem; border-radius:1rem; margin-bottom:2rem; border:2px solid rgba(59, 130, 246, 0.2);">
-                    <p style="font-size:1.6rem; color:#94a3b8; margin-bottom:1rem;">
+                    <p style="font-size:2.0rem; color:#000000; margin-bottom:1rem;">
                         <strong style="color:#facc15;">JobCard Reference:</strong> ${sanitizeHTML(state.activeReg)}
                     </p>
                 </div>
@@ -1433,13 +1433,13 @@
             <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); padding:3rem; border-radius:2rem; border:2px solid rgba(59, 130, 246, 0.3); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);">
                 <h3 style="font-size:2.5rem; margin-bottom:2rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Work Done Report</h3>
                 <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); padding:2rem; border-radius:1rem; margin-bottom:2rem; border:2px solid rgba(59, 130, 246, 0.2);">
-                    <p style="font-size:1.6rem; color:#94a3b8; margin-bottom:0.8rem;">
+                    <p style="font-size:2.0rem; color:#000000; margin-bottom:0.8rem;">
                         <strong style="color:#facc15;">JobCard Reference:</strong> ${sanitizeHTML(service.jobcardref)}
                     </p>
-                    <p style="font-size:1.6rem; color:#94a3b8; margin-bottom:0.8rem;">
+                    <p style="font-size:2.0rem; color:#000000; margin-bottom:0.8rem;">
                         <strong style="color:#06b6d4;">Technician:</strong> ${sanitizeHTML(service.tech)}
                     </p>
-                    <p style="font-size:1.6rem; color:#94a3b8;">
+                    <p style="font-size:2.0rem; color:#000000;">
                         <strong style="color:#06b6d4;">Instruction:</strong> ${sanitizeHTML(service.instruction)}
                     </p>
                 </div>
@@ -2426,7 +2426,7 @@
                 <button onclick="selectCategory('${c.id}')" class="category-card ${c.color}" aria-label="View ${sanitizeHTML(c.name)} category">
                     <span class="category-icon">${c.icon}</span>
                     <span class="category-name">${sanitizeHTML(c.name)}</span>
-                    <span style="font-size:1.6rem; color:#94a3b8;">
+                    <span style="font-size:2.0rem; color:#000000;">
                         ${uniqueNames.size} Items
                     </span>
                 </button>

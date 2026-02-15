@@ -280,12 +280,8 @@ header {
 /* --- Category Grid & Cards --- */
 .category-grid { 
     display: grid; 
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+    grid-template-columns: repeat(3, 1fr); 
     gap: 2rem; 
-}
-
-@media (min-width: 1024px) { 
-    .category-grid { grid-template-columns: repeat(3, 1fr); } 
 }
 
 .category-card {
@@ -1028,6 +1024,22 @@ RESPONSIVE BREAKPOINTS
     footer { bottom: 10px; padding: 0.8rem 1.5rem; }
     footer button { font-size: 1.4rem; }
     #back-to-top { bottom: 90px; right: 20px; width: 48px; height: 48px; }
+    
+    /* Show 2 category cards per row on tablet/portrait */
+    .category-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+    .category-card {
+        padding: 2.5rem 1.5rem;
+        min-height: 250px;
+    }
+    .category-icon {
+        font-size: 5rem;
+    }
+    .category-name {
+        font-size: 1.6rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -1080,6 +1092,23 @@ RESPONSIVE BREAKPOINTS
     .service-icon {
         width: 35px;
         height: 35px;
+        font-size: 1.4rem;
+    }
+    
+    /* Keep category cards in 2 columns even on very small screens */
+    .category-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    .category-card {
+        padding: 2rem 1rem;
+        min-height: 200px;
+        border-radius: 1.2rem;
+    }
+    .category-icon {
+        font-size: 4.5rem;
+    }
+    .category-name {
         font-size: 1.4rem;
     }
     

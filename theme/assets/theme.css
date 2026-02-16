@@ -983,15 +983,3 @@ https://stackoverflow.com/questions/30533055/calculating-shadow-values-for-all-m
 }
 
 /* End Spinner */
-
-/* Mobile portrait table responsiveness */
-@media (max-width: 600px) {
-
-    .anvil-data-grid,
-    .anvil-data-grid table {
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap;
-    }
-
-}

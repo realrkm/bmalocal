@@ -3039,22 +3039,20 @@ function setupListeners() {
     };
 
     window.openWorkDone = (reg) => {
-        if (state.activeReg !== reg) {
-            state.cart = [];
-            state.techNotes = '';
-            state.defectList = '';
-            state.partsSearchQuery = '';
-            state.customerResponse = '';
-            state.approvedParts = '';
-            state.selectedTechnician = '';
-            state.signatureData = '';
+        state.cart = [];
+        state.techNotes = '';
+        state.defectList = '';
+        state.partsSearchQuery = '';
+        state.customerResponse = '';
+        state.approvedParts = '';
+        state.selectedTechnician = '';
+        state.signatureData = '';
             
-            cartCount.innerText = 0;
-            cartCount.classList.add('hidden');
+        cartCount.innerText = 0;
+        cartCount.classList.add('hidden');
             
-            // ⭐ Reset data loaded flag to allow fresh data load
-            state.dataLoadedForReg = null;
-        }
+        // ⭐ Reset data loaded flag to allow fresh data load
+        state.dataLoadedForReg = null;
         
         // ⭐ Mark that we're coming from Work Done
         state.cameFromWorkDone = true;

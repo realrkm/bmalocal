@@ -2900,6 +2900,8 @@ function setupListeners() {
             await loadActiveServices();
 
             clearNavigationHistory();
+            // Clear Cart
+            state.cart=[];
             state.currentView = 'home';
             render();    
 

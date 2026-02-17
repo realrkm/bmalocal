@@ -126,6 +126,8 @@ class AddNewParts(AddNewPartsTemplate):
             return
             
         anvil.server.call_s("addNewParts", purchaseDate, partName, partNumber, locationID, supplierID, units, buyingPrice, sellingPrice,discountPrice, reorderLevel)
+        #Update Blank Car Part Categories
+        anvil.server.call_s("update_null_carpart_categories")
         alert("Part Saved Successfully", title="Success", large=False)
 
         if self.isPopup is True:

@@ -200,7 +200,7 @@ class AddMorePartsInConfirmQuote(AddMorePartsInConfirmQuoteTemplate):
                     "amount": amount,
                 }
             )
-
+                
         try:
             anvil.server.call_s(
                 "updateQuotationPartsAndServices",
@@ -221,7 +221,7 @@ class AddMorePartsInConfirmQuote(AddMorePartsInConfirmQuoteTemplate):
             alert("Please connect to the internet to proceed.", title="No Internet")
         except Exception as e:
             alert(f"An error occurred: {str(e)}", title="Error")
-
+        
         # Close Form
         self.btn_Close_click()
         self.refresh()

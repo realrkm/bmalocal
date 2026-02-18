@@ -242,6 +242,7 @@ class DefectsForm(DefectsFormTemplate):
         result = anvil.server.call("getJobCardRow", self.defects_data[0]["ID"])
         if result["Status"] == "In Service" or result["Status"] == "Verify Task" or  result["Status"] == "Issue Invoice":
             alert(content=AddMorePartsInConfirmQuote(self.defects_data[0]["ID"]), buttons=[], dismissible=False,large=True)
+            self.btn_AddMorePartsAndServicesInConfirmedQuote.enabled=True
         else:
             alert("Sorry, please update the job card's list of parts and services within the current workflow.", title="Workflow Action", large=False)
             self.btn_AddMorePartsAndServicesInConfirmedQuote.enabled=True

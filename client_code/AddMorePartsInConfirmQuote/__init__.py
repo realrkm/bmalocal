@@ -167,33 +167,6 @@ class AddMorePartsInConfirmQuote(AddMorePartsInConfirmQuoteTemplate):
     def btn_Save_click(self, **event_args):
         self.btn_Save.enabled = False  # Prevent multiple clicks
 
-        if not self.cmbJobCardRef.selected_value:
-            alert(
-                "Sorry, please select job card ref to proceed.",
-                title="Blank Field(s) Found",
-            )
-            self.cmbJobCardRef.focus()
-            self.btn_Save.enabled = True
-            return
-
-        if not self.txtQuoteConfirmationFeedback.text:
-            alert(
-                "Sorry, please enter quote confirmation feedback to proceed.",
-                title="Blank Field(s) Found",
-            )
-            self.txtQuoteConfirmationFeedback.focus()
-            self.btn_Save.enabled = True
-            return
-
-        if not self.cmbWorkflow.selected_value:
-            alert(
-                "Sorry, please select the next workflow status to proceed.",
-                title="Blank Field(s) Found",
-            )
-            self.cmbWorkflow.focus()
-            self.btn_Save.enabled = True
-            return
-
         rows = self.repeating_panel_assigned_parts.items or []
         if not rows:
             anvil.alert(
@@ -205,8 +178,6 @@ class AddMorePartsInConfirmQuote(AddMorePartsInConfirmQuoteTemplate):
 
         assignedDate = date.today()
         jobCardID = self.cmbJobCardRef.selected_value["ID"]
-        remarks = self.txtQuoteConfirmationFeedback.text
-        status = self.cmbWorkflow.selected_value
 
         items = []
         for row in rows:
@@ -232,15 +203,13 @@ class AddMorePartsInConfirmQuote(AddMorePartsInConfirmQuoteTemplate):
 
         try:
             anvil.server.call_s(
-                "saveFullQuotationPartsAndServicesFeedback",
+                "updateQuotationPartsAndServices",
                 assignedDate,
                 jobCardID,
-                remarks,
                 items,
             )
-            anvil.server.call_s("updateJobCardStatus", jobCardID, status)
 
-            alert("Quotation confirmation saved successfully", title="Success")
+            alert("Confirmation updates saved successfully", title="Success")
         except anvil.server.UplinkDisconnectedError:
             alert(
                 "Connection to server lost. Please check your internet or try again later.",
@@ -253,23 +222,11 @@ class AddMorePartsInConfirmQuote(AddMorePartsInConfirmQuoteTemplate):
         except Exception as e:
             alert(f"An error occurred: {str(e)}", title="Error")
 
-        self.downloadQuotationPdf(jobCardID)
-
         # Close Form
         self.btn_Close_click()
         self.refresh()
 
-    def downloadQuotationPdf(self, jobCardID):
-        media_object = anvil.server.call(
-            "createQuotationInvoicePdf", jobCardID, "Confirm Quotation"
-        )
-        anvil.media.download(media_object)
-        self.deleteFile(jobCardID, "Confirm Quotation")
-
-    def deleteFile(self, jobCardID, docType):
-        anvil.server.call("deleteFile", jobCardID, docType)
-
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.raise_event("x-close-alert", value=True)
-        get_open_form().btn_Workflow_click()
+       

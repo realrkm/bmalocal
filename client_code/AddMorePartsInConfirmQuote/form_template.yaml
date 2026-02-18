@@ -7,7 +7,7 @@ components:
   - event_bindings: {change: cmbJobCardRef_change}
     layout_properties: {grid_position: 'MXOMMF,YKLUZP'}
     name: cmbJobCardRef
-    properties: {background: 'theme:White', border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: false, placeholder: Select Job Card Ref, visible: true}
+    properties: {background: 'theme:White', border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: false, placeholder: Select Job Card Ref, visible: false}
     type: DropDown
   - layout_properties: {grid_position: 'SICJFP,MYGIBQ', row_background: 'theme:Black'}
     name: spacer_1

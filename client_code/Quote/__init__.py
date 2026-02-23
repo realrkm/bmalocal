@@ -48,6 +48,7 @@ class Quote(QuoteTemplate):
         self.txtClientInstructions.text = ModGetData.getJobCardInstructions(self.cmbJobCardRef.selected_value['ID'])
         self.txtTechNotes.text= ModGetData.getJobCardTechNotes(self.cmbJobCardRef.selected_value['ID'])
         self.txtDefectsList.text = ModGetData.getJobCardDefects(self.cmbJobCardRef.selected_value['ID'])
+        self.txtPricedDefectsList.text = ModGetData.getJobCardPricedDefects(self.cmbJobCardRef.selected_value['ID'])
         self.txtRequestedParts.text = ModGetData.getRequestedParts(self.cmbJobCardRef.selected_value['ID'])
 
     def btn_Search_click(self, **event_args):

@@ -58,6 +58,7 @@ class DefectsForm(DefectsFormTemplate):
             self.txtClientInstructions.text = defectListData[0]['Instruction']
             self.txtTechNotes.text = defectListData[0]['Notes']
             self.txtDefectsList.text = defectListData[0]['Defects']
+            self.txtPricedDefectsList.text=defectListData[0]['PricedDefects']
             self.txtTechnicianPortalRequestedParts.text=defectListData[0]["TechnicianPortalRequestedParts"]
             self.txtRequestedParts.text = defectListData[0]['RequestedParts']
             self.drop_down_staff.selected_value = defectListData[0]["PreparedByStaff"]
@@ -107,6 +108,7 @@ class DefectsForm(DefectsFormTemplate):
         instructions= self.txtClientInstructions.text
         notes = self.txtTechNotes.text
         defects = self.txtDefectsList.text
+        priceddefects = self.txtPricedDefectsList.text
         parts=self.txtRequestedParts.text
         staffID = self.drop_down_staff.selected_value
         signature = None
@@ -126,7 +128,7 @@ class DefectsForm(DefectsFormTemplate):
         existingrecord = anvil.server.call("getJobCardDefects", jobcardID)
         if not existingrecord:
             #Create record first in tbl_techniciandefectsandrequestedparts
-            anvil.server.call('saveTecnicianDefectsAndRequestedParts', jobcardID, defects, parts, staffID, signature)
+            anvil.server.call('saveTecnicianDefectsAndRequestedParts', jobcardID, defects, priceddefects, parts, staffID, signature)
             #Transition Checked In jobcards to Create Quote since data now exists in tbl_techniciandefectsandrequestedparts
             anvil.server.call_s("transitionCheckedInToCreateQuote")
             

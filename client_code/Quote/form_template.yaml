@@ -37,6 +37,14 @@ components:
     name: txtDefectsList
     properties: {background: 'theme:White', border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black'}
     type: TextArea
+  - layout_properties: {grid_position: ''}
+    name: label_title_4
+    properties: {align: center, background: 'theme:Gray 300', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:Gray 800', text: Priced Defects For Quotation}
+    type: Label
+  - layout_properties: {grid_position: ''}
+    name: txtPricedDefectsList
+    properties: {align: left, auto_expand: true, background: 'theme:White', border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Priced Defects For Quotation}
+    type: TextArea
   - layout_properties: {grid_position: 'RYHDSR,DSPEQV'}
     name: label_RequestedParts
     properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: '', role: null, text: Requested Parts List}

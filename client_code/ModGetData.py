@@ -35,7 +35,10 @@ def getTechnicianJobCards(status, regNo):
      
 def getJobCardDefects(id):
     return anvil.server.call_s('getJobCardDefects', id)
-        
+
+def getJobCardPricedDefects(id):
+    return anvil.server.call_s('getJobCardPricedDefects', id)
+    
 def getRequestedParts(id):
     return anvil.server.call_s('getRequestedParts', id)
 

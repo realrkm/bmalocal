@@ -133,7 +133,7 @@ class DefectsForm(DefectsFormTemplate):
             anvil.server.call_s("transitionCheckedInToCreateQuote")
             
 
-        anvil.server.call("updateDefectsList", jobcardID, instructions, notes,defects,parts, staffID, signature)
+        anvil.server.call("updateDefectsList", jobcardID, instructions, notes, defects, priceddefects, parts, staffID, signature)
         
         #Update Blank Defects And Requested Parts
         anvil.server.call_s("updateBlankDefectsAndRequestedParts")

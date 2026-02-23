@@ -120,7 +120,7 @@ class TechnicianDefectsAndRequestedParts(TechnicianDefectsAndRequestedPartsTempl
             self.btn_Save.enabled = True
             return   
         
-        anvil.server.call('saveTecnicianDefectsAndRequestedParts', jobcardref, defects, requestedParts, staffID, signature)
+        anvil.server.call('saveTecnicianDefectsAndRequestedParts', jobcardref, defects, defects, requestedParts, staffID, signature)
         anvil.server.call_s('updateJobCardStatus', jobcardref, status)
 
         if status == "Cancel Jobcard":

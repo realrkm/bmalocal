@@ -67,6 +67,7 @@ class DefectsForm(DefectsFormTemplate):
             getJobCardDetails = anvil.server.call("getJobCardRow", defects_data[0]["ID"])
             self.txtClientInstructions.text = getJobCardDetails["ClientInstruction"]
             self.txtTechNotes.text = getJobCardDetails["Notes"]
+            
         #result = anvil.server.call("getDefectsStaffAndSignature",defects_data[0]["ID"])
         #if result: #Return existing details
         #    self.image_1.source = result[0]["Signature"]

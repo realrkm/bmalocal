@@ -1183,20 +1183,13 @@
                                 <div style="display:flex; align-items:center; gap:1rem;">
                                     <div style="display:flex; flex-direction:column; align-items:center;">
                                         <span style="color:#94a3b8; font-size:1.2rem;">QTY</span>
-                                        <input 
-                                            type="number" 
+                                        <span
                                             id="modal-cart-qty-${i}"
-                                            value="${item.quantity}" 
-                                            min="0.01"
-                                            step="0.01"
-                                            onchange="updateCartQuantityFromModal(${i}, this.value)"
                                             aria-label="Quantity for ${sanitizeHTML(item.name)}"
-                                            style="width:80px; padding:0.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; text-align:center;"
-                                        >
+                                            style="width:80px; padding:0.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; text-align:center; display:inline-block;">
+                                            ${item.quantity}
+                                        </span>
                                     </div>
-                                    <button onclick="removeFromCartFromModal(${i})" aria-label="Remove ${sanitizeHTML(item.name)} from cart" style="color:#ef4444; background:none; border:none; cursor:pointer; font-size:1.5rem;">
-                                        <i data-lucide="trash-2" aria-hidden="true"></i>
-                                    </button>
                                 </div>
                             </div>
                         `).join('')}

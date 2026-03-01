@@ -204,7 +204,7 @@ class DefectsForm(DefectsFormTemplate):
         
     def downloadPricedDefectsPdf(self, job_card_id):
         #Check for existing data first
-        result = anvil.server.call("get_defects_list_details_by_job_id", job_card_id)
+        result = anvil.server.call("get_priced_defects_list_details_by_job_id", job_card_id)
         if result is None:
             anvil.alert(
                 "No data was returned from the server. Please confirm the defects data exists.",
@@ -212,9 +212,9 @@ class DefectsForm(DefectsFormTemplate):
                 large=False
             )
         else:
-            media_object = anvil.server.call('downloadDefectsPdfForm', job_card_id, "DefectsList")
+            media_object = anvil.server.call('downloadDefectsPdfForm', job_card_id, "PricedDefectsList")
             anvil.media.download(media_object)
-            self.deleteFile(job_card_id, "DefectsList")
+            self.deleteFile(job_card_id, "PricedDefectsList")
 
     def deleteFile(self, jobCardID, docType):
         anvil.server.call("deleteFile", jobCardID, docType)

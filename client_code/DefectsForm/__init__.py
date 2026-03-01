@@ -176,10 +176,33 @@ class DefectsForm(DefectsFormTemplate):
 
     def btn_DownloadDefectsList_click(self, **event_args):
         """This method is called when the button is clicked"""
+        self.btn_DownloadDefectsList.enabled=False
         jobcardID = self.defects_data[0]["ID"]
         self.downloadDefectsPdf(jobcardID)
+        self.btn_DownloadDefectsList.enabled=True
               
     def downloadDefectsPdf(self, job_card_id):
+        #Check for existing data first
+        result = anvil.server.call("get_defects_list_details_by_job_id", job_card_id)
+        if result is None:
+            anvil.alert(
+                "No data was returned from the server. Please confirm the defects data exists.",
+                title="Data Error",
+                large=False
+            )
+        else:
+            media_object = anvil.server.call('downloadDefectsPdfForm', job_card_id, "DefectsList")
+            anvil.media.download(media_object)
+            self.deleteFile(job_card_id, "DefectsList")
+
+    def btn_DownloadPricedDefectsList_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        self.btn_DownloadPricedDefectsList.enabled=False
+        jobcardID = self.defects_data[0]["ID"]
+        self.downloadPricedDefectsPdf(jobcardID)
+        self.btn_DownloadPricedDefectsList.enabled=True
+        
+    def downloadPricedDefectsPdf(self, job_card_id):
         #Check for existing data first
         result = anvil.server.call("get_defects_list_details_by_job_id", job_card_id)
         if result is None:

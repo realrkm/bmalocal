@@ -20,20 +20,6 @@ components:
     name: spacer_2_copy
     properties: {height: 6.18182373046875}
     type: Spacer
-  - event_bindings: {click: btn_DownloadDefectsList_click}
-    layout_properties: {full_width_row: false, grid_position: 'JYAMLS,GWJENI'}
-    name: btn_DownloadDefectsList
-    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: DOWNLOAD DEFECTS LIST}
-    type: Button
-  - event_bindings: {click: btn_DownloadTechNotes_click}
-    layout_properties: {grid_position: 'JYAMLS,WOFJAI'}
-    name: btn_DownloadTechNotes
-    properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: null, text: DOWNLOAD TECH NOTES}
-    type: Button
-  - layout_properties: {grid_position: 'ANFDGB,DNBISW'}
-    name: spacer_2
-    properties: {height: 6.18182373046875}
-    type: Spacer
   - event_bindings: {click: btn_Update_click}
     layout_properties: {grid_position: 'ZZHUZR,ZXNXXV'}
     name: btn_Update
@@ -85,6 +71,11 @@ components:
     name: txtTechNotes
     properties: {auto_expand: true, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: ''}
     type: TextArea
+  - event_bindings: {click: btn_DownloadTechNotes_click}
+    layout_properties: {grid_position: 'SCBITU,XZLOMU'}
+    name: btn_DownloadTechNotes
+    properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: null, text: DOWNLOAD TECHnician NOTES}
+    type: Button
   - layout_properties: {grid_position: 'ZRXSFU,NEMGHF'}
     name: label_title_1
     properties:
@@ -101,6 +92,11 @@ components:
     name: txtDefectsList
     properties: {auto_expand: true, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: 'Enter List Of Defects '}
     type: TextArea
+  - event_bindings: {click: btn_DownloadDefectsList_click}
+    layout_properties: {grid_position: 'HFIRII,VVLCBD'}
+    name: btn_DownloadDefectsList
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: DOWNLOAD DEFECTS LIST}
+    type: Button
   - layout_properties: {grid_position: 'VUUMCK,ZQPEKO'}
     name: label_title_4
     properties: {align: center, background: 'theme:Gray 300', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:Gray 800', text: Priced Defects For Quotation}
@@ -109,6 +105,11 @@ components:
     name: txtPricedDefectsList
     properties: {auto_expand: true, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Priced Defects For Quotation}
     type: TextArea
+  - event_bindings: {click: btn_DownloadPricedDefectsList_click}
+    layout_properties: {grid_position: 'BVYDWC,LSELXG'}
+    name: btn_DownloadPricedDefectsList
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: DOWNLOAD PRICED DEFECTS LIST}
+    type: Button
   - event_bindings: {click: btn_IncompleteDefectsInfo_click}
     layout_properties: {grid_position: 'HAHPYI,QSPIXO'}
     name: btn_IncompleteDefectsInfo
@@ -245,7 +246,7 @@ components:
     type: ColumnPanel
   layout_properties: {grid_position: 'HEOFNJ,KNGYLD', row_background: 'theme:White'}
   name: card_1
-  properties: {border: solid, col_widths: '{}', role: card}
+  properties: {border: solid, col_widths: '{"FOZOKD":45,"XZLOMU":15,"VGHXWP":45,"VVLCBD":15,"EJPTOZ":45,"LSELXG":15}', role: card}
   type: ColumnPanel
 container:
   properties: {background: ''}

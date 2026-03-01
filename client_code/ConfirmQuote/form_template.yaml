@@ -195,14 +195,15 @@ components:
     name: label_Workflow
     properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Workflow Status *}
     type: Label
-  - layout_properties: {grid_position: 'HFHMFG,XMVJWY'}
+  - event_bindings: {}
+    layout_properties: {grid_position: 'HFHMFG,XMVJWY'}
     name: cmbWorkflow
     properties:
       border: solid
       font: Roboto
       foreground: theme:Black
       include_placeholder: true
-      items: [Confirm Quote, In Service]
+      items: [In Service, Confirm Quote]
       placeholder: 'Select Next Workflow Status * '
       role: null
     type: DropDown

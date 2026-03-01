@@ -227,3 +227,8 @@ class ConfirmQuote(ConfirmQuoteTemplate):
         self.raise_event('x-close-alert', value = True)
         get_open_form().btn_Workflow_click()
 
+    @handle("cmbWorkflow", "change")
+    def cmbWorkflow_change(self, **event_args):
+        """This method is called when an item is selected"""
+        pass
+

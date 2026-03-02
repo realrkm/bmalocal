@@ -196,7 +196,7 @@ header {
 /* --- Enhanced Service Cards --- */
 .service-card-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
     gap: 2rem;
     margin-bottom: 3rem;
 }
@@ -211,6 +211,7 @@ header {
     cursor: pointer;
     position: relative;
     overflow: hidden;
+    min-width: 0;
 }
 
 .service-card::before {
@@ -584,7 +585,7 @@ header {
     outline: none;
     border-color: #06b6d4;
     box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.2),
-        0 8px 25px rgba(6, 182, 212, 0.3);
+                0 8px 25px rgba(6, 182, 212, 0.3);
 }
 
 .breadcrumb-nav { 
@@ -637,7 +638,7 @@ footer {
     display: flex;
     justify-content: center;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6),
-        0 0 60px rgba(59, 130, 246, 0.2);
+                0 0 60px rgba(59, 130, 246, 0.2);
 }
 
 footer button {
@@ -782,7 +783,7 @@ footer button:hover {
     max-width: 500px;
     width: 90%;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
-        0 0 80px rgba(59, 130, 246, 0.3);
+                0 0 80px rgba(59, 130, 246, 0.3);
     animation: alertSlideIn 0.3s ease-out;
 }
 
@@ -933,7 +934,7 @@ RESPONSIVE BREAKPOINTS
     
     /* Keep service cards in a row */
     .service-card-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
         gap: 1.5rem;
     }
     .service-card {
@@ -974,7 +975,7 @@ RESPONSIVE BREAKPOINTS
     
     /* Keep service cards in a row on portrait/mobile */
     .service-card-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
         gap: 1rem;
     }
     .service-card {
@@ -1077,7 +1078,7 @@ RESPONSIVE BREAKPOINTS
     
     /* Keep service cards in a row even on very small screens */
     .service-card-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
         gap: 0.8rem;
     }
     .service-card {

@@ -678,6 +678,7 @@
 
         const totalServices = state.activeServices.length;
         const checkedInCount = state.activeServices.filter(s => s.status === 'Checked-In').length;
+        const createQuoteCount = state.activeServices.filter(s => s.status === 'Create Quote').length;
         const inServiceCount = state.activeServices.filter(s => s.status === 'In-Service').length;
 
         mainContent.innerHTML = `
@@ -708,6 +709,15 @@
                     <div class="service-card-title">Checked In</div>
                     <div class="service-card-subtitle">Awaiting service</div>
                     <div class="service-stat">${checkedInCount}</div>
+                </div>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);">📝</div>
+                <div>
+                    <div class="service-card-title">Create Quote</div>
+                    <div class="service-card-subtitle">Awaiting quotation</div>
+                    <div class="service-stat">${createQuoteCount}</div>
                 </div>
             </div>
             

@@ -379,6 +379,12 @@ class EditJobCard(EditJobCardTemplate):
             self.btn_Update.enabled = True
             return
 
+        if not self.txtChassisNo.text:
+            alert("Sorry, please enter Chassis No.", title="Blank Field(s) Found")
+            self.txtChassisNo.focus()
+            self.btn_Update.enabled = True
+            return
+            
         if not self.txtMakeAndModel.text:
             alert("Sorry, please enter make and model.", title="Blank Field(s) Found")
             self.txtMakeAndModel.focus()
@@ -441,6 +447,8 @@ class EditJobCard(EditJobCardTemplate):
         Spare = self.chkSpare.checked
         Jack = self.chkJack.checked
         Brace = self.chkBrace.checked
+        RegNo = self.txtRegNo.text
+        Chassis=self.txtChassisNo.text
         MakeAndModel = self.txtMakeAndModel.text
         EngineCC = self.txtEngineCC.text
         Mileage = self.txtMileage.text
@@ -462,7 +470,7 @@ class EditJobCard(EditJobCardTemplate):
         # Call a server-side function to update the data
         # This function updates an existing row in 'tbl_jobcarddetails' and 'tbl_pendingassignedjobs' tables
         anvil.server.call("update_job_card_details",jobcardID, technicianDetails, ClientDetails, JobCardRef, ReceivedDate, DueDate, ExpDate,
-                          CheckedInBy,Ins, Comp, TPO, Spare, Jack, Brace,MakeAndModel, EngineCC, Mileage, EngineNo, 
+                          CheckedInBy,Ins, Comp, TPO, Spare, Jack, Brace,RegNo, Chassis, MakeAndModel, EngineCC, Mileage, EngineNo, 
                           EngineCode,Manual,Auto, Empty, Quarter, Half,ThreeQuarter, Full,PaintCode,ClientInstruction, Notes, workDone)
         
         alert("Job card details updated successfully", title="Success")

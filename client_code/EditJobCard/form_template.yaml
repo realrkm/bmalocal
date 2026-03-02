@@ -137,18 +137,14 @@ components:
     name: label_CarDetails
     properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Car Details}
     type: Label
-  - layout_properties: {grid_position: 'KWMGLW,HZNGSM'}
-    name: label_3
-    properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, foreground: '#dc1818', text: The Reg No and Chassis No fields cannot be modified after saving.}
-    type: Label
   - event_bindings: {change: txtRegNo_change}
     layout_properties: {grid_position: 'MTTVLH,DEQPOB SKLABW,HNGJRC'}
     name: txtRegNo
-    properties: {align: center, background: 'theme:White', bold: false, border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: '#dc1818', placeholder: Enter Reg No *, text: ''}
+    properties: {align: center, background: 'theme:White', bold: false, border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Reg No *, text: ''}
     type: TextBox
   - layout_properties: {grid_position: 'MTTVLH,DEQPOB QXXYVB,IUYGPI'}
     name: txtChassisNo
-    properties: {align: center, background: 'theme:White', bold: false, border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: '#dc1818', placeholder: Enter Chassis No, text: ''}
+    properties: {align: center, background: 'theme:White', bold: false, border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Chassis No *, text: ''}
     type: TextBox
   - event_bindings: {change: txtMileage_change}
     layout_properties: {grid_position: 'MTTVLH,DEQPOB AOBGXT,ZJSRCA'}

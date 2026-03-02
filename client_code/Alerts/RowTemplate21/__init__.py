@@ -17,7 +17,8 @@ class RowTemplate21(RowTemplate21Template):
     def btn_DeleteRow_click(self, **event_args):
         """This method is called when the button is clicked"""
         items = list(self.parent.items)
-        print(items[list(self.parent.items).index(self.item)])
-        #del items[list(self.parent.items).index(self.item)]
-        #self.parent.items = items
-
+        jobcard = items[list(self.parent.items).index(self.item)]['jobcard']
+        createdat= items[list(self.parent.items).index(self.item)]['created_at']
+        anvil.server.call("updateNotifications", jobcard, createdat, "InvoiceAlerts")
+        del items[list(self.parent.items).index(self.item)]
+        self.parent.items = items

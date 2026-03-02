@@ -11,7 +11,7 @@ components:
     type: Button
   - components:
     - name: repeating_panel_1
-      properties: {item_template: FAQ.RowTemplate21}
+      properties: {item_template: Alerts.RowTemplate21}
       type: RepeatingPanel
     layout_properties: {full_width_row: false, grid_position: 'AKAKUY,NXYLBT'}
     name: data_grid_1
@@ -20,7 +20,8 @@ components:
       - {data_key: jobcard, expand: true, id: JKSDUP, title: JobCard Ref}
       - {data_key: message, expand: true, id: VJQQOR, title: Message}
       - {data_key: created_at, expand: true, id: OJLQEN, title: Created At}
-      - {data_key: active, expand: true, id: EAFWMU, title: Pending}
+      - {data_key: active, expand: false, id: EAFWMU, title: Pending, width: 223}
+      - {data_key: column_1, id: KNKAXC, title: '', width: '90'}
       foreground: theme:Black
       role: null
     type: DataGrid

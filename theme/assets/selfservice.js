@@ -577,6 +577,7 @@
                 instruction: card.Instruction,
                 workDone:    card.workDone || '',
                 status:      card.status === 'Checked In'  ? 'Checked-In'  :
+                    card.status === 'Create Quote' ? 'Create Quote' :
                     card.status === 'In Service'  ? 'In-Service'  :
                     card.status
             }));
@@ -724,6 +725,7 @@
         <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:2rem; flex-wrap:wrap;">
             <div style="display:flex; gap:1rem;">
                 <button class="btn-status ${state.currentStatusFilter === 'Checked-In' ? 'active-filter' : ''}" onclick="filterByStatus('Checked-In')">Checked-In</button>
+                <button class="btn-status ${state.currentStatusFilter === 'Create Quote' ? 'active-filter' : ''}" onclick="filterByStatus('Create Quote')">Create Quote</button>
                 <button class="btn-status ${state.currentStatusFilter === 'In-Service' ? 'active-filter' : ''}" onclick="filterByStatus('In-Service')">In-Service</button>
             </div>
             
@@ -744,7 +746,7 @@
                             <td data-label="Technician"><strong>${sanitizeHTML(s.tech)}</strong></td>
                             <td data-label="JobCard Ref" style="color:#facc15; font-weight:bold;">${sanitizeHTML(s.jobcardref)}</td>
                             <td data-label="Instruction">${sanitizeHTML(s.instruction)}</td>
-                            <td data-label="Status"><span class="status-badge ${s.status === 'In-Service' ? 'status-in-service' : s.status === 'Completed' ? 'status-completed' : 'status-checked-in'}">${s.status}</span></td>
+                            <td data-label="Status"><span class="status-badge ${s.status === 'In-Service' ? 'status-in-service' : s.status === 'Create Quote' ? 'status-create-quote' : s.status === 'Completed' ? 'status-completed' : 'status-checked-in'}">${s.status}</span></td>
                             <td data-label="Action">
                                 ${s.status === 'Completed' ? '✅ Finished' : s.status === 'In-Service' ? `
                                     <button onclick="openWorkDone('${sanitizeHTML(s.jobcardref)}')" class="btn-work-done">Work Done</button>
@@ -812,7 +814,7 @@
                     <td data-label="Technician"><strong>${sanitizeHTML(s.tech)}</strong></td>
                     <td data-label="JobCard Ref" style="color:#facc15; font-weight:bold;">${sanitizeHTML(s.jobcardref)}</td>
                     <td data-label="Instruction">${sanitizeHTML(s.instruction)}</td>
-                    <td data-label="Status"><span class="status-badge ${s.status === 'In-Service' ? 'status-in-service' : s.status === 'Completed' ? 'status-completed' : 'status-checked-in'}">${s.status}</span></td>
+                    <td data-label="Status"><span class="status-badge ${s.status === 'In-Service' ? 'status-in-service' : s.status === 'Create Quote' ? 'status-create-quote' : s.status === 'Completed' ? 'status-completed' : 'status-checked-in'}">${s.status}</span></td>
                     <td data-label="Action">
                         ${s.status === 'Completed' ? '✅ Finished' : s.status === 'In-Service' ? `
                             <button onclick="openWorkDone('${sanitizeHTML(s.jobcardref)}')" class="btn-work-done">Work Done</button>
@@ -944,6 +946,8 @@
     function renderPartsRequestTab() {
         const totalQuantity = state.cart.reduce((sum, item) => sum + item.quantity, 0);
         const shouldShowCollapse = state.collapseOpen || !!state.signatureData;
+        const activeService = state.activeServices.find(s => s.jobcardref === state.activeReg);
+        const shouldShowClearDetails = !state.cameFromWorkDone && activeService?.status !== 'Create Quote';
 
         return `
         <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); border-radius:1rem; margin-bottom:2rem; border:2px solid rgba(59, 130, 246, 0.2); overflow:hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
@@ -1070,7 +1074,7 @@
         </div>
         
         <div style="display:flex; gap:1rem; justify-content:flex-end; margin-bottom:2rem;">
-            ${!state.cameFromWorkDone ? `
+            ${shouldShowClearDetails ? `
             <button 
                 onclick="clearPartsDetails()" 
                 style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:1.2rem 2.5rem; border-radius:0.8rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease;">

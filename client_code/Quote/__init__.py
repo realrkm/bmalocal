@@ -19,9 +19,6 @@ class Quote(QuoteTemplate):
 
         # Any code you write here will run before the form opens.
         anvil.js.call('replaceBanner')
-        
-        set_default_error_handling(self.handle_server_errors) #Set global server error handler
-            
         self.cmbJobCardRef.items =  ModGetData.getJobCardRef(valueID)
         # ✅ Select the first item if available
         if self.cmbJobCardRef.items:
@@ -29,16 +26,46 @@ class Quote(QuoteTemplate):
             # ✅ Manually call the change handler
             self.cmbJobCardRef_change()
 
+        set_default_error_handling(self.handle_server_errors) #Set global server error handler
 
     def handle_server_errors(self, exc):
         if isinstance(exc, anvil.server.UplinkDisconnectedError):
-            anvil.alert("Connection to server lost. Please check your internet or try again later.", title="Disconnected", large=False)
+            self._show_notification(
+                message="Connection to server lost. Please check your internet or try again later.",
+                title="Disconnected",
+                style="danger"
+            )
         elif isinstance(exc, anvil.server.SessionExpiredError):
-            anvil.js.window.location.reload() #Reload the app on session timeout
+            anvil.js.window.location.reload()  # Reload the app on session timeout
         elif isinstance(exc, anvil.server.AppOfflineError):
-            anvil.alert("Please connect to the internet to proceed.", title="No Internet", large=False)   
+            self._show_notification(
+                message="Please connect to the internet to proceed.",
+                title="No Internet",
+                style="warning"
+            )
         else:
-            anvil.alert(f"Unexpected error: {exc}", title="Error", large=False)       
+            self._show_notification(
+                message=f"Unexpected error: {exc}",
+                title="Error",
+                style="danger"
+            )
+
+    def _show_notification(self, message, title="", style="danger", timeout=3):
+        """
+        Displays an Anvil Notification that auto-dismisses after `timeout` seconds.
+    
+        :param message: The notification body text.
+        :param title:   The notification title.
+        :param style:   'danger' | 'warning' | 'success' | 'info'
+        :param timeout: Seconds before the notification disappears (default: 3).
+        """
+        notif = Notification(
+            message,
+            title=title,
+            style=style,      # controls the colour — danger=red, warning=orange, success=green, info=blue
+            timeout=timeout,  # auto-dismisses after this many seconds
+        )
+        notif.show()  
             
     def refresh(self, **event_args):
         self.set_event_handler("x-refresh", self.refresh)

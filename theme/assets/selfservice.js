@@ -77,6 +77,56 @@
         'Transmission': { icon: '⚡', color: 'bg-purple' }
     };
 
+    // ── Toast helper (add this once at the top of your IIFE) ─────────────────────
+    function showToast(message, type = 'error', duration = 4000) {
+        // Remove any existing toast
+        const existing = document.getElementById('toast-notification');
+        if (existing) existing.remove();
+
+        const colors = {
+            error:   { bg: '#d32f2f', icon: '✕' },
+            success: { bg: '#388e3c', icon: '✓' },
+            warning: { bg: '#f57c00', icon: '⚠' },
+            info:    { bg: '#1976d2', icon: 'ℹ' },
+        };
+
+        const { bg, icon } = colors[type] || colors.info;
+
+        const toast = document.createElement('div');
+        toast.id = 'toast-notification';
+        toast.style.cssText = `
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: ${bg};
+        color: white;
+        padding: 12px 20px;
+        border-radius: 4px;
+        font-size: 14px;
+        font-family: Roboto, Arial, sans-serif;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+        z-index: 9999;
+        max-width: 400px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    `;
+        toast.innerHTML = `<span style="font-weight:bold;">${icon}</span><span>${message}</span>`;
+
+        document.body.appendChild(toast);
+
+        // Fade in
+        requestAnimationFrame(() => { toast.style.opacity = '1'; });
+
+        // Fade out and remove after duration
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 300);
+        }, duration);
+    }
     // ===========================
     // UTILITY FUNCTIONS
     // ===========================
@@ -516,31 +566,26 @@
     async function loadActiveServices() {
         try {
             const jobcardsData = await anvil.call(mainContent, 'get_technician_jobcards_by_status');
-
             if (!Array.isArray(jobcardsData)) {
                 throw new Error('Invalid data format received');
             }
-
             state.activeServices = jobcardsData.map(card => ({
-                no: card.id,
-                date: card.ReceivedDate,
-                tech: card.Technician,
-                jobcardref: card.JobCardRef,
+                no:          card.id,
+                date:        card.ReceivedDate,
+                tech:        card.Technician,
+                jobcardref:  card.JobCardRef,
                 instruction: card.Instruction,
-                workDone: card.workDone || '',
-                status: card.status === 'Checked In' ? 'Checked-In' : 
-                    card.status === 'In Service' ? 'In-Service' : 
+                workDone:    card.workDone || '',
+                status:      card.status === 'Checked In'  ? 'Checked-In'  :
+                    card.status === 'In Service'  ? 'In-Service'  :
                     card.status
             }));
         } catch (error) {
             console.error('Error loading active services:', error);
             state.activeServices = [];
-
             if (state.currentView === 'home') {
-                await customAlert(
-                    'Failed to load services. Please refresh the page.',
-                    'Connection Error'
-                );
+                // ── Replaced customAlert with toast ──────────────────────────────
+                showToast('Failed to load services. Please refresh the page.', 'error');
             }
         }
     }

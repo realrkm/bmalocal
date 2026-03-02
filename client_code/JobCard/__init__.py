@@ -17,11 +17,7 @@ class JobCard(JobCardTemplate):
         self.init_components(**properties)
 
         # Any code you write here will run before the form opens.
-        anvil.js.call('replaceBanner')
-        
-        set_default_error_handling(self.handle_server_errors) #Set global server error handler
-
-        #Set focus into technician
+        anvil.js.call('replaceBanner')#Set focus into technician
         self.search_keyword_1.text_box_search.focus()
 
         # Attach the event that fetches technicians
@@ -31,17 +27,46 @@ class JobCard(JobCardTemplate):
         # Attach the event that fetches checked in by details
         self.search_keyword_4.set_event_handler('x-get-search-keys', self.getStaffDetails)
         self.search_keyword_4.text_box_search.placeholder = "Checked In By *"
-        
-        
+        set_default_error_handling(self.handle_server_errors) #Set global server error handler
+
     def handle_server_errors(self, exc):
         if isinstance(exc, anvil.server.UplinkDisconnectedError):
-            anvil.alert("Connection to server lost. Please check your internet or try again later.", title="Disconnected", large=False)
+            self._show_notification(
+                message="Connection to server lost. Please check your internet or try again later.",
+                title="Disconnected",
+                style="danger"
+            )
         elif isinstance(exc, anvil.server.SessionExpiredError):
-            anvil.js.window.location.reload() #Reload the app on session timeout
+            anvil.js.window.location.reload()  # Reload the app on session timeout
         elif isinstance(exc, anvil.server.AppOfflineError):
-            anvil.alert("Please connect to the internet to proceed.", title="No Internet", large=False)   
+            self._show_notification(
+                message="Please connect to the internet to proceed.",
+                title="No Internet",
+                style="warning"
+            )
         else:
-            anvil.alert(f"Unexpected error: {exc}", title="Error", large=False)
+            self._show_notification(
+                message=f"Unexpected error: {exc}",
+                title="Error",
+                style="danger"
+            )
+
+    def _show_notification(self, message, title="", style="danger", timeout=3):
+        """
+        Displays an Anvil Notification that auto-dismisses after `timeout` seconds.
+    
+        :param message: The notification body text.
+        :param title:   The notification title.
+        :param style:   'danger' | 'warning' | 'success' | 'info'
+        :param timeout: Seconds before the notification disappears (default: 3).
+        """
+        notif = Notification(
+            message,
+            title=title,
+            style=style,      # controls the colour — danger=red, warning=orange, success=green, info=blue
+            timeout=timeout,  # auto-dismisses after this many seconds
+        )
+        notif.show()
 
 
     def getTechnicianName(self,  **event_args):

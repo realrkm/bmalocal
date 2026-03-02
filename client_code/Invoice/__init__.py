@@ -17,9 +17,6 @@ class Invoice(InvoiceTemplate):
 
         # Any code you write here will run before the form opens.
         anvil.js.call('replaceBanner')
-        
-        set_default_error_handling(self.handle_server_errors) #Set global server error handler
-        
         self.cmbJobCardRef.items =  ModGetData.getJobCardRef(valueID)
         
         # ✅ Select the first item if available

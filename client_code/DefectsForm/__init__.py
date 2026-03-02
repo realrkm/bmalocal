@@ -22,8 +22,7 @@ class DefectsForm(DefectsFormTemplate):
 
         # Any code you write here will run before the form opens.
         anvil.js.call('replaceBanner')
-        set_default_error_handling(self.handle_server_errors)  # Set global server error handler
-        
+               
         self.populateForm(defects_data)
         # Store defects_data for later use
         self.defects_data = defects_data
@@ -31,21 +30,50 @@ class DefectsForm(DefectsFormTemplate):
         items = anvil.server.call("getStaffAndTechnicianNames")
         # Convert to a list of (display_text, value) tuples
         self.drop_down_staff.items = items
-         
-    def refresh(self, **event_args):
-        self.set_event_handler("x-refresh", self.refresh)
-        
+        set_default_error_handling(self.handle_server_errors) #Set global server error handler
+
     def handle_server_errors(self, exc):
         if isinstance(exc, anvil.server.UplinkDisconnectedError):
-            anvil.alert("Connection to server lost. Please check your internet or try again later.",title="Disconnected",large=False)
+            self._show_notification(
+                message="Connection to server lost. Please check your internet or try again later.",
+                title="Disconnected",
+                style="danger"
+            )
         elif isinstance(exc, anvil.server.SessionExpiredError):
             anvil.js.window.location.reload()  # Reload the app on session timeout
         elif isinstance(exc, anvil.server.AppOfflineError):
-            anvil.alert("Please connect to the internet to proceed.",title="No Internet",large=False)
-        elif isinstance(exc, TypeError) and "NoneType" in str(exc):
-            anvil.alert("The system attempted to read data that doesn't exist. Please refresh the page or populate required data.", title="Data Error", large=False)
+            self._show_notification(
+                message="Please connect to the internet to proceed.",
+                title="No Internet",
+                style="warning"
+            )
         else:
-            anvil.alert(f"Unexpected error: {exc}", title="Error", large=False)
+            self._show_notification(
+                message=f"Unexpected error: {exc}",
+                title="Error",
+                style="danger"
+            )
+
+    def _show_notification(self, message, title="", style="danger", timeout=3):
+        """
+        Displays an Anvil Notification that auto-dismisses after `timeout` seconds.
+    
+        :param message: The notification body text.
+        :param title:   The notification title.
+        :param style:   'danger' | 'warning' | 'success' | 'info'
+        :param timeout: Seconds before the notification disappears (default: 3).
+        """
+        notif = Notification(
+            message,
+            title=title,
+            style=style,      # controls the colour — danger=red, warning=orange, success=green, info=blue
+            timeout=timeout,  # auto-dismisses after this many seconds
+        )
+        notif.show()
+        
+    def refresh(self, **event_args):
+        self.set_event_handler("x-refresh", self.refresh)
+        
 
     def populateForm(self, defects_data, **event_args):
         """This method is called when an item is selected""" 

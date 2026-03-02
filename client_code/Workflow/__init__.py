@@ -15,7 +15,7 @@ class Workflow(WorkflowTemplate):
 
         # Any code you write here will run before the form opens.
         anvil.js.call('replaceBanner')
-        set_default_error_handling(self.handle_server_errors) #Set global server error handler
+        
         self.load_dashboard_data()
         self.total_label.text = "Total Vehicles: 0"
         self.permissions = permissions
@@ -27,6 +27,47 @@ class Workflow(WorkflowTemplate):
             self.btn_TransitionToComplete.visible=True
         else:
             self.btn_TransitionToComplete.visible=False
+            
+        set_default_error_handling(self.handle_server_errors) #Set global server error handler
+
+    def handle_server_errors(self, exc):
+        if isinstance(exc, anvil.server.UplinkDisconnectedError):
+            self._show_notification(
+                message="Connection to server lost. Please check your internet or try again later.",
+                title="Disconnected",
+                style="danger"
+            )
+        elif isinstance(exc, anvil.server.SessionExpiredError):
+            anvil.js.window.location.reload()  # Reload the app on session timeout
+        elif isinstance(exc, anvil.server.AppOfflineError):
+            self._show_notification(
+                message="Please connect to the internet to proceed.",
+                title="No Internet",
+                style="warning"
+            )
+        else:
+            self._show_notification(
+                message=f"Unexpected error: {exc}",
+                title="Error",
+                style="danger"
+            )
+
+    def _show_notification(self, message, title="", style="danger", timeout=3):
+        """
+        Displays an Anvil Notification that auto-dismisses after `timeout` seconds.
+    
+        :param message: The notification body text.
+        :param title:   The notification title.
+        :param style:   'danger' | 'warning' | 'success' | 'info'
+        :param timeout: Seconds before the notification disappears (default: 3).
+        """
+        notif = Notification(
+            message,
+            title=title,
+            style=style,      # controls the colour — danger=red, warning=orange, success=green, info=blue
+            timeout=timeout,  # auto-dismisses after this many seconds
+        )
+        notif.show()
 
     def apply_permissions(self):
         """Apply only WORKFLOW-related permissions and load the first available subform."""
@@ -83,16 +124,6 @@ class Workflow(WorkflowTemplate):
         items = list(self.cmbStatus.items or [])
         items.append(new_item)
         self.cmbStatus.items = items
-
-    def handle_server_errors(self, exc):
-        if isinstance(exc, anvil.server.UplinkDisconnectedError):
-            anvil.alert("Connection to server lost. Please check your internet or try again later.", title="Disconnected", large=False)
-        elif isinstance(exc, anvil.server.SessionExpiredError):
-            anvil.js.window.location.reload() #Reload the app on session timeout
-        elif isinstance(exc, anvil.server.AppOfflineError):
-            anvil.alert("Please connect to the internet to proceed.", title="No Internet", large=False)   
-        else:
-            anvil.alert(f"Unexpected error: {exc}", title="Error", large=False)
 
     def refresh(self, **event_args):
         self.set_event_handler("x-refresh", self.refresh)

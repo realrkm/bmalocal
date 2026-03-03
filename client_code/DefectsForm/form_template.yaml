@@ -55,61 +55,124 @@ components:
     name: txtClientInstructions
     properties: {auto_expand: true, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: ''}
     type: TextArea
-  - layout_properties: {grid_position: 'ROBDYJ,LCEFEZ'}
-    name: latel_TechNotes
-    properties:
-      align: center
-      background: theme:Gray 300
-      bold: false
-      font: Mozilla Headline
-      font_size: 22
-      foreground: theme:Gray 800
-      text: |
-        Tech Notes
-    type: Label
+  - components:
+    - layout_properties: {grid_position: 'CBORDO,HBCGLJ FHCLHD,XNMWLR'}
+      name: spacer_13
+      properties: {height: 32}
+      type: Spacer
+    - layout_properties: {grid_position: 'CBORDO,HBCGLJ FHCLHD,PMDFAO'}
+      name: latel_TechNotes
+      properties:
+        align: center
+        background: theme:Gray 300
+        bold: false
+        font: Mozilla Headline
+        font_size: 22
+        foreground: theme:Gray 800
+        text: |
+          Technician  Notes
+      type: Label
+    - layout_properties: {grid_position: 'CBORDO,HBCGLJ FHCLHD,FMUGOB LGQNVV,HJUWUZ'}
+      name: spacer_1
+      properties: {height: '0.5'}
+      type: Spacer
+    - event_bindings: {click: btn_DownloadTechNotes_click}
+      layout_properties: {grid_position: 'CBORDO,HBCGLJ FHCLHD,FMUGOB BMNKWN,FYPHKQ'}
+      name: btn_DownloadTechNotes
+      properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:download', role: null, text: '', tooltip: Download Tech Notes}
+      type: Button
+    - layout_properties: {grid_position: 'CBORDO,HBCGLJ FHCLHD,FMUGOB MEIXBH,BZAWXL'}
+      name: spacer_7
+      properties: {height: '0.5'}
+      type: Spacer
+    - layout_properties: {grid_position: 'CBORDO,HBCGLJ FHCLHD,FBIEQA'}
+      name: spacer_10
+      properties: {height: 32}
+      type: Spacer
+    layout_properties: {grid_position: 'SCRUGR,REGRKK'}
+    name: column_panel_2
+    properties: {background: '#E0E0E0', col_widths: '{"PMDFAO":75,"FMUGOB":8,"FBIEQA":2,"XNMWLR":10}', wrap_on: never}
+    type: ColumnPanel
   - layout_properties: {grid_position: 'SCBITU,FOZOKD'}
     name: txtTechNotes
     properties: {auto_expand: true, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: ''}
     type: TextArea
-  - event_bindings: {click: btn_DownloadTechNotes_click}
-    layout_properties: {grid_position: 'SCBITU,XZLOMU'}
-    name: btn_DownloadTechNotes
-    properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: null, text: DOWNLOAD TECHnician NOTES}
-    type: Button
-  - layout_properties: {grid_position: 'ZRXSFU,NEMGHF'}
-    name: label_title_1
-    properties:
-      align: center
-      background: theme:Gray 300
-      bold: false
-      font: Mozilla Headline
-      font_size: 22
-      foreground: theme:Gray 800
-      text: |
-        List of Defects
-    type: Label
+  - components:
+    - layout_properties: {grid_position: 'KEZBVL,WLKINJ'}
+      name: spacer_14
+      properties: {height: 32}
+      type: Spacer
+    - layout_properties: {grid_position: 'KEZBVL,GLOGFG'}
+      name: label_title_1
+      properties:
+        align: center
+        background: theme:Gray 300
+        bold: false
+        font: Mozilla Headline
+        font_size: 22
+        foreground: theme:Gray 800
+        text: |
+          List of Defects
+      type: Label
+    - layout_properties: {grid_position: 'KEZBVL,FBLGAA JDPQQE,NSVGIQ'}
+      name: spacer_2
+      properties: {height: '0.5'}
+      type: Spacer
+    - event_bindings: {click: btn_DownloadDefectsList_click}
+      layout_properties: {grid_position: 'KEZBVL,FBLGAA UDIDZD,HQJUUG'}
+      name: btn_DownloadDefectsList
+      properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:download', text: '', tooltip: Download Defects List}
+      type: Button
+    - layout_properties: {grid_position: 'KEZBVL,FBLGAA VYESNQ,PJZVPT'}
+      name: spacer_8
+      properties: {height: '0.5'}
+      type: Spacer
+    - layout_properties: {grid_position: 'KEZBVL,UPLPWW'}
+      name: spacer_11
+      properties: {height: 32}
+      type: Spacer
+    layout_properties: {grid_position: 'CVZCHQ,RSJTFH'}
+    name: column_panel_3
+    properties: {background: '#E0E0E0', col_widths: '{"GLOGFG":75,"FBLGAA":8,"UPLPWW":2,"WLKINJ":10}', wrap_on: never}
+    type: ColumnPanel
   - layout_properties: {grid_position: 'HFIRII,VGHXWP'}
     name: txtDefectsList
     properties: {auto_expand: true, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: 'Enter List Of Defects '}
     type: TextArea
-  - event_bindings: {click: btn_DownloadDefectsList_click}
-    layout_properties: {grid_position: 'HFIRII,VVLCBD'}
-    name: btn_DownloadDefectsList
-    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: DOWNLOAD DEFECTS LIST}
-    type: Button
-  - layout_properties: {grid_position: 'VUUMCK,ZQPEKO'}
-    name: label_title_4
-    properties: {align: center, background: 'theme:Gray 300', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:Gray 800', text: Priced Defects For Quotation}
-    type: Label
+  - components:
+    - layout_properties: {grid_position: 'WKQJEW,ZNUZYY'}
+      name: spacer_15
+      properties: {height: 32}
+      type: Spacer
+    - layout_properties: {grid_position: 'WKQJEW,QIZAWR'}
+      name: label_title_4
+      properties: {align: center, background: 'theme:Gray 300', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:Gray 800', text: Priced Defects For Quotation}
+      type: Label
+    - layout_properties: {grid_position: 'WKQJEW,CLLVLO HVBARQ,EJZPEJ'}
+      name: spacer_6
+      properties: {height: '0.5'}
+      type: Spacer
+    - event_bindings: {click: btn_DownloadPricedDefectsList_click}
+      layout_properties: {grid_position: 'WKQJEW,CLLVLO MBOATE,JFJVKZ'}
+      name: btn_DownloadPricedDefectsList
+      properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:download', text: '', tooltip: 'Download Priced Defects '}
+      type: Button
+    - layout_properties: {grid_position: 'WKQJEW,CLLVLO QJBFLB,EUJWAU'}
+      name: spacer_9
+      properties: {height: '0.5'}
+      type: Spacer
+    - layout_properties: {grid_position: 'WKQJEW,SQYXDR'}
+      name: spacer_12
+      properties: {height: 32}
+      type: Spacer
+    layout_properties: {grid_position: 'NRKGDK,TAHEAO'}
+    name: column_panel_4
+    properties: {background: '#E0E0E0', col_widths: '{"QIZAWR":75,"CLLVLO":8,"SQYXDR":2,"ZNUZYY":10}', wrap_on: never}
+    type: ColumnPanel
   - layout_properties: {grid_position: 'BVYDWC,EJPTOZ'}
     name: txtPricedDefectsList
     properties: {auto_expand: true, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Priced Defects For Quotation}
     type: TextArea
-  - event_bindings: {click: btn_DownloadPricedDefectsList_click}
-    layout_properties: {grid_position: 'BVYDWC,LSELXG'}
-    name: btn_DownloadPricedDefectsList
-    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: DOWNLOAD PRICED DEFECTS LIST}
-    type: Button
   - event_bindings: {click: btn_IncompleteDefectsInfo_click}
     layout_properties: {grid_position: 'HAHPYI,QSPIXO'}
     name: btn_IncompleteDefectsInfo
@@ -246,7 +309,7 @@ components:
     type: ColumnPanel
   layout_properties: {grid_position: 'HEOFNJ,KNGYLD', row_background: 'theme:White'}
   name: card_1
-  properties: {border: solid, col_widths: '{"FOZOKD":45,"XZLOMU":15,"VGHXWP":45,"VVLCBD":15,"EJPTOZ":45,"LSELXG":15}', role: card}
+  properties: {border: solid, col_widths: '{"FOZOKD":45,"VGHXWP":45,"EJPTOZ":45}', role: card}
   type: ColumnPanel
 container:
   properties: {background: ''}

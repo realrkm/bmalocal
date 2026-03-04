@@ -20,10 +20,10 @@ class Quote(QuoteTemplate):
 
         # Any code you write here will run before the form opens.
         anvil.js.call('replaceBanner')
+        #Find existance of duplicate quotation entries
         entries = anvil.server.call("getDuplicateQuotationEntries", valueID)
-        alert(entries)
         if entries > 1:
-            alert(content=DuplicateEntries(valueID), buttons=[], dismissible=False, large=True)
+            alert(content=DuplicateEntries(valueID), dismissible=False, large=True)
         else:
             self.cmbJobCardRef.items =  ModGetData.getJobCardRef(valueID)
             alert(self.cmbJobCardRef.items)

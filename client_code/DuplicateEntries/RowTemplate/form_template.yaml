@@ -1,0 +1,7 @@
+components:
+- layout_properties: {column: KPULMH}
+  name: button_1
+  properties: {background: '#0056D6', foreground: 'theme:White', icon: 'fa:trash-o', text: ''}
+  type: Button
+container: {type: DataRowPanel}
+is_package: true

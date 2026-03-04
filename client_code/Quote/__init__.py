@@ -20,6 +20,7 @@ class Quote(QuoteTemplate):
         # Any code you write here will run before the form opens.
         anvil.js.call('replaceBanner')
         self.cmbJobCardRef.items =  ModGetData.getJobCardRef(valueID)
+        alert(self.cmbJobCardRef.items)
         # ✅ Select the first item if available
         if self.cmbJobCardRef.items:
             self.cmbJobCardRef.selected_value = self.cmbJobCardRef.items[0][1]

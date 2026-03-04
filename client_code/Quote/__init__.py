@@ -9,6 +9,7 @@ import anvil.media
 import anvil.js
 from .. import ModGetData
 from ..EditQuote import EditQuote
+from ..DuplicateEntries import DuplicateEntries
 from datetime import date
 import time
 
@@ -19,13 +20,18 @@ class Quote(QuoteTemplate):
 
         # Any code you write here will run before the form opens.
         anvil.js.call('replaceBanner')
-        self.cmbJobCardRef.items =  ModGetData.getJobCardRef(valueID)
-        alert(self.cmbJobCardRef.items)
-        # ✅ Select the first item if available
-        if self.cmbJobCardRef.items:
-            self.cmbJobCardRef.selected_value = self.cmbJobCardRef.items[0][1]
-            # ✅ Manually call the change handler
-            self.cmbJobCardRef_change()
+        entries = anvil.server.call("getDuplicateQuotationEntries", valueID)
+        alert(entries)
+        if entries > 1:
+            alert(content=DuplicateEntries(valueID), buttons=[], dismissible=False, large=True)
+        else:
+            self.cmbJobCardRef.items =  ModGetData.getJobCardRef(valueID)
+            alert(self.cmbJobCardRef.items)
+            # ✅ Select the first item if available
+            if self.cmbJobCardRef.items:
+                self.cmbJobCardRef.selected_value = self.cmbJobCardRef.items[0][1]
+                # ✅ Manually call the change handler
+                self.cmbJobCardRef_change()
 
         set_default_error_handling(self.handle_server_errors) #Set global server error handler
 

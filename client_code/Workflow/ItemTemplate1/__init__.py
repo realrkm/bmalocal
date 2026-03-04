@@ -3,6 +3,7 @@ from anvil import *
 import anvil.server
 from ...TechnicianDefectsAndRequestedParts import TechnicianDefectsAndRequestedParts
 from ...Quote import Quote
+from ...DuplicateEntries import DuplicateEntries
 from ...ConfirmQuote import ConfirmQuote
 from ...InServiceForm import InServiceForm
 from ...VerifyTask import VerifyTask
@@ -90,7 +91,17 @@ class ItemTemplate1(ItemTemplate1Template):
 
         form_class = forms.get(action_text)
         if form_class:
-            alert(content=form_class(record_id), buttons=[], dismissible=False, large=True)
+            if action_text =="CREATE QUOTE":
+                #Find existance of duplicate quotation entries
+                entries = anvil.server.call("getDuplicateQuotationEntries", record_id)
+                if entries > 1:
+                    alert(content=DuplicateEntries(record_id), dismissible=False, large=True)
+                    # Inside the alert form's button click handler
+                    self.raise_event('x-close-alert', value = True)
+                else:
+                    alert(content=form_class(record_id), buttons=[], dismissible=False, large=True)
+            else:
+                alert(content=form_class(record_id), buttons=[], dismissible=False, large=True)
 
 
     # ---- LEFT ----

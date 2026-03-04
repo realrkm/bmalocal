@@ -9,7 +9,6 @@ import anvil.media
 import anvil.js
 from .. import ModGetData
 from ..EditQuote import EditQuote
-from ..DuplicateEntries import DuplicateEntries
 from datetime import date
 import time
 
@@ -20,18 +19,13 @@ class Quote(QuoteTemplate):
 
         # Any code you write here will run before the form opens.
         anvil.js.call('replaceBanner')
-        #Find existance of duplicate quotation entries
-        entries = anvil.server.call("getDuplicateQuotationEntries", valueID)
-        if entries > 1:
-            alert(content=DuplicateEntries(valueID), dismissible=False, large=True)
-        else:
-            self.cmbJobCardRef.items =  ModGetData.getJobCardRef(valueID)
-            alert(self.cmbJobCardRef.items)
-            # ✅ Select the first item if available
-            if self.cmbJobCardRef.items:
-                self.cmbJobCardRef.selected_value = self.cmbJobCardRef.items[0][1]
-                # ✅ Manually call the change handler
-                self.cmbJobCardRef_change()
+        
+        self.cmbJobCardRef.items =  ModGetData.getJobCardRef(valueID)
+        # ✅ Select the first item if available
+        if self.cmbJobCardRef.items:
+            self.cmbJobCardRef.selected_value = self.cmbJobCardRef.items[0][1]
+            # ✅ Manually call the change handler
+            self.cmbJobCardRef_change()
 
         set_default_error_handling(self.handle_server_errors) #Set global server error handler
 
@@ -246,8 +240,5 @@ class Quote(QuoteTemplate):
         """This method is called when the button is clicked"""
         self.remove_from_parent()
 
-    def text_box_searchPartNo_pressed_enter(self, **event_args):
-        """This method is called when the user presses Enter in this text box"""
-        pass
-
+    
    

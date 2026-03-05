@@ -5,7 +5,6 @@ import anvil.tables.query as q
 from anvil.tables import app_tables
 from anvil import *
 import anvil.js
-import threading
 
 # ************************************************* Error Handling Section *******************************
 
@@ -26,13 +25,13 @@ def _show_notification(message, title="", style="danger", timeout=3):
     )
     notif.show()
 
+    # Clear the lock after timeout using JavaScript's setTimeout
+    # timeout is in seconds, setTimeout expects milliseconds
     def clear_notification():
-        import time
-        time.sleep(timeout)
         global _active_notification
         _active_notification = None
 
-    threading.Thread(target=clear_notification, daemon=True).start()
+    anvil.js.window.setTimeout(clear_notification, timeout * 1000)
 
 
 def handle_server_errors(exc):

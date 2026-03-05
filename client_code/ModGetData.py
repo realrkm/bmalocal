@@ -4,6 +4,58 @@ import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
 from anvil import *
+import anvil.js
+import threading
+
+# ************************************************* Error Handling Section *******************************
+
+_active_notification = None  # Module-level lock — shared across all forms
+
+def _show_notification(message, title="", style="danger", timeout=3):
+    global _active_notification
+    if _active_notification == title:
+        return  # Already showing this notification, skip
+
+    _active_notification = title
+
+    notif = Notification(
+        message,
+        title=title,
+        style=style,
+        timeout=timeout,
+    )
+    notif.show()
+
+    def clear_notification():
+        import time
+        time.sleep(timeout)
+        global _active_notification
+        _active_notification = None
+
+    threading.Thread(target=clear_notification, daemon=True).start()
+
+
+def handle_server_errors(exc):
+    if isinstance(exc, anvil.server.UplinkDisconnectedError):
+        _show_notification(
+            message="Connection to server lost. Please check your internet or try again later.",
+            title="Disconnected",
+            style="danger"
+        )
+    elif isinstance(exc, anvil.server.SessionExpiredError):
+        anvil.js.window.location.reload()
+    elif isinstance(exc, anvil.server.AppOfflineError):
+        _show_notification(
+            message="Please connect to the internet to proceed.",
+            title="No Internet",
+            style="warning"
+        )
+    else:
+        _show_notification(
+            message=f"Unexpected error: {exc}",
+            title="Error",
+            style="danger"
+        )
 
 #************************************************* Client Details Section *******************************
 def getClientName(self):

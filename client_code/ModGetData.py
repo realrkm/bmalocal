@@ -8,52 +8,60 @@ import anvil.js
 
 # ************************************************* Error Handling Section *******************************
 
-_active_notification = None  # Module-level lock
+_notification_shown_at = {}  # title -> JS timestamp
 
-def _show_notification(message, title="", style="danger", timeout=3):
-    global _active_notification
+def _show_error(label, message, title="", timeout=5):
+    """
+    Displays an error message in a label and clears it after timeout seconds.
+    
+    :param label:   The Anvil Label component to display the message in.
+    :param message: The error message text.
+    :param title:   Optional title prefix shown before the message.
+    :param timeout: Seconds before the label is cleared (default: 5).
+    """
+    now = anvil.js.window.Date.now()
+    last_shown = _notification_shown_at.get(title, 0)
 
-    # If same notification is already active, do nothing
-    if _active_notification == title:
-        return
+    if (now - last_shown) < (timeout * 1000):
+        return  # Still within timeout window, skip
 
-    _active_notification = title
+    _notification_shown_at[title] = now
 
-    notif = Notification(
-        message,
-        title=title,
-        style=style,
-        timeout=timeout,
-    )
-    notif.show()
+    # Show message in label
+    label.text = f"{title}: {message}" if title else message
+    label.visible = True
 
-    # Use raw JS to clear the lock after timeout
-    anvil.js.call_js('setTimeout', anvil.js.window.Function(
-        "window._anvilNotifLock = null;"
-    ), timeout * 1000)
+    # Clear the label after timeout using JS setTimeout
+    def clear_label():
+        label.text = ""
+        label.visible = False
+        _notification_shown_at.pop(title, None)  # Reset the lock
+
+    anvil.js.window.setTimeout(clear_label, timeout * 1000)
 
 
-def handle_server_errors(exc):
+def handle_server_errors(exc, label):
     if isinstance(exc, anvil.server.UplinkDisconnectedError):
-        _show_notification(
+        _show_error(
+            label=label,
             message="Connection to server lost. Please check your internet or try again later.",
-            title="Disconnected",
-            style="danger"
+            title="Disconnected"
         )
     elif isinstance(exc, anvil.server.SessionExpiredError):
         anvil.js.window.location.reload()
     elif isinstance(exc, anvil.server.AppOfflineError):
-        _show_notification(
-            message="Please connect to the internet to proceed.",
-            title="No Internet",
-            style="warning"
+        _show_error(
+            label=label,
+            message="Please ensure the server is up and running.",
+            title="No Internet"
         )
     else:
-        _show_notification(
+        _show_error(
+            label=label,
             message=f"Unexpected error: {exc}",
-            title="Error",
-            style="danger"
+            title="Error"
         )
+        
 #************************************************* Client Details Section *******************************
 def getClientName(self):
     name_list = []

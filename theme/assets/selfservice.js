@@ -2859,8 +2859,8 @@ function setupListeners() {
         // Rest of your save logic...
         let partsAndQuantities = null;
         if (state.cart.length > 0) {
-            partsAndQuantities = state.cart.map((item, i) => 
-                `${i + 1}. ${item.name} - Qty: ${item.quantity}`
+            partsAndQuantities = state.cart.map((item) => 
+                `${item.name} - Qty: ${item.quantity}`
                                                ).join('\n');
         }
 

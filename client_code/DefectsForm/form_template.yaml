@@ -77,7 +77,7 @@ components:
       properties: {height: '0.5'}
       type: Spacer
     - event_bindings: {click: btn_DownloadTechNotes_click}
-      layout_properties: {grid_position: 'CBORDO,HBCGLJ FHCLHD,FMUGOB BMNKWN,FYPHKQ'}
+      layout_properties: {full_width_row: true, grid_position: 'CBORDO,HBCGLJ FHCLHD,FMUGOB BMNKWN,FYPHKQ'}
       name: btn_DownloadTechNotes
       properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:download', role: null, text: '', tooltip: Download Tech Notes}
       type: Button
@@ -91,7 +91,7 @@ components:
       type: Spacer
     layout_properties: {grid_position: 'SCRUGR,REGRKK'}
     name: column_panel_2
-    properties: {background: '#E0E0E0', col_widths: '{"PMDFAO":75,"FMUGOB":8,"FBIEQA":2,"XNMWLR":10}', wrap_on: never}
+    properties: {background: '#E0E0E0', col_widths: '{"PMDFAO":75,"FMUGOB":8,"FBIEQA":2,"XNMWLR":10}', wrap_on: mobile}
     type: ColumnPanel
   - layout_properties: {grid_position: 'SCBITU,FOZOKD'}
     name: txtTechNotes
@@ -119,7 +119,7 @@ components:
       properties: {height: '0.5'}
       type: Spacer
     - event_bindings: {click: btn_DownloadDefectsList_click}
-      layout_properties: {grid_position: 'KEZBVL,FBLGAA UDIDZD,HQJUUG'}
+      layout_properties: {full_width_row: true, grid_position: 'KEZBVL,FBLGAA UDIDZD,HQJUUG'}
       name: btn_DownloadDefectsList
       properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:download', text: '', tooltip: Download Defects List}
       type: Button
@@ -133,7 +133,7 @@ components:
       type: Spacer
     layout_properties: {grid_position: 'CVZCHQ,RSJTFH'}
     name: column_panel_3
-    properties: {background: '#E0E0E0', col_widths: '{"GLOGFG":75,"FBLGAA":8,"UPLPWW":2,"WLKINJ":10}', wrap_on: never}
+    properties: {background: '#E0E0E0', col_widths: '{"GLOGFG":75,"FBLGAA":8,"UPLPWW":2,"WLKINJ":10}', wrap_on: mobile}
     type: ColumnPanel
   - layout_properties: {grid_position: 'HFIRII,VGHXWP'}
     name: txtDefectsList
@@ -153,7 +153,7 @@ components:
       properties: {height: '0.5'}
       type: Spacer
     - event_bindings: {click: btn_DownloadPricedDefectsList_click}
-      layout_properties: {grid_position: 'WKQJEW,CLLVLO MBOATE,JFJVKZ'}
+      layout_properties: {full_width_row: true, grid_position: 'WKQJEW,CLLVLO MBOATE,JFJVKZ'}
       name: btn_DownloadPricedDefectsList
       properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:download', text: '', tooltip: 'Download Priced Defects '}
       type: Button
@@ -167,7 +167,7 @@ components:
       type: Spacer
     layout_properties: {grid_position: 'NRKGDK,TAHEAO'}
     name: column_panel_4
-    properties: {background: '#E0E0E0', col_widths: '{"QIZAWR":75,"CLLVLO":8,"SQYXDR":2,"ZNUZYY":10}', wrap_on: never}
+    properties: {background: '#E0E0E0', col_widths: '{"QIZAWR":75,"CLLVLO":8,"SQYXDR":2,"ZNUZYY":10}', wrap_on: mobile}
     type: ColumnPanel
   - layout_properties: {grid_position: 'BVYDWC,EJPTOZ'}
     name: txtPricedDefectsList

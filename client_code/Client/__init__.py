@@ -19,10 +19,6 @@ class Client(ClientTemplate):
         # Any code you write here will run before the form opens.
         anvil.js.call('replaceBanner')
 
-        self.error_label.visible = False  # Hidden by default
-
-        set_default_error_handling(lambda exc: ModGetData.handle_server_errors(exc, self.error_label))
-
     def refresh(self, **event_args):
         self.set_event_handler("x-refresh", self.refresh)
         

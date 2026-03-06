@@ -19,7 +19,6 @@ class Launcher(LauncherTemplate):
             anvil.users.login_with_form()
         user = anvil.users.get_user()
 
-
         if user:
             # Fetch permissions from server
             self.permissions = anvil.server.call("get_user_permissions", user["role_id"])

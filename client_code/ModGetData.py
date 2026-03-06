@@ -44,7 +44,7 @@ def handle_server_errors(exc, label):
     if isinstance(exc, anvil.server.UplinkDisconnectedError):
         _show_error(
             label=label,
-            message="Connection to server lost. Please check your internet or try again later.",
+            message="Connection via anvil uplink is lost. Please check your internet or try again later.",
             title="Disconnected"
         )
     elif isinstance(exc, anvil.server.SessionExpiredError):
@@ -53,7 +53,7 @@ def handle_server_errors(exc, label):
         _show_error(
             label=label,
             message="Please ensure the server is up and running.",
-            title="No Internet"
+            title="Lost connection"
         )
     else:
         _show_error(

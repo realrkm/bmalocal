@@ -586,7 +586,7 @@
             state.activeServices = [];
             if (state.currentView === 'home') {
                 // ── Replaced customAlert with toast ──────────────────────────────
-                showToast('Failed to load services. Please refresh the page.', 'error');
+                showToast('Failed to load services. Please ensure the server is running.', 'error');
             }
         }
     }
@@ -2960,7 +2960,7 @@ function setupListeners() {
         } catch (err) {
             console.error(err);
             await customAlert(
-                'Failed to save work done. Please try again.',
+                'Failed to save work done. Please ensure the server is up and running.',
                 '❌ Error'
             );
         }
@@ -3157,7 +3157,7 @@ function setupListeners() {
         } catch (err) {
             console.error(err);
             await customAlert(
-                'Failed to save work done. Please try again.',
+                'Failed to save work done. Please ensure the server is up and running.',
                 '❌ Error'
             );
         }

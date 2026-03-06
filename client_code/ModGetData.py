@@ -8,12 +8,14 @@ import anvil.js
 
 # ************************************************* Error Handling Section *******************************
 
-_active_notification = None  # Module-level lock — shared across all forms
+_active_notification = None  # Module-level lock
 
 def _show_notification(message, title="", style="danger", timeout=3):
     global _active_notification
+
+    # If same notification is already active, do nothing
     if _active_notification == title:
-        return  # Already showing this notification, skip
+        return
 
     _active_notification = title
 
@@ -25,13 +27,10 @@ def _show_notification(message, title="", style="danger", timeout=3):
     )
     notif.show()
 
-    # Clear the lock after timeout using JavaScript's setTimeout
-    # timeout is in seconds, setTimeout expects milliseconds
-    def clear_notification():
-        global _active_notification
-        _active_notification = None
-
-    anvil.js.window.setTimeout(clear_notification, timeout * 1000)
+    # Use raw JS to clear the lock after timeout
+    anvil.js.call_js('setTimeout', anvil.js.window.Function(
+        "window._anvilNotifLock = null;"
+    ), timeout * 1000)
 
 
 def handle_server_errors(exc):
@@ -55,7 +54,6 @@ def handle_server_errors(exc):
             title="Error",
             style="danger"
         )
-
 #************************************************* Client Details Section *******************************
 def getClientName(self):
     name_list = []

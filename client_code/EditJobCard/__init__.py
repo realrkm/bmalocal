@@ -149,18 +149,6 @@ class EditJobCard(EditJobCardTemplate):
         self.txt_Address.text = x["Address"]
         self.txt_Email.text = x["Email"]
 
-        # Resset car details
-        self.chkComp.checked = 0
-        self.chkTPO.checked = 0
-        self.txtRegNo.text = ""
-        self.txtMakeAndModel.text = ""
-        self.txtChassisNo.text = ""
-        self.txtEngineCC.text = ""
-        self.txtEngineNo.text = ""
-        self.txtEngineCode.text = ""
-        self.txtPaintCode.text = ""
-        self.chkAuto.checked = ""
-        self.chkManual.checked = ""
 
     def chkComp_change(self, **event_args):
         """This method is called when this checkbox is checked or unchecked"""

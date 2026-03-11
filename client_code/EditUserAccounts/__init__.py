@@ -43,15 +43,11 @@ class EditUserAccounts(EditUserAccountsTemplate):
             return
     
         # Call server
-        anvil.server.call(
-            "update_user",
-            email=oldemail,
-            new_email=email,
-            enabled=active,
-            role_id=role,
-        )
-    
-        alert("Update is successful", title="Success", large=False)
+        try:
+            result = anvil.server.call("update_user",email=oldemail, new_email=email,enabled=active,role_id=role,)
+            alert(result, large=False)
+        except Exception as e:
+            alert(str(e), title="Error", large=False)
         self.btn_Close_click()
         get_open_form().btn_Settings_click()
 

@@ -33,7 +33,6 @@ class ResetForgotPassword(ResetForgotPasswordTemplate):
             alert(result, large=False)
         except Exception as e:
             alert(str(e), title="Error", large=False)
-        #alert("Update is successful", title="Success", large=False)
         self.btn_Close_click()
         get_open_form().btn_Settings_click()
 

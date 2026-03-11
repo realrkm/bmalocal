@@ -115,10 +115,13 @@ class StockTake(StockTakeTemplate):
     def btn_Upload_click(self, **event_args):
         """This method is called when the button is clicked"""
         data = [item for item in self.repeating_panel_1.items]
-        anvil.server.call("save_stocktake", data)
-        alert("Stocktake saved successfully")
-        self.repeating_panel_1.items = []   # clears repeating panel
-        self.txt_BarcodePartNo.text = ""
+        if data:
+            anvil.server.call("save_stocktake", data)
+            alert("Stocktake saved successfully")
+            self.repeating_panel_1.items = []   # clears repeating panel
+            self.txt_BarcodePartNo.text = ""
+        else:
+            alert("Sorry, please enter data to proceed", title="Blank Field(s) Found")
 
 
    

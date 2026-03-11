@@ -28,8 +28,11 @@ class ResetForgotPassword(ResetForgotPasswordTemplate):
             alert("Password is required.", title="Error", large=False)
             return
         # Call server
-        result = anvil.server.call("reset_password", email, password)
-        alert(result, large=False)
+        try:
+            result = anvil.server.call("reset_password", email, password)
+            alert(result, large=False)
+        except Exception as e:
+            alert(str(e), title="Error", large=False)
         #alert("Update is successful", title="Success", large=False)
         self.btn_Close_click()
         get_open_form().btn_Settings_click()

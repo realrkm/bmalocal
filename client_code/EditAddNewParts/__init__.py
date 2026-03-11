@@ -73,6 +73,7 @@ class EditAddNewParts(EditAddNewPartsTemplate):
     
     def btn_Update_click(self, **event_args):
         """This method is called when the button is clicked"""
+        self.btn_Update.enabled=False
         purchaseDate = self.date_picker_purchase.date
         partName = self.txtPartName.text
         partNumber = self.txtPartNumber.text
@@ -91,6 +92,7 @@ class EditAddNewParts(EditAddNewPartsTemplate):
                 large=False,
             )
             self.date_picker_purchase.focus()
+            self.btn_Update.enabled=True
             return
 
         if not partName:
@@ -100,6 +102,7 @@ class EditAddNewParts(EditAddNewPartsTemplate):
                 large=False,
             )
             self.txtPartName.focus()
+            self.btn_Update.enabled=True
             return
 
         if not partNumber:
@@ -109,6 +112,7 @@ class EditAddNewParts(EditAddNewPartsTemplate):
                 large=False,
             )
             self.txtPartNumber.focus()
+            self.btn_Update.enabled=True
             return
 
         if not locationID:
@@ -118,6 +122,7 @@ class EditAddNewParts(EditAddNewPartsTemplate):
                 large=False,
             )
             self.drop_down_location.focus()
+            self.btn_Update.enabled=True
             return
 
         if not supplierID:
@@ -127,6 +132,7 @@ class EditAddNewParts(EditAddNewPartsTemplate):
                 large=False,
             )
             self.drop_down_supplier.focus()
+            self.btn_Update.enabled=True
             return
 
         if not units:
@@ -136,6 +142,7 @@ class EditAddNewParts(EditAddNewPartsTemplate):
                 large=False,
             )
             self.txtNoOfUnits.focus()
+            self.btn_Update.enabled=True
             return
 
         if not buyingPrice:
@@ -145,6 +152,7 @@ class EditAddNewParts(EditAddNewPartsTemplate):
                 large=False,
             )
             self.txtBuyingPrice.focus()
+            self.btn_Update.enabled=True
             return
 
         if not sellingPrice:
@@ -154,6 +162,7 @@ class EditAddNewParts(EditAddNewPartsTemplate):
                 large=False,
             )
             self.txtSellingPrice.focus()
+            self.btn_Update.enabled=True
             return
 
         if not reorderLevel:
@@ -163,6 +172,7 @@ class EditAddNewParts(EditAddNewPartsTemplate):
                 large=False,
             )
             self.txtReorderLevel.focus()
+            self.btn_Update.enabled=True
             return
 
         anvil.server.call_s(

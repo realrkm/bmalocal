@@ -196,7 +196,7 @@ header {
 /* --- Enhanced Service Cards --- */
 .service-card-grid {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
     gap: 2rem;
     margin-bottom: 3rem;
 }
@@ -457,6 +457,12 @@ header {
     background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
     color: #fff;
     border: 2px solid rgba(249, 115, 22, 0.3);
+}
+
+.status-confirm-quote {
+    background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
+    color: #fff;
+    border: 2px solid rgba(168, 85, 247, 0.3);
 }
 
 .status-completed { 
@@ -934,7 +940,7 @@ RESPONSIVE BREAKPOINTS
     
     /* Keep service cards in a row */
     .service-card-grid {
-        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+        grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
         gap: 1.5rem;
     }
     .service-card {
@@ -975,7 +981,7 @@ RESPONSIVE BREAKPOINTS
     
     /* Keep service cards in a row on portrait/mobile */
     .service-card-grid {
-        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+        grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
         gap: 1rem;
     }
     .service-card {
@@ -1078,7 +1084,7 @@ RESPONSIVE BREAKPOINTS
     
     /* Keep service cards in a row even on very small screens */
     .service-card-grid {
-        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+        grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
         gap: 0.8rem;
     }
     .service-card {

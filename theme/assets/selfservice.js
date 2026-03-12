@@ -576,9 +576,10 @@
                 jobcardref:  card.JobCardRef,
                 instruction: card.Instruction,
                 workDone:    card.workDone || '',
-                status:      card.status === 'Checked In'  ? 'Checked-In'  :
-                    card.status === 'Create Quote' ? 'Create Quote' :
-                    card.status === 'In Service'  ? 'In-Service'  :
+                status:      card.status === 'Checked In'     ? 'Checked-In'     :
+                    card.status === 'Create Quote'  ? 'Create Quote'  :
+                    card.status === 'Confirm Quote' ? 'Confirm Quote' :
+                    card.status === 'In Service'    ? 'In-Service'    :
                     card.status
             }));
         } catch (error) {
@@ -679,6 +680,7 @@
         const totalServices = state.activeServices.length;
         const checkedInCount = state.activeServices.filter(s => s.status === 'Checked-In').length;
         const createQuoteCount = state.activeServices.filter(s => s.status === 'Create Quote').length;
+        const confirmQuoteCount = state.activeServices.filter(s => s.status === 'Confirm Quote').length;
         const inServiceCount = state.activeServices.filter(s => s.status === 'In-Service').length;
 
         mainContent.innerHTML = `
@@ -722,6 +724,15 @@
             </div>
             
             <div class="service-card">
+                <div class="service-icon" style="background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);">✅</div>
+                <div>
+                    <div class="service-card-title">Confirm Quote</div>
+                    <div class="service-card-subtitle">Awaiting confirmation</div>
+                    <div class="service-stat">${confirmQuoteCount}</div>
+                </div>
+            </div>
+            
+            <div class="service-card">
                 <div class="service-icon" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);">🔨</div>
                 <div>
                     <div class="service-card-title">In Service</div>
@@ -736,6 +747,7 @@
             <div style="display:flex; gap:1rem;">
                 <button class="btn-status ${state.currentStatusFilter === 'Checked-In' ? 'active-filter' : ''}" onclick="filterByStatus('Checked-In')">Checked-In</button>
                 <button class="btn-status ${state.currentStatusFilter === 'Create Quote' ? 'active-filter' : ''}" onclick="filterByStatus('Create Quote')">Create Quote</button>
+                <button class="btn-status ${state.currentStatusFilter === 'Confirm Quote' ? 'active-filter' : ''}" onclick="filterByStatus('Confirm Quote')">Confirm Quote</button>
                 <button class="btn-status ${state.currentStatusFilter === 'In-Service' ? 'active-filter' : ''}" onclick="filterByStatus('In-Service')">In-Service</button>
             </div>
             
@@ -756,7 +768,7 @@
                             <td data-label="Technician"><strong>${sanitizeHTML(s.tech)}</strong></td>
                             <td data-label="JobCard Ref" style="color:#facc15; font-weight:bold;">${sanitizeHTML(s.jobcardref)}</td>
                             <td data-label="Instruction">${sanitizeHTML(s.instruction)}</td>
-                            <td data-label="Status"><span class="status-badge ${s.status === 'In-Service' ? 'status-in-service' : s.status === 'Create Quote' ? 'status-create-quote' : s.status === 'Completed' ? 'status-completed' : 'status-checked-in'}">${s.status}</span></td>
+                            <td data-label="Status"><span class="status-badge ${s.status === 'In-Service' ? 'status-in-service' : s.status === 'Create Quote' ? 'status-create-quote' : s.status === 'Confirm Quote' ? 'status-confirm-quote' : s.status === 'Completed' ? 'status-completed' : 'status-checked-in'}">${s.status}</span></td>
                             <td data-label="Action">
                                 ${s.status === 'Completed' ? '✅ Finished' : s.status === 'In-Service' ? `
                                     <button onclick="openWorkDone('${sanitizeHTML(s.jobcardref)}')" class="btn-work-done">Work Done</button>
@@ -824,7 +836,7 @@
                     <td data-label="Technician"><strong>${sanitizeHTML(s.tech)}</strong></td>
                     <td data-label="JobCard Ref" style="color:#facc15; font-weight:bold;">${sanitizeHTML(s.jobcardref)}</td>
                     <td data-label="Instruction">${sanitizeHTML(s.instruction)}</td>
-                    <td data-label="Status"><span class="status-badge ${s.status === 'In-Service' ? 'status-in-service' : s.status === 'Create Quote' ? 'status-create-quote' : s.status === 'Completed' ? 'status-completed' : 'status-checked-in'}">${s.status}</span></td>
+                    <td data-label="Status"><span class="status-badge ${s.status === 'In-Service' ? 'status-in-service' : s.status === 'Create Quote' ? 'status-create-quote' : s.status === 'Confirm Quote' ? 'status-confirm-quote' : s.status === 'Completed' ? 'status-completed' : 'status-checked-in'}">${s.status}</span></td>
                     <td data-label="Action">
                         ${s.status === 'Completed' ? '✅ Finished' : s.status === 'In-Service' ? `
                             <button onclick="openWorkDone('${sanitizeHTML(s.jobcardref)}')" class="btn-work-done">Work Done</button>
@@ -957,7 +969,7 @@
         const totalQuantity = state.cart.reduce((sum, item) => sum + item.quantity, 0);
         const shouldShowCollapse = state.collapseOpen || !!state.signatureData;
         const activeService = state.activeServices.find(s => s.jobcardref === state.activeReg);
-        const shouldShowClearDetails = !state.cameFromWorkDone && activeService?.status !== 'Create Quote';
+        const shouldShowClearDetails = !state.cameFromWorkDone && activeService?.status !== 'Create Quote' && activeService?.status !== 'Confirm Quote';
 
         return `
         <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); border-radius:1rem; margin-bottom:2rem; border:2px solid rgba(59, 130, 246, 0.2); overflow:hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">

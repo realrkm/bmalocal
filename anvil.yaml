@@ -127,6 +127,9 @@ services:
 - client_config: {}
   server_config: {}
   source: /runtime/services/anvil/secrets.yml
+- client_config: {}
+  server_config: {custom_smtp: true, smtp_encryption: starttls, smtp_host: smtp.gmail.com, smtp_password: nJKP4uV8onq92iHh+N+uToOuDLCn4hjjQKwtrqlw7g1M34ZFfxpCOlaOcAmEgaIzMvtg2fK12SLTSjRGRoIGvsvMK/qUz9GkMi8mikgoR0zpx2JS7bpYXQpPihtDzJFkt+gcq1qok/h/xsR6QzgJLxEhUbQDQ+2TJ1/wd6Mb+MXtPVCy1F4EjwyTiF0=, smtp_port: 587, smtp_user: kamaumwaniki23}
+  source: /runtime/services/anvil/email.yml
 startup: {module: Launcher, type: form}
 startup_form: null
 uplink_visible: true

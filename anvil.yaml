@@ -85,10 +85,7 @@ db_schema:
       type: number
     server: full
     title: Users
-dependencies:
-- dep_id: dep_vs7vaoeb017tlj
-  resolution_hints: {app_id: 3PIDO5P3H4VPEMPL, name: routing, package_name: routing}
-  version: {version_tag: v0.5.0}
+dependencies: []
 metadata: {logo_img: 'asset:BMAAutoAccessories.ico', title: BMA Auto Accessories}
 name: BMALocal
 native_deps:

@@ -175,7 +175,7 @@ components:
       - event_bindings: {click: btn_JobCard_click}
         layout_properties: {grid_position: 'GOPPPW,WSVUBH'}
         name: btn_JobCard
-        properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:clipboard', role: primary-color, text: JOB CARD}
+        properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:clipboard', role: primary-color, text: JOBCARD}
         type: Button
       - event_bindings: {click: btn_Defects_click}
         layout_properties: {grid_position: 'GOPPPW,JEHHOH'}

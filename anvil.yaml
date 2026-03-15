@@ -105,7 +105,7 @@ native_deps:
 package_name: BMALocal
 runtime_options:
   client_version: '3'
-  server_spec: null
+  server_spec: {base: python310-standard}
   server_spec_disabled: {base: python310-minimal, requirements: ''}
   server_version: python3-sandbox
   version: 2

@@ -55,13 +55,14 @@ class Client(ClientTemplate):
             self.txt_phone.focus()
             self.btn_SaveAndNew.enabled =True
             return
+        """
         elif not re.match(r'^\+?1?[-.\s]?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}$', phone):
             alert("Please enter a valid phone number")
             self.txt_phone.text = ""
             self.txt_phone.focus()
             self.btn_SaveAndNew.enabled =True
             return
-               
+        """               
         
         # Call server function
         duplicate = anvil.server.call('check_duplicate_contact', "Client", phone)

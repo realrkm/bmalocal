@@ -46,6 +46,7 @@ class AmendedInvoice(AmendedInvoiceTemplate):
                 self.drop_down_JobCardRefDetails.selected_value,
             )            
             if existing_jobcard_details:
+                                
                 self.label_MakeAndModel.text = existing_jobcard_details[0]["MakeAndModel"]
                 self.label_Chassis.text = existing_jobcard_details[0]["ChassisNo"]
                 self.label_RegNo.text = existing_jobcard_details[0]["RegNo"]

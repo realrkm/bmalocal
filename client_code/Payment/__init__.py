@@ -98,7 +98,8 @@ class Payment(PaymentTemplate):
         jobcardID = result['ID']
         self.txt_InvoicedAmount.text = anvil.server.call_s('get_invoice_total_by_job_id', jobcardID) 
         self.text_box_PreviousPayment.text = anvil.server.call_s('get_previous_payment', jobcardID)
-        bal = float(self.txt_InvoicedAmount.text.replace(",", "")) - float(self.text_box_PreviousPayment.text.replace(",", ""))
+        discount = anvil.server.call("get_discount_payment", jobcardID)
+        bal = float(self.txt_InvoicedAmount.text.replace(",", "")) - float(self.text_box_PreviousPayment.text.replace(",", "")) - float(discount.replace(",", ""))
         self.text_box_Bal.text = bal
         
     def recalculate_balance(self):

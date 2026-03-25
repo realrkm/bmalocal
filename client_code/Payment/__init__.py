@@ -108,9 +108,10 @@ class Payment(PaymentTemplate):
         previous = float(self.text_box_PreviousPayment.text.replace(",", "") or 0)
         discount = float(self.text_box_Discount.text or 0)
         paid = float(self.text_box_Amount.text or 0)
+        exisiting_discount = anvil.server.call("get_discount_payment", jobcardID)
     
         # Calculate balance
-        balance = invoiced - previous - paid - discount
+        balance = invoiced - previous - paid - discount - exisiting_discount
     
         # Display and format balance
         self.text_box_Bal.text = f"{balance:.2f}"

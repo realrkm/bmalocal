@@ -47,10 +47,14 @@ class SearchKeyword(SearchKeywordTemplate):
             if not hasattr(self, 'search_keys'):
                 self.search_keys = self.raise_event('x-get-search-keys')
     
-            self.repeating_panel_results.items = [
-                key for key in self.search_keys
-                if key['entry'].lower().startswith(text.lower())
-            ]
+            self.repeating_panel_results.items = sorted(
+                [
+                    key for key in self.search_keys
+                    if key['entry'].lower().startswith(text.lower())
+                ],
+                key=lambda x: x['entry'].lower(),
+                reverse=True
+            )
 
     def set_result(self, result, **event_args):
         """Store the selected result and update the textbox with the entry."""

@@ -96,6 +96,7 @@ class Payment(PaymentTemplate):
     def populatePaymentDetails(self, result, **event_args):
         """Do something when a result is selected from search hints."""
         jobcardID = result['ID']
+        self.label_ID.text=jobcardID
         self.txt_InvoicedAmount.text = anvil.server.call_s('get_invoice_total_by_job_id', jobcardID) 
         self.text_box_PreviousPayment.text = anvil.server.call_s('get_previous_payment', jobcardID)
         discount = anvil.server.call("get_discount_payment", jobcardID)
@@ -108,10 +109,10 @@ class Payment(PaymentTemplate):
         previous = float(self.text_box_PreviousPayment.text.replace(",", "") or 0)
         discount = float(self.text_box_Discount.text or 0)
         paid = float(self.text_box_Amount.text or 0)
-        exisiting_discount = anvil.server.call("get_discount_payment", jobcardID)
+        existing_discount = anvil.server.call("get_discount_payment", self.label_ID.text)
     
         # Calculate balance
-        balance = invoiced - previous - paid - discount - exisiting_discount
+        balance = invoiced - previous - paid - discount - float(existing_discount.replace(",",""))
     
         # Display and format balance
         self.text_box_Bal.text = f"{balance:.2f}"

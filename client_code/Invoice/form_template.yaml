@@ -175,7 +175,8 @@ components:
     name: label_Workflow
     properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Workflow Status *}
     type: Label
-  - layout_properties: {grid_position: 'CZNAXU,LIISFS'}
+  - event_bindings: {}
+    layout_properties: {grid_position: 'CZNAXU,LIISFS'}
     name: cmbWorkflow
     properties:
       border: solid

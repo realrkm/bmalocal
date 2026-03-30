@@ -229,7 +229,8 @@ class Invoice(InvoiceTemplate):
         """This method is called when the button is clicked"""
         self.raise_event('x-close-alert', value = True)
         get_open_form().btn_Workflow_click()
-  
+
+    
 
 
 

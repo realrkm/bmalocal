@@ -130,6 +130,27 @@ class AmendedInvoice(AmendedInvoiceTemplate):
             self.txtSellingPrice.focus()
             return
 
+        # Get current items first
+        current_items = self.repeating_panel_assigned_parts.items
+        if not isinstance(current_items, list):
+            current_items = []
+
+        # ✅ Check for duplicate using Name and Number (case-insensitive)
+        selected_name = self.lbl_PartName.text.strip().lower()
+        selected_number = self.lbl_PartNumber.text.strip().lower()
+        already_exists = any(
+            item["Name"].strip().lower() == selected_name and
+            item["Number"].strip().lower() == selected_number
+            for item in current_items
+        )
+
+        if already_exists:
+            alert(
+                f"'{self.lbl_PartName.text}' has already been added.",
+                title="Duplicate Part",
+                large=False
+            )
+            return
         # Populate data grid with assigned parts
         new_part = {
             "Item": self.lbl_PartName.text,
@@ -173,6 +194,23 @@ class AmendedInvoice(AmendedInvoiceTemplate):
             self.txtAmount.focus()
             return
 
+        # Get current items first
+        current_items2 = self.repeating_panel_assigned_parts.items
+        if not isinstance(current_items2, list):
+            current_items2 = []
+
+        # ✅ Check for duplicate using service Name (case-insensitive)
+        entered_name = self.txtServices.text.strip().lower()
+        already_exists = any(item["Item"].strip().lower() == entered_name for item in current_items2)
+
+        if already_exists:
+            alert(
+                f"'{self.txtServices.text.strip()}' has already been added.",
+                title="Duplicate Service",
+                large=False
+            )
+            return
+            
         # Populate data grid with services
         new_service = {
             "Item": self.txtServices.text,

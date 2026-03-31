@@ -111,13 +111,18 @@ class Invoice(InvoiceTemplate):
         if not isinstance(current_items, list):
             current_items = []
     
-        # ✅ Check for duplicate using CarPartID
-        selected_id = str(self.lbl_ID.text)
-        already_exists = any(str(item["CarPartID"]) == selected_id for item in current_items)
+        # ✅ Check for duplicate using Name and Number (case-insensitive)
+        selected_name = self.lbl_PartName.text.strip().lower()
+        selected_number = self.lbl_PartNumber.text.strip().lower()
+        already_exists = any(
+            item["Name"].strip().lower() == selected_name and
+            item["Number"].strip().lower() == selected_number
+            for item in current_items
+        )
     
         if already_exists:
             alert(
-                f"'{self.lbl_PartName.text}' has already been added. Please adjust the quantity instead.",
+                f"'{self.lbl_PartName.text}' has already been added.",
                 title="Duplicate Part",
                 large=False
             )
@@ -156,7 +161,7 @@ class Invoice(InvoiceTemplate):
             return
     
         # Get current items first
-        current_items2 = self.repeating_panel_assigned_services.items
+        current_items2 = self.repeating_panel_assigned_parts.items
         if not isinstance(current_items2, list):
             current_items2 = []
     
@@ -166,7 +171,7 @@ class Invoice(InvoiceTemplate):
     
         if already_exists:
             alert(
-                f"'{self.txtServices.text.strip()}' has already been added. Please edit the existing entry instead.",
+                f"'{self.txtServices.text.strip()}' has already been added.",
                 title="Duplicate Service",
                 large=False
             )
@@ -178,7 +183,7 @@ class Invoice(InvoiceTemplate):
             "Amount": f"{float(self.txtAmount.text):,.2f}"
         }
     
-        self.repeating_panel_assigned_services.items = current_items2 + [new_service]
+        self.repeating_panel_assigned_parts.items = current_items2 + [new_service]
         self.refresh()
     
         # Clear selected items

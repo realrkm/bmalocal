@@ -92,7 +92,7 @@ class Invoice(InvoiceTemplate):
     def btn_AddParts_click(self, **event_args):
         """This method is called when the button is clicked"""
         textSellingPrice = str(self.txtSellingPrice.text).strip()
-        
+    
         if not self.drop_down_selectPart.selected_value:
             alert("Sorry, please select car part to proceed.", title="Blank Field(s) Found", large=False)
             self.drop_down_selectPart.focus()
@@ -105,8 +105,25 @@ class Invoice(InvoiceTemplate):
             alert("Sorry, please enter the selling price to proceed.", title="Blank Field(s) Found", large=False)
             self.txtSellingPrice.focus()
             return
-
-        #Populate data grid with assigned parts
+    
+        # Get current items first
+        current_items = self.repeating_panel_assigned_parts.items
+        if not isinstance(current_items, list):
+            current_items = []
+    
+        # ✅ Check for duplicate using CarPartID
+        selected_id = str(self.lbl_ID.text)
+        already_exists = any(str(item["CarPartID"]) == selected_id for item in current_items)
+    
+        if already_exists:
+            alert(
+                f"'{self.lbl_PartName.text}' has already been added. Please adjust the quantity instead.",
+                title="Duplicate Part",
+                large=False
+            )
+            return
+    
+        # Populate data grid with assigned parts
         new_part = {
             "Name": self.lbl_PartName.text,
             "Number": self.lbl_PartNumber.text,
@@ -114,53 +131,59 @@ class Invoice(InvoiceTemplate):
             "Amount": f"{float(self.txtSellingPrice.text):,.2f}",
             "CarPartID": self.lbl_ID.text
         }
-
-        # Append to the repeating panel's items
-        current_items = self.repeating_panel_assigned_parts.items
-        if not isinstance(current_items, list):
-            current_items = []
-        updated_items = current_items + [new_part]
-        self.repeating_panel_assigned_parts.items = updated_items
+    
+        self.repeating_panel_assigned_parts.items = current_items + [new_part]
         self.refresh()
-
-        #Clear selected items
+    
+        # Clear selected items
         self.text_box_searchPartNo.text = ""
         self.drop_down_selectPart.items = []
-        self.txtQuantity.text =""
-        self.txtSellingPrice.text =""
+        self.txtQuantity.text = ""
+        self.txtSellingPrice.text = ""
 
 
     def btn_AddServices_click(self, **event_args):
         """This method is called when the button is clicked"""
         textAmount = str(self.txtAmount.text).strip()
-        
+    
         if not self.txtServices.text:
             alert("Sorry, please enter service name to proceed.", title="Blank Field(s) Found", large=False)
             self.txtServices.focus()
             return
-
         if textAmount == "":
             alert("Sorry, please enter amount to proceed.", title="Blank Field(s) Found", large=False)
             self.txtAmount.focus()
             return
-
-        #Populate data grid with assigned parts
+    
+        # Get current items first
+        current_items2 = self.repeating_panel_assigned_services.items
+        if not isinstance(current_items2, list):
+            current_items2 = []
+    
+        # ✅ Check for duplicate using service Name (case-insensitive)
+        entered_name = self.txtServices.text.strip().lower()
+        already_exists = any(item["Name"].strip().lower() == entered_name for item in current_items2)
+    
+        if already_exists:
+            alert(
+                f"'{self.txtServices.text.strip()}' has already been added. Please edit the existing entry instead.",
+                title="Duplicate Service",
+                large=False
+            )
+            return
+    
+        # Populate data grid with assigned services
         new_service = {
             "Name": self.txtServices.text,
             "Amount": f"{float(self.txtAmount.text):,.2f}"
         }
-
-        # Append to the repeating panel's items
-        current_items2 = self.repeating_panel_assigned_parts.items
-        if not isinstance(current_items2, list):
-            current_items2 = []
-        updated_items2 = current_items2 + [new_service]
-        self.repeating_panel_assigned_parts.items = updated_items2
+    
+        self.repeating_panel_assigned_services.items = current_items2 + [new_service]
         self.refresh()
-
-        #Clear selected items
-        self.txtServices.text =""
-        self.txtAmount.text =""
+    
+        # Clear selected items
+        self.txtServices.text = ""
+        self.txtAmount.text = ""
 
     def btn_Save_click(self, **event_args):
         self.btn_Save.enabled = False #Prevent multiple button clicks

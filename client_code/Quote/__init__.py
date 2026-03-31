@@ -140,6 +140,23 @@ class Quote(QuoteTemplate):
             self.txtAmount.focus()
             return
 
+        # Get current items first
+        current_items2 = self.repeating_panel_assigned_parts.items
+        if not isinstance(current_items2, list):
+            current_items2 = []
+
+        # ✅ Check for duplicate using service Name (case-insensitive)
+        entered_name = self.txtServices.text.strip().lower()
+        already_exists = any(item["Name"].strip().lower() == entered_name for item in current_items2)
+
+        if already_exists:
+            alert(
+                f"'{self.txtServices.text.strip()}' has already been added.",
+                title="Duplicate Service",
+                large=False
+            )
+            return
+            
         #Populate data grid with assigned parts
         new_service = {
             "Name": self.txtServices.text,

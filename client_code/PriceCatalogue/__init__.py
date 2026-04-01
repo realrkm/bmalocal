@@ -66,7 +66,8 @@ class PriceCatalogue(PriceCatalogueTemplate):
    
     def btn_Export_click(self, **event_args):
         """This method is called when the button is clicked"""
-        pass
+        excel_file = anvil.server.call("export_current_selling_prices_and_reorder_levels")
+        anvil.media.download(excel_file)
 
     
     def btn_Import_click(self, **event_args):

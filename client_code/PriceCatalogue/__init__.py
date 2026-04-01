@@ -63,6 +63,16 @@ class PriceCatalogue(PriceCatalogueTemplate):
         alert(content=MissingSellingPrice(), buttons=[], dismissible=False,large=True)
         self.btn_MissingSellingPrice.enabled = True
 
+   
+    def btn_Export_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        pass
+
+    
+    def btn_Import_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        pass
+
  
         
     

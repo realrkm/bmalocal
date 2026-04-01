@@ -71,6 +71,10 @@ class PriceCatalogue(PriceCatalogueTemplate):
         alert("Selling Prices and Reorder Levels exported successfully.", title="Success", large=False)
 
 
+    def _reset_file_uploader(self):
+        """Resets the file uploader using the built-in clear method."""
+        self.file_loader_import.clear()
+
     def file_loader_import_change(self, file, **event_args):
         """This method is called when a new file is selected for upload."""
         if file is None:
@@ -83,7 +87,7 @@ class PriceCatalogue(PriceCatalogueTemplate):
                 title="Invalid File",
                 large=False
             )
-            self.file_uploader_1.clear()
+            self._reset_file_uploader()  # ✅ Clear after wrong file type alert is dismissed
             return
 
         # Confirm before proceeding
@@ -95,35 +99,26 @@ class PriceCatalogue(PriceCatalogueTemplate):
             buttons=[("Yes, Import", True), ("Cancel", False)]
         )
         if not confirmed:
-            self.file_uploader_1.clear()
+            self._reset_file_uploader()  # ✅ Clear on cancel
             return
 
-        # Show progress while processing
-        with anvil.server.no_loading_indicator:
-            Notification(
-                "Importing data, please wait...",
-                title="Processing",
-                style="info",
-                timeout=None
-            ).show()
+        # Show progress notification and keep a reference to dismiss it later
+        notification = Notification(
+            "Importing data, please wait...",
+            title="Processing",
+            style="info",
+            timeout=None
+        )
+        notification.show()
 
         try:
             summary = anvil.server.call(
                 "import_selling_prices_and_reorder_levels", file
             )
-            # Check if any rows were skipped
             if "skipped" in summary.lower():
-                alert(
-                    summary,
-                    title="Import Completed with Warnings",
-                    large=True
-                )
+                alert(summary, title="Import Completed with Warnings", large=True)
             else:
-                alert(
-                    summary,
-                    title="Import Successful",
-                    large=False
-                )
+                alert(summary, title="Import Successful", large=False)
         except Exception as e:
             alert(
                 f"An error occurred during import:\n\n{str(e)}",
@@ -131,6 +126,7 @@ class PriceCatalogue(PriceCatalogueTemplate):
                 large=True
             )
         finally:
-            self.file_uploader_1.clear()
-
-    
+            notification.hide()           # ✅ Dismiss notification when processing is done
+            self._reset_file_uploader()   # ✅ Clear after processing completes
+        """Refresh the repeating panel with the latest data from the database."""
+        self.repeating_panel_1.items = anvil.server.call("get_filtered_parts")

@@ -68,12 +68,69 @@ class PriceCatalogue(PriceCatalogueTemplate):
         """This method is called when the button is clicked"""
         excel_file = anvil.server.call("export_current_selling_prices_and_reorder_levels")
         anvil.media.download(excel_file)
+        alert("Selling Prices and Reorder Levels exported successfully.", title="Success", large=False)
 
-    
-    def btn_Import_click(self, **event_args):
-        """This method is called when the button is clicked"""
-        pass
 
- 
-        
+    def file_loader_import_change(self, file, **event_args):
+        """This method is called when a new file is selected for upload."""
+        if file is None:
+            return
+
+        # Validate file type
+        if not file.name.endswith(".xlsx"):
+            alert(
+                "Invalid file type. Please upload a valid Excel (.xlsx) file.",
+                title="Invalid File",
+                large=False
+            )
+            self.file_uploader_1.clear()
+            return
+
+        # Confirm before proceeding
+        confirmed = confirm(
+            f"You are about to import '{file.name}'. "
+            "This will update selling prices, discount prices, and reorder levels in the database. "
+            "Do you want to proceed?",
+            title="Confirm Import",
+            buttons=[("Yes, Import", True), ("Cancel", False)]
+        )
+        if not confirmed:
+            self.file_uploader_1.clear()
+            return
+
+        # Show progress while processing
+        with anvil.server.no_loading_indicator:
+            Notification(
+                "Importing data, please wait...",
+                title="Processing",
+                style="info",
+                timeout=None
+            ).show()
+
+        try:
+            summary = anvil.server.call(
+                "import_selling_prices_and_reorder_levels", file
+            )
+            # Check if any rows were skipped
+            if "skipped" in summary.lower():
+                alert(
+                    summary,
+                    title="Import Completed with Warnings",
+                    large=True
+                )
+            else:
+                alert(
+                    summary,
+                    title="Import Successful",
+                    large=False
+                )
+        except Exception as e:
+            alert(
+                f"An error occurred during import:\n\n{str(e)}",
+                title="Import Failed",
+                large=True
+            )
+        finally:
+            self.file_uploader_1.clear()
+
     

@@ -139,8 +139,8 @@ class AmendedInvoice(AmendedInvoiceTemplate):
         selected_name = self.lbl_PartName.text.strip().lower()
         selected_number = self.lbl_PartNumber.text.strip().lower()
         already_exists = any(
-            item["Name"].strip().lower() == selected_name and
-            item["Number"].strip().lower() == selected_number
+            item["Item"].strip().lower() == selected_name and
+            item["PartNo"].strip().lower() == selected_number
             for item in current_items
         )
 

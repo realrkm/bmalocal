@@ -23,7 +23,8 @@ class ProgressTracker(ProgressTrackerTemplate):
         
     def btn_SearchCustomer_click(self, **event_args):
         """This method is called when the text in this text box is edited"""
-        if self.txtJobCardRef.text.strip():
+        self.txtJobCardRef.text = self.txtJobCardRef.text.strip()
+        if self.txtJobCardRef.text:
             search_value = self.txtJobCardRef.text
             result = anvil.server.call("getJobCardDetailsWithRefOrFullnameSearch", search_value)
             # Clear drop down

@@ -26,8 +26,9 @@ class Quote(QuoteTemplate):
             self.cmbJobCardRef.selected_value = self.cmbJobCardRef.items[0][1]
             # ✅ Manually call the change handler
             self.cmbJobCardRef_change()
-
-            
+        
+        self.missing_price_ids = {}  # {part_id: manually_entered_price}
+        
     def refresh(self, **event_args):
         self.set_event_handler("x-refresh", self.refresh)
 
@@ -66,7 +67,13 @@ class Quote(QuoteTemplate):
         self.lbl_PartNumber.text = result2[0]["PartNo"]
         partname = anvil.server.call_s("getCarPartNamesWithId", self.drop_down_selectPart.selected_value)
         self.lbl_PartName.text = partname[0]["Name"]
-        self.txtSellingPrice.text = ModGetData.getSellingPrice(self.lbl_ID.text)
+        
+        price = ModGetData.getSellingPrice(self.lbl_ID.text)
+        self.txtSellingPrice.text = price
+    
+        # Track IDs with no price so we can update them later
+        if price is None:
+            self.missing_price_ids[self.lbl_ID.text] = None
                   
 
     def btn_AddParts_click(self, **event_args):
@@ -114,6 +121,11 @@ class Quote(QuoteTemplate):
             "Amount": f"{float(self.txtSellingPrice.text):,.2f}"
         }
 
+        # If this part had no price in the DB, record what the user typed
+        part_id = self.lbl_ID.text
+        if part_id in self.missing_price_ids:
+            self.missing_price_ids[part_id] = float(self.txtSellingPrice.text)
+            
         # Append to the repeating panel's items
         current_items = self.repeating_panel_assigned_parts.items
         if not isinstance(current_items, list):
@@ -174,7 +186,17 @@ class Quote(QuoteTemplate):
         #Clear selected items
         self.txtServices.text =""
         self.txtAmount.text =""
-
+        
+    def insertMissingSellingPrices(self):
+        """
+        For any parts that had no selling price in the DB but were manually
+        priced by the user, update tbl_partssellingprice with the entered amount.
+        """
+        for part_id, price in self.missing_price_ids.items():
+            if price is not None:
+                anvil.server.call_s('insertMissingSellingPrice', part_id, price)
+        self.missing_price_ids.clear()
+    
     def btn_Save_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.btn_Save.enabled = False #Prevent multiple clicks
@@ -216,6 +238,7 @@ class Quote(QuoteTemplate):
             alert("Job reverted back to Checked In", title="Success")
         else:
             alert("Quotation saved successfully and download is initiated", title="Success")
+            self.insertMissingSellingPrices()
             self.downloadQuotationPdf(jobCardID)
         
         # Close Form

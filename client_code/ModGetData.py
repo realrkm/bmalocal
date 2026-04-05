@@ -61,7 +61,7 @@ def handle_server_errors(exc, label):
             message=f"Unexpected error: {exc}",
             title="Error"
         )
-        
+
 #************************************************* Client Details Section *******************************
 def getClientName(self):
     name_list = []
@@ -70,7 +70,7 @@ def getClientName(self):
     return name_list # Continue using data
       
 def getClientNameWithID(valueID):
-    result =  anvil.server.call_s("getClientNameWithID", valueID)
+    result = anvil.server.call_s("getClientNameWithID", valueID)
     return result
             
 #************************************************* Job Card Details Section *******************************
@@ -108,19 +108,41 @@ def getCarPartNames():
     for row in anvil.server.call_s('getCarPartNames'):
         carpartname_list.append((row['Name'], row))
     return carpartname_list
-        
-    
+
 def getCarPartNumber(name):
     carpartnumber_list = []
     for row in anvil.server.call_s('getCarPartNumber', name):
         carpartnumber_list.append((row['PartNo'], row))
     return carpartnumber_list
 
+#************************************************* Selling Price Tracking Section *******************************
+_missing_price_ids = {}  # {part_id: manually_entered_price | None}
+
+def trackMissingPrice(part_id):
+    """Call this when getSellingPrice returns None for a part."""
+    _missing_price_ids[part_id] = None
+
+def recordManualPrice(part_id, price):
+    """Call this when a user manually enters a price for a previously unpriced part."""
+    if part_id in _missing_price_ids:
+        _missing_price_ids[part_id] = float(price)
+
+def updateMissingSellingPrices():
+    """
+    Fires a server update for every part that had no DB price but received
+    a manual price from the user. Clears the tracker afterwards.
+    """
+    for part_id, price in _missing_price_ids.items():
+        if price is not None:
+            anvil.server.call_s('updateMissingSellingPrice', part_id, price)
+    _missing_price_ids.clear()
+
 def getSellingPrice(id):
     sellingPrice = anvil.server.call_s('getSellingPrice', id)
     if sellingPrice is None:
+        trackMissingPrice(id)
         alert("Sorry, please enter selling price to proceed.", title="Blank Field(s) Found", large=False)
-        return
+        return None
     else:
         return sellingPrice[0]
                         
@@ -130,4 +152,3 @@ def getClientQuotationFeedback(JobCardID):
 
 def getQuotationConfirmationFeedback(JobCardID):
     return anvil.server.call_s('getQuotationConfirmationFeedback', JobCardID)
-

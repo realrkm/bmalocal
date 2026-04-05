@@ -19,23 +19,22 @@ class Quote(QuoteTemplate):
 
         # Any code you write here will run before the form opens.
         anvil.js.call('replaceBanner')
-        
-        self.cmbJobCardRef.items =  ModGetData.getJobCardRef(valueID)
+
+        self.cmbJobCardRef.items = ModGetData.getJobCardRef(valueID)
         # ✅ Select the first item if available
         if self.cmbJobCardRef.items:
             self.cmbJobCardRef.selected_value = self.cmbJobCardRef.items[0][1]
             # ✅ Manually call the change handler
             self.cmbJobCardRef_change()
-        
-        self.missing_price_ids = {}  # {part_id: manually_entered_price}
-        
+
+
     def refresh(self, **event_args):
         self.set_event_handler("x-refresh", self.refresh)
 
     def cmbJobCardRef_change(self, **event_args):
         """This method is called when an item is selected"""
         self.txtClientInstructions.text = ModGetData.getJobCardInstructions(self.cmbJobCardRef.selected_value['ID'])
-        self.txtTechNotes.text= ModGetData.getJobCardTechNotes(self.cmbJobCardRef.selected_value['ID'])
+        self.txtTechNotes.text = ModGetData.getJobCardTechNotes(self.cmbJobCardRef.selected_value['ID'])
         self.txtDefectsList.text = ModGetData.getJobCardDefects(self.cmbJobCardRef.selected_value['ID'])
         self.txtPricedDefectsList.text = ModGetData.getJobCardPricedDefects(self.cmbJobCardRef.selected_value['ID'])
         self.txtRequestedParts.text = ModGetData.getRequestedParts(self.cmbJobCardRef.selected_value['ID'])
@@ -51,7 +50,7 @@ class Quote(QuoteTemplate):
 
         result = anvil.server.call('getCarPartNameAndNumber', search_value)
 
-        #Clear drop down 
+        # Clear drop down
         self.drop_down_selectPart.items = ""
 
         if result:
@@ -59,22 +58,18 @@ class Quote(QuoteTemplate):
         else:
             alert("No records found for the entered part detail.", title="Not Found")
 
-        
+
     def drop_down_selectPart_change(self, **event_args):
         """This method is called when an item is selected"""
         self.lbl_ID.text = self.drop_down_selectPart.selected_value
-        result2 =  anvil.server.call_s("getCarPartNumberWithID", self.lbl_ID.text)
+        result2 = anvil.server.call_s("getCarPartNumberWithID", self.lbl_ID.text)
         self.lbl_PartNumber.text = result2[0]["PartNo"]
         partname = anvil.server.call_s("getCarPartNamesWithId", self.drop_down_selectPart.selected_value)
         self.lbl_PartName.text = partname[0]["Name"]
-        
+
         price = ModGetData.getSellingPrice(self.lbl_ID.text)
         self.txtSellingPrice.text = price
-    
-        # Track IDs with no price so we can update them later
-        if price is None:
-            self.missing_price_ids[self.lbl_ID.text] = None
-                  
+
 
     def btn_AddParts_click(self, **event_args):
         """This method is called when the button is clicked"""
@@ -113,7 +108,7 @@ class Quote(QuoteTemplate):
             )
             return
             
-        #Populate data grid with assigned parts
+        # Populate data grid with assigned parts
         new_part = {
             "Name": self.lbl_PartName.text,
             "Number": self.lbl_PartNumber.text,
@@ -122,10 +117,8 @@ class Quote(QuoteTemplate):
         }
 
         # If this part had no price in the DB, record what the user typed
-        part_id = self.lbl_ID.text
-        if part_id in self.missing_price_ids:
-            self.missing_price_ids[part_id] = float(self.txtSellingPrice.text)
-            
+        ModGetData.recordManualPrice(self.lbl_ID.text, self.txtSellingPrice.text)
+
         # Append to the repeating panel's items
         current_items = self.repeating_panel_assigned_parts.items
         if not isinstance(current_items, list):
@@ -134,11 +127,11 @@ class Quote(QuoteTemplate):
         self.repeating_panel_assigned_parts.items = updated_items
         self.refresh()
 
-        #Clear selected items
+        # Clear selected items
         self.text_box_searchPartNo.text = ""
         self.drop_down_selectPart.items = []
-        self.txtQuantity.text =""
-        self.txtSellingPrice.text =""
+        self.txtQuantity.text = ""
+        self.txtSellingPrice.text = ""
 
     def btn_AddServices_click(self, **event_args):
         """This method is called when the button is clicked"""
@@ -169,7 +162,7 @@ class Quote(QuoteTemplate):
             )
             return
             
-        #Populate data grid with assigned parts
+        # Populate data grid with assigned parts
         new_service = {
             "Name": self.txtServices.text,
             "Amount": f"{float(self.txtAmount.text):,.2f}"
@@ -183,23 +176,20 @@ class Quote(QuoteTemplate):
         self.repeating_panel_assigned_parts.items = updated_items2
         self.refresh()
 
-        #Clear selected items
-        self.txtServices.text =""
-        self.txtAmount.text =""
-        
+        # Clear selected items
+        self.txtServices.text = ""
+        self.txtAmount.text = ""
+
     def insertMissingSellingPrices(self):
         """
-        For any parts that had no selling price in the DB but were manually
-        priced by the user, update tbl_partssellingprice with the entered amount.
+        Delegates to ModGetData to update any parts that had no selling price
+        in the DB but received a manual price from the user.
         """
-        for part_id, price in self.missing_price_ids.items():
-            if price is not None:
-                anvil.server.call_s('insertMissingSellingPrice', part_id, price)
-        self.missing_price_ids.clear()
-    
+        ModGetData.updateMissingSellingPrices()
+
     def btn_Save_click(self, **event_args):
         """This method is called when the button is clicked"""
-        self.btn_Save.enabled = False #Prevent multiple clicks
+        self.btn_Save.enabled = False  # Prevent multiple clicks
         
         if not self.cmbJobCardRef.selected_value:
             alert("Sorry, please select job card ref to proceed.", title="Blank Field(s) Found", large=False)
@@ -218,15 +208,14 @@ class Quote(QuoteTemplate):
             alert("Sorry, please select workflow status to proceed.", title="Blank Field(s) Found", large=False)
             self.cmbWorkflow.focus()
             self.btn_Save.enabled = True
-
             return   
         
-        assignedDate= date.today()
-        jobCardID=self.cmbJobCardRef.selected_value['ID']
+        assignedDate = date.today()
+        jobCardID = self.cmbJobCardRef.selected_value['ID']
         status = self.cmbWorkflow.selected_value
         
         for row in rows:
-            name= row['Name']
+            name = row['Name']
             number = row.get('Number', "")
             quantity = None if row.get('Quantity') is None else float(row['Quantity'])
             amount = float(row["Amount"].replace(",", "")) if "," in row["Amount"] else float(row["Amount"])
@@ -255,12 +244,9 @@ class Quote(QuoteTemplate):
 
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""
-        self.raise_event('x-close-alert', value = True)
+        self.raise_event('x-close-alert', value=True)
         get_open_form().btn_Workflow_click()
 
     def btn_DeleteRow_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.remove_from_parent()
-
-    
-   

@@ -101,7 +101,9 @@ class AmendedInvoice(AmendedInvoiceTemplate):
             "getCarPartNamesWithId", self.drop_down_selectPart.selected_value
         )
         self.lbl_PartName.text = partname[0]["Name"]
-        self.txtSellingPrice.text = ModGetData.getSellingPrice(self.lbl_ID.text)
+
+        price = ModGetData.getSellingPrice(self.lbl_ID.text)
+        self.txtSellingPrice.text = price
 
     def btn_AddParts_click(self, **event_args):
         """This method is called when the button is clicked"""

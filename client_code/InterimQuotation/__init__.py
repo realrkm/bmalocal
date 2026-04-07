@@ -92,7 +92,9 @@ class InterimQuotation(InterimQuotationTemplate):
         self.lbl_PartNumber.text = result2[0]["PartNo"]
         partname = anvil.server.call_s("getCarPartNamesWithId", self.drop_down_selectPart.selected_value)
         self.lbl_PartName.text = partname[0]["Name"]
-        self.txtSellingPrice.text = ModGetData.getSellingPrice(self.lbl_ID.text)
+
+        price = ModGetData.getSellingPrice(self.lbl_ID.text)
+        self.txtSellingPrice.text = price
 
 
     def btn_AddParts_click(self, **event_args):
@@ -141,6 +143,9 @@ class InterimQuotation(InterimQuotationTemplate):
             "Quantity": self.txtQuantity.text,
             "Amount": "TO BE CONFIRMED" if float(self.txtSellingPrice.text) == 0 else f"{float(self.txtSellingPrice.text):,.2f}"
         }
+
+        # If this part had no price in the DB, record what the user typed
+        ModGetData.recordManualPrice(self.lbl_ID.text, self.txtSellingPrice.text)
 
         # Append to the repeating panel's items
         current_items = self.repeating_panel_assigned_parts.items
@@ -204,6 +209,13 @@ class InterimQuotation(InterimQuotationTemplate):
         #Clear selected items
         self.txtServices.text =""
         self.txtAmount.text =""
+
+    def insertMissingSellingPrices(self):
+        """
+        Delegates to ModGetData to update any parts that had no selling price
+        in the DB but received a manual price from the user.
+        """
+        ModGetData.insertMissingSellingPrice()
 
     def btn_SaveAndDownload_click(self, **event_args):
         self.btn_SaveAndDownload.enabled = False
@@ -285,6 +297,7 @@ class InterimQuotation(InterimQuotationTemplate):
         job_card_id = anvil.server.call_s('saveJobCardDetailsFromInterimQuotation', customerID, jobcardref, receiveddate, duedate, checkinstaff, regno, makeandmodel, chassis,  enginecode, mileage, oldJobCardId)
         anvil.server.call("saveInterimQuotationPartsAndServices",receiveddate, job_card_id, items)
         alert("Interim Quotation Saved Successfully.", title="Success", large=False)
+        self.insertMissingSellingPrices()
         self.downloadQuotationPdf(job_card_id)
         
         # Clear form

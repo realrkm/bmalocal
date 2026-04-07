@@ -45,7 +45,7 @@ components:
   - event_bindings: {click: btn_ViewTechnicianPortalDetails_click}
     layout_properties: {grid_position: 'FBKMZC,ATVYDK'}
     name: btn_ViewTechnicianPortalDetails
-    properties: {background: '#0056D6', border: '', enabled: false, foreground: 'theme:White', icon: '', role: raised, spacing_above: none, text: View Technician Portal Details, visible: true}
+    properties: {background: '#0056D6', border: '', enabled: false, foreground: 'theme:White', icon: '', role: raised, spacing_above: none, text: View Tech Portal Details, visible: true}
     type: Button
   - components:
     - components:

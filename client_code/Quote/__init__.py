@@ -185,7 +185,7 @@ class Quote(QuoteTemplate):
         Delegates to ModGetData to update any parts that had no selling price
         in the DB but received a manual price from the user.
         """
-        ModGetData.updateMissingSellingPrices()
+        ModGetData.insertMissingSellingPrice()
 
     def btn_Save_click(self, **event_args):
         """This method is called when the button is clicked"""

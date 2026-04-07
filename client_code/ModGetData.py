@@ -127,14 +127,14 @@ def recordManualPrice(part_id, price):
     if part_id in _missing_price_ids:
         _missing_price_ids[part_id] = float(price)
 
-def updateMissingSellingPrices():
+def insertMissingSellingPrice():
     """
     Fires a server update for every part that had no DB price but received
     a manual price from the user. Clears the tracker afterwards.
     """
     for part_id, price in _missing_price_ids.items():
         if price is not None:
-            anvil.server.call_s('updateMissingSellingPrice', part_id, price)
+            anvil.server.call_s('insertMissingSellingPrice', part_id, price)
     _missing_price_ids.clear()
 
 def getSellingPrice(id):

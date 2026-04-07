@@ -162,6 +162,9 @@ class AmendedInvoice(AmendedInvoiceTemplate):
             "CarPartID": self.lbl_ID.text
         }
 
+        # If this part had no price in the DB, record what the user typed
+        ModGetData.recordManualPrice(self.lbl_ID.text, self.txtSellingPrice.text)
+
         # Append to the repeating panel's items
         current_items = self.repeating_panel_assigned_parts.items
         if not isinstance(current_items, list):
@@ -230,8 +233,6 @@ class AmendedInvoice(AmendedInvoiceTemplate):
         # Clear selected items
         self.txtServices.text = ""
         self.txtAmount.text = ""
-
-    
 
     def btn_AddVAT_click(self, **event_args):
         """This method is called when the button is clicked"""
@@ -330,7 +331,14 @@ class AmendedInvoice(AmendedInvoiceTemplate):
 
         # Clear selected items
         self.txtPreviousAmount.text = ""
-        
+
+    def insertMissingSellingPrices(self):
+        """
+        Delegates to ModGetData to update any parts that had no selling price
+        in the DB but received a manual price from the user.
+        """
+        ModGetData.insertMissingSellingPrice()
+
     def btn_SaveAndDownload_click(self, **event_args):
         self.btn_SaveAndDownload.enabled = False
         
@@ -407,6 +415,7 @@ class AmendedInvoice(AmendedInvoiceTemplate):
             "updateInvoice", invoicedate, job_card_id, items
         )
         alert("Amended Invoice Saved Successfully.", title="Success", large=False)
+        self.insertMissingSellingPrices()
         self.downloadInvoicePdf(job_card_id)
 
         # Clear form

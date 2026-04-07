@@ -73,7 +73,9 @@ class ConfirmQuote(ConfirmQuoteTemplate):
         self.lbl_PartNumber.text = result2[0]["PartNo"]
         partname = anvil.server.call_s("getCarPartNamesWithId", self.drop_down_selectPart.selected_value)
         self.lbl_PartName.text = partname[0]["Name"]
-        self.txtSellingPrice.text = ModGetData.getSellingPrice(self.lbl_ID.text)
+        
+        price = ModGetData.getSellingPrice(self.lbl_ID.text)
+        self.txtSellingPrice.text = price
 
 
     def btn_AddParts_click(self, **event_args):
@@ -99,6 +101,9 @@ class ConfirmQuote(ConfirmQuoteTemplate):
             "Amount": f"{float(self.txtSellingPrice.text):,.2f}"
         }
 
+        # If this part had no price in the DB, record what the user typed
+        ModGetData.recordManualPrice(self.lbl_ID.text, self.txtSellingPrice.text)
+        
         # Append to the repeating panel's items
         current_items = self.repeating_panel_assigned_parts.items
         if not isinstance(current_items, list):
@@ -140,6 +145,13 @@ class ConfirmQuote(ConfirmQuoteTemplate):
         #Clear selected items
         self.txtServices.text =""
         self.txtAmount.text =""
+
+    def insertMissingSellingPrices(self):
+        """
+        Delegates to ModGetData to update any parts that had no selling price
+        in the DB but received a manual price from the user.
+        """
+        ModGetData.insertMissingSellingPrice()
 
     def btn_Save_click(self, **event_args):
         self.btn_Save.enabled = False #Prevent multiple clicks
@@ -207,7 +219,8 @@ class ConfirmQuote(ConfirmQuoteTemplate):
             alert("Please connect to the internet to proceed.", title="No Internet")
         except Exception as e:
             alert(f"An error occurred: {str(e)}", title="Error")
-    
+
+        self.insertMissingSellingPrices()
         self.downloadQuotationPdf(jobCardID)
 
         # Close Form

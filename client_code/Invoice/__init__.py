@@ -87,7 +87,9 @@ class Invoice(InvoiceTemplate):
         self.lbl_PartNumber.text = result2[0]["PartNo"]
         partname = anvil.server.call_s("getCarPartNamesWithId", self.drop_down_selectPart.selected_value)
         self.lbl_PartName.text = partname[0]["Name"]
-        self.txtSellingPrice.text = ModGetData.getSellingPrice(self.lbl_ID.text)
+        
+        price = ModGetData.getSellingPrice(self.lbl_ID.text)
+        self.txtSellingPrice.text = price
 
     def btn_AddParts_click(self, **event_args):
         """This method is called when the button is clicked"""
@@ -127,7 +129,7 @@ class Invoice(InvoiceTemplate):
                 large=False
             )
             return
-    
+
         # Populate data grid with assigned parts
         new_part = {
             "Name": self.lbl_PartName.text,
@@ -136,7 +138,10 @@ class Invoice(InvoiceTemplate):
             "Amount": f"{float(self.txtSellingPrice.text):,.2f}",
             "CarPartID": self.lbl_ID.text
         }
-    
+
+        # If this part had no price in the DB, record what the user typed
+        ModGetData.recordManualPrice(self.lbl_ID.text, self.txtSellingPrice.text)
+
         self.repeating_panel_assigned_parts.items = current_items + [new_part]
         self.refresh()
     
@@ -190,6 +195,13 @@ class Invoice(InvoiceTemplate):
         self.txtServices.text = ""
         self.txtAmount.text = ""
 
+    def insertMissingSellingPrices(self):
+        """
+        Delegates to ModGetData to update any parts that had no selling price
+        in the DB but received a manual price from the user.
+        """
+        ModGetData.insertMissingSellingPrice()
+        
     def btn_Save_click(self, **event_args):
         self.btn_Save.enabled = False #Prevent multiple button clicks
         if not self.cmbJobCardRef.selected_value:
@@ -239,6 +251,7 @@ class Invoice(InvoiceTemplate):
         anvil.server.call_s('updateJobCardStatus', jobCardID, status)
 
         alert("Invoice saved successfully and download is initiated.", title="Success")
+        self.insertMissingSellingPrices()
         self.downloadInvoicePdf(jobCardID)
 
         # Close Form

@@ -245,7 +245,7 @@ class Main(MainTemplate):
     def btn_ViewBuyingPriceExceedsSelling_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.btn_ViewBuyingPriceExceedsSelling.enabled=False
-        alert(content=ViewTechnicianPortalDetails(), dismissible=False,large=True)
+        alert(content=ViewPricingAlertDetails(), dismissible=False,large=True)
         self.btn_ViewBuyingPriceExceedsSelling.enabled=True
 
     

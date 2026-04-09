@@ -18,11 +18,5 @@ class ViewPricingAlertDetails(ViewPricingAlertDetailsTemplate):
         anvil.js.call("replaceBanner")
         self.user = anvil.users.get_user()
         self.repeating_panel_1.items = anvil.server.call_s(
-            "fetch_active_technician_portal_info", self.user
+            "getPartsWhereBuyingPriceExceedsSelling", self.user
         )
-
-    def btn_UpdateStatus_click(self, **event_args):
-        """This method is called when the button is clicked"""
-        anvil.server.call_s("deactivate_technician_portal_info")
-        alert("Pending technician portal info is updated successfully", title="Success")
-        self.raise_event("x-close-alert", value=True)

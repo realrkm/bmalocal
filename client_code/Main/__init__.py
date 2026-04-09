@@ -13,6 +13,7 @@ from ..FAQ import FAQ
 from ..Alerts import Alerts
 from ..IncompleteDefectsInfo import IncompleteDefectsInfo
 from ..ViewTechnicianPortalDetails import ViewTechnicianPortalDetails
+from ..ViewPricingAlertDetails import ViewPricingAlertDetails
 
 class Main(MainTemplate):
     def __init__(self, **properties):
@@ -239,5 +240,12 @@ class Main(MainTemplate):
         self.btn_ViewTechnicianPortalDetails.enabled=False
         alert(content=ViewTechnicianPortalDetails(), dismissible=False,large=True)
         self.btn_ViewTechnicianPortalDetails.enabled=True
+
+
+    def btn_ViewBuyingPriceExceedsSelling_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        self.btn_ViewBuyingPriceExceedsSelling.enabled=False
+        alert(content=ViewTechnicianPortalDetails(), dismissible=False,large=True)
+        self.btn_ViewBuyingPriceExceedsSelling.enabled=True
 
     

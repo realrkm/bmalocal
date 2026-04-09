@@ -16,5 +16,5 @@ class RowTemplate(RowTemplateTemplate):
 
         partNo = self.item['PartNo']
 
-        # Call method directly on parent form
-        self.parent.parent.open_edit_form(partNo)
+        # Call method directly on parent form, going one item up at a time
+        self.parent.parent.parent.parent.open_edit_form(partNo)

@@ -19,4 +19,7 @@ class RowTemplate(RowTemplateTemplate):
         """This method is called when the button is clicked"""
         items = list(self.parent.items)
         partNo = items[list(self.parent.items).index(self.item)]['PartNo']
-        alert(content=UpdatePricingAmount(partNo), buttons=)
+        alert(content=UpdatePricingAmount(partNo), buttons=[], dismissible=False, large=True)
+        self.parent.
+
+

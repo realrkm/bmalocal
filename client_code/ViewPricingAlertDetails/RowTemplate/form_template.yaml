@@ -2,7 +2,7 @@ components:
 - event_bindings: {click: btn_EditItem_click}
   layout_properties: {column: ISSMTN}
   name: btn_EditItem
-  properties: {background: '#0056D6', foreground: 'theme:White', icon: 'fa:edit', icon_align: right, text: '', tooltip: Delete Row}
+  properties: {background: '#0056D6', foreground: 'theme:White', icon: 'fa:edit', icon_align: right, text: '', tooltip: Update Item Prices}
   type: Button
 container: {type: DataRowPanel}
 is_package: true

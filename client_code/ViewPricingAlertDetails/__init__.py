@@ -8,7 +8,6 @@ from anvil.tables import app_tables
 import anvil.js
 from .. import ModNavigation
 
-
 class ViewPricingAlertDetails(ViewPricingAlertDetailsTemplate):
     def __init__(self, **properties):
         # Set Form properties and Data Bindings.
@@ -20,8 +19,14 @@ class ViewPricingAlertDetails(ViewPricingAlertDetailsTemplate):
         self.repeating_panel_1.items = anvil.server.call_s(
             "getPartsWhereBuyingPriceExceedsSelling", self.user
         )
-        self.repeating_panel_1.set_event_handler("x-close-parent", self.Close_click)
+        self.repeating_panel_1.set_event_handler("x-close-parent", self.handle_edit)
+
+    def handle_edit(self, partNo=None, **event_args):
+        """Store the partNo and close this form — caller opens UpdatePricingAmount next"""
+        self.selected_partNo = partNo
+        self.raise_event("x-close-alert", value=True)
 
     def Close_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.raise_event("x-close-alert", value=True)
+    

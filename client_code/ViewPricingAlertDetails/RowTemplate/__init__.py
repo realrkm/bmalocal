@@ -7,7 +7,6 @@ import anvil.tables.query as q
 from anvil.tables import app_tables
 from ...UpdatePricingAmount import UpdatePricingAmount
 
-
 class RowTemplate(RowTemplateTemplate):
     def __init__(self, **properties):
         # Set Form properties and Data Bindings.
@@ -20,14 +19,24 @@ class RowTemplate(RowTemplateTemplate):
         """This method is called when the button is clicked"""
         items = list(self.parent.items)
         partNo = items[list(self.parent.items).index(self.item)]['PartNo']
-        self.raise_event("x-close-parent")
-        alert(content=UpdatePricingAmount(partNo), buttons=[], dismissible=False, large=True)
-        
-        # Refresh the repeating panel after the alert closes
-        self.parent.items = anvil.server.call('getPartsWhereBuyingPriceExceedsSelling',self.user)
-    
-        # Signal the parent form to close if no items remain
-        if not self.parent.items:
-            
+        # Pass partNo up to ViewPricingAlertDetails instead of opening a nested alert
+        self.raise_event("x-close-parent", partNo=partNo)
+        pricing_form = ViewPricingAlertDetails()
+        alert(
+            content=pricing_form,
+            buttons=[],
+            dismissible=False,
+            large=True
+        )
+        # ViewPricingAlertDetails alert is now fully closed
+        # Safe to open UpdatePricingAmount as a fresh top-level alert
+        if pricing_form.selected_partNo:
+            update_form = UpdatePricingAmount(pricing_form.selected_partNo)
+            alert(
+                content=update_form,
+                buttons=[],
+                dismissible=False,
+                large=True
+            )
 
 

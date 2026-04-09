@@ -206,16 +206,18 @@ class Main(MainTemplate):
 
             # Make ONE server call to get all data
             data = anvil.server.call_s('fetch_all_dashboard_notifications', user)
-
+            
             # Extract the lists from the returned dictionary
             notifications = data.get("notifications", [])
             incomplete_defects = data.get("incomplete_defects", [])
             tech_portal_info = data.get("technician_portal", [])
-
+            pricing_alert = data.get("pricing_alert", [])
+            
             # Simplify boolean logic (if list has items, bool() is True, else False)
             self.btn_alerts.enabled = bool(notifications)
             self.btn_IncompleteDefectsInfo.enabled = bool(incomplete_defects)
             self.btn_ViewTechnicianPortalDetails.enabled = bool(tech_portal_info)
+            self.btn_ViewBuyingPriceExceedsSelling.enabled = bool(pricing_alert)
 
             # Handle the notification label text
             for n in notifications:

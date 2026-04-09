@@ -1,6 +1,6 @@
 components:
 - components:
-  - layout_properties: {full_width_row: true, grid_position: 'LHTAYG,UPBADU'}
+  - layout_properties: {full_width_row: false, grid_position: 'LHTAYG,UPBADU'}
     name: label_1
     properties: {font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Buying Price Exceeds Selling Price Details}
     type: Label
@@ -9,16 +9,16 @@ components:
       name: repeating_panel_1
       properties: {item_template: ViewPricingAlertDetails.RowTemplate}
       type: RepeatingPanel
-    layout_properties: {full_width_row: true, grid_position: 'AKAKUY,NXYLBT'}
+    layout_properties: {full_width_row: false, grid_position: 'AKAKUY,NXYLBT'}
     name: data_grid_1
     properties:
       columns:
-      - {data_key: 'No', expand: false, id: OFDFRX, title: 'No', width: 46}
+      - {data_key: 'No', expand: false, id: OFDFRX, title: 'No', width: 60}
       - {data_key: Name, expand: true, id: JKSDUP, title: Name}
-      - {data_key: PartNo, expand: true, id: VJQQOR, title: PartNo}
+      - {data_key: PartNo, expand: true, id: VJQQOR, title: PartNo, width: ''}
       - {data_key: Cost, expand: true, id: OJLQEN, title: Buying Price}
       - {data_key: Selling, expand: true, id: EAFWMU, title: Selling}
-      - {data_key: Discount, expand: true, id: JNDAOA, title: Discount}
+      - {data_key: Discount, expand: true, id: JNDAOA, title: Discount, width: ''}
       - {data_key: BuyingPriceExceedsSelling, expand: true, id: PPDHEG, title: Margin Error}
       foreground: theme:Black
       role: null

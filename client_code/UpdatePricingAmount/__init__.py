@@ -19,7 +19,6 @@ class UpdatePricingAmount(UpdatePricingAmountTemplate):
         anvil.js.call("replaceBanner")
         self.drop_down_location.items = anvil.server.call("getLocation")
         self.drop_down_supplier.items = anvil.server.call("getSupplier")
-        
         self.text_box_searchPartNo.text = partno
         self.btn_Search_click()
 
@@ -198,6 +197,6 @@ class UpdatePricingAmount(UpdatePricingAmountTemplate):
         alert("Part Updated Successfully", title="Success", large=False)
         self.btn_Close_click()
 
-    def Close_click(self, **event_args):
+    def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.raise_event("x-close-alert", value=True)

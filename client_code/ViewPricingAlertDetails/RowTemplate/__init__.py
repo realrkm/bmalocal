@@ -12,6 +12,7 @@ class RowTemplate(RowTemplateTemplate):
     def __init__(self, **properties):
         # Set Form properties and Data Bindings.
         self.init_components(**properties)
+        self.user = anvil.users.get_user()
 
         # Any code you write here will run before the form opens.
 
@@ -19,7 +20,14 @@ class RowTemplate(RowTemplateTemplate):
         """This method is called when the button is clicked"""
         items = list(self.parent.items)
         partNo = items[list(self.parent.items).index(self.item)]['PartNo']
+        self.raise_event("x-close-parent")
         alert(content=UpdatePricingAmount(partNo), buttons=[], dismissible=False, large=True)
-        self.parent.
+        
+        # Refresh the repeating panel after the alert closes
+        self.parent.items = anvil.server.call('getPartsWhereBuyingPriceExceedsSelling',self.user)
+    
+        # Signal the parent form to close if no items remain
+        if not self.parent.items:
+            
 
 

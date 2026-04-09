@@ -20,7 +20,8 @@ class ViewPricingAlertDetails(ViewPricingAlertDetailsTemplate):
         self.repeating_panel_1.items = anvil.server.call_s(
             "getPartsWhereBuyingPriceExceedsSelling", self.user
         )
+        self.repeating_panel_1.set_event_handler("x-close-parent", self.Close_click)
 
-    def btn_Close_click(self, **event_args):
+    def Close_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.raise_event("x-close-alert", value=True)

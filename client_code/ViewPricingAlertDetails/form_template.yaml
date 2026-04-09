@@ -20,6 +20,7 @@ components:
       - {data_key: Selling, expand: true, id: EAFWMU, title: Selling}
       - {data_key: Discount, expand: true, id: JNDAOA, title: Discount, width: ''}
       - {data_key: BuyingPriceExceedsSelling, expand: true, id: PPDHEG, title: Margin Error}
+      - {data_key: '', id: ISSMTN, title: '', width: '90'}
       foreground: theme:Black
       role: null
     type: DataGrid

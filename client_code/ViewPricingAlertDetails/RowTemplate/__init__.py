@@ -5,6 +5,7 @@ import anvil.users
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
+from ...UpdatePricingAmount import UpdatePricingAmount
 
 
 class RowTemplate(RowTemplateTemplate):
@@ -13,3 +14,9 @@ class RowTemplate(RowTemplateTemplate):
         self.init_components(**properties)
 
         # Any code you write here will run before the form opens.
+
+    def btn_EditItem_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        items = list(self.parent.items)
+        partNo = items[list(self.parent.items).index(self.item)]['PartNo']
+        alert(content=UpdatePricingAmount(partNo), buttons=)

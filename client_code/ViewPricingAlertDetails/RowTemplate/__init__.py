@@ -20,23 +20,13 @@ class RowTemplate(RowTemplateTemplate):
         items = list(self.parent.items)
         partNo = items[list(self.parent.items).index(self.item)]['PartNo']
         # Pass partNo up to ViewPricingAlertDetails instead of opening a nested alert
-        self.raise_event("x-close-parent", partNo=partNo)
-        pricing_form = ViewPricingAlertDetails()
+        self.parent.raise_event("x-close-parent")
+        
         alert(
-            content=pricing_form,
+            content=UpdatePricingAmount(partNo),
             buttons=[],
             dismissible=False,
             large=True
         )
-        # ViewPricingAlertDetails alert is now fully closed
-        # Safe to open UpdatePricingAmount as a fresh top-level alert
-        if pricing_form.selected_partNo:
-            update_form = UpdatePricingAmount(pricing_form.selected_partNo)
-            alert(
-                content=update_form,
-                buttons=[],
-                dismissible=False,
-                large=True
-            )
-
+        
 

@@ -26,7 +26,9 @@ components:
     type: DataGrid
   layout_properties: {full_width_row: true, grid_position: 'VEVJGL,WBCQON'}
   name: card_1
-  properties: {role: card}
+  properties: {role: card, wrap_on: never}
   type: ColumnPanel
-container: {type: ColumnPanel}
+container:
+  properties: {wrap_on: never}
+  type: ColumnPanel
 is_package: true

@@ -256,8 +256,11 @@ class AmendedInvoice(AmendedInvoiceTemplate):
             return
     
         # Get current parts or services list
-        current_items4 = self.repeating_panel_assigned_parts.items
-        if not isinstance(current_items4, list) or len(current_items4) == 0:
+        current_items3 = self.repeating_panel_assigned_parts.items
+       
+        print(f"The current items in the repeating panel are {current_items3} \n")
+        
+        if not isinstance(current_items3, list) or len(current_items3) == 0:
             alert(
                 "Sorry, please enter parts or services first, in order to calculate VAT.",
                 title="Missing Parts Or Services",
@@ -267,7 +270,7 @@ class AmendedInvoice(AmendedInvoiceTemplate):
         # Compute total before VAT (remove commas)
         total_amount = 0.0
 
-        for row in current_items4:
+        for row in current_items3:
             # Clean up Amount (remove commas)
             amount_str = str(row.get("Amount", "")).replace(",", "").strip()
             qty = row.get("QuantityIssued")
@@ -300,10 +303,11 @@ class AmendedInvoice(AmendedInvoiceTemplate):
         selected_number = f"{vat_amount:,.2f}"
         already_exists = any(
             item["Item"].strip().lower() == selected_name and
-            item["Amount"] == selected_number
-            for item in current_items4
+            item["Amount"].replace(",", "").strip() == selected_number
+            for item in current_items3
         )
 
+        print(f"The existing values are {already_exists} \n")
         if already_exists:
             alert(
                 f"'{self.lbl_PartName.text}' has already been added.",
@@ -313,7 +317,7 @@ class AmendedInvoice(AmendedInvoiceTemplate):
             return
             
         # Update repeating panel
-        updated_items4 = current_items4 + [new_VAT]
+        updated_items4 = current_items3 + [new_VAT]
         self.repeating_panel_assigned_parts.items = updated_items4
         self.refresh()
     
@@ -338,12 +342,30 @@ class AmendedInvoice(AmendedInvoiceTemplate):
             "Amount": f"{float(self.txtPreviousAmount.text):,.2f}",
         }
 
+        current_items4 = self.repeating_panel_assigned_parts.items
+
+        #  Check for duplicate using Name and Number (case-insensitive)
+        selected_name = "Previous Balance"
+        selected_number = f"{float(self.txtPreviousAmount.text):,.2f}"
+        already_exists = any(
+            item["Item"].strip().lower() == selected_name and
+            item["Amount"].replace(",", "").strip() == selected_number
+            for item in current_items4
+        )
+
+        if already_exists:
+            alert(
+                f"'{self.lbl_PartName.text}' has already been added.",
+                title="Duplicate Part",
+                large=False
+            )
+            return
         # Append to the repeating panel's items
-        current_items3 = self.repeating_panel_assigned_parts.items
-        if not isinstance(current_items3, list):
-            current_items3 = []
-        updated_items3 = current_items3 + [new_service]
-        self.repeating_panel_assigned_parts.items = updated_items3
+        
+        if not isinstance(current_items4, list):
+            current_items4 = []
+        updated_items4 = current_items4 + [new_service]
+        self.repeating_panel_assigned_parts.items = updated_items4
         self.refresh()
 
         # Clear selected items

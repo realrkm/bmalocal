@@ -257,9 +257,6 @@ class AmendedInvoice(AmendedInvoiceTemplate):
     
         # Get current parts or services list
         current_items3 = self.repeating_panel_assigned_parts.items
-       
-        print(f"The current items in the repeating panel are {current_items3} \n")
-        
         if not isinstance(current_items3, list) or len(current_items3) == 0:
             alert(
                 "Sorry, please enter parts or services first, in order to calculate VAT.",
@@ -300,18 +297,15 @@ class AmendedInvoice(AmendedInvoiceTemplate):
 
         #  Check for duplicate using Name and Number (case-insensitive)
         selected_name = f"{int(vat_percent)}% VAT"
-        selected_number = f"{vat_amount:,.2f}"
         already_exists = any(
-            item["Item"].strip().lower() == selected_name and
-            item["Amount"].replace(",", "").strip() == selected_number
+            item["Item"].strip() == selected_name 
             for item in current_items3
         )
 
-        print(f"The existing values are {already_exists} \n")
         if already_exists:
             alert(
-                f"'{self.lbl_PartName.text}' has already been added.",
-                title="Duplicate Part",
+                f"'{selected_name}' has already been added.",
+                title="Duplicate VAT",
                 large=False
             )
             return
@@ -346,17 +340,15 @@ class AmendedInvoice(AmendedInvoiceTemplate):
 
         #  Check for duplicate using Name and Number (case-insensitive)
         selected_name = "Previous Balance"
-        selected_number = f"{float(self.txtPreviousAmount.text):,.2f}"
         already_exists = any(
-            item["Item"].strip().lower() == selected_name and
-            item["Amount"].replace(",", "").strip() == selected_number
+            item["Item"].strip() == selected_name 
             for item in current_items4
         )
 
         if already_exists:
             alert(
-                f"'{self.lbl_PartName.text}' has already been added.",
-                title="Duplicate Part",
+                f"'{selected_name}' has already been added.",
+                title="Duplicate Balance",
                 large=False
             )
             return

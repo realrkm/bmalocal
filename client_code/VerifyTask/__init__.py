@@ -18,10 +18,10 @@ class VerifyTask(VerifyTaskTemplate):
         self.init_components(**properties)
         anvil.js.call('replaceBanner')
         self.cmbJobCardID.items =  ModGetData.getJobCardRef(valueID)
-        # ✅ Select the first item if available
+        # Select the first item if available
         if self.cmbJobCardID.items:
             self.cmbJobCardID.selected_value = self.cmbJobCardID.items[0][1]
-            # ✅ Manually call the change handler
+            # Manually call the change handler
             #self.cmbJobCardID_change()
        
     def get_signature_image(self):

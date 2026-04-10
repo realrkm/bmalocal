@@ -137,7 +137,7 @@ class AmendedInvoice(AmendedInvoiceTemplate):
         if not isinstance(current_items, list):
             current_items = []
 
-        # ✅ Check for duplicate using Name and Number (case-insensitive)
+        #  Check for duplicate using Name and Number (case-insensitive)
         selected_name = self.lbl_PartName.text.strip().lower()
         selected_number = self.lbl_PartNumber.text.strip().lower()
         already_exists = any(
@@ -204,7 +204,7 @@ class AmendedInvoice(AmendedInvoiceTemplate):
         if not isinstance(current_items2, list):
             current_items2 = []
 
-        # ✅ Check for duplicate using service Name (case-insensitive)
+        # Check for duplicate using service Name (case-insensitive)
         entered_name = self.txtServices.text.strip().lower()
         already_exists = any(item["Item"].strip().lower() == entered_name for item in current_items2)
 
@@ -294,7 +294,24 @@ class AmendedInvoice(AmendedInvoiceTemplate):
             "Item": f"{int(vat_percent)}% VAT",
             "Amount": f"{vat_amount:,.2f}",  # formatted nicely
         }
-    
+
+        #  Check for duplicate using Name and Number (case-insensitive)
+        selected_name = f"{int(vat_percent)}% VAT"
+        selected_number = f"{vat_amount:,.2f}"
+        already_exists = any(
+            item["Item"].strip().lower() == selected_name and
+            item["Amount"] == selected_number
+            for item in current_items4
+        )
+
+        if already_exists:
+            alert(
+                f"'{self.lbl_PartName.text}' has already been added.",
+                title="Duplicate Part",
+                large=False
+            )
+            return
+            
         # Update repeating panel
         updated_items4 = current_items4 + [new_VAT]
         self.repeating_panel_assigned_parts.items = updated_items4
@@ -367,7 +384,7 @@ class AmendedInvoice(AmendedInvoiceTemplate):
             self.btn_SaveAndDownload.enabled = True
             return
 
-        # ✅ Check if any item has "Previous Balance"
+        # Check if any item has "Previous Balance"
         has_previous_balance = any(
             item.get("Item", "").strip().lower() == "previous balance"
             for item in rows

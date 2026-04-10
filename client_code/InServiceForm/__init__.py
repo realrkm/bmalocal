@@ -20,10 +20,10 @@ class InServiceForm(InServiceFormTemplate):
         anvil.js.call('replaceBanner')
         
         self.cmbJobCardRef.items =  ModGetData.getJobCardRef(valueID)
-        # ✅ Select the first item if available
+        # Select the first item if available
         if self.cmbJobCardRef.items:
             self.cmbJobCardRef.selected_value = self.cmbJobCardRef.items[0][1]
-            # ✅ Manually call the change handler
+            # Manually call the change handler
             self.cmbJobCardRef_change()
             
     def cmbJobCardRef_change(self, **event_args):

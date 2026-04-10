@@ -19,10 +19,10 @@ class Invoice(InvoiceTemplate):
         anvil.js.call('replaceBanner')
         self.cmbJobCardRef.items =  ModGetData.getJobCardRef(valueID)
         
-        # ✅ Select the first item if available
+        #  Select the first item if available
         if self.cmbJobCardRef.items:
             self.cmbJobCardRef.selected_value = self.cmbJobCardRef.items[0][1]
-            # ✅ Manually call the change handler
+            #  Manually call the change handler
             self.cmbJobCardRef_change()
         
     def refresh(self, **event_args):
@@ -113,7 +113,7 @@ class Invoice(InvoiceTemplate):
         if not isinstance(current_items, list):
             current_items = []
     
-        # ✅ Check for duplicate using Name and Number (case-insensitive)
+        #  Check for duplicate using Name and Number (case-insensitive)
         selected_name = self.lbl_PartName.text.strip().lower()
         selected_number = self.lbl_PartNumber.text.strip().lower()
         already_exists = any(
@@ -170,7 +170,7 @@ class Invoice(InvoiceTemplate):
         if not isinstance(current_items2, list):
             current_items2 = []
     
-        # ✅ Check for duplicate using service Name (case-insensitive)
+        # Check for duplicate using service Name (case-insensitive)
         entered_name = self.txtServices.text.strip().lower()
         already_exists = any(item["Name"].strip().lower() == entered_name for item in current_items2)
     

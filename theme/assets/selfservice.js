@@ -929,7 +929,7 @@
                 onclick="switchPartsTab('workdone')" 
                 class="parts-tab-btn ${state.activePartsTab === 'workdone' ? 'active' : ''}"
                 style="flex:1; min-width:180px; padding:1.2rem 2rem; border-radius:1rem; font-size:1.8rem; font-weight:bold; cursor:pointer; transition:all 0.3s ease; border:2px solid ${state.activePartsTab === 'workdone' ? 'rgba(59, 130, 246, 0.5)' : 'transparent'}; background:${state.activePartsTab === 'workdone' ? 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' : 'transparent'}; color:white;">
-                ✅ Work Done
+                 Work Done
             </button>
             `}
         </div>
@@ -1466,7 +1466,7 @@
                 
                 <div style="margin-bottom:2rem;">
                     <label for="approved-parts-textarea" style="display:block; margin-bottom:1rem; font-size:2rem; font-weight:bold; color:#06b6d4;">
-                        ✅ Approved Parts
+                         Approved Parts
                     </label>
                     <textarea 
                         id="approved-parts-textarea" 
@@ -2893,7 +2893,7 @@ function setupListeners() {
 
             await customAlert(
                 `Details have been saved successfully for JobCard ${state.activeReg}`,
-                '✅ Success'
+                ' Success'
             );
 
             // Clear state
@@ -2955,7 +2955,7 @@ function setupListeners() {
 
             await customAlert(
                 `Work done has been saved successfully for JobCard ${state.activeReg}`,
-                '✅ Success'
+                ' Success'
             );
 
             state.currentWorkDoneReg = null;
@@ -3154,7 +3154,7 @@ function setupListeners() {
 
             await customAlert(
                 `Work done has been saved successfully for jobcard reference ${state.currentWorkDoneReg}`,
-                '✅ Success'
+                ' Success'
             );
 
             state.currentWorkDoneReg = null;

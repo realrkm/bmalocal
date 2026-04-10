@@ -142,7 +142,7 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
                 "subs": {sub.tag: sub.checked for sub in subs}
             }
 
-        # ✅ Check if at least one permission is selected
+        # Check if at least one permission is selected
         any_selected = any(
             section_data["main"] or any(section_data["subs"].values())
             for section_data in selected_permissions.values()

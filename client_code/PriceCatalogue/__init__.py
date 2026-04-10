@@ -87,7 +87,7 @@ class PriceCatalogue(PriceCatalogueTemplate):
                 title="Invalid File",
                 large=False
             )
-            self._reset_file_uploader()  # ✅ Clear after wrong file type alert is dismissed
+            self._reset_file_uploader()  #  Clear after wrong file type alert is dismissed
             return
 
         # Confirm before proceeding
@@ -99,7 +99,7 @@ class PriceCatalogue(PriceCatalogueTemplate):
             buttons=[("Yes, Import", True), ("Cancel", False)]
         )
         if not confirmed:
-            self._reset_file_uploader()  # ✅ Clear on cancel
+            self._reset_file_uploader()  # Clear on cancel
             return
 
         # Show progress notification and keep a reference to dismiss it later
@@ -126,7 +126,7 @@ class PriceCatalogue(PriceCatalogueTemplate):
                 large=True
             )
         finally:
-            notification.hide()           # ✅ Dismiss notification when processing is done
-            self._reset_file_uploader()   # ✅ Clear after processing completes
+            notification.hide()           # Dismiss notification when processing is done
+            self._reset_file_uploader()   # Clear after processing completes
         """Refresh the repeating panel with the latest data from the database."""
         self.repeating_panel_1.items = anvil.server.call("get_filtered_parts")

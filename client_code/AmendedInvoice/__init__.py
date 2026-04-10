@@ -418,6 +418,8 @@ class AmendedInvoice(AmendedInvoiceTemplate):
         self.insertMissingSellingPrices()
         self.downloadInvoicePdf(job_card_id)
 
+        # Update payment details balance after invoice change
+        anvil.server.call_s("updatePaymentDetailsAfterInvoiceChanges", job_card_id)
         # Clear form
         self.clear_form_fields()
 

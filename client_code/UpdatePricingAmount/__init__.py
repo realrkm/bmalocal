@@ -21,6 +21,7 @@ class UpdatePricingAmount(UpdatePricingAmountTemplate):
         self.drop_down_supplier.items = anvil.server.call("getSupplier")
         self.text_box_searchPartNo.text = partno
         self.btn_Search_click()
+       
 
     def btn_Search_click(self, **event_args):
         """This method is called when the text in this text box is edited"""

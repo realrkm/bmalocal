@@ -32,21 +32,16 @@ components:
     name: spacer_3
     properties: {height: 14}
     type: Spacer
-  - components:
-    - event_bindings: {click: btn_SaveAndNew_click}
-      layout_properties: {grid_position: 'UDPTXQ,UROGSA'}
-      name: btn_SaveAndNew
-      properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: Save AND NEW}
-      type: Button
-    - event_bindings: {click: btn_EditClient_click}
-      layout_properties: {grid_position: 'UDPTXQ,YNPAUW'}
-      name: btn_EditClient
-      properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: EDIT CLIENT}
-      type: Button
-    layout_properties: {grid_position: 'TRDMYB,SQGFAP'}
-    name: card_2
-    properties: {border: '', role: wide, wrap_on: never}
-    type: ColumnPanel
+  - event_bindings: {click: btn_SaveAndNew_click}
+    layout_properties: {grid_position: 'VKHDUQ,POONTC'}
+    name: btn_SaveAndNew
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: Save AND NEW}
+    type: Button
+  - event_bindings: {click: btn_EditClient_click}
+    layout_properties: {grid_position: 'VKHDUQ,MDXRBZ'}
+    name: btn_EditClient
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: EDIT CLIENT}
+    type: Button
   - layout_properties: {grid_position: 'DADULD,CAPVTF'}
     name: spacer_3_copy
     properties: {height: 14}

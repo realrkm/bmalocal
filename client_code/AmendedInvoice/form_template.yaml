@@ -260,7 +260,7 @@ components:
         - {data_key: Amount, expand: true, id: VGKUXC, title: Amount (Kshs), width: ''}
         - {data_key: '', expand: false, id: ULDDEA, title: ''}
         foreground: theme:White
-        role: null
+        role: wide
         rows_per_page: 200
         show_page_controls: false
         wrap_on: mobile

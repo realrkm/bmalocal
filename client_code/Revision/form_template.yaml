@@ -22,7 +22,7 @@ components:
     type: Button
   layout_properties: {full_width_row: true, grid_position: 'VUYUYS,BUPJEJ', row_background: 'theme:Black'}
   name: card_1
-  properties: {role: card}
+  properties: {role: wide, wrap_on: never}
   type: ColumnPanel
 - layout_properties: {full_width_row: true, grid_position: 'VKRIBD,OQBACR', row_background: 'theme:Black'}
   name: card_2

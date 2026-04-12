@@ -175,7 +175,7 @@ components:
           type: Label
         layout_properties: {grid_position: 'RGDOSG,VMRFAU', row_background: 'theme:Black'}
         name: card_3
-        properties: {background: '', border: solid, role: card}
+        properties: {background: 'theme:White', border: solid, role: wide}
         type: ColumnPanel
       - event_bindings: {click: btn_JobCard_click}
         layout_properties: {grid_position: 'GOPPPW,WSVUBH'}

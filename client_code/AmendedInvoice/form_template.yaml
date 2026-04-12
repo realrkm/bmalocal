@@ -242,11 +242,11 @@ components:
     - components:
       - layout_properties: {}
         name: repeating_panel_assigned_parts
-        properties: {background: 'theme:Black', border: solid, foreground: 'theme:White', item_template: AmendedInvoice.RowTemplate, role: card}
+        properties: {background: '', border: '', foreground: '', item_template: AmendedInvoice.RowTemplate, role: wide}
         type: RepeatingPanel
       - layout_properties: {}
         name: txtTotal
-        properties: {align: right, background: 'theme:Gray 900', bold: true, border: '', font: Roboto, foreground: 'theme:White', role: dense}
+        properties: {align: right, background: 'theme:Black', bold: true, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: dense}
         type: TextBox
       layout_properties: {grid_position: 'FIBFWU,BDAUFF'}
       name: data_grid_1

@@ -983,3 +983,83 @@ https://stackoverflow.com/questions/30533055/calculating-shadow-values-for-all-m
 }
 
 /* End Spinner */
+
+/* Data Grids - Full Update */
+
+/* 1. Scrolling Container */
+.anvil-role-wide.anvil-data-grid > .data-grid-child-panel {
+    overflow: auto;               /* Enables horizontal and vertical scroll */
+    max-height: 70vh;             /* Set vertical height limit */
+    position: relative;
+    border-radius: 24px;          /* Matches grid border-radius */
+}
+
+/* 2. Unified Sticky Header Background */
+.anvil-role-wide.anvil-data-grid > .data-grid-child-panel > div.auto-grid-header {
+    background-color: #000000 !important; /* Solid black to hide rows sliding behind */
+    background-image: none !important;    /* Remove gradients to avoid mobile display bugs */
+    border-bottom: 1px solid %color:Surface Variant%;
+border-radius: 24px 24px 0 0;
+position: sticky;
+top: 0;
+z-index: 10;
+}
+
+/* Force every column in the header to inherit the black background */
+.anvil-role-wide.anvil-data-grid > .data-grid-child-panel > div.auto-grid-header .data-row-col {
+    background-color: #000000 !important;
+    color: #ffffff;                       /* Ensure text is visible on black */
+}
+
+/* 3. Row Sizing and Screen Logic */
+.anvil-role-wide.anvil-data-grid .anvil-data-row-panel {
+    flex-wrap: nowrap !important;         
+    width: fit-content;
+    min-width: 100%;                      /* Stretch on actual large screens */
+}
+
+/* Fix for Android Chrome "Desktop Site" and Portrait Mobile */
+/* If the screen is narrower than 992px, keep columns compact */
+@media screen and (max-width: 768px) {
+    .anvil-role-wide.anvil-data-grid .anvil-data-row-panel {
+        min-width: max-content !important; 
+    }
+}
+
+
+/* 4. Grid Borders and Radius */
+.anvil-role-wide.anvil-data-grid {
+    border-radius: 24px;
+    border: 1px solid %color:Surface Variant%;
+overflow: hidden;                     /* Prevents content bleed on corners */
+}
+
+.anvil-role-wide.anvil-data-grid .data-grid-child-panel div.data-row-col {
+    border-left: 1px solid %color:Surface Variant%;
+border-bottom: 1px solid %color:Surface Variant%;
+}
+
+.anvil-role-wide.anvil-data-grid .data-grid-child-panel div.data-row-col:first-child {
+    border-left: 0;
+}
+
+.anvil-role-wide.anvil-data-grid > .data-grid-child-panel > div.auto-grid-header div.data-row-col {
+    border-top: 0;
+    border-bottom: 0;
+    border-right: 0;
+}
+/* 5. Row Text Alignment and Padding */
+.anvil-role-wide.anvil-data-grid .anvil-data-row-panel .data-row-col > div {
+    padding: 12px;                /* Matches the header padding */
+    text-align: center !important; /* Centers row data to match header labels */
+    display: flex;
+    align-items: center;          /* Vertically centers content */
+    justify-content: center;      /* Horizontally centers content */
+}
+
+/* Optional: Subtle hover effect for better readability on long lists */
+.anvil-role-wide.anvil-data-grid .anvil-data-row-panel:hover {
+    background-color: %color:Primary Container Overlay 5%%;
+}
+
+/* End Data Grids */

@@ -62,7 +62,7 @@ components:
       type: Spacer
     layout_properties: {grid_position: 'NWEUAS,CHNGLZ', row_background: 'theme:Black'}
     name: card_2
-    properties: {role: card}
+    properties: {role: card, wrap_on: never}
     type: ColumnPanel
   - layout_properties: {grid_position: 'JWDAPA,KTCTNR'}
     name: spacer_1_copy
@@ -111,12 +111,14 @@ components:
       - {data_key: Discount, expand: true, id: LHIADB, title: Discounted Price (Kshs)}
       - {data_key: StockBalance, id: ZSGDYX, title: Stock Balance}
       foreground: theme:White
-      role: null
-      wrap_on: mobile
+      role: wide
+      wrap_on: never
     type: DataGrid
   layout_properties: {full_width_row: true, grid_position: 'AWGLFW,UVUHMI', row_background: 'theme:Black'}
   name: card_1
-  properties: {col_widths: '{"NAGFFN":40,"GLYMLM":20}', role: card}
+  properties: {col_widths: '{"NAGFFN":40,"GLYMLM":20}', role: card, wrap_on: never}
   type: ColumnPanel
-container: {type: ColumnPanel}
+container:
+  properties: {role: wide, wrap_on: never}
+  type: ColumnPanel
 is_package: true

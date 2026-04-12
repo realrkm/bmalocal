@@ -20,6 +20,7 @@ class PriceCatalogue(PriceCatalogueTemplate):
         anvil.js.call('replaceBanner')
         
         self.repeating_panel_1.items = anvil.server.call("get_filtered_parts")
+        self.data_grid_1.role='wide'
         
     def btn_Search_click(self, **event_args):
         """This method is called when the button is clicked"""

@@ -12,7 +12,7 @@ components:
   - event_bindings: {click: btn_SearchCustomer_click}
     layout_properties: {grid_position: 'YOTKWG,LZQOZW'}
     name: btn_SearchCustomer
-    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: primary-color, text: Search}
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: raised, text: Search}
     type: Button
   - event_bindings: {change: drop_down_JobCardRefDetails_change}
     layout_properties: {grid_position: 'ZODTMU,UIVWXD'}

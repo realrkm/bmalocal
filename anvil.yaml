@@ -127,6 +127,6 @@ services:
 - client_config: {}
   server_config: {}
   source: /runtime/services/anvil/secrets.yml
-startup: {module: Form1, type: form}
+startup: {module: Launcher, type: form}
 startup_form: null
 uplink_visible: true

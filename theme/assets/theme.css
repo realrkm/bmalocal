@@ -984,7 +984,7 @@ https://stackoverflow.com/questions/30533055/calculating-shadow-values-for-all-m
 
 /* End Spinner */
 
-/* Data Grids - Full Update */
+/* Add Scrolling and Locking Headers */
 
 /* 1. Scrolling Container */
 .anvil-role-wide.anvil-data-grid > .data-grid-child-panel {
@@ -1026,7 +1026,6 @@ z-index: 10;
     }
 }
 
-
 /* 4. Grid Borders and Radius */
 .anvil-role-wide.anvil-data-grid {
     border-radius: 24px;
@@ -1062,4 +1061,4 @@ border-bottom: 1px solid %color:Surface Variant%;
     background-color: %color:Primary Container Overlay 5%%;
 }
 
-/* End Data Grids */
+/* End Add Scrolling and Locking Headers */

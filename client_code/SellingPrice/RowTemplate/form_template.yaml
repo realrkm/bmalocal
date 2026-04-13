@@ -5,6 +5,6 @@ components:
   properties: {background: '#0056D6', foreground: 'theme:White', icon: 'fa:edit', text: ''}
   type: Button
 container:
-  properties: {font: Roboto, font_size: 16}
+  properties: {font: Roboto, font_size: 16, role: wide}
   type: DataRowPanel
 is_package: true

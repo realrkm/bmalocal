@@ -34,7 +34,7 @@ components:
   - components:
     - layout_properties: {pinned: false}
       name: client_repeater
-      properties: {item_template: ClientContactReport.RowTemplate3, role: null}
+      properties: {item_template: ClientContactReport.RowTemplate3, role: wide}
       type: RepeatingPanel
     data_bindings: []
     layout_properties: {full_width_row: false, grid_position: 'WUUYLU,BXHIPD'}
@@ -52,7 +52,7 @@ components:
       - {data_key: Discount, expand: true, id: SHVONS, title: Discount}
       - {data_key: Balance, expand: true, id: TWTWEL, title: Balance}
       foreground: theme:White
-      role: null
+      role: wide
       rows_per_page: 25
       spacing_above: medium
       spacing_below: medium

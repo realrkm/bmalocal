@@ -5,6 +5,6 @@ components:
   properties: {background: '#0056D6', foreground: 'theme:White', icon: 'fa:trash-o', icon_align: right, text: '', tooltip: Delete Row}
   type: Button
 container:
-  properties: {align: left, background: 'theme:Black', border: solid, foreground: 'theme:White'}
+  properties: {align: left, background: '', border: '', foreground: '', role: wide}
   type: DataRowPanel
 is_package: true

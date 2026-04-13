@@ -35,7 +35,7 @@ components:
   - components:
     - layout_properties: {pinned: false}
       name: car_repeater
-      properties: {item_template: CarDetailsReport.RowTemplate3, role: null}
+      properties: {item_template: CarDetailsReport.RowTemplate3, role: wide}
       type: RepeatingPanel
     data_bindings: []
     layout_properties: {full_width_row: false, grid_position: 'WUUYLU,BXHIPD'}
@@ -54,7 +54,7 @@ components:
       - {data_key: JobCardRef, expand: true, id: PWPZHT, title: Job Card Ref}
       - {data_key: MakeAndModel, expand: true, id: LGMPBL, title: MakeAndModel}
       foreground: theme:White
-      role: null
+      role: wide
       rows_per_page: 25
       spacing_above: medium
       spacing_below: medium
@@ -62,7 +62,7 @@ components:
     type: DataGrid
   layout_properties: {full_width_row: false, grid_position: 'BHYZFO,GONIBV'}
   name: card_1
-  properties: {border: solid, col_widths: '{}', role: card, wrap_on: mobile}
+  properties: {border: solid, col_widths: '{}', role: wide, wrap_on: mobile}
   type: ColumnPanel
 container:
   properties: {role: full-screen-form}

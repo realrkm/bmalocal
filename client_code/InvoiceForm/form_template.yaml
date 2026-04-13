@@ -90,16 +90,16 @@ components:
     - components:
       - layout_properties: {}
         name: repeating_panel_1
-        properties: {background: 'theme:White', foreground: 'theme:Gray 900', item_template: InvoiceForm.RowTemplate7}
+        properties: {background: '', foreground: '', item_template: InvoiceForm.RowTemplate7, role: wide}
         type: RepeatingPanel
       - layout_properties: {}
         name: txtTotal
-        properties: {align: right, background: 'theme:Gray 900', bold: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:White'}
+        properties: {align: right, background: '', bold: true, font: Mozilla Headline, font_size: 16, foreground: '', role: wide}
         type: TextBox
       layout_properties: {grid_position: 'BFLQXP,IIWNTA'}
       name: data_grid_1
       properties:
-        background: theme:Gray 600
+        background: theme:Black
         border: solid
         columns:
         - {data_key: Item, expand: true, id: JKSDUP, title: Item}
@@ -107,13 +107,14 @@ components:
         - {data_key: Amount, expand: true, id: OJLQEN, title: Amount (Kshs)}
         - {data_key: Total, expand: true, id: EXIPLU, title: Total (Kshs)}
         foreground: theme:White
+        role: wide
         rows_per_page: 200
         show_page_controls: false
         wrap_on: mobile
       type: DataGrid
     layout_properties: {grid_position: 'XEMOEL,PDSIOY'}
     name: column_panel_1
-    properties: {border: ''}
+    properties: {border: '', role: wide}
     type: ColumnPanel
   - layout_properties: {grid_position: 'XNQORR,XWJCJB'}
     name: spacer_2
@@ -121,7 +122,7 @@ components:
     type: Spacer
   layout_properties: {full_width_row: false, grid_position: 'WNBWSA,NHSORN', row_background: ''}
   name: card_1
-  properties: {role: card}
+  properties: {role: wide}
   type: ColumnPanel
 container:
   properties: {border: ''}

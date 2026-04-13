@@ -2,8 +2,9 @@ components:
 - components:
   - components:
     - data_bindings: []
+      layout_properties: {}
       name: repeating_panel_1
-      properties: {item_template: UserAccounts.RowTemplate14}
+      properties: {item_template: UserAccounts.RowTemplate14, role: wide}
       type: RepeatingPanel
     layout_properties: {full_width_row: true, grid_position: 'WQGOLM,AGBUMU'}
     name: data_grid_1
@@ -22,11 +23,12 @@ components:
       - {data_key: '', id: ZDSCHS, title: '', width: '90'}
       - {data_key: '', id: GRYODO, title: '', width: '90'}
       foreground: theme:White
+      role: wide
       wrap_on: mobile
     type: DataGrid
   layout_properties: {full_width_row: true, grid_position: 'HBBMXX,VAVFQV', row_background: 'theme:Black'}
   name: card_1
-  properties: {role: card, wrap_on: mobile}
+  properties: {role: wide, wrap_on: mobile}
   type: ColumnPanel
 container:
   properties: {wrap_on: mobile}

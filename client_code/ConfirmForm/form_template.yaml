@@ -90,16 +90,16 @@ components:
     - components:
       - layout_properties: {}
         name: repeating_panel_1
-        properties: {border: '', foreground: 'theme:Black', item_template: ConfirmForm.RowTemplate, role: card}
+        properties: {border: '', foreground: '', item_template: ConfirmForm.RowTemplate, role: wide}
         type: RepeatingPanel
       - layout_properties: {}
         name: txtTotal
-        properties: {align: right, background: 'theme:Gray 900', bold: true, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: dense}
+        properties: {align: right, background: 'theme:Black', bold: true, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: wide}
         type: TextBox
       layout_properties: {grid_position: 'FIBFWU,BDAUFF'}
       name: data_grid_1
       properties:
-        background: theme:Gray 600
+        background: theme:Black
         border: solid
         columns:
         - {data_key: Item, expand: true, id: JKSDUP, title: Item}
@@ -107,7 +107,7 @@ components:
         - {data_key: Amount, expand: true, id: VGKUXC, title: Amount (Kshs)}
         - {data_key: Total, expand: true, id: VQKMLW, title: Total (Kshs)}
         foreground: theme:White
-        role: null
+        role: wide
         rows_per_page: 200
         show_page_controls: false
         wrap_on: mobile
@@ -136,7 +136,7 @@ components:
     type: Spacer
   layout_properties: {full_width_row: false, grid_position: 'WNBWSA,NHSORN', row_background: ''}
   name: card_1
-  properties: {role: card}
+  properties: {role: wide}
   type: ColumnPanel
 container:
   properties: {border: ''}

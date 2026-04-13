@@ -29,7 +29,7 @@ components:
       type: Label
     layout_properties: {grid_position: 'CBFHWX,UAVCFE KWJBXD,HSRIEX'}
     name: card_1
-    properties: {background: '', border: solid, role: card}
+    properties: {background: '', border: solid, role: wide}
     type: ColumnPanel
   - components:
     - layout_properties: {grid_position: 'ABEEYG,VLZOHB'}
@@ -38,7 +38,7 @@ components:
       type: Label
     layout_properties: {grid_position: 'CBFHWX,UAVCFE VUPNIX,ZNIYEC'}
     name: card_2
-    properties: {border: solid, role: card}
+    properties: {border: solid, role: wide}
     type: ColumnPanel
   - components:
     - layout_properties: {grid_position: 'AALUQY,NXAEWY'}
@@ -47,7 +47,7 @@ components:
       type: Label
     layout_properties: {grid_position: 'CBFHWX,UKSLLR TEPVHP,WPVVZF'}
     name: card_3
-    properties: {border: solid, role: card}
+    properties: {border: solid, role: wide}
     type: ColumnPanel
   - components:
     - layout_properties: {grid_position: 'DKZZEF,NZWECX'}
@@ -56,7 +56,7 @@ components:
       type: Label
     layout_properties: {grid_position: 'CBFHWX,UKSLLR'}
     name: card_4
-    properties: {border: solid, role: card}
+    properties: {border: solid, role: wide}
     type: ColumnPanel
   - components:
     - layout_properties: {grid_position: 'UDEQDH,ACOSRJ'}
@@ -65,7 +65,7 @@ components:
       type: Label
     layout_properties: {grid_position: 'CBFHWX,YAEUBN AVSOFZ,KQHQQZ'}
     name: card_5
-    properties: {border: solid, role: card}
+    properties: {border: solid, role: wide}
     type: ColumnPanel
   - components:
     - layout_properties: {grid_position: 'QKJJOF,EBXTQC'}
@@ -74,7 +74,7 @@ components:
       type: Label
     layout_properties: {grid_position: 'CBFHWX,YAEUBN GZLQWT,TUPACJ'}
     name: card_6
-    properties: {border: solid, role: card}
+    properties: {border: solid, role: wide}
     type: ColumnPanel
   - components:
     - layout_properties: {grid_position: 'TSJLQK,VOISHW'}
@@ -83,7 +83,7 @@ components:
       type: Label
     layout_properties: {grid_position: 'NMVVCR,FCMSDJ'}
     name: card_7
-    properties: {border: solid, role: card}
+    properties: {border: solid, role: wide}
     type: ColumnPanel
   layout_properties: {grid_position: 'WPWCTX,JDYOEV'}
   name: column_panel_2

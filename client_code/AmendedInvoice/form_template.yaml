@@ -258,7 +258,7 @@ components:
         - {data_key: PartNo, expand: true, id: EXBEOB, title: Number}
         - {data_key: QuantityIssued, expand: true, id: OJLQEN, title: Quantity, width: ''}
         - {data_key: Amount, expand: true, id: VGKUXC, title: Amount (Kshs), width: ''}
-        - {data_key: '', expand: false, id: ULDDEA, title: ''}
+        - {data_key: '', expand: false, id: ULDDEA, title: '', width: '90'}
         foreground: theme:White
         role: wide
         rows_per_page: 200

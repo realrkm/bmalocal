@@ -11,7 +11,7 @@ components:
   - components:
     - layout_properties: {pinned: false}
       name: client_repeater
-      properties: {item_template: ClientContactReport.RowTemplate3, role: null}
+      properties: {item_template: ClientContactReport.RowTemplate3, role: wide}
       type: RepeatingPanel
     data_bindings: []
     layout_properties: {full_width_row: false, grid_position: 'WUUYLU,BXHIPD'}
@@ -21,13 +21,14 @@ components:
       border: solid
       columns:
       - {data_key: 'No', expand: false, id: LXRVOX, title: 'No', width: 49}
-      - {data_key: Fullname, expand: true, id: CUNVFB, title: Fullname, width: 126.66665649414062}
-      - {data_key: Phone, expand: false, id: IUBBKG, title: Phone, width: 130}
-      - {data_key: Address, expand: false, id: BDLZGZ, title: Address, width: 143.6666259765625}
-      - {data_key: Email, expand: true, id: XCHXFY, title: Email, width: 155.6666259765625}
-      - {data_key: Narration, expand: false, id: JHCREX, title: Narration, width: 102.33331298828125}
+      - {data_key: Fullname, expand: true, id: CUNVFB, title: Fullname, width: ''}
+      - {data_key: Phone, expand: true, id: IUBBKG, title: Phone, width: ''}
+      - {data_key: Address, expand: true, id: BDLZGZ, title: Address, width: ''}
+      - {data_key: '', id: FVRUJA, title: '', width: '1'}
+      - {data_key: Email, expand: true, id: XCHXFY, title: Email, width: ''}
+      - {data_key: Narration, expand: true, id: JHCREX, title: Narration, width: ''}
       foreground: theme:White
-      role: null
+      role: wide
       rows_per_page: 25
       spacing_above: medium
       spacing_below: medium
@@ -35,7 +36,7 @@ components:
     type: DataGrid
   layout_properties: {full_width_row: false, grid_position: 'BHYZFO,GONIBV'}
   name: card_1
-  properties: {border: solid, role: card, wrap_on: mobile}
+  properties: {border: solid, role: wide, wrap_on: mobile}
   type: ColumnPanel
 container:
   properties: {role: full-screen-form}

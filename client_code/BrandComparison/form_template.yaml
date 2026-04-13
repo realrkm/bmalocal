@@ -163,6 +163,7 @@ components:
         - {data_key: GroupID, expand: true, id: KYVUEH, title: Group ID}
         - {data_key: '', id: ZBHQLY, title: '', width: '90'}
         foreground: theme:White
+        role: wide
         rows_per_page: 200
         show_page_controls: false
         wrap_on: mobile

@@ -11,6 +11,6 @@ components:
   properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 14, foreground: 'theme:Black', placeholder: Enter Quantity *, type: number}
   type: TextBox
 container:
-  properties: {border: solid}
+  properties: {border: '', role: wide}
   type: DataRowPanel
 is_package: true

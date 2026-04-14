@@ -47,7 +47,18 @@ class Main(MainTemplate):
             self.error_label.visible = False  # Hidden by default
 
             set_default_error_handling(lambda exc: ModGetData.handle_server_errors(exc, self.error_label))
-        
+        # Hide the popup on load
+        self.live_assistant_popup.visible = False
+
+    def fab_button_click(self, **event_args):
+        # Toggle the popup open/closed
+        self.live_assistant_popup.visible = not self.live_assistant_popup.visible
+        # Swap the mic icon
+        if self.live_assistant_popup.visible:
+            self.fab_button.icon = "fa:microphone"
+        else:
+            self.fab_button.icon = "fa:microphone-slash"
+            
     def refresh(self, **event_args):
         self.set_event_handler("x-refresh", self.refresh)
         

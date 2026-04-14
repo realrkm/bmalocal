@@ -178,3 +178,8 @@ roles:
 - components: [Link]
   name: selected
 - {components: null, name: wide}
+- {name: fab}
+- {name: live-assistant-popup}
+- {name: live-assistant-header}
+- {name: live-assistant-body}
+- {name: live-dot}

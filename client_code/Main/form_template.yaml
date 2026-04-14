@@ -1,10 +1,10 @@
 components:
 - components:
-  - layout_properties: {grid_position: 'TPMBDK,LAAQRC'}
+  - layout_properties: {grid_position: 'CLSJCB,WBKABB TPMBDK,LAAQRC'}
     name: error_label
     properties: {align: right, foreground: '#e51515', icon_align: left_edge}
     type: Label
-  - layout_properties: {grid_position: 'AYVILZ,GEIHUC'}
+  - layout_properties: {grid_position: 'CLSJCB,WBKABB AYVILZ,GEIHUC'}
     name: notification_label
     properties:
       align: center
@@ -28,7 +28,7 @@ components:
     name: notification_timer
     properties: {interval: 5}
     type: Timer
-  - layout_properties: {grid_position: 'FJQHCH,VRODKY'}
+  - layout_properties: {grid_position: 'CLSJCB,WBKABB FJQHCH,VRODKY'}
     name: spacer_2
     properties: {height: '10'}
     type: Spacer
@@ -53,10 +53,15 @@ components:
       name: btn_ViewBuyingPriceExceedsSelling
       properties: {background: '#f20000', border: '', enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: '', role: raised, spacing_above: none, text: Pricing Alert, visible: true}
       type: Button
-    layout_properties: {grid_position: 'EXJVCC,PMZDAH'}
+    layout_properties: {grid_position: 'CLSJCB,WBKABB EXJVCC,PMZDAH'}
     name: card_2
     properties: {role: wide, wrap_on: never}
     type: ColumnPanel
+  - event_bindings: {click: fab_button_click}
+    layout_properties: {grid_position: 'CLSJCB,FGQTDK'}
+    name: fab_button
+    properties: {icon: 'fa:microphone', icon_align: right, role: fab, text: ''}
+    type: Button
   - components:
     - components:
       - layout_properties: {grid_position: 'OUINEK,OUAOZU'}
@@ -73,18 +78,39 @@ components:
         type: Spacer
       layout_properties: {grid_position: 'OQQFZQ,ODANXC'}
       name: card_1
-      properties: {background: 'theme:White', border: '', role: null}
+      properties: {background: 'theme:White', border: '', col_widths: '{"MLFQQF":55}', role: null}
       type: ColumnPanel
-    layout_properties: {full_width_row: true, grid_position: 'PFXQBN,DICXDA'}
+    layout_properties: {full_width_row: true, grid_position: 'CLSJCB,WBKABB PFXQBN,DICXDA'}
     name: column_panel_content
     properties: {}
+    type: ColumnPanel
+  - components:
+    - layout_properties: {grid_position: 'NYWMEF,UJVUTH'}
+      name: label_1
+      properties:
+        role: [live-assistant-header, live-dot]
+        text: LIVE ASSISTANT
+      type: Label
+    - layout_properties: {grid_position: 'HLAMCA,LPDXWG'}
+      name: label_2
+      properties:
+        role: live-assistant-body
+        text: |+
+          Listening…
+
+
+
+      type: Label
+    layout_properties: {grid_position: 'CLSJCB,ZSCHZU'}
+    name: live_assistant_popup
+    properties: {role: live-assistant-popup}
     type: ColumnPanel
   layout_properties: {slot: default}
   name: column_panel_main
   properties:
     background: theme:White
     border: ''
-    col_widths: '{}'
+    col_widths: '{"WBKABB":73,"FGQTDK":2,"ZSCHZU":5}'
     role: card
     spacing:
       padding: [null, 8, null, 8]

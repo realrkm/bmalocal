@@ -1062,3 +1062,93 @@ border-bottom: 1px solid %color:Surface Variant%;
 }
 
 /* End Add Scrolling and Locking Headers */
+
+/* ── Floating Action Button (FAB) ── */
+.anvil-role-fab {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+}
+
+.anvil-role-fab > .btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50% !important;
+    padding: 0 !important;
+    min-height: 56px;
+    background-color: #e53935 !important; /* red, matching your screenshot */
+    color: white !important;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.35) !important;
+    font-size: 22px;
+    line-height: 56px;
+    text-align: center;
+    border: none;
+}
+
+.anvil-role-fab > .btn:hover {
+    background-color: #c62828 !important;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.45) !important;
+    transform: scale(1.08);
+    transition: all 0.2s ease;
+}
+
+/* ── Live Assistant popup panel ── */
+.anvil-role-live-assistant-popup {
+    position: fixed;
+    bottom: 92px;      /* sits just above the FAB */
+    right: 24px;
+    z-index: 9998;
+    width: 320px;
+    background: white;
+    border-radius: 12px;
+    border: 1.5px solid %color:Primary 500%;
+box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+overflow: hidden;
+animation: popup-in 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes popup-in {
+    from { opacity: 0; transform: scale(0.85) translateY(20px); }
+    to   { opacity: 1; transform: scale(1)    translateY(0);    }
+}
+
+/* Header bar inside the popup */
+.anvil-role-live-assistant-header {
+    background-color: %color:Primary 500%;
+    color: white;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Transcript / body area */
+.anvil-role-live-assistant-body {
+    padding: 12px 16px;
+    min-height: 120px;
+    font-size: 14px;
+    color: rgba(0,0,0,0.7);
+    background: #fafafa;
+}
+
+/* Green "live" pulse dot */
+.anvil-role-live-dot::before {
+    content: "";
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #4caf50;
+    margin-right: 6px;
+    animation: pulse-dot 1.4s ease-in-out infinite;
+    vertical-align: middle;
+}
+
+@keyframes pulse-dot {
+    0%, 100% { opacity: 1;   transform: scale(1);    }
+    50%       { opacity: 0.4; transform: scale(0.75); }
+}

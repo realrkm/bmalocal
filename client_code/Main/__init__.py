@@ -158,6 +158,16 @@ class Main(MainTemplate):
             self.fab_btn.role = "fab"
             self.fab_btn.icon = "fa:microphone-slash"
             self.lbl_status.text = "Disconnected"
+            
+        elif event_name == "volume_level":
+            level = data.get("level", 0)
+            # Map the volume to the width of a bar (e.g., 0% to 100%)
+            # Sensitivity adjustment: multiplying by 2 helps see lower talking volumes
+            width = min(100, level * 2) 
+            self.node_volume_bar.width = f"{width}%"
+
+            # Optional: Change color if it's too loud (peaking)
+            self.node_volume_bar.background = "#00e676" if width < 85 else "#ff5252"
 
 
     def _close_popup(self):

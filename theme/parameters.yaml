@@ -187,3 +187,6 @@ roles:
 - {name: status-bar}
 - components: [Button]
   name: close-popup-btn
+- {name: volume-level-bar}
+- components: [LinearPanel]
+  name: volume-bar-container

@@ -98,10 +98,12 @@ native_deps:
             }
         }
     </script>
+
     <script>
         (function () {
             "use strict";
 
+            // ✅ Updated to current stable Live model
             const MODEL   = "gemini-2.0-flash-live";
             const WS_BASE = "wss://generativelanguage.googleapis.com/ws/" +
                 "google.ai.generativelanguage.v1beta." +
@@ -114,6 +116,7 @@ native_deps:
             let audioCtx       = null;
             let micStream      = null;
             let processorNode  = null;
+            let analyserNode   = null; // 🟢 New: For volume visualizer
             let apiKey         = "";
             let isConnected    = false;
             let nextPlayTime   = 0;
@@ -173,104 +176,131 @@ native_deps:
             }
 
             async function startMic() {
-            micStream = await navigator.mediaDevices.getUserMedia({
-            audio: { sampleRate: INPUT_SAMPLE_RATE, channelCount: 1, echoCancellation: true, noiseSuppression: true }
-        });
-            ensureAudioContext();
-            const micCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: INPUT_SAMPLE_RATE });
-            const source = micCtx.createMediaStreamSource(micStream);
-            processorNode = micCtx.createScriptProcessor(4096, 1, 1);
-            processorNode.onaudioprocess = (e) => {
-            if (!isConnected || !ws || ws.readyState !== WebSocket.OPEN) return;
-            const pcmB64 = float32ToBase64PCM(e.inputBuffer.getChannelData(0));
-            ws.send(JSON.stringify({
-            realtimeInput: { mediaChunks: [{ mimeType: "audio/pcm", data: pcmB64 }] }
-        }));
-        };
-            source.connect(processorNode);
-            processorNode.connect(micCtx.destination);
-        }
+                micStream = await navigator.mediaDevices.getUserMedia({
+                    audio: { sampleRate: INPUT_SAMPLE_RATE, channelCount: 1, echoCancellation: true, noiseSuppression: true }
+                });
 
-            function connect() {
-            if (isConnected) return;
-            const url = `${WS_BASE}?key=${apiKey}`;
-            ws = new WebSocket(url);
-            notifyAnvil("status", { text: "Connecting..." });
+                ensureAudioContext();
+                // Use a separate context for the mic to ensure sample rate matching
+                const micCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: INPUT_SAMPLE_RATE });
+                const source = micCtx.createMediaStreamSource(micStream);
 
-            setupTimeout = setTimeout(() => {
-            if (!isConnected) {
-            disconnect();
-            notifyAnvil("error", { message: "Connection timeout" });
-        }
-        }, 10000);
+                // 🟢 Visualizer Setup
+                analyserNode = micCtx.createAnalyser();
+                analyserNode.fftSize = 256;
+                source.connect(analyserNode);
 
-            ws.onopen = () => {
-            ws.send(JSON.stringify({
-            setup: {
-            model: `models/${MODEL}`,
-            generationConfig: {
-            responseModalities: ["AUDIO", "TEXT"],
-            speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Aoede" } } }
-        },
-            systemInstruction: {
-            parts: [{
-            text: "You are a professional assistant for BMA Auto Accessories (BMW, Mercedes, Audi experts). " +
-            "Answer questions about job cards, inventory, and invoices concisely. " +
-            "SAFETY RULE: If asked for technical torque specs, fluid capacities, or safety-critical data, " +
-            "and you are not 100% certain, advise the user to consult the official workshop manual. Do not guess."
-        }]
-        },
-            /* Add Tool Declarations here in next phase */
-            tools: [{ functionDeclarations: [] }]
-        }
-        }));
-        };
+                processorNode = micCtx.createScriptProcessor(4096, 1, 1);
+                processorNode.onaudioprocess = (e) => {
+                    if (!isConnected || !ws || ws.readyState !== WebSocket.OPEN) return;
 
-            ws.onmessage = async (event) => {
-            let raw = event.data;
-            if (raw instanceof Blob) raw = await raw.text();
-            let msg = JSON.parse(raw);
+                    // Send audio to Gemini
+                    const pcmB64 = float32ToBase64PCM(e.inputBuffer.getChannelData(0));
+                    ws.send(JSON.stringify({
+                        realtimeInput: { mediaChunks: [{ mimeType: "audio/pcm", data: pcmB64 }] }
+                        }));
 
-            if (msg.setupComplete) {
-            if (setupTimeout) clearTimeout(setupTimeout);
-            isConnected = true;
-            notifyAnvil("connected", {});
-            startMic().catch(e => notifyAnvil("error", { message: e.message }));
-        }
+                        // 🟢 Calculate volume level (0-100ish)
+                        const dataArray = new Uint8Array(analyserNode.frequencyBinCount);
+                        analyserNode.getByteFrequencyData(dataArray);
+                        let sum = 0;
+                        for (let i = 0; i < dataArray.length; i++) { sum += dataArray[i]; }
+                        const average = sum / dataArray.length;
 
-            if (msg.serverContent) {
-            const sc = msg.serverContent;
-            const parts = sc.modelTurn?.parts || [];
-            for (const part of parts) {
-            if (part.inlineData?.data) scheduleAudioChunk(base64PCMToFloat32(part.inlineData.data));
-            if (part.text) notifyAnvil("transcript", { text: part.text });
-        }
-            if (sc.turnComplete) notifyAnvil("status", { text: "🟢 Listening" });
-        }
-        };
+                        // Send volume to Anvil for the visual bar
+                        notifyAnvil("volume_level", { level: average });
+                        };
 
-            ws.onclose = () => {
-            isConnected = false;
-            notifyAnvil("disconnected", {});
-        };
-        }
+                        source.connect(processorNode);
+                        processorNode.connect(micCtx.destination);
+                        }
 
-            function disconnect() {
-            if (ws) ws.close();
-            if (micStream) micStream.getTracks().forEach(t => t.stop());
-            isConnected = false;
-        }
+                        function connect() {
+                        if (isConnected) return;
+                        if (!apiKey) { notifyAnvil("error", { message: "No API Key" }); return; }
 
-            window.GeminiLive = {
-            setApiKey: (key) => { apiKey = key; },
-            connect: connect,
-            disconnect: disconnect,
-            sendText: (text) => {
-            if (isConnected && ws) ws.send(JSON.stringify({ clientContent: { turns: [{ role: "user", parts: [{ text }] }], turnComplete: true } }));
-        }
-        };
+                        const url = `${WS_BASE}?key=${apiKey}`;
+                        ws = new WebSocket(url);
+                        notifyAnvil("status", { text: "Connecting..." });
+
+                        setupTimeout = setTimeout(() => {
+                        if (!isConnected) {
+                        disconnect();
+                        notifyAnvil("error", { message: "Connection timeout" });
+                        }
+                        }, 10000);
+
+                        ws.onopen = () => {
+                        ws.send(JSON.stringify({
+                        setup: {
+                        model: `models/${MODEL}`,
+                        generationConfig: {
+                        responseModalities: ["AUDIO", "TEXT"],
+                        speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Aoede" } } }
+                        },
+                        systemInstruction: {
+                        parts: [{
+                        text: "You are a professional assistant for BMA Auto Accessories. " +
+                        "Answer concisely. SAFETY: If asked for critical torque or fluid specs " +
+                        "and you aren't 100% sure, tell them to check the manual. Do not guess."
+                        }]
+                        },
+                        tools: [{ functionDeclarations: [] }]
+                        }
+                        }));
+                        };
+
+                        ws.onmessage = async (event) => {
+                        let raw = event.data;
+                        if (raw instanceof Blob) raw = await raw.text();
+                        let msg = JSON.parse(raw);
+
+                        if (msg.setupComplete) {
+                        if (setupTimeout) clearTimeout(setupTimeout);
+                        isConnected = true;
+                        notifyAnvil("connected", {});
+                        startMic().catch(e => notifyAnvil("error", { message: e.message }));
+                        }
+
+                        if (msg.serverContent) {
+                        const sc = msg.serverContent;
+                        const parts = sc.modelTurn?.parts || [];
+                        for (const part of parts) {
+                        if (part.inlineData?.data) scheduleAudioChunk(base64PCMToFloat32(part.inlineData.data));
+                        if (part.text) notifyAnvil("transcript", { text: part.text });
+                        }
+                        if (sc.turnComplete) notifyAnvil("status", { text: "🟢 Listening" });
+                        }
+
+                        if (msg.error) {
+                        notifyAnvil("error", { message: msg.error.message });
+                        disconnect();
+                        }
+                        };
+
+                        ws.onclose = () => {
+                        isConnected = false;
+                        notifyAnvil("disconnected", {});
+                        };
+                        }
+
+                        function disconnect() {
+                        if (ws) ws.close();
+                        if (micStream) micStream.getTracks().forEach(t => t.stop());
+                        isConnected = false;
+                        if (setupTimeout) clearTimeout(setupTimeout);
+                        }
+
+                        window.GeminiLive = {
+                        setApiKey: (key) => { apiKey = key; },
+                        connect: connect,
+                        disconnect: disconnect,
+                        sendText: (text) => {
+                        if (isConnected && ws) ws.send(JSON.stringify({ clientContent: { turns: [{ role: "user", parts: [{ text }] }], turnComplete: true } }));
+                        }
+                        };
         })();
-            </script>
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Mozilla+Headline:wght@200..700&display=swap" rel="stylesheet">

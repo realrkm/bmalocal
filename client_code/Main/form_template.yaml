@@ -57,10 +57,14 @@ components:
     name: card_2
     properties: {role: wide, wrap_on: never}
     type: ColumnPanel
-  - event_bindings: {click: fab_button_click}
+  - event_bindings: {click: fab_btn_click}
     layout_properties: {grid_position: 'CLSJCB,FGQTDK'}
-    name: fab_button
-    properties: {icon: 'fa:microphone', icon_align: right, role: fab, text: ''}
+    name: fab_btn
+    properties:
+      icon: fa:microphone
+      icon_align: right
+      role: [fab, fab-active]
+      text: ''
     type: Button
   - components:
     - components:
@@ -88,21 +92,25 @@ components:
     - layout_properties: {grid_position: 'NYWMEF,UJVUTH'}
       name: label_1
       properties:
-        role: [live-assistant-header, live-dot]
+        role: [live-dot, assistant-header]
         text: LIVE ASSISTANT
       type: Label
     - layout_properties: {grid_position: 'HLAMCA,LPDXWG'}
-      name: label_2
+      name: lbl_transcript
       properties:
-        role: live-assistant-body
+        role: transcript-box
         text: |+
           Listening…
 
 
 
       type: Label
+    - layout_properties: {grid_position: 'UKUZLM,FASTIO'}
+      name: lbl_status
+      properties: {role: status-bar}
+      type: Label
     layout_properties: {grid_position: 'CLSJCB,ZSCHZU'}
-    name: live_assistant_popup
+    name: live_popup
     properties: {role: live-assistant-popup}
     type: ColumnPanel
   layout_properties: {slot: default}
@@ -110,7 +118,7 @@ components:
   properties:
     background: theme:White
     border: ''
-    col_widths: '{"WBKABB":73,"FGQTDK":2,"ZSCHZU":5}'
+    col_widths: '{"WBKABB":25,"FGQTDK":5,"ZSCHZU":50}'
     role: card
     spacing:
       padding: [null, 8, null, 8]

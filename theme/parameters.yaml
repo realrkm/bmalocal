@@ -180,6 +180,8 @@ roles:
 - {components: null, name: wide}
 - {name: fab}
 - {name: live-assistant-popup}
-- {name: live-assistant-header}
-- {name: live-assistant-body}
+- {name: assistant-header}
+- {name: transcript-box}
 - {name: live-dot}
+- {name: fab-active}
+- {name: status-bar}

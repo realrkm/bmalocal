@@ -1,3 +1,42 @@
+
+"""
+Main.py  — Live Assistant wired to Gemini 3.1 Flash Live
+ 
+DESIGNER SETUP (do this before wiring Python):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.  FAB Button
+      - Name:  fab_btn
+      - Role:  fab
+      - Icon:  fa:microphone-slash
+      - Text:  (empty)
+      - Click handler:  fab_btn_click
+ 
+2.  ColumnPanel  (the popup card)
+      - Name:  live_popup
+      - Role:  live-assistant-popup
+      - Visible:  False (uncheck in designer)
+ 
+    Inside live_popup add:
+    ├── Label   name=lbl_header   role=assistant-header,live-dot   text="LIVE ASSISTANT"
+    ├── Label   name=lbl_transcript   role=transcript-box          text="Press the mic to start…"
+    └── Label   name=lbl_status   role=status-bar                  text=""
+ 
+3.  CustomHtmlPanel
+      - Name:  gemini_script_panel
+      - html property: paste the ENTIRE contents of live_assistant.html here
+        (or set it to your asset name if you uploaded it as an asset)
+ 
+4.  App Secrets
+      - Add a secret named  GEMINI_API_KEY  with your Google AI Studio key.
+      - Never hard-code the key in Python source.
+ 
+HOW IT WORKS:
+━━━━━━━━━━━━━
+• fab_btn_click  toggles the popup and starts/stops the Gemini session.
+• JavaScript in live_assistant.html handles the WebSocket, mic, and audio.
+• JS calls anvil.call("live_assistant_event", ...) to push transcript /
+  status updates back to Python, which updates the labels.
+"""
 from ._anvil_designer import MainTemplate
 from anvil import *
 import anvil.server
@@ -14,6 +53,8 @@ from ..Alerts import Alerts
 from ..IncompleteDefectsInfo import IncompleteDefectsInfo
 from ..ViewTechnicianPortalDetails import ViewTechnicianPortalDetails
 from ..ViewPricingAlertDetails import ViewPricingAlertDetails
+
+from anvil.js.window import GeminiLive, setTimeout # exposes window.GeminiLive
 
 class Main(MainTemplate):
     def __init__(self, **properties):
@@ -47,17 +88,90 @@ class Main(MainTemplate):
             self.error_label.visible = False  # Hidden by default
 
             set_default_error_handling(lambda exc: ModGetData.handle_server_errors(exc, self.error_label))
-        # Hide the popup on load
-        self.live_assistant_popup.visible = False
+        
+        self._session_active = False
+        self.live_popup.visible=False
+        try:
+            api_key = anvil.server.call("get_gemini_api_key")
+            GeminiLive.setApiKey(api_key)
+        except Exception as e:
+            print(f"[LiveAssistant] Could not load API key: {e}")
 
-    def fab_button_click(self, **event_args):
-        # Toggle the popup open/closed
-        self.live_assistant_popup.visible = not self.live_assistant_popup.visible
-        # Swap the mic icon
-        if self.live_assistant_popup.visible:
-            self.fab_button.icon = "fa:microphone"
+        self.live_popup.visible = False
+        anvil.js.window["live_assistant_event"] = self._on_gemini_event
+
+    # ── FAB button click ─────────────────────────────────────────
+
+    def fab_btn_click(self, **event_args):
+        if not self._session_active:
+            self._start_session()
         else:
-            self.fab_button.icon = "fa:microphone-slash"
+            self._stop_session()
+
+    # ── Session control ──────────────────────────────────────────
+
+    def _start_session(self):
+        self.live_popup.visible = True
+        self.lbl_transcript.text = "Connecting…"
+        self.lbl_status.text = ""
+        self.fab_btn.role = "fab-active"
+        self.fab_btn.icon = "fa:microphone"
+        self._session_active = True
+        GeminiLive.connect()
+
+    def _stop_session(self):
+        GeminiLive.disconnect()
+        self._session_active = False
+        self.fab_btn.role = "fab"
+        self.fab_btn.icon = "fa:microphone-slash"
+
+        # JS setTimeout replaces threading.Timer — runs in the browser
+        # event loop after 3 seconds, no thread needed
+        def _hide():
+            self.live_popup.visible = False
+            self.lbl_transcript.text = "Press the mic to start…"
+            self.lbl_status.text = ""
+
+        setTimeout(_hide, 3000)
+
+    # ── Gemini event callback (called from JS) ───────────────────
+
+    def _on_gemini_event(self, event_name, data_json):
+        import json
+        try:
+            data = json.loads(data_json)
+        except Exception:
+            data = {}
+
+        if event_name == "connected":
+            self.lbl_status.text = "🟢  Live"
+            self.lbl_transcript.text = "Listening…"
+
+        elif event_name == "transcript":
+            text = data.get("text", "")
+            if text:
+                self.lbl_transcript.text = text
+
+        elif event_name == "status":
+            self.lbl_status.text = data.get("text", "")
+
+        elif event_name == "disconnected":
+            self.lbl_status.text = "⚪  Disconnected"
+            self._session_active = False
+            self.fab_btn.role = "fab"
+            self.fab_btn.icon = "fa:microphone-slash"
+
+        elif event_name == "error":
+            msg = data.get("message", "Unknown error")
+            self.lbl_status.text = f"❌  {msg}"
+            self._session_active = False
+            self.fab_btn.role = "fab"
+            self.fab_btn.icon = "fa:microphone-slash"
+
+        elif event_name == "tool_call":
+            print(f"[LiveAssistant] tool_call: {data.get('name')}")
+
+            
             
     def refresh(self, **event_args):
         self.set_event_handler("x-refresh", self.refresh)
@@ -261,4 +375,4 @@ class Main(MainTemplate):
         alert(content=ViewPricingAlertDetails(), dismissible=False,large=True)
         self.btn_ViewBuyingPriceExceedsSelling.enabled=True
 
-    
+   

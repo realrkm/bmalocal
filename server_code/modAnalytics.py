@@ -1,4 +1,4 @@
-import anvil.secrets
+
 import anvil.users
 import anvil.tables as tables
 import anvil.tables.query as q
@@ -12,8 +12,10 @@ import re # For User-Agent parsing
 from anvil import Media
 import datetime
 
-
-
+@anvil.server.callable
+def get_gemini_api_key():
+    return anvil.secrets.get_secret("get_gemini_api_key")
+    
 @anvil.server.callable
 def get_stats(user_agent_string=None): # Accept user_agent_string from client
     # --- 1. Get Client IP Address (provided by Anvil) ---

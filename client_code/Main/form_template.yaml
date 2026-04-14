@@ -93,7 +93,7 @@ components:
       name: label_1
       properties:
         role: [live-dot, assistant-header]
-        text: LIVE ASSISTANT
+        text: ASK GEMMA
       type: Label
     - components:
       - layout_properties: {}

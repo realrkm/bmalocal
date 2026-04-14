@@ -90,30 +90,39 @@ class Main(MainTemplate):
             set_default_error_handling(lambda exc: ModGetData.handle_server_errors(exc, self.error_label))
         
         self._session_active = False
-        self.live_popup.visible=False
+        self.live_popup.visible = False
+
+        # Load API Key (Stored in Secrets)
         try:
             api_key = anvil.server.call("get_gemini_api_key")
             GeminiLive.setApiKey(api_key)
         except Exception as e:
-            print(f"[LiveAssistant] Could not load API key: {e}")
+            print(f"Key Error: {e}")
 
-        self.live_popup.visible = False
+        # Bind JS Events to Python
         anvil.js.window["live_assistant_event"] = self._on_gemini_event
 
-    # ── FAB button click ─────────────────────────────────────────
-
     def fab_btn_click(self, **event_args):
+        # If panel is hidden but we are connected, just show it
+        if self._session_active and not self.live_popup.visible:
+            self.live_popup.visible = True
+            return
+
+        # Normal Toggle Logic
         if not self._session_active:
             self._start_session()
         else:
             self._stop_session()
 
-    # ── Session control ──────────────────────────────────────────
+    def btn_close_popup_click(self, **event_args):
+        """Hides UI only. WebSocket remains open if active."""
+        self.live_popup.visible = False
+        if self._session_active:
+            self.fab_btn.tooltip = "Assistant is still listening (Click to show)"
 
     def _start_session(self):
         self.live_popup.visible = True
-        self.lbl_transcript.text = "Connecting…"
-        self.lbl_status.text = ""
+        self.lbl_transcript.text = "Connecting..."
         self.fab_btn.role = "fab-active"
         self.fab_btn.icon = "fa:microphone"
         self._session_active = True
@@ -125,52 +134,39 @@ class Main(MainTemplate):
         self.fab_btn.role = "fab"
         self.fab_btn.icon = "fa:microphone-slash"
 
-        # JS setTimeout replaces threading.Timer — runs in the browser
-        # event loop after 3 seconds, no thread needed
-        def _hide():
+        def _cleanup():
             self.live_popup.visible = False
-            self.lbl_transcript.text = "Press the mic to start…"
-            self.lbl_status.text = ""
-
-        setTimeout(_hide, 3000)
-
-    # ── Gemini event callback (called from JS) ───────────────────
+            self.lbl_transcript.text = "Press mic to start..."
+        setTimeout(_cleanup, 2000)
 
     def _on_gemini_event(self, event_name, data_json):
         import json
-        try:
-            data = json.loads(data_json)
-        except Exception:
-            data = {}
+        data = json.loads(data_json)
 
         if event_name == "connected":
-            self.lbl_status.text = "🟢  Live"
-            self.lbl_transcript.text = "Listening…"
+            self.lbl_status.text = "🟢 Live"
+            self.lbl_transcript.text = "Ready. How can I help with the workshop?"
 
         elif event_name == "transcript":
-            text = data.get("text", "")
-            if text:
-                self.lbl_transcript.text = text
+            self.lbl_transcript.text = data.get("text", "")
 
         elif event_name == "status":
             self.lbl_status.text = data.get("text", "")
 
-        elif event_name == "disconnected":
-            self.lbl_status.text = "⚪  Disconnected"
+        elif event_name in ["disconnected", "error"]:
             self._session_active = False
             self.fab_btn.role = "fab"
             self.fab_btn.icon = "fa:microphone-slash"
+            self.lbl_status.text = "Disconnected"
 
-        elif event_name == "error":
-            msg = data.get("message", "Unknown error")
-            self.lbl_status.text = f"❌  {msg}"
-            self._session_active = False
-            self.fab_btn.role = "fab"
-            self.fab_btn.icon = "fa:microphone-slash"
 
-        elif event_name == "tool_call":
-            print(f"[LiveAssistant] tool_call: {data.get('name')}")
-
+    def _close_popup(self):
+        """Hide the panel but leave the WebSocket connection untouched."""
+        self.live_popup.visible = False
+        self._popup_open = False
+        # FAB icon stays as active mic so user knows session is still live
+        if self._session_active:
+            self.fab_btn.tooltip = "Reopen assistant (still connected)"      
             
             
     def refresh(self, **event_args):

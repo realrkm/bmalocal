@@ -89,7 +89,192 @@ dependencies: []
 metadata: {logo_img: 'asset:BMAAutoAccessories.ico', title: BMA Auto Accessories}
 name: BMALocal
 native_deps:
-  head_html: "<script>\n    function replaceBanner(){\n        var els = [].slice.apply(document.getElementsByClassName(\"anvil-show-banner\"));\n        for (var i = 0; i < els.length; i++) {\n            els[i].className = els[i].className.replace(/ *\\banvil-show-banner\\b/g, \" \");\n        }\n    }\n</script>\n<!-- live_assistant.html\nPlace this file in your Anvil app's \"Assets\" folder,\nthen drop a CustomHtmlPanel on your form and set its\nhtml property to: _live_assistant_html\n(Anvil wraps asset HTML automatically when you name the\nCustomHtmlPanel tag).\n\nAlternatively, paste the <script> block directly into a\nCustomHtmlPanel component set to \"html\" mode.\n-->\n<script>\n    (function () {\n        \"use strict\";\n\n        /* ─────────────────────────────────────────────────────────────\n     CONFIG — Anvil calls window.GeminiLive.setApiKey(key) from\n     Python before calling connect(), so the key never lives in\n     the source file.\n  ───────────────────────────────────────────────────────────── */\n        // ✅ FIXED: Use valid Gemini Live model name\n        const MODEL   = \"gemini-3.1-flash-live-preview\";\n        const WS_BASE = \"wss://generativelanguage.googleapis.com/ws/\" +\n            \"google.ai.generativelanguage.v1beta.\" +\n            \"GenerativeService.BidiGenerateContent\";\n\n        /* Audio constants — Gemini Live API requirements */\n        const INPUT_SAMPLE_RATE  = 16000;   // mic → Gemini\n        const OUTPUT_SAMPLE_RATE = 24000;   // Gemini → speaker\n\n        /* ─────────────────────────────────────────────────────────────\n     STATE\n  ───────────────────────────────────────────────────────────── */\n        let ws             = null;\n        let audioCtx       = null;\n        let micStream      = null;\n        let processorNode  = null;\n        let apiKey         = \"\";\n        let isConnected    = false;\n        let outputQueue    = [];   // PCM chunks waiting to play\n        let isPlaying      = false;\n        let nextPlayTime   = 0;\n        let setupTimeout   = null; // ✅ Added: timeout handle\n\n        /* ─────────────────────────────────────────────────────────────\n     HELPERS\n  ───────────────────────────────────────────────────────────── */\n\n        /** Convert Float32 PCM → 16-bit LE PCM base64 for Gemini */\n        function float32ToBase64PCM(float32Array) {\n            const int16 = new Int16Array(float32Array.length);\n            for (let i = 0; i < float32Array.length; i++) {\n                int16[i] = Math.max(-32768, Math.min(32767, float32Array[i] * 32767));\n            }\n                let binary = \"\";\n                const bytes = new Uint8Array(int16.buffer);\n                for (let i = 0; i < bytes.byteLength; i++) {\n                binary += String.fromCharCode(bytes[i]);\n            }\n                return btoa(binary);\n            }\n\n                /** Decode base64 PCM16 from Gemini → Float32 */\n                function base64PCMToFloat32(b64) {\n                const binary = atob(b64);\n                const bytes  = new Uint8Array(binary.length);\n                for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);\n                const int16  = new Int16Array(bytes.buffer);\n                const f32    = new Float32Array(int16.length);\n                for (let i = 0; i < int16.length; i++) f32[i] = int16[i] / 32768.0;\n                return f32;\n            }\n\n                /** Post a status / transcript update to Python via Anvil's JS↔Python bridge */\n                function notifyAnvil(event, data) {\n                try {\n                // ✅ FIXED: Call Python handler directly via window object\n                if (window.live_assistant_event) {\n                window.live_assistant_event(event, JSON.stringify(data));\n            }\n            } catch (err) {\n                console.error(\"[GeminiLive] notifyAnvil failed:\", err);\n            }\n            }\n\n                /** Update the transcript label inside the Anvil popup */\n                function setTranscript(text) {\n                notifyAnvil(\"transcript\", { text });\n            }\n\n                function setStatus(text) {\n                notifyAnvil(\"status\", { text });\n            }\n\n                /* ─────────────────────────────────────────────────────────────\n                AUDIO OUTPUT — queue-based scheduler so chunks play gaplessly\n                ───────────────────────────────────────────────────────────── */\n\n                function ensureAudioContext() {\n                if (!audioCtx || audioCtx.state === \"closed\") {\n                audioCtx = new (window.AudioContext || window.webkitAudioContext)(\n                { sampleRate: OUTPUT_SAMPLE_RATE }\n                );\n            }\n                if (audioCtx.state === \"suspended\") audioCtx.resume();\n                window._debugAudioCtx = audioCtx;\n            }\n\n                function scheduleAudioChunk(f32Data) {\n                ensureAudioContext();\n                const buffer = audioCtx.createBuffer(1, f32Data.length, OUTPUT_SAMPLE_RATE);\n                buffer.copyToChannel(f32Data, 0);\n\n                const source = audioCtx.createBufferSource();\n                source.buffer = buffer;\n                source.connect(audioCtx.destination);\n\n                const now = audioCtx.currentTime;\n                if (nextPlayTime < now) nextPlayTime = now + 0.05; // tiny buffer\n                source.start(nextPlayTime);\n                nextPlayTime += buffer.duration;\n            }\n\n                /* ─────────────────────────────────────────────────────────────\n                MIC CAPTURE\n                ───────────────────────────────────────────────────────────── */\n\n                async function startMic() {\n                micStream = await navigator.mediaDevices.getUserMedia({\n                audio: {\n                sampleRate: INPUT_SAMPLE_RATE,\n                channelCount: 1,\n                echoCancellation: true,\n                noiseSuppression: true,\n                autoGainControl: true,\n            }\n            });\n\n                ensureAudioContext();\n                const micCtx = new (window.AudioContext || window.webkitAudioContext)(\n                { sampleRate: INPUT_SAMPLE_RATE }\n                );\n                const source = micCtx.createMediaStreamSource(micStream);\n\n                // ScriptProcessor is deprecated but has universal browser support.\n                // Use 4096 buffer — ~256ms latency, acceptable for voice.\n                processorNode = micCtx.createScriptProcessor(4096, 1, 1);\n\n                processorNode.onaudioprocess = (e) => {\n                if (!isConnected || !ws || ws.readyState !== WebSocket.OPEN) return;\n                const pcmB64 = float32ToBase64PCM(e.inputBuffer.getChannelData(0));\n                ws.send(JSON.stringify({\n                realtimeInput: {\n                mediaChunks: [{ mimeType: \"audio/pcm\", data: pcmB64 }]\n            }\n            }));\n            };\n\n                source.connect(processorNode);\n                processorNode.connect(micCtx.destination);\n            }\n\n                function stopMic() {\n                if (processorNode) { processorNode.disconnect(); processorNode = null; }\n                if (micStream)     { micStream.getTracks().forEach(t => t.stop()); micStream = null; }\n            }\n\n                /* ─────────────────────────────────────────────────────────────\n                WEBSOCKET / SESSION\n                ───────────────────────────────────────────────────────────── */\n\n                function connect() {\n                if (isConnected) return;\n                if (!apiKey) { setStatus(\"❌ No API key set\"); return; }\n\n                const url = `${WS_BASE}?key=${apiKey}`;\n                ws = new WebSocket(url);\n                setStatus(\"Connecting…\");\n\n                // ✅ Added: Setup timeout to prevent hanging UI\n                setupTimeout = setTimeout(() => {\n                if (!isConnected) {\n                console.warn(\"[GeminiLive] Setup timeout - no setupComplete received\");\n                setStatus(\"⚠️ Connection timeout\");\n                notifyAnvil(\"error\", { message: \"Setup timed out\" });\n                disconnect();\n            }\n            }, 10000); // 10 seconds\n\n                ws.onopen = () => {\n                console.log(\"[GeminiLive] WebSocket opened\");\n                /* Step 1 — send session setup message */\n                ws.send(JSON.stringify({\n                setup: {\n                model: `models/${MODEL}`,\n                generationConfig: {\n                responseModalities: [\"AUDIO\", \"TEXT\"],\n                speechConfig: {\n                voiceConfig: { prebuiltVoiceConfig: { voiceName: \"Aoede\" } }\n            }\n            },\n                systemInstruction: {\n                parts: [{\n                text: \"You are a helpful live assistant for BMA Auto Accessories, \" +\n                \"a workshop management system for BMW, Mercedes-Benz, and Audi vehicles. \" +\n                \"Answer questions about job cards, invoices, inventory, workflow, and payments. \" +\n                \"Be concise and professional.\"\n            }]\n            }\n            }\n            }));\n            };\n\n                ws.onmessage = async (event) => {\n                let raw = event.data;\n\n                /* WebSocket may deliver Blob or string */\n                if (raw instanceof Blob) raw = await raw.text();\n\n                // ✅ Added: Debug logging for incoming messages\n                console.log(\"[GeminiLive] WS message:\", raw.substring(0, 300) + (raw.length > 300 ? \"...\" : \"\"));\n\n                let msg;\n                try { msg = JSON.parse(raw); } catch (e) { \n                console.error(\"[GeminiLive] Parse error:\", e); \n                return; \n            }\n\n                /* ── Session ready ── */\n                if (msg.setupComplete) {\n                // ✅ Clear timeout on successful setup\n                if (setupTimeout) { clearTimeout(setupTimeout); setupTimeout = null; }\n\n                isConnected = true;\n                nextPlayTime = 0;\n                setStatus(\"Listening…\");\n                notifyAnvil(\"connected\", {});\n\n                startMic().catch(err => {\n                console.error(\"[GeminiLive] Mic start error:\", err);\n                setStatus(\"Mic error: \" + err.message);\n                notifyAnvil(\"error\", { message: err.message });\n            });\n            }\n\n                /* ── Server content (audio + transcript) ── */\n                if (msg.serverContent) {\n                const sc = msg.serverContent;\n\n                /* Audio parts */\n                const parts = sc.modelTurn?.parts || [];\n                for (const part of parts) {\n                if (part.inlineData?.mimeType?.startsWith(\"audio/pcm\")) {\n                scheduleAudioChunk(base64PCMToFloat32(part.inlineData.data));\n            }\n                if (part.text) {\n                setTranscript(part.text);\n            }\n            }\n\n                /* Transcript from outputTranscription (if enabled) */\n                if (sc.outputTranscription?.text) {\n                setTranscript(sc.outputTranscription.text);\n            }\n\n                if (sc.turnComplete) {\n                setStatus(\"Listening…\");\n            }\n            }\n\n                /* ── Tool calls (optional, expand as needed) ── */\n                if (msg.toolCall) {\n                notifyAnvil(\"tool_call\", { name: msg.toolCall.functionCalls?.[0]?.name });\n            }\n\n                /* ── Errors from server ── */\n                if (msg.error) {\n                const errMsg = msg.error.message || JSON.stringify(msg.error);\n                console.error(\"[GeminiLive] Server error:\", errMsg);\n                setStatus(\"Error: \" + errMsg);\n                notifyAnvil(\"error\", { message: errMsg });\n                disconnect(); // Clean up on error\n            }\n            };\n\n                ws.onerror = (e) => {\n                console.error(\"[GeminiLive] WebSocket error:\", e);\n                setStatus(\"Connection error\");\n                notifyAnvil(\"error\", { message: \"WebSocket error\" });\n            };\n\n                ws.onclose = (e) => {\n                console.log(\"[GeminiLive] WebSocket closed:\", e.code, e.reason);\n                // ✅ Clear timeout on close\n                if (setupTimeout) { clearTimeout(setupTimeout); setupTimeout = null; }\n                isConnected = false;\n                stopMic();\n                setStatus(\"Disconnected\");\n                notifyAnvil(\"disconnected\", { code: e.code, reason: e.reason });\n            };\n            }\n\n                function disconnect() {\n                // ✅ Clear any pending timeout\n                if (setupTimeout) { clearTimeout(setupTimeout); setupTimeout = null; }\n\n                stopMic();\n                if (ws) { \n                if (ws.readyState === WebSocket.OPEN) ws.close(); \n                ws = null; \n            }\n                isConnected = false;\n                setStatus(\"Disconnected\");\n            }\n\n                /** Send a text message mid-conversation */\n                function sendText(text) {\n                if (!isConnected || !ws) return;\n                ws.send(JSON.stringify({\n                clientContent: {\n                turns: [{ role: \"user\", parts: [{ text }] }],\n                turnComplete: true\n            }\n            }));\n            }\n\n                /* ─────────────────────────────────────────────────────────────\n                PUBLIC API  — called from Anvil Python via anvil.js\n                ───────────────────────────────────────────────────────────── */\n                window.GeminiLive = {\n                setApiKey  : (key) => { apiKey = key; },\n                connect    : connect,\n                disconnect : disconnect,\n                sendText   : sendText,\n                isConnected: () => isConnected,\n            };\n\n                console.log(\"[GeminiLive] module loaded — model:\", MODEL);\n            })();\n            // ✅ Expose a test function for console debugging\n            window._testGeminiAudio = function() {\n                if (!window._debugAudioCtx) {\n                    console.warn(\"⚠️ AudioContext not initialized yet. Click the FAB first.\");\n                    return;\n                }\n                const ctx = window._debugAudioCtx;\n                const buf = ctx.createBuffer(1, ctx.sampleRate * 0.3, ctx.sampleRate);\n                const data = buf.getChannelData(0);\n                for (let i = 0; i < data.length; i++) {\n                    data[i] = Math.sin(i * 0.05) * 0.4;\n                }\n                const src = ctx.createBufferSource();\n                src.buffer = buf;\n                src.connect(ctx.destination);\n                src.start();\n                console.log(\"🔊 Gemini audio test tone played (0.3s)\");\n            };\n                </script>\n<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n<link href=\"https://fonts.googleapis.com/css2?family=Mozilla+Headline:wght@200..700&display=swap\" rel=\"stylesheet\">\n\n"
+  head_html: |+
+    <script>
+        function replaceBanner(){
+            var els = [].slice.apply(document.getElementsByClassName("anvil-show-banner"));
+            for (var i = 0; i < els.length; i++) {
+                els[i].className = els[i].className.replace(/ *\banvil-show-banner\b/g, " ");
+            }
+        }
+    </script>
+    <script>
+        (function () {
+            "use strict";
+
+            const MODEL   = "gemini-2.0-flash-live";
+            const WS_BASE = "wss://generativelanguage.googleapis.com/ws/" +
+                "google.ai.generativelanguage.v1beta." +
+                "GenerativeService.BidiGenerateContent";
+
+            const INPUT_SAMPLE_RATE  = 16000;
+            const OUTPUT_SAMPLE_RATE = 24000;
+
+            let ws             = null;
+            let audioCtx       = null;
+            let micStream      = null;
+            let processorNode  = null;
+            let apiKey         = "";
+            let isConnected    = false;
+            let nextPlayTime   = 0;
+            let setupTimeout   = null;
+
+            function float32ToBase64PCM(float32Array) {
+                const int16 = new Int16Array(float32Array.length);
+                for (let i = 0; i < float32Array.length; i++) {
+                    int16[i] = Math.max(-32768, Math.min(32767, float32Array[i] * 32767));
+                }
+                let binary = "";
+                const bytes = new Uint8Array(int16.buffer);
+                for (let i = 0; i < bytes.byteLength; i++) {
+                    binary += String.fromCharCode(bytes[i]);
+                }
+                return btoa(binary);
+            }
+
+            function base64PCMToFloat32(b64) {
+                const binary = atob(b64);
+                const bytes  = new Uint8Array(binary.length);
+                for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+                const int16  = new Int16Array(bytes.buffer);
+                const f32    = new Float32Array(int16.length);
+                for (let i = 0; i < int16.length; i++) f32[i] = int16[i] / 32768.0;
+                return f32;
+            }
+
+            function notifyAnvil(event, data) {
+                try {
+                    if (window.live_assistant_event) {
+                        window.live_assistant_event(event, JSON.stringify(data));
+                    }
+                } catch (err) {
+                    console.error("[GeminiLive] notifyAnvil failed:", err);
+                }
+            }
+
+            function ensureAudioContext() {
+                if (!audioCtx || audioCtx.state === "closed") {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: OUTPUT_SAMPLE_RATE });
+                }
+                if (audioCtx.state === "suspended") audioCtx.resume();
+            }
+
+            function scheduleAudioChunk(f32Data) {
+                ensureAudioContext();
+                const buffer = audioCtx.createBuffer(1, f32Data.length, OUTPUT_SAMPLE_RATE);
+                buffer.copyToChannel(f32Data, 0);
+                const source = audioCtx.createBufferSource();
+                source.buffer = buffer;
+                source.connect(audioCtx.destination);
+                const now = audioCtx.currentTime;
+                if (nextPlayTime < now) nextPlayTime = now + 0.05;
+                source.start(nextPlayTime);
+                nextPlayTime += buffer.duration;
+            }
+
+            async function startMic() {
+            micStream = await navigator.mediaDevices.getUserMedia({
+            audio: { sampleRate: INPUT_SAMPLE_RATE, channelCount: 1, echoCancellation: true, noiseSuppression: true }
+        });
+            ensureAudioContext();
+            const micCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: INPUT_SAMPLE_RATE });
+            const source = micCtx.createMediaStreamSource(micStream);
+            processorNode = micCtx.createScriptProcessor(4096, 1, 1);
+            processorNode.onaudioprocess = (e) => {
+            if (!isConnected || !ws || ws.readyState !== WebSocket.OPEN) return;
+            const pcmB64 = float32ToBase64PCM(e.inputBuffer.getChannelData(0));
+            ws.send(JSON.stringify({
+            realtimeInput: { mediaChunks: [{ mimeType: "audio/pcm", data: pcmB64 }] }
+        }));
+        };
+            source.connect(processorNode);
+            processorNode.connect(micCtx.destination);
+        }
+
+            function connect() {
+            if (isConnected) return;
+            const url = `${WS_BASE}?key=${apiKey}`;
+            ws = new WebSocket(url);
+            notifyAnvil("status", { text: "Connecting..." });
+
+            setupTimeout = setTimeout(() => {
+            if (!isConnected) {
+            disconnect();
+            notifyAnvil("error", { message: "Connection timeout" });
+        }
+        }, 10000);
+
+            ws.onopen = () => {
+            ws.send(JSON.stringify({
+            setup: {
+            model: `models/${MODEL}`,
+            generationConfig: {
+            responseModalities: ["AUDIO", "TEXT"],
+            speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Aoede" } } }
+        },
+            systemInstruction: {
+            parts: [{
+            text: "You are a professional assistant for BMA Auto Accessories (BMW, Mercedes, Audi experts). " +
+            "Answer questions about job cards, inventory, and invoices concisely. " +
+            "SAFETY RULE: If asked for technical torque specs, fluid capacities, or safety-critical data, " +
+            "and you are not 100% certain, advise the user to consult the official workshop manual. Do not guess."
+        }]
+        },
+            /* Add Tool Declarations here in next phase */
+            tools: [{ functionDeclarations: [] }]
+        }
+        }));
+        };
+
+            ws.onmessage = async (event) => {
+            let raw = event.data;
+            if (raw instanceof Blob) raw = await raw.text();
+            let msg = JSON.parse(raw);
+
+            if (msg.setupComplete) {
+            if (setupTimeout) clearTimeout(setupTimeout);
+            isConnected = true;
+            notifyAnvil("connected", {});
+            startMic().catch(e => notifyAnvil("error", { message: e.message }));
+        }
+
+            if (msg.serverContent) {
+            const sc = msg.serverContent;
+            const parts = sc.modelTurn?.parts || [];
+            for (const part of parts) {
+            if (part.inlineData?.data) scheduleAudioChunk(base64PCMToFloat32(part.inlineData.data));
+            if (part.text) notifyAnvil("transcript", { text: part.text });
+        }
+            if (sc.turnComplete) notifyAnvil("status", { text: "🟢 Listening" });
+        }
+        };
+
+            ws.onclose = () => {
+            isConnected = false;
+            notifyAnvil("disconnected", {});
+        };
+        }
+
+            function disconnect() {
+            if (ws) ws.close();
+            if (micStream) micStream.getTracks().forEach(t => t.stop());
+            isConnected = false;
+        }
+
+            window.GeminiLive = {
+            setApiKey: (key) => { apiKey = key; },
+            connect: connect,
+            disconnect: disconnect,
+            sendText: (text) => {
+            if (isConnected && ws) ws.send(JSON.stringify({ clientContent: { turns: [{ role: "user", parts: [{ text }] }], turnComplete: true } }));
+        }
+        };
+        })();
+            </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mozilla+Headline:wght@200..700&display=swap" rel="stylesheet">
+
 package_name: BMALocal
 runtime_options:
   client_version: '3'
@@ -100,7 +285,7 @@ runtime_options:
 secrets:
   get_gemini_api_key:
     type: secret
-    value: {4RRE6XHVJN3EPJYM: uOaVVCKTcjTkSu4QEdcZhf/49MODFNagEJojuoBduGI+D8dvB7soPckl9NO44qWlKCD64mfD78ieRGHoQ1bbWtSINzJ96vwQdgcQ1ppttX79YnfJBhFOx4FFub/uwQTmWrP9zeasjDjgvl/sU583rNsTHgh1M2RRmRejAvXTbROOoU4cOac=}
+    value: {4RRE6XHVJN3EPJYM: DJVyF6j3IPqdwuI9Cu6nlf9JkiYFU+9EUQtBU/raMDiAgN1SorKIwnkFh53IU/pIBmD3yVODaAr3z/C2CTusiytNwQyPuQX3PnYiC2WasIfDkhqYpVnScz3gkDyBWGWd8jElhs/IbQVFbKPgEIbdNaW7CQasCqBVaBdlV1fhb1kcQ6QS5cM=}
 services:
 - client_config: {}
   server_config: {}

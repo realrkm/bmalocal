@@ -185,3 +185,5 @@ roles:
 - {name: live-dot}
 - {name: fab-active}
 - {name: status-bar}
+- components: [Button]
+  name: close-popup-btn

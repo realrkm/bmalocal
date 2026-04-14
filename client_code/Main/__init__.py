@@ -92,13 +92,6 @@ class Main(MainTemplate):
         self._session_active = False
         self.live_popup.visible = False
 
-        # Load API Key (Stored in Secrets)
-        try:
-            api_key = anvil.server.call("get_gemini_api_key")
-            GeminiLive.setApiKey(api_key)
-        except Exception as e:
-            print(f"Key Error: {e}")
-
         # Bind JS Events to Python
         anvil.js.window["live_assistant_event"] = self._on_gemini_event
 
@@ -159,15 +152,14 @@ class Main(MainTemplate):
             self.fab_btn.icon = "fa:microphone-slash"
             self.lbl_status.text = "Disconnected"
             
-        elif event_name == "volume_level":
+        elif event_name == "volume":
             level = data.get("level", 0)
-            # Map the volume to the width of a bar (e.g., 0% to 100%)
-            # Sensitivity adjustment: multiplying by 2 helps see lower talking volumes
-            width = min(100, level * 2) 
-            self.node_volume_bar.width = f"{level * 100}%"
-
-            # Optional: Change color if it's too loud (peaking)
-            self.node_volume_bar.background = "#00e676" if width < 85 else "#ff5252"
+            # Convert 0.0-1.0 to percentage
+            percentage = level * 100
+            self.node_volume_bar.width = f"{percentage}%"
+        
+            # Visual feedback: change color if peaking
+            self.node_volume_bar.background = "#00e676" if percentage < 85 else "#ff5252"
 
 
     def _close_popup(self):

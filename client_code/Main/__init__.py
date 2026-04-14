@@ -68,6 +68,7 @@ class Main(MainTemplate):
         user = anvil.users.get_user()
         
         
+        """
         if user:
             # Fetch permissions from server
             self.permissions = anvil.server.call("get_user_permissions", user["role_id"])
@@ -82,13 +83,13 @@ class Main(MainTemplate):
             user_agent = navigator.userAgent
             # Now call your server function and pass the user_agent
             anvil.server.call_s('get_stats', user_agent)
-
+        
             ModNavigation.home_form = self
                 
             self.error_label.visible = False  # Hidden by default
 
             set_default_error_handling(lambda exc: ModGetData.handle_server_errors(exc, self.error_label))
-        
+        """
         self._session_active = False
         self.live_popup.visible = False
 

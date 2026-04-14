@@ -48,8 +48,9 @@ components:
       - {data_key: Fullname, expand: true, id: CUNVFB, title: Client, width: ''}
       - {data_key: Phone, expand: true, id: IUBBKG, title: Phone, width: ''}
       - {data_key: RegNo, expand: true, id: BDLZGZ, title: Reg No, width: ''}
+      - {data_key: '', id: BUFNSP, title: '', width: '30'}
       - {data_key: ChassisNo, expand: true, id: XCHXFY, title: Chassis No, width: ''}
-      - {data_key: '', expand: false, id: HIVUJH, title: '', width: 89}
+      - {data_key: '', expand: false, id: HIVUJH, title: '', width: '69'}
       - {data_key: ReceivedDate, expand: true, id: CDALEJ, title: Date Received}
       - {data_key: JobCardRef, expand: true, id: PWPZHT, title: Job Card Ref}
       - {data_key: MakeAndModel, expand: true, id: LGMPBL, title: MakeAndModel}

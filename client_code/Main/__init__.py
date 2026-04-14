@@ -164,7 +164,7 @@ class Main(MainTemplate):
             # Map the volume to the width of a bar (e.g., 0% to 100%)
             # Sensitivity adjustment: multiplying by 2 helps see lower talking volumes
             width = min(100, level * 2) 
-            self.node_volume_bar.width = f"{width}%"
+            self.node_volume_bar.width = f"{level * 100}%"
 
             # Optional: Change color if it's too loud (peaking)
             self.node_volume_bar.background = "#00e676" if width < 85 else "#ff5252"

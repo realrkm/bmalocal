@@ -4,3 +4,5 @@ __pycache__
 .anvil-data
 .env
 cert
+logs
+\server_code\__pycache__

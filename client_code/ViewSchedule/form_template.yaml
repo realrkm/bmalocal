@@ -1,0 +1,87 @@
+components:
+- components:
+  - components:
+    - layout_properties: {grid_position: 'IQKQLL,GWGLLZ'}
+      name: label_title
+      properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', text: View Schedule List}
+      type: Label
+    - layout_properties: {grid_position: 'DCVOAH,CUGJCX'}
+      name: spacer_3
+      properties: {height: '10'}
+      type: Spacer
+    - layout_properties: {grid_position: 'XAXAYT,GMHQHQ'}
+      name: date_picker_start
+      properties: {background: 'theme:Whte', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Start Date *}
+      type: DatePicker
+    - layout_properties: {grid_position: 'XAXAYT,BZPFMN'}
+      name: date_picker_end
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter End Date *}
+      type: DatePicker
+    - layout_properties: {grid_position: 'BLYLRY,ODSPOH'}
+      name: spacer_2
+      properties: {height: '10'}
+      type: Spacer
+    - event_bindings: {click: btn_Search_click}
+      layout_properties: {grid_position: 'FZPKVA,XILSMG'}
+      name: btn_Search
+      properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: SEARCH}
+      type: Button
+    - event_bindings: {click: btn_Close_click}
+      layout_properties: {grid_position: 'FZPKVA,XTLUND'}
+      name: btn_Close
+      properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: CLOSE}
+      type: Button
+    - layout_properties: {grid_position: 'PRKDNG,ETWLSK'}
+      name: spacer_1_copy
+      properties: {height: '10'}
+      type: Spacer
+    - event_bindings: {click: btn_Export_click}
+      layout_properties: {grid_position: 'LGITZW,DSWQSR'}
+      name: btn_Export
+      properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: EXPORT AS EXCEL}
+      type: Button
+    - layout_properties: {grid_position: 'UHURSU,KATXVC'}
+      name: spacer_1
+      properties: {height: '10'}
+      type: Spacer
+    layout_properties: {full_width_row: true, grid_position: 'IRLIYA,IIGWFD', row_background: 'theme:White'}
+    name: card_2
+    properties: {role: card}
+    type: ColumnPanel
+  - components:
+    - components:
+      - name: repeating_panel_1
+        properties: {item_template: ViewSchedule.RowTemplate20}
+        type: RepeatingPanel
+      layout_properties: {full_width_row: true, grid_position: 'QQJCOI,YCCUIU'}
+      name: data_grid_1
+      properties:
+        background: theme:Black
+        columns:
+        - {data_key: Date, expand: true, id: JKSDUP, title: Date}
+        - {data_key: ClientName, expand: true, id: VJQQOR, title: Name}
+        - {data_key: TotalInvoiceAmount, expand: true, id: OJLQEN, title: Total Amt}
+        - {data_key: CarParts, expand: true, id: ZDEAFB, title: Car Parts}
+        - {data_key: EngineOil, expand: true, id: TCVESX, title: Eng. Oil}
+        - {data_key: Consumable, expand: true, id: DZBVPL, title: Cons}
+        - {data_key: Diagnosis, expand: true, id: PYJLJJ, title: Diag}
+        - {data_key: Labour, expand: true, id: NGWVIC, title: Lab}
+        - {data_key: EngineWash, expand: true, id: HGBSCZ, title: Eng. Wash}
+        - {data_key: Alignment, expand: true, id: UOLOAF, title: Align.}
+        - {data_key: TransferGearboxOil, expand: true, id: NEAAFA, title: T/G Oil}
+        - {data_key: Others, expand: true, id: ZWSIYF, title: Others}
+        - {data_key: TotalDiscount, expand: true, id: EVJCDF, title: Disc.}
+        - {data_key: Balance, expand: true, id: MUQQEF, title: Bal}
+        foreground: theme:White
+        wrap_on: mobile
+      type: DataGrid
+    layout_properties: {full_width_row: true, grid_position: 'SBNSLY,GBPKEO', row_background: 'theme:Black'}
+    name: card_3
+    properties: {role: card}
+    type: ColumnPanel
+  layout_properties: {full_width_row: true, grid_position: 'LLOKST,EZIQIY', row_background: 'theme:Black'}
+  name: card_1
+  properties: {role: card}
+  type: ColumnPanel
+container: {type: ColumnPanel}
+is_package: true

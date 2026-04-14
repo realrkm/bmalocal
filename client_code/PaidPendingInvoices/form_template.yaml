@@ -1,0 +1,30 @@
+components:
+- components:
+  - components:
+    - name: repeating_panel_1
+      properties: {item_template: PaidPendingInvoices.RowTemplate8}
+      type: RepeatingPanel
+    layout_properties: {full_width_row: true, grid_position: 'NMRTRA,IOXZSL'}
+    name: data_grid_1
+    properties:
+      background: theme:Black
+      border: solid
+      columns:
+      - {data_key: 'No', expand: false, id: JKSDUP, title: 'No', width: 84.5}
+      - {data_key: Date, expand: true, id: VJQQOR, title: Invoiced Date, width: ''}
+      - {data_key: JobCardRef, expand: true, id: OJLQEN, title: Job Card Ref}
+      - {data_key: Item, expand: true, id: GOXAZB, title: Item, width: ''}
+      - {data_key: PartNo, expand: true, id: HGFISP, title: PartNo, width: ''}
+      - {data_key: Quantity, expand: true, id: GYUEKP, title: Quantity}
+      - {data_key: Amount, expand: true, id: BUEABL, title: Amount}
+      - {data_key: Total, expand: true, id: LHIADB, title: Total}
+      foreground: theme:White
+      role: null
+      wrap_on: mobile
+    type: DataGrid
+  layout_properties: {full_width_row: true, grid_position: 'VSZSHU,FRJSBU'}
+  name: card_1
+  properties: {role: card}
+  type: ColumnPanel
+container: {type: ColumnPanel}
+is_package: true

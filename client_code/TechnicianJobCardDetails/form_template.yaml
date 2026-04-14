@@ -1,0 +1,22 @@
+components:
+- components:
+  - event_bindings: {click: btn_Technician_click}
+    layout_properties: {full_width_row: true, grid_position: 'ICYPZW,KZTHLI'}
+    name: btn_Technician
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, role: primary-color, text: TECHNICIANS}
+    type: Button
+  - event_bindings: {click: btn_AssignedJobCards_click}
+    layout_properties: {grid_position: 'ICYPZW,NSPLJR'}
+    name: btn_AssignedJobCards
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, role: primary-color, text: ASSIGNED JOB CARDS}
+    type: Button
+  layout_properties: {full_width_row: true, grid_position: 'JZBVFT,RUNOIA', row_background: 'theme:Black'}
+  name: card_1
+  properties: {background: 'theme:White', role: null}
+  type: ColumnPanel
+- layout_properties: {full_width_row: true, grid_position: 'YGOXWJ,QYCVVH'}
+  name: card_2
+  properties: {col_spacing: huge, role: card, visible: false}
+  type: ColumnPanel
+container: {type: ColumnPanel}
+is_package: true

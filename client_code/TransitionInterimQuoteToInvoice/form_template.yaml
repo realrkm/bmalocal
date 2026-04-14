@@ -1,0 +1,52 @@
+components:
+- components:
+  - components:
+    - layout_properties: {grid_position: 'BKXUEC,TCOIBP'}
+      name: label_title
+      properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', role: full-screen-form, text: Transition Interim Quote To Invoice}
+      type: Label
+    - layout_properties: {grid_position: 'WJLLWS,VNDRLO'}
+      name: spacer_1
+      properties: {height: '10'}
+      type: Spacer
+    - layout_properties: {grid_position: 'PMSKGL,YAXNIZ'}
+      name: txtJobCardRef
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Jobcard Ref Ending With IQ *}
+      type: TextBox
+    - event_bindings: {click: btn_Search_click}
+      layout_properties: {grid_position: 'PMSKGL,RJTLBU'}
+      name: btn_Search
+      properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: SEARCH}
+      type: Button
+    - layout_properties: {grid_position: 'WQHALO,FDUPEI'}
+      name: drop_down_JobCardRefDetails
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Jobcard Ref Ending With IQ *}
+      type: DropDown
+    - layout_properties: {grid_position: 'XGDICU,GUGILH'}
+      name: spacer_3
+      properties: {height: '10'}
+      type: Spacer
+    - event_bindings: {click: btn_Transition_click}
+      layout_properties: {grid_position: 'TPQVZG,UKIVPK'}
+      name: btn_Transition
+      properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: TRANSITION TO INVOICE}
+      type: Button
+    - event_bindings: {click: btn_Close_click}
+      layout_properties: {grid_position: 'TPQVZG,JVIZJX'}
+      name: btn_Close
+      properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: CLOSE}
+      type: Button
+    - layout_properties: {grid_position: 'UFNSSC,JPGRIT'}
+      name: spacer_2
+      properties: {height: '10'}
+      type: Spacer
+    layout_properties: {grid_position: 'FUVDZH,MPALTE', row_background: 'theme:White'}
+    name: card_2
+    properties: {border: solid, col_widths: '{"YAXNIZ":40,"RJTLBU":20}', role: card}
+    type: ColumnPanel
+  layout_properties: {full_width_row: true, grid_position: 'LNQKCO,JNWMIQ', row_background: 'theme:Black'}
+  name: card_1
+  properties: {role: card}
+  type: ColumnPanel
+container: {type: ColumnPanel}
+is_package: true

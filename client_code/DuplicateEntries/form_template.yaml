@@ -1,0 +1,37 @@
+components:
+- components:
+  - layout_properties: {full_width_row: true, grid_position: 'ACEKNI,OXBMRU'}
+    name: label_1
+    properties: {align: center, background: 'theme:Gray 600', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', italic: false, text: Delete Duplicated Entries, underline: false}
+    type: Label
+  - layout_properties: {grid_position: 'HCYPAG,XCLZMU'}
+    name: spacer_1
+    properties: {height: 22}
+    type: Spacer
+  - components:
+    - name: repeating_panel_1
+      properties: {item_template: DuplicateEntries.RowTemplate}
+      type: RepeatingPanel
+    layout_properties: {full_width_row: true, grid_position: 'FAXAHC,SZKWDQ'}
+    name: data_grid_1
+    properties:
+      background: theme:Black
+      border: solid
+      columns:
+      - {data_key: ID, expand: false, id: JKSDUP, title: ID, width: '100'}
+      - {data_key: JobCardRef, expand: true, id: VJQQOR, title: JobCardRef}
+      - {data_key: TechnicianRequestedParts, expand: false, id: OJLQEN, title: TechnicianRequestedParts, width: 280}
+      - {data_key: Defects, expand: true, id: NYGLEL, title: Defects}
+      - {data_key: PricedDefects, expand: true, id: FSCGQV, title: PricedDefects}
+      - {data_key: RequestedParts, expand: true, id: TYPPWJ, title: RequestedParts}
+      - {data_key: CreatedBy, expand: true, id: DMVQYN, title: CreatedBy, width: ''}
+      - {data_key: '', id: KPULMH, title: '', width: '90'}
+      foreground: theme:White
+      role: null
+    type: DataGrid
+  layout_properties: {full_width_row: true, grid_position: 'ZRRHHY,MJNFYK'}
+  name: card_1
+  properties: {role: card}
+  type: ColumnPanel
+container: {type: ColumnPanel}
+is_package: true

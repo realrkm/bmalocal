@@ -1,0 +1,58 @@
+<div id="scanner-wrapper" style="text-align:center;">
+
+    <!-- Video Container -->
+    <div id="video-container" style="display:none;">
+        <video id="video" autoplay></video>
+        <div id="scan-line"></div>
+    </div>
+
+    <!-- Message Box -->
+    <div id="message-box" class="info" style="display:none; margin-top:10px;"></div>
+
+</div>
+
+<!-- Embedded CSS -->
+<style>
+    #video-container {
+        position: relative;
+        width: 100%;
+        max-width: 500px;
+        margin: auto;
+        overflow: hidden;
+    }
+
+    #video {
+        width: 100%;
+        border: 90px solid #ccc;
+        border-radius: 8px;
+    }
+
+    #scan-line {
+        display: none;
+        position: absolute;
+        top: 20%;
+        left: 10%;
+        right: 10%;
+        height: 20px;
+        background: red;
+        animation: scan-move 2s linear infinite;
+        z-index: 10;
+    }
+
+    @keyframes scan-move {
+        0% { top: 20%; }
+        100% { top: 80%; }
+    }
+
+    #message-box.info {
+        color: blue;
+    }
+
+    #message-box.error {
+        color: red;
+        font-weight: bold;
+    }
+</style>
+
+<!-- JS Barcode Scanner -->
+<script src="_/theme/barcode.js"></script>

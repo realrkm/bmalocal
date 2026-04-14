@@ -1,0 +1,35 @@
+from ._anvil_designer import ViewPricingAlertDetailsTemplate
+from anvil import *
+import anvil.server
+import anvil.users
+import anvil.tables as tables
+import anvil.tables.query as q
+from anvil.tables import app_tables
+import anvil.js
+from .. import ModNavigation
+from ..UpdatePricingAmount import UpdatePricingAmount
+
+class ViewPricingAlertDetails(ViewPricingAlertDetailsTemplate):
+    def __init__(self, **properties):
+        self.init_components(**properties)
+
+        anvil.js.call("replaceBanner")
+        self.user = anvil.users.get_user()
+
+        self.repeating_panel_1.items = anvil.server.call_s(
+            "getPartsWhereBuyingPriceExceedsSelling", self.user
+        )
+
+    def open_edit_form(self, partNo):
+        """Close this form and open UpdatePricingAmount"""
+
+        # Close this alert
+        self.raise_event("x-close-alert", value=True)
+
+        # Open next alert
+        alert(
+            content=UpdatePricingAmount(partNo),
+            buttons=[],
+            dismissible=False,
+            large=True
+        )

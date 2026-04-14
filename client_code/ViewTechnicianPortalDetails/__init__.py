@@ -1,0 +1,29 @@
+from ._anvil_designer import ViewTechnicianPortalDetailsTemplate
+from anvil import *
+import anvil.server
+import anvil.users
+import anvil.tables as tables
+import anvil.tables.query as q
+from anvil.tables import app_tables
+import anvil.js
+from .. import ModNavigation
+
+
+class ViewTechnicianPortalDetails(ViewTechnicianPortalDetailsTemplate):
+    def __init__(self, **properties):
+        # Set Form properties and Data Bindings.
+        self.init_components(**properties)
+
+        # Any code you write here will run before the form opens.
+        anvil.js.call("replaceBanner")
+        self.user = anvil.users.get_user()
+        self.repeating_panel_1.items = anvil.server.call_s(
+            "fetch_active_technician_portal_info", self.user
+        )
+
+    def btn_UpdateStatus_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        anvil.server.call_s("deactivate_technician_portal_info")
+        alert("Pending technician portal info is updated successfully", title="Success")
+        self.raise_event("x-close-alert", value=True)
+        

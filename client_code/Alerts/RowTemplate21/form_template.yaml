@@ -1,0 +1,8 @@
+components:
+- event_bindings: {click: btn_DeleteRow_click}
+  layout_properties: {column: KNKAXC}
+  name: btn_DeleteRow
+  properties: {background: '#0056D6', foreground: 'theme:White', icon: 'fa:trash-o', icon_align: right, text: '', tooltip: Delete Row}
+  type: Button
+container: {type: DataRowPanel}
+is_package: true

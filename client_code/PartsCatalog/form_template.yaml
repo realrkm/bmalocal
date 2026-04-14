@@ -1,0 +1,17 @@
+components:
+- components:
+  - components:
+    - layout_properties: {grid_position: 'OMELDZ,YNRQFV'}
+      name: content_panel
+      properties: {border: solid}
+      type: ColumnPanel
+    layout_properties: {grid_position: 'EUBXOD,KGWSQC'}
+    name: card_1
+    properties: {border: solid, role: card}
+    type: ColumnPanel
+  layout_properties: {full_width_row: true, grid_position: 'OONQAL,YDFUBI', row_background: 'theme:Black'}
+  name: card_2
+  properties: {role: card}
+  type: ColumnPanel
+container: {type: ColumnPanel}
+is_package: true

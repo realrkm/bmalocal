@@ -1,0 +1,92 @@
+components:
+- components:
+  - components:
+    - layout_properties: {grid_position: 'YGSUGG,ZHDGQC'}
+      name: label_title
+      properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', text: Sign Jobcard}
+      type: Label
+    - layout_properties: {grid_position: ''}
+      name: label_3
+      properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, foreground: '#dc1818', text: Only Jobcards Under Checked-In Can be Signed}
+      type: Label
+    - components:
+      - layout_properties: {grid_position: 'RFHQPV,FTGPVR'}
+        name: spacer_1
+        properties: {height: '10'}
+        type: Spacer
+      - event_bindings: {pressed_enter: btn_SearchRegNo_click}
+        layout_properties: {grid_position: 'YVOMMX,ZHVJMR'}
+        name: txt_JobcardRef
+        properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 14, foreground: 'theme:Black', placeholder: Enter Jobcard Ref Here *}
+        type: TextBox
+      - event_bindings: {click: btn_SearchRegNo_click}
+        layout_properties: {grid_position: 'YVOMMX,BREWUZ'}
+        name: btn_SearchRegNo
+        properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: SEARCH}
+        type: Button
+      - event_bindings: {}
+        layout_properties: {grid_position: 'IMCMHI,MTXJWR'}
+        name: cmbJobCardID
+        properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Jobcard Ref *}
+        type: DropDown
+      - layout_properties: {grid_position: 'QZHXNO,YUMKFW'}
+        name: spacer_6
+        properties: {height: '10'}
+        type: Spacer
+      - layout_properties: {grid_position: 'FNRTPW,JDKWYP', row_background: 'theme:Black'}
+        name: spacer_2
+        properties: {height: '10'}
+        type: Spacer
+      - components:
+        - layout_properties: {grid_position: 'VWNMSG,PFYNST'}
+          name: column_panel_2
+          properties: {}
+          type: ColumnPanel
+        - layout_properties: {grid_position: 'VWNMSG,PDUYLC'}
+          name: signature_component_1
+          properties: {}
+          type: form:SignatureComponent
+        - layout_properties: {grid_position: 'VWNMSG,CWGYYF'}
+          name: column_panel_1
+          properties: {}
+          type: ColumnPanel
+        layout_properties: {grid_position: 'RGPBFT,ORYBJY'}
+        name: card_4
+        properties: {border: solid, col_widths: '{"PFYNST":15,"PDUYLC":30,"CWGYYF":15}', role: card}
+        type: ColumnPanel
+      - layout_properties: {grid_position: 'BLPMFJ,MYXOWO', row_background: 'theme:Black'}
+        name: spacer_3
+        properties: {height: '10'}
+        type: Spacer
+      - layout_properties: {grid_position: 'GNKMET,LHXGIS'}
+        name: spacer_5
+        properties: {height: '10'}
+        type: Spacer
+      - event_bindings: {click: btn_DownloadJobCard_click}
+        layout_properties: {grid_position: 'WOKDTY,LQMQWI'}
+        name: btn_DownloadJobCard
+        properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: DOWNLOAD JOBCARD}
+        type: Button
+      - event_bindings: {click: btn_Close_click}
+        layout_properties: {grid_position: 'WOKDTY,MXSFCR'}
+        name: btn_Close
+        properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: CLOSE}
+        type: Button
+      - layout_properties: {grid_position: 'YJHEZM,PBGWCN'}
+        name: spacer_4
+        properties: {height: '10'}
+        type: Spacer
+      layout_properties: {grid_position: 'ILOTUD,YGDRHM'}
+      name: card_3
+      properties: {border: solid, col_widths: '{"ZHVJMR":40,"BREWUZ":20}', role: card}
+      type: ColumnPanel
+    layout_properties: {grid_position: 'UAMNOW,EODTTC', row_background: 'theme:White'}
+    name: card_2
+    properties: {border: solid, role: card}
+    type: ColumnPanel
+  layout_properties: {full_width_row: true, grid_position: 'HYCCIB,RSNKQN', row_background: 'theme:Black'}
+  name: card_1
+  properties: {role: card}
+  type: ColumnPanel
+container: {type: ColumnPanel}
+is_package: true

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>TECHNICIAN PORTAL</title>
+        <link rel="stylesheet" href="_/theme/selfservice.css">
+        <script src="_/theme/lucide.min.js"></script>
+    </head>
+    <body>
+        <header>
+            <div class="header-container">
+                <div class="header-left">
+                    <button id="back-btn" class="hidden header-action-btn" aria-label="Go back to previous page">
+                        <i data-lucide="move-left" aria-hidden="true"></i>
+                    </button>
+                    <div id="admin-trigger" style="cursor: pointer;">
+                        <h1>TECHNICIAN PORTAL - BMA AUTO EXPRESS</h1>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <button id="cart-btn" class="header-action-btn" aria-label="View shopping cart">
+                        <i data-lucide="shopping-cart" style="width: 32px; height: 32px;" aria-hidden="true"></i>
+                        <span id="cart-count" class="hidden" aria-live="polite">0</span>
+                    </button>
+                    <button id="logout-btn" class="header-action-btn" aria-label="Logout">
+                        <i data-lucide="log-out" style="width: 32px; height: 32px;" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+        <nav id="breadcrumb-container" class="breadcrumb-nav hidden" aria-label="Breadcrumb"></nav>
+        <main id="main-content" class="container" role="main"></main>
+        <button id="back-to-top" class="hidden-fade" aria-label="Scroll to top">
+            <i data-lucide="arrow-up" aria-hidden="true"></i>
+        </button>
+        <footer>
+            <button id="home-footer-btn" aria-label="Go to service dashboard">
+                🏠 Service Dashboard
+            </button>
+        </footer>
+        <script src="_/theme/selfservice.js"></script>
+    </body>
+</html>

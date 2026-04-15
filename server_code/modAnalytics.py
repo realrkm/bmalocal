@@ -1,4 +1,3 @@
-
 import anvil.users
 import anvil.tables as tables
 import anvil.tables.query as q
@@ -6,15 +5,11 @@ from anvil.tables import app_tables
 import anvil.server
 #from datetime import datetime, timedelta
 import anvil.tz
-import anvil.secrets
 import requests # Import the requests library
 import re # For User-Agent parsing
 from anvil import Media
 import datetime
 
-@anvil.server.callable
-def get_gemini_api_key():
-    return anvil.secrets.get_secret("get_gemini_api_key")
     
 @anvil.server.callable
 def get_stats(user_agent_string=None): # Accept user_agent_string from client

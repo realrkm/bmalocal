@@ -147,8 +147,8 @@ class Main(MainTemplate):
             anvil.js.window["GeminiLive"].disconnect()
 
         # stop speech synthesis
-        anvil.js.call_js("window.speechSynthesis.cancel")
-        anvil.js.call_js("window.bmaFlushSpeech")
+        #anvil.js.call_js("window.speechSynthesis.cancel")
+        #anvil.js.call_js("window.bmaFlushSpeech")
 
         # reset UI
         self.lbl_status.text = "⚪ Stopped"

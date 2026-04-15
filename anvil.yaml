@@ -181,19 +181,14 @@ native_deps:
             let speechBuffer = "";
 
             window.bmaSpeakChunk = function (text) {
-                if (!text || !text.trim()) return;
+                if (!text?.trim()) return;
 
-                speechBuffer += text;
-
-                if (speechBuffer.length > 80) {
-                    const utter = new SpeechSynthesisUtterance(speechBuffer);
-                    speechBuffer = "";
-
-                    const voices = speechSynthesis.getVoices();
-                    utter.voice = voices.find(v => v.name.includes("Google")) || voices[0];
-
-                    speechSynthesis.speak(utter);
-                }
+                // Speak immediately for responsiveness
+                const utter = new SpeechSynthesisUtterance(text);
+                const voices = speechSynthesis.getVoices();
+                utter.voice = voices.find(v => v.name.includes("Google")) || voices[0];
+                utter.rate = 0.9; // Slightly slower for clarity
+                speechSynthesis.speak(utter);
             };
 
             window.bmaFlushSpeech = function () {

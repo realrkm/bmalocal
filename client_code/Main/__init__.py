@@ -52,16 +52,16 @@ class Main(MainTemplate):
         self.is_open = False
 
     # ─────────────────────────────────────────────
-    # FAB CLICK: Toggle listening
+    # FAB CLICK: Display / Hide Chat Window
     # ─────────────────────────────────────────────
 
     def fab_btn_click(self, **event_args):
         if self.is_open:
             self.live_popup.visible = False
-            self._popup_open = False
+            self.is_open=False
         else:
             self.live_popup.visible = True
-            self._popup_open = True
+            self.is_open=True
         
             
     def refresh(self, **event_args):

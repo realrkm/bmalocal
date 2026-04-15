@@ -49,24 +49,20 @@ class Main(MainTemplate):
         self.live_popup.visible = False
         self.fab_btn.tooltip = "Click to talk"
         self.fab_btn.enabled = True
+        self.is_open = False
 
     # ─────────────────────────────────────────────
     # FAB CLICK: Toggle listening
     # ─────────────────────────────────────────────
 
     def fab_btn_click(self, **event_args):
-        self._open_popup()
-
-    def _open_popup(self):
-        self.live_popup.visible = True
-        self._popup_open = True
-
-    def btn_close_popup_click(self, **event_args):
-        self._close_popup()
-
-    def _close_popup(self):
-        self.live_popup.visible = False
-        self._popup_open = False
+        if self.is_open:
+            self.live_popup.visible = False
+            self._popup_open = False
+        else:
+            self.live_popup.visible = True
+            self._popup_open = True
+        
             
     def refresh(self, **event_args):
         self.set_event_handler("x-refresh", self.refresh)

@@ -23,5 +23,7 @@ components:
   name: card_2
   properties: {col_spacing: huge, role: card, wrap_on: never}
   type: ColumnPanel
-container: {type: ColumnPanel}
+container:
+  properties: {role: wide-card}
+  type: ColumnPanel
 is_package: true

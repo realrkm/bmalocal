@@ -190,3 +190,4 @@ roles:
 - {name: volume-level-bar}
 - components: [LinearPanel]
   name: volume-bar-container
+- {name: wide-card}

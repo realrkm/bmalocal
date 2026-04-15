@@ -124,7 +124,7 @@ components:
     background: theme:White
     border: ''
     col_widths: '{"WBKABB":73,"FGQTDK":2,"ZSCHZU":5}'
-    role: card
+    role: wide-card
     spacing:
       padding: [null, 8, null, 8]
     spacing_above: large

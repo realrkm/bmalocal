@@ -1,42 +1,3 @@
-
-"""
-Main.py  — Live Assistant wired to Gemini 3.1 Flash Live
- 
-DESIGNER SETUP (do this before wiring Python):
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-1.  FAB Button
-      - Name:  fab_btn
-      - Role:  fab
-      - Icon:  fa:microphone-slash
-      - Text:  (empty)
-      - Click handler:  fab_btn_click
- 
-2.  ColumnPanel  (the popup card)
-      - Name:  live_popup
-      - Role:  live-assistant-popup
-      - Visible:  False (uncheck in designer)
- 
-    Inside live_popup add:
-    ├── Label   name=lbl_header   role=assistant-header,live-dot   text="LIVE ASSISTANT"
-    ├── Label   name=lbl_transcript   role=transcript-box          text="Press the mic to start…"
-    └── Label   name=lbl_status   role=status-bar                  text=""
- 
-3.  CustomHtmlPanel
-      - Name:  gemini_script_panel
-      - html property: paste the ENTIRE contents of live_assistant.html here
-        (or set it to your asset name if you uploaded it as an asset)
- 
-4.  App Secrets
-      - Add a secret named  GEMINI_API_KEY  with your Google AI Studio key.
-      - Never hard-code the key in Python source.
- 
-HOW IT WORKS:
-━━━━━━━━━━━━━
-• fab_btn_click  toggles the popup and starts/stops the Gemini session.
-• JavaScript in live_assistant.html handles the WebSocket, mic, and audio.
-• JS calls anvil.call("live_assistant_event", ...) to push transcript /
-  status updates back to Python, which updates the labels.
-"""
 from ._anvil_designer import MainTemplate
 from anvil import *
 import anvil.server
@@ -47,99 +8,208 @@ from anvil.tables import app_tables
 from .. import ModNavigation
 from .. import ModGetData
 import anvil.js
-from anvil.js.window import navigator
+from anvil.js.window import navigator, setTimeout
 from ..FAQ import FAQ
 from ..Alerts import Alerts
 from ..IncompleteDefectsInfo import IncompleteDefectsInfo
 from ..ViewTechnicianPortalDetails import ViewTechnicianPortalDetails
 from ..ViewPricingAlertDetails import ViewPricingAlertDetails
 
-from anvil.js.window import GeminiLive, setTimeout # exposes window.GeminiLive
 
 class Main(MainTemplate):
+
     def __init__(self, **properties):
-        # Set Form properties and Data Bindings.
         self.init_components(**properties)
 
-        # Any code you write here will run before the form opens.
         anvil.js.call('replaceBanner')
         while anvil.users.get_user() is None:
             anvil.users.login_with_form()
+
         user = anvil.users.get_user()
-        
-        
-        """
         if user:
-            # Fetch permissions from server
             self.permissions = anvil.server.call("get_user_permissions", user["role_id"])
             self.apply_permissions()
 
-            if user['role_id']==1:
+            if user['role_id'] == 1:
                 self.refresh()
             else:
-                self.notification_label.visible=False
-                self.btn_alerts.visible=False
-                self.btn_IncompleteDefectsInfo.visible=False
-            user_agent = navigator.userAgent
-            # Now call your server function and pass the user_agent
-            anvil.server.call_s('get_stats', user_agent)
-        
-            ModNavigation.home_form = self
-                
-            self.error_label.visible = False  # Hidden by default
+                self.notification_label.visible = False
+                self.btn_alerts.visible = False
+                self.btn_IncompleteDefectsInfo.visible = False
 
-            set_default_error_handling(lambda exc: ModGetData.handle_server_errors(exc, self.error_label))
-        """
-        self._session_active = False
+            user_agent = navigator.userAgent
+            anvil.server.call_s('get_stats', user_agent)
+            ModNavigation.home_form = self
+            self.error_label.visible = False
+            set_default_error_handling(
+                lambda exc: ModGetData.handle_server_errors(exc, self.error_label)
+            )
+
+        # ── Live Assistant state ──────────────────────────────
+        self._session_active = False  # mic/speech session running
+        self._popup_open     = False  # panel visible
+
         self.live_popup.visible = False
 
-        # Bind JS Events to Python
+        # Expose Python handler so JS can call it
         anvil.js.window["live_assistant_event"] = self._on_gemini_event
 
-    def fab_btn_click(self, **event_args):
-        # If panel is hidden but we are connected, just show it
-        if self._session_active and not self.live_popup.visible:
-            self.live_popup.visible = True
-            return
+        # Inject the speech + routing JS into the page
+        anvil.js.call_js("""
+          (function () {
+            if (window._bmaLiveLoaded) return;
+            window._bmaLiveLoaded = true;
 
-        # Normal Toggle Logic
-        if not self._session_active:
-            self._start_session()
+            const SpeechRecognition =
+              window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = SpeechRecognition ? new SpeechRecognition() : null;
+
+            let isListening = false;
+
+            function notify(event, data) {
+              try {
+                if (window.live_assistant_event) {
+                  window.live_assistant_event(event, JSON.stringify(data));
+                }
+              } catch (e) { console.error('[BMALive] notify error', e); }
+            }
+
+            if (recognition) {
+              recognition.continuous = false;
+              recognition.lang = 'en-US';
+              recognition.interimResults = false;
+
+              recognition.onstart = () => {
+                isListening = true;
+                notify('status', { text: '🎤 Listening...' });
+              };
+
+              // When the user finishes speaking, send text to Python
+              // Python calls ask_gemma on the server — no CORS
+              recognition.onresult = (e) => {
+                const transcript = e.results[0][0].transcript;
+                notify('transcript', { text: 'You: ' + transcript });
+                notify('status',     { text: '⏳ Thinking...' });
+                // Hand off to Python — Python calls the server
+                notify('user_said',  { text: transcript });
+              };
+
+              recognition.onend  = () => { isListening = false; };
+              recognition.onerror = (e) => {
+                notify('status', { text: '❌ Mic error: ' + e.error });
+                isListening = false;
+              };
+            }
+
+            // Text-to-speech helper called from Python after server responds
+            window.bmaSpeak = function (text) {
+              const utter = new SpeechSynthesisUtterance(text);
+              const voices = window.speechSynthesis.getVoices();
+              utter.voice = voices.find(
+                v => v.name.includes('Google') || v.name.includes('Premium')
+              ) || voices[0];
+              window.speechSynthesis.speak(utter);
+            };
+
+            window.GeminiLive = {
+              connect: () => {
+                if (!recognition) {
+                  notify('error', { message: 'Speech recognition not supported in this browser.' });
+                  return;
+                }
+                if (!isListening) {
+                  try { recognition.start(); notify('connected', {}); }
+                  catch (ex) { console.error('recognition.start error', ex); }
+                }
+              },
+              disconnect: () => {
+                if (recognition && isListening) recognition.stop();
+                notify('disconnected', {});
+              },
+              relisten: () => {
+                // Re-arm the mic for the next utterance after a reply
+                if (recognition && !isListening) {
+                  try { recognition.start(); }
+                  catch (ex) { console.error('relisten error', ex); }
+                }
+              }
+            };
+          })();
+        """)
+
+    # ── FAB click ─────────────────────────────────────────────
+
+    def fab_btn_click(self, **event_args):
+        if self._session_active and not self._popup_open:
+            # Session alive, panel hidden → just reopen
+            self._open_popup()
+        elif self._session_active and self._popup_open:
+            # Session alive, panel open → minimise only
+            self._close_popup()
         else:
-            self._stop_session()
+            # Not connected → start fresh
+            self._start_session()
+
+    # ── Close button (X) inside popup header ──────────────────
 
     def btn_close_popup_click(self, **event_args):
-        """Hides UI only. WebSocket remains open if active."""
-        self.live_popup.visible = False
-        if self._session_active:
-            self.fab_btn.tooltip = "Assistant is still listening (Click to show)"
+        self._close_popup()
+
+    # ── Session helpers ───────────────────────────────────────
 
     def _start_session(self):
-        self.live_popup.visible = True
+        self._open_popup()
         self.lbl_transcript.text = "Connecting..."
+        self.lbl_status.text = ""
         self.fab_btn.role = "fab-active"
         self.fab_btn.icon = "fa:microphone"
         self._session_active = True
-        GeminiLive.connect()
+        anvil.js.window["GeminiLive"].connect()
 
     def _stop_session(self):
-        GeminiLive.disconnect()
+        anvil.js.window["GeminiLive"].disconnect()
         self._session_active = False
+        self._popup_open = False
         self.fab_btn.role = "fab"
         self.fab_btn.icon = "fa:microphone-slash"
+        self.fab_btn.tooltip = ""
 
         def _cleanup():
             self.live_popup.visible = False
             self.lbl_transcript.text = "Press mic to start..."
+            self.lbl_status.text = ""
+
         setTimeout(_cleanup, 2000)
+
+    def _open_popup(self):
+        self.live_popup.visible = True
+        self._popup_open = True
+        self.fab_btn.tooltip = "Minimise assistant"
+
+    def _close_popup(self):
+        self.live_popup.visible = False
+        self._popup_open = False
+        if self._session_active:
+            self.fab_btn.tooltip = "Assistant still listening — tap to reopen"
+
+    # ── Gemini/Gemma event handler (called from JS) ────────────
 
     def _on_gemini_event(self, event_name, data_json):
         import json
-        data = json.loads(data_json)
+        try:
+            data = json.loads(data_json)
+        except Exception:
+            data = {}
 
         if event_name == "connected":
             self.lbl_status.text = "🟢 Live"
             self.lbl_transcript.text = "Ready. How can I help with the workshop?"
+
+        elif event_name == "user_said":
+            # User finished speaking — call Ollama via the server proxy
+            user_text = data.get("text", "")
+            if user_text:
+                self._ask_gemma_and_reply(user_text)
 
         elif event_name == "transcript":
             self.lbl_transcript.text = data.get("text", "")
@@ -147,29 +217,35 @@ class Main(MainTemplate):
         elif event_name == "status":
             self.lbl_status.text = data.get("text", "")
 
-        elif event_name in ["disconnected", "error"]:
+        elif event_name == "disconnected":
             self._session_active = False
             self.fab_btn.role = "fab"
             self.fab_btn.icon = "fa:microphone-slash"
-            self.lbl_status.text = "Disconnected"
-            
-        elif event_name == "volume":
-            level = data.get("level", 0)
-            # Convert 0.0-1.0 to percentage
-            percentage = level * 100
-            self.node_volume_bar.width = f"{percentage}%"
-        
-            # Visual feedback: change color if peaking
-            self.node_volume_bar.background = "#00e676" if percentage < 85 else "#ff5252"
+            self.lbl_status.text = "⚪ Disconnected"
 
+        elif event_name == "error":
+            msg = data.get("message", "Unknown error")
+            self.lbl_status.text = f"❌ {msg}"
+            self._session_active = False
+            self.fab_btn.role = "fab"
+            self.fab_btn.icon = "fa:microphone-slash"
 
-    def _close_popup(self):
-        """Hide the panel but leave the WebSocket connection untouched."""
-        self.live_popup.visible = False
-        self._popup_open = False
-        # FAB icon stays as active mic so user knows session is still live
-        if self._session_active:
-            self.fab_btn.tooltip = "Reopen assistant (still connected)"      
+    # ── Server proxy call — runs on Anvil server, no CORS ─────
+
+    def _ask_gemma_and_reply(self, user_text):
+        self.lbl_status.text = "⏳ Thinking..."
+        try:
+            reply = anvil.server.call("ask_gemma", user_text)
+            # Show reply in transcript
+            self.lbl_transcript.text = f"Gemma: {reply}"
+            self.lbl_status.text = "🟢 Live"
+            # Speak the reply using the browser's TTS
+            anvil.js.call_js("window.bmaSpeak", reply)
+            # Re-arm microphone so user can speak again without clicking
+            anvil.js.window["GeminiLive"].relisten()
+        except Exception as e:
+            self.lbl_status.text = f"❌ {e}"
+            self.lbl_transcript.text = "Could not reach Ollama. Is it running?"  
             
             
     def refresh(self, **event_args):

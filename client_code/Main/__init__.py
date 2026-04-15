@@ -48,7 +48,15 @@ class Main(MainTemplate):
                 lambda exc: ModGetData.handle_server_errors(exc, self.error_label)
             )
 
+        # Initialize cleanup counter
+        self._cleanup_counter = 0
 
+        # Optional: Clear stale tasks from previous sessions on load
+        try:
+            anvil.server.call("cleanup_old_tasks", 0)
+        except Exception:
+            pass
+            
         # ── Walkie-Talkie State ──────────────────────────────
         self._state = "idle"  # idle | listening | thinking | speaking
         self._pending_text = None
@@ -143,62 +151,66 @@ class Main(MainTemplate):
     # Server Query (blocking, but with timeout)
     # ─────────────────────────────────────────────
 
+    def _query_gemma(self, user_text):
+        """Launch task and start polling timer"""
+        try:
+            self._task_id = anvil.server.call("start_gemma_query", user_text)
+            self._state = "thinking"
+            self.lbl_status.text = "🤔 Thinking..."
+            self.fab_btn.enabled = False  # Prevent interruption
+            self.timer_1.interval = 0.5   # Poll every 500ms
+            self.timer_1.enabled = True
+        except Exception as e:
+            self._on_error(f"Failed to start query: {e}")
+            self._return_to_idle()
+    
     def timer_1_tick(self, **event_args):
-        """Poll background task for completion"""
-        if not hasattr(self, 'current_task') or not self.current_task:
+        # Increment counter (timer runs every 0.5s)
+        self._cleanup_counter += 1
+
+        # Call cleanup every 300 seconds (600 polls × 0.5s)
+        if self._cleanup_counter >= 600:
+            self._cleanup_counter = 0
+            try:
+                cleaned = anvil.server.call("cleanup_old_tasks", 300)
+                if cleaned:
+                    print(f"[Cleanup] Removed {cleaned} old tasks")
+            except Exception:
+                pass  # Non-critical, fail silently
+                
+        """Poll server for task completion"""
+        if not hasattr(self, '_task_id') or not self._task_id:
             return
     
         try:
-            # Check if task finished
-            if self.current_task.is_complete():
-                self.timer_1.enabled = False  # Stop polling
+            state = anvil.server.call("get_gemma_task_status", self._task_id)
+            status = state.get("status")
     
-                result = self.current_task.get_result()  # Get final response
-                if result and result.strip():
+            if status == "complete":
+                self.timer_1.enabled = False  # Stop polling
+                response = state.get("response", "").strip()
+    
+                if response:
                     self._state = "speaking"
-                    self.lbl_transcript.text = f"Gemma: {result}"
+                    self.lbl_transcript.text = f"Gemma: {response}"
                     self.lbl_status.text = "🔊 Speaking..."
-                    # Speak full response once
-                    anvil.js.call_js("window.bmaSpeakFull", result)
+                    anvil.js.call_js("window.bmaSpeakFull", response)
                 else:
                     self.lbl_transcript.text = "Gemma: (no response)"
                     self._return_to_idle()
-                return
     
-            # Check for errors during execution
-            state = self.current_task.get_state()
-            status = state.get('status', '')
-    
-            if status.startswith('error:'):
+            elif status == "error":
                 self.timer_1.enabled = False
-                self._on_error(status.replace('error: ', ''))
-                return
+                self._on_error(state.get("error", "Unknown server error"))
     
-            # Optional: Show progress while thinking
-            if status == 'thinking':
-                dots = "." * ((int(time.time()) % 4))  # Animate: . .. ...
+            elif status == "thinking":
+                # Optional: animate dots while waiting
+                dots = "." * (int(time.time()) % 4)
                 self.lbl_status.text = f"🤔 Thinking{dots}"
-    
+                
         except Exception as e:
             self.timer_1.enabled = False
-            self._on_error(f"Task error: {e}")
-    
-    def _query_gemma(self, user_text):
-        try:
-            self._state = "thinking"
-            self.lbl_status.text = "🤔 Thinking..."
-            self.fab_btn.enabled = False  # Prevent interruption during processing
-    
-            # Launch background task (returns immediately, even on free plan)
-            self.current_task = anvil.server.call("ask_gemma_sync", user_text)
-    
-            # Start polling timer
-            self.timer_1.interval = 0.5  # Poll every 500ms
-            self.timer_1.enabled = True
-    
-        except Exception as e:
-            self._on_error(f"Failed to start: {e}")
-            self._return_to_idle()
+            self._on_error(f"Polling error: {e}")
         
 
     def _return_to_idle(self):

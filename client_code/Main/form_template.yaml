@@ -61,7 +61,7 @@ components:
     layout_properties: {grid_position: 'CLSJCB,FGQTDK'}
     name: fab_btn
     properties:
-      icon: fa:microphone
+      icon: fa:wechat
       icon_align: right
       role: [fab, fab-active]
       text: ''
@@ -89,30 +89,16 @@ components:
     properties: {}
     type: ColumnPanel
   - components:
-    - layout_properties: {grid_position: 'NYWMEF,UJVUTH AVOHIE,ZJRZCP'}
+    - layout_properties: {grid_position: 'NYWMEF,UJVUTH'}
       name: label_1
       properties:
         role: [live-dot, assistant-header]
-        text: ASK GEMMA
+        text: WALKIE TALKIE
       type: Label
-    - event_bindings: {tick: timer_1_tick}
-      layout_properties: {grid_position: 'NYWMEF,UJVUTH DJYKKZ,PCHSKL'}
-      name: timer_1
-      properties: {}
-      type: Timer
-    - components:
-      - layout_properties: {}
-        name: node_volume_bar
-        properties: {role: volume-level-bar}
-        type: Label
-      layout_properties: {grid_position: 'NYWMEF,HWDNPY'}
-      name: volume_meter_container
-      properties: {background: '#53b512', role: volume-bar-container}
-      type: LinearPanel
     - event_bindings: {click: btn_close_popup_click}
       layout_properties: {grid_position: 'NYWMEF,SRPIKL'}
       name: btn_close_popup
-      properties: {background: 'theme:White', border: '', foreground: '', icon: 'fa:times', icon_align: right, role: close-popup-btn, text: ''}
+      properties: {background: '', border: solid, foreground: 'theme:Black', icon: 'fa:times', icon_align: right, role: close-popup-btn, text: ''}
       type: Button
     - layout_properties: {grid_position: 'HLAMCA,LPDXWG'}
       name: lbl_transcript
@@ -130,7 +116,7 @@ components:
       type: Label
     layout_properties: {grid_position: 'CLSJCB,ZSCHZU'}
     name: live_popup
-    properties: {col_widths: '{"UJVUTH":65,"SRPIKL":10,"HWDNPY":10}', role: live-assistant-popup}
+    properties: {col_widths: '{"UJVUTH":65,"SRPIKL":10}', role: live-assistant-popup}
     type: ColumnPanel
   layout_properties: {slot: default}
   name: column_panel_main

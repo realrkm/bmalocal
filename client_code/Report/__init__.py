@@ -16,7 +16,7 @@ from .. import ModGetData
 class Report(ReportTemplate):
     def __init__(self, permissions, **properties):
         self.init_components(**properties)
-
+        
         # Any code you write here will run before the form opens.
         anvil.js.call('replaceBanner')
         self.card_panel.visible = False

@@ -14,7 +14,7 @@ from ..Alerts import Alerts
 from ..IncompleteDefectsInfo import IncompleteDefectsInfo
 from ..ViewTechnicianPortalDetails import ViewTechnicianPortalDetails
 from ..ViewPricingAlertDetails import ViewPricingAlertDetails
-
+import json
 
 class Main(MainTemplate):
 
@@ -54,88 +54,6 @@ class Main(MainTemplate):
         # Expose Python handler so JS can call it
         anvil.js.window["live_assistant_event"] = self._on_gemini_event
 
-        # Inject the speech + routing JS into the page
-        anvil.js.call_js("""
-          (function () {
-            if (window._bmaLiveLoaded) return;
-            window._bmaLiveLoaded = true;
-
-            const SpeechRecognition =
-              window.SpeechRecognition || window.webkitSpeechRecognition;
-            const recognition = SpeechRecognition ? new SpeechRecognition() : null;
-
-            let isListening = false;
-
-            function notify(event, data) {
-              try {
-                if (window.live_assistant_event) {
-                  window.live_assistant_event(event, JSON.stringify(data));
-                }
-              } catch (e) { console.error('[BMALive] notify error', e); }
-            }
-
-            if (recognition) {
-              recognition.continuous = false;
-              recognition.lang = 'en-US';
-              recognition.interimResults = false;
-
-              recognition.onstart = () => {
-                isListening = true;
-                notify('status', { text: '🎤 Listening...' });
-              };
-
-              // When the user finishes speaking, send text to Python
-              // Python calls ask_gemma on the server — no CORS
-              recognition.onresult = (e) => {
-                const transcript = e.results[0][0].transcript;
-                notify('transcript', { text: 'You: ' + transcript });
-                notify('status',     { text: '⏳ Thinking...' });
-                // Hand off to Python — Python calls the server
-                notify('user_said',  { text: transcript });
-              };
-
-              recognition.onend  = () => { isListening = false; };
-              recognition.onerror = (e) => {
-                notify('status', { text: '❌ Mic error: ' + e.error });
-                isListening = false;
-              };
-            }
-
-            // Text-to-speech helper called from Python after server responds
-            window.bmaSpeak = function (text) {
-              const utter = new SpeechSynthesisUtterance(text);
-              const voices = window.speechSynthesis.getVoices();
-              utter.voice = voices.find(
-                v => v.name.includes('Google') || v.name.includes('Premium')
-              ) || voices[0];
-              window.speechSynthesis.speak(utter);
-            };
-
-            window.GeminiLive = {
-              connect: () => {
-                if (!recognition) {
-                  notify('error', { message: 'Speech recognition not supported in this browser.' });
-                  return;
-                }
-                if (!isListening) {
-                  try { recognition.start(); notify('connected', {}); }
-                  catch (ex) { console.error('recognition.start error', ex); }
-                }
-              },
-              disconnect: () => {
-                if (recognition && isListening) recognition.stop();
-                notify('disconnected', {});
-              },
-              relisten: () => {
-                // Re-arm the mic for the next utterance after a reply
-                if (recognition && !isListening) {
-                  try { recognition.start(); }
-                  catch (ex) { console.error('relisten error', ex); }
-                }
-              }
-            };
-          })();
-        """)
 
     # ── FAB click ─────────────────────────────────────────────
 
@@ -159,12 +77,11 @@ class Main(MainTemplate):
 
     def _start_session(self):
         self._open_popup()
-        self.lbl_transcript.text = "Connecting..."
-        self.lbl_status.text = ""
-        self.fab_btn.role = "fab-active"
-        self.fab_btn.icon = "fa:microphone"
         self._session_active = True
-        anvil.js.window["GeminiLive"].connect()
+        self._mode = "listening"
+
+        if "GeminiLive" in anvil.js.window:
+            anvil.js.window["GeminiLive"].connect()
 
     def _stop_session(self):
         anvil.js.window["GeminiLive"].disconnect()
@@ -195,57 +112,60 @@ class Main(MainTemplate):
     # ── Gemini/Gemma event handler (called from JS) ────────────
 
     def _on_gemini_event(self, event_name, data_json):
-        import json
-        try:
-            data = json.loads(data_json)
-        except Exception:
-            data = {}
-
+        
+        data = json.loads(data_json or "{}")
+    
         if event_name == "connected":
+            self._mode = "listening"
             self.lbl_status.text = "🟢 Live"
-            self.lbl_transcript.text = "Ready. How can I help with the workshop?"
-
-        elif event_name == "user_said":
-            # User finished speaking — call Ollama via the server proxy
+            self.lbl_transcript.text = "Listening..."
+    
+        elif event_name == "interim":
+            self.lbl_transcript.text = f"You: {data.get('text','')}"
+    
+        elif event_name == "final":
             user_text = data.get("text", "")
             if user_text:
-                self._ask_gemma_and_reply(user_text)
-
-        elif event_name == "transcript":
-            self.lbl_transcript.text = data.get("text", "")
-
+                self._mode = "thinking"
+                self._stream_gemma(user_text)
+    
+        elif event_name == "barge_in":
+            self._mode = "listening"
+            self.lbl_status.text = "🎤 Interrupted"
+    
         elif event_name == "status":
             self.lbl_status.text = data.get("text", "")
-
+    
         elif event_name == "disconnected":
-            self._session_active = False
-            self.fab_btn.role = "fab"
-            self.fab_btn.icon = "fa:microphone-slash"
+            self._mode = "idle"
             self.lbl_status.text = "⚪ Disconnected"
-
-        elif event_name == "error":
-            msg = data.get("message", "Unknown error")
-            self.lbl_status.text = f"❌ {msg}"
-            self._session_active = False
-            self.fab_btn.role = "fab"
-            self.fab_btn.icon = "fa:microphone-slash"
 
     # ── Server proxy call — runs on Anvil server, no CORS ─────
 
-    def _ask_gemma_and_reply(self, user_text):
+    def _stream_gemma(self, user_text):
         self.lbl_status.text = "⏳ Thinking..."
+        self._mode = "speaking"
+    
         try:
-            reply = anvil.server.call("ask_gemma", user_text)
-            # Show reply in transcript
-            self.lbl_transcript.text = f"Gemma: {reply}"
+            stream = anvil.server.call("ask_gemma_stream", user_text)
+    
+            full = ""
+    
+            for chunk in stream:
+                if not chunk:
+                    continue
+    
+                full += chunk
+                self.lbl_transcript.text = f"Gemma: {full}"
+    
+                # speak live
+                anvil.js.call_js("window.bmaSpeakChunk", chunk)
+    
             self.lbl_status.text = "🟢 Live"
-            # Speak the reply using the browser's TTS
-            anvil.js.call_js("window.bmaSpeak", reply)
-            # Re-arm microphone so user can speak again without clicking
-            anvil.js.window["GeminiLive"].relisten()
+            self._mode = "listening"
+    
         except Exception as e:
-            self.lbl_status.text = f"❌ {e}"
-            self.lbl_transcript.text = "Could not reach Ollama. Is it running?"  
+            self.lbl_status.text = f"❌ {e}" 
             
             
     def refresh(self, **event_args):

@@ -98,7 +98,120 @@ native_deps:
             }
         }
     </script>
+    <script>
+        (function () {
+            if (window._bmaLiveLoaded) return;
+            window._bmaLiveLoaded = true;
 
+            const SpeechRecognition =
+                window.SpeechRecognition || window.webkitSpeechRecognition;
+
+            const recognition = SpeechRecognition ? new SpeechRecognition() : null;
+
+            let isListening = false;
+            let silenceTimer = null;
+
+            function notify(event, data) {
+                try {
+                    if (window.live_assistant_event) {
+                        window.live_assistant_event(event, JSON.stringify(data));
+                    }
+                } catch (e) {
+                    console.error('[BMALive]', e);
+                }
+            }
+
+            function stopSpeaking() {
+                if (window.speechSynthesis.speaking) {
+                    window.speechSynthesis.cancel();
+                    notify('barge_in', {});
+                }
+            }
+
+            if (recognition) {
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = "en-US";
+
+                recognition.onstart = () => {
+                isListening = true;
+                notify("status", { text: "🎤 Listening..." });
+            };
+
+                recognition.onspeechstart = () => {
+                stopSpeaking(); // 🔥 BARGE-IN
+            };
+
+                recognition.onresult = (e) => {
+                let interim = "";
+                let finalText = "";
+
+                for (let i = e.resultIndex; i < e.results.length; i++) {
+                if (e.results[i].isFinal) {
+                finalText += e.results[i][0].transcript;
+            } else {
+                interim += e.results[i][0].transcript;
+            }
+            }
+
+                if (interim) {
+                notify("interim", { text: interim });
+            }
+
+                if (finalText) {
+                clearTimeout(silenceTimer);
+
+                silenceTimer = setTimeout(() => {
+                notify("final", { text: finalText });
+            }, 700); // natural pause detection
+            }
+            };
+
+                recognition.onend = () => {
+                isListening = false;
+                try { recognition.start(); } catch {}
+            };
+
+                recognition.onerror = (e) => {
+                notify("status", { text: "❌ " + e.error });
+                isListening = false;
+            };
+            }
+
+                window.bmaSpeakChunk = function (text) {
+                if (!text || !text.trim()) return;
+
+                const utter = new SpeechSynthesisUtterance(text);
+
+                const voices = window.speechSynthesis.getVoices();
+                utter.voice =
+                voices.find(v => v.name.includes("Google")) || voices[0];
+
+                window.speechSynthesis.speak(utter);
+            };
+
+                window.GeminiLive = {
+                connect: () => {
+                if (!recognition) {
+                notify("error", { message: "Speech not supported" });
+                return;
+            }
+                try {
+                recognition.start();
+                notify("connected", {});
+            } catch (e) {
+                console.error(e);
+            }
+            },
+
+                disconnect: () => {
+                if (recognition) recognition.stop();
+                window.speechSynthesis.cancel();
+                notify("disconnected", {});
+            }
+            };
+            })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Mozilla+Headline:wght@200..700&display=swap" rel="stylesheet">

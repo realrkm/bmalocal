@@ -789,6 +789,7 @@ body>div[data-notify="container"].alert-warning>span[data-notify="title"]{
     max-width: none !important;
     margin: 0 !important;
     padding: 20px; /* Optional: adds breathing room inside the card */
+    border-radius: 0;
 }
 
 /* full_width_row sections go full bleed */

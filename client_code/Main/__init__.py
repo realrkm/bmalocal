@@ -145,15 +145,15 @@ class Main(MainTemplate):
 
     def timer_1_tick(self, **event_args):
         """Poll background task for completion"""
-        if not hasattr(self, '_current_task') or not self._current_task:
+        if not hasattr(self, 'current_task') or not self.current_task:
             return
     
         try:
             # Check if task finished
-            if self._current_task.is_complete():
+            if self.current_task.is_complete():
                 self.timer_1.enabled = False  # Stop polling
     
-                result = self._current_task.get_result()  # Get final response
+                result = self.current_task.get_result()  # Get final response
                 if result and result.strip():
                     self._state = "speaking"
                     self.lbl_transcript.text = f"Gemma: {result}"
@@ -166,7 +166,7 @@ class Main(MainTemplate):
                 return
     
             # Check for errors during execution
-            state = self._current_task.get_state()
+            state = self.current_task.get_state()
             status = state.get('status', '')
     
             if status.startswith('error:'):
@@ -190,7 +190,7 @@ class Main(MainTemplate):
             self.fab_btn.enabled = False  # Prevent interruption during processing
     
             # Launch background task (returns immediately, even on free plan)
-            self._current_task = anvil.server.call("ask_gemma_sync", user_text)
+            self.current_task = anvil.server.call("ask_gemma_sync", user_text)
     
             # Start polling timer
             self.timer_1.interval = 0.5  # Poll every 500ms

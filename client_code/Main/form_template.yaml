@@ -89,12 +89,17 @@ components:
     properties: {}
     type: ColumnPanel
   - components:
-    - layout_properties: {grid_position: 'NYWMEF,UJVUTH'}
+    - layout_properties: {grid_position: 'NYWMEF,UJVUTH MXDVNJ,NMQOUS'}
       name: label_1
       properties:
         role: [live-dot, assistant-header]
         text: ASK GEMMA
       type: Label
+    - event_bindings: {tick: timer_1_tick}
+      layout_properties: {grid_position: 'NYWMEF,UJVUTH VRCCHS,ZLDDAR'}
+      name: timer_1
+      properties: {}
+      type: Timer
     - components:
       - layout_properties: {}
         name: node_volume_bar

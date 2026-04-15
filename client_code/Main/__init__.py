@@ -15,6 +15,7 @@ from ..IncompleteDefectsInfo import IncompleteDefectsInfo
 from ..ViewTechnicianPortalDetails import ViewTechnicianPortalDetails
 from ..ViewPricingAlertDetails import ViewPricingAlertDetails
 import json
+import time
 
 class Main(MainTemplate):
 
@@ -160,7 +161,10 @@ class Main(MainTemplate):
     
                 # speak live
                 anvil.js.call_js("window.bmaSpeakChunk", chunk)
-    
+                time.sleep(0.01)  # prevents UI freeze
+            # ✅ ADD THIS AFTER LOOP
+            anvil.js.call_js("window.bmaFlushSpeech")
+            
             self.lbl_status.text = "🟢 Live"
             self._mode = "listening"
     

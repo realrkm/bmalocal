@@ -178,17 +178,31 @@ native_deps:
             };
             }
 
-                window.bmaSpeakChunk = function (text) {
+            let speechBuffer = "";
+
+            window.bmaSpeakChunk = function (text) {
                 if (!text || !text.trim()) return;
 
-                const utter = new SpeechSynthesisUtterance(text);
+                speechBuffer += text;
 
-                const voices = window.speechSynthesis.getVoices();
-                utter.voice =
-                voices.find(v => v.name.includes("Google")) || voices[0];
+                if (speechBuffer.length > 80) {
+                    const utter = new SpeechSynthesisUtterance(speechBuffer);
+                    speechBuffer = "";
 
-                window.speechSynthesis.speak(utter);
+                    const voices = speechSynthesis.getVoices();
+                    utter.voice = voices.find(v => v.name.includes("Google")) || voices[0];
+
+                    speechSynthesis.speak(utter);
+                }
             };
+
+            window.bmaFlushSpeech = function () {
+                if (speechBuffer.trim()) {
+                    const utter = new SpeechSynthesisUtterance(speechBuffer);
+                    speechBuffer = "";
+                    speechSynthesis.speak(utter);
+                }
+                };
 
                 window.GeminiLive = {
                 connect: () => {

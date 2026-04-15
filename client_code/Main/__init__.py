@@ -48,162 +48,195 @@ class Main(MainTemplate):
                 lambda exc: ModGetData.handle_server_errors(exc, self.error_label)
             )
 
-        # ── Assistant state ──────────────────────────────
-        self._session_active = False
-        self._popup_open = False
-        self._stop_requested = False
-        self._mode = "idle"
+
+        # ── Walkie-Talkie State ──────────────────────────────
+        self._state = "idle"  # idle | listening | thinking | speaking
+        self._pending_text = None
 
         self.live_popup.visible = False
+        self.fab_btn.tooltip = "Click to talk"
+        self.fab_btn.enabled = True
 
         # JS callback bridge
-        anvil.js.window["live_assistant_event"] = self._on_gemini_event
+        anvil.js.window["live_assistant_event"] = self._on_assistant_event
 
     # ─────────────────────────────────────────────
-    # FAB TOGGLE (START / STOP)
+    # FAB CLICK: Toggle listening
     # ─────────────────────────────────────────────
 
     def fab_btn_click(self, **event_args):
-        if self._session_active:
-            self._stop_session()
-        else:
-            self._start_session()
-        if not self._session_active:
-            self._start_session()
-            
+        if self._state == "idle":
+            self._start_listening()
+        elif self._state == "listening":
+            self._stop_listening()  # User manually ended utterance
+        # Ignore clicks during thinking/speaking (or add cancel logic if desired)
+
     # ─────────────────────────────────────────────
-    # UI popup controls
+    # Listening Controls
     # ─────────────────────────────────────────────
 
-    def btn_close_popup_click(self, **event_args):
-        self._close_popup()
+    def _start_listening(self):
+        self._state = "listening"
+        self._open_popup()
+        self.lbl_status.text = "🎤 Listening..."
+        self.lbl_transcript.text = "Speak now..."
+        self.fab_btn.tooltip = "Click to stop & send"
+        self.fab_btn.icon = "fa:stop"
+        self.fab_btn.enabled = True
+
+        # Start mic via JS
+        started = anvil.js.call_js("window.BMALiveControl.startListening")
+        if not started:
+            self._on_error("Microphone access denied or not supported")
+
+    def _stop_listening(self):
+        if self._state != "listening":
+            return
+        stopped = anvil.js.call_js("window.BMALiveControl.stopListening")
+        if stopped:
+            self.lbl_status.text = "⏳ Processing..."
+            # Don't change state yet – wait for "final" event from JS
+
+    # ─────────────────────────────────────────────
+    # JS Event Handler (unified)
+    # ─────────────────────────────────────────────
+
+    def _on_assistant_event(self, event_name, data_json):
+        data = json.loads(data_json or "{}")
+
+        if event_name == "interim":
+            # Show live transcription while listening
+            if self._state == "listening":
+                self.lbl_transcript.text = f"You: {data.get('text','')}"
+
+        elif event_name == "final":
+            # User finished speaking → send to server
+            if self._state == "listening":
+                user_text = data.get("text", "").strip()
+                if user_text:
+                    self._state = "thinking"
+                    self.lbl_status.text = "🤔 Thinking..."
+                    self.fab_btn.enabled = False  # Prevent interruption
+                    self._query_gemma(user_text)
+                else:
+                    self._return_to_idle()
+
+        elif event_name == "speech_complete":
+            # Assistant finished speaking → return to idle
+            if self._state == "speaking":
+                self._return_to_idle()
+
+        elif event_name == "barge_in":
+            # User interrupted assistant
+            if self._state in ["thinking", "speaking"]:
+                anvil.js.call_js("window.BMALiveControl.cancelSpeech")
+                self._return_to_idle()
+                self.lbl_status.text = "🎤 Interrupted"
+
+        elif event_name == "status":
+            self.lbl_status.text = data.get("text", self.lbl_status.text)
+
+        elif event_name == "error":
+            self._on_error(data.get("message", "Unknown error"))
+
+    # ─────────────────────────────────────────────
+    # Server Query (blocking, but with timeout)
+    # ─────────────────────────────────────────────
+
+    def timer_1_tick(self, **event_args):
+        """Poll background task for completion"""
+        if not hasattr(self, '_current_task') or not self._current_task:
+            return
+    
+        try:
+            # Check if task finished
+            if self._current_task.is_complete():
+                self.timer_1.enabled = False  # Stop polling
+    
+                result = self._current_task.get_result()  # Get final response
+                if result and result.strip():
+                    self._state = "speaking"
+                    self.lbl_transcript.text = f"Gemma: {result}"
+                    self.lbl_status.text = "🔊 Speaking..."
+                    # Speak full response once
+                    anvil.js.call_js("window.bmaSpeakFull", result)
+                else:
+                    self.lbl_transcript.text = "Gemma: (no response)"
+                    self._return_to_idle()
+                return
+    
+            # Check for errors during execution
+            state = self._current_task.get_state()
+            status = state.get('status', '')
+    
+            if status.startswith('error:'):
+                self.timer_1.enabled = False
+                self._on_error(status.replace('error: ', ''))
+                return
+    
+            # Optional: Show progress while thinking
+            if status == 'thinking':
+                dots = "." * ((int(time.time()) % 4))  # Animate: . .. ...
+                self.lbl_status.text = f"🤔 Thinking{dots}"
+    
+        except Exception as e:
+            self.timer_1.enabled = False
+            self._on_error(f"Task error: {e}")
+    
+    def _query_gemma(self, user_text):
+        try:
+            self._state = "thinking"
+            self.lbl_status.text = "🤔 Thinking..."
+            self.fab_btn.enabled = False  # Prevent interruption during processing
+    
+            # Launch background task (returns immediately, even on free plan)
+            self._current_task = anvil.server.call("ask_gemma_sync", user_text)
+    
+            # Start polling timer
+            self.timer_1.interval = 0.5  # Poll every 500ms
+            self.timer_1.enabled = True
+    
+        except Exception as e:
+            self._on_error(f"Failed to start: {e}")
+            self._return_to_idle()
+        
+
+    def _return_to_idle(self):
+        self._state = "idle"
+        self.lbl_status.text = "⚪ Ready"
+        self.fab_btn.tooltip = "Click to talk"
+        self.fab_btn.icon = "fa:microphone"
+        self.fab_btn.enabled = True
+        # Keep popup open for context, or close if preferred:
+        # self._close_popup()
+
+    def _on_error(self, message):
+        self._state = "idle"
+        self.lbl_status.text = f"❌ {message}"
+        self.fab_btn.enabled = True
+        self.fab_btn.icon = "fa:microphone"
+        print(f"[Assistant Error] {message}")
+
+    # ─────────────────────────────────────────────
+    # Popup UI helpers
+    # ─────────────────────────────────────────────
 
     def _open_popup(self):
         self.live_popup.visible = True
         self._popup_open = True
-        self.fab_btn.tooltip = "Minimise assistant"
+
+    def btn_close_popup_click(self, **event_args):
+        # Cancel any active session when closing popup
+        if self._state == "listening":
+            anvil.js.call_js("window.BMALiveControl.stopListening")
+        elif self._state == "speaking":
+            anvil.js.call_js("window.BMALiveControl.cancelSpeech")
+        self._return_to_idle()
+        self._close_popup()
 
     def _close_popup(self):
         self.live_popup.visible = False
         self._popup_open = False
-
-        if self._session_active:
-            self.fab_btn.tooltip = "Assistant running — tap to reopen"
-
-    # ─────────────────────────────────────────────
-    # START SESSION
-    # ─────────────────────────────────────────────
-
-    def _start_session(self):
-        self._session_active = True
-        self._stop_requested = False
-        self._mode = "listening"
-
-        self._open_popup()
-
-        self.lbl_status.text = "🟢 Starting..."
-        self.lbl_transcript.text = ""
-
-        # Start polling timer
-        self.timer_1.interval = 0.2  # 200ms
-        self.timer_1.enabled = True
-    
-        if "GeminiLive" in anvil.js.window:
-            anvil.js.window["GeminiLive"].connect()
-            
-    def timer_1_tick(self, **event_args):
-        """Poll background task for streaming updates"""
-        if not hasattr(self, '_current_task') or not self._current_task:
-            return
-    
-        state = self._current_task.get_state()
-    
-        if state.get('status') == 'streaming':
-            response = state.get('response', '')
-            self.lbl_transcript.text = f"Gemma: {response}"
-            # Speak chunk-by-chunk
-            anvil.js.call_js("window.bmaSpeakChunk", response[-50:])  # last ~50 chars
-    
-        elif state.get('status') == 'complete':
-            self.timer_1.enabled = False
-            self.lbl_status.text = "🟢 Live"
-            self._mode = "listening"
-            anvil.js.call_js("window.bmaFlushSpeech")
-    
-        elif state.get('status', '').startswith('error'):
-            self.timer_1.enabled = False
-            self.lbl_status.text = f"❌ {state['status']}"
-    # ─────────────────────────────────────────────
-    # STOP SESSION (HARD STOP)
-    # ─────────────────────────────────────────────
-
-    def _stop_session(self):
-        self._stop_requested = True
-        self._session_active = False
-        self._mode = "idle"
-
-        # stop mic + recognition
-        if "GeminiLive" in anvil.js.window:
-            anvil.js.window["GeminiLive"].disconnect()
-
-        # stop speech synthesis
-        #anvil.js.call_js("window.speechSynthesis.cancel")
-        #anvil.js.call_js("window.bmaFlushSpeech")
-
-        # reset UI
-        self.lbl_status.text = "⚪ Stopped"
-        self.lbl_transcript.text = "Assistant stopped"
-
-        self._close_popup()
-
-    # ─────────────────────────────────────────────
-    # JS EVENT HANDLER (mic / speech events)
-    # ─────────────────────────────────────────────
-
-    def _on_gemini_event(self, event_name, data_json):
-
-        data = json.loads(data_json or "{}")
-
-        if event_name == "connected":
-            self._mode = "listening"
-            self.lbl_status.text = "🟢 Live"
-            self.lbl_transcript.text = "Listening..."
-
-        elif event_name == "interim":
-            self.lbl_transcript.text = f"You: {data.get('text','')}"
-
-        elif event_name == "final":
-            user_text = data.get("text", "")
-            if user_text and self._session_active:
-                self._mode = "thinking"
-                self._stream_gemma(user_text)
-
-        elif event_name == "barge_in":
-            self._mode = "listening"
-            self.lbl_status.text = "🎤 Interrupted"
-
-        elif event_name == "status":
-            self.lbl_status.text = data.get("text", "")
-
-        elif event_name == "disconnected":
-            self._mode = "idle"
-            self.lbl_status.text = "⚪ Disconnected"
-
-    # ─────────────────────────────────────────────
-    # STREAMING FROM SERVER
-    # ─────────────────────────────────────────────
-
-    def _stream_gemma(self, user_text):
-        self.lbl_status.text = "⏳ Thinking..."
-        self._mode = "thinking"
-    
-        try:
-            # ✅ Launch background task (returns Task object immediately)
-            self._current_task = anvil.server.call("ask_gemma_stream", user_text)
-            # Timer will handle polling - no need to wait here
-        except Exception as e:
-            self.lbl_status.text = f"❌ {e}"
-            self._mode = "listening"
             
             
     def refresh(self, **event_args):
@@ -407,5 +440,7 @@ class Main(MainTemplate):
         self.btn_ViewBuyingPriceExceedsSelling.enabled=False
         alert(content=ViewPricingAlertDetails(), dismissible=False,large=True)
         self.btn_ViewBuyingPriceExceedsSelling.enabled=True
+
+    
 
    

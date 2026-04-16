@@ -41,15 +41,12 @@ components:
       - {data_key: active, expand: true, id: EAFWMU, title: Pending}
       - {data_key: column_1, id: IUWOMF, title: '', width: '90'}
       foreground: theme:Black
-      role: [wide-card, glass-panel]
+      role: [wide-card]
       wrap_on: never
     type: DataGrid
   layout_properties: {full_width_row: true, grid_position: 'VEVJGL,WBCQON'}
   name: card_1
-  properties:
-    background: ''
-    role: [wide-card, glass-panel, card, wide]
-    wrap_on: never
+  properties: {background: '', role: null, wrap_on: never}
   type: ColumnPanel
 container: {type: ColumnPanel}
 is_package: true

@@ -4,19 +4,36 @@ components:
     name: label_1
     properties: {font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Updated Technician Portal Details}
     type: Label
+  - layout_properties: {grid_position: 'JIMAOO,NGGHAW'}
+    name: spacer_2
+    properties: {height: '20'}
+    type: Spacer
   - event_bindings: {click: btn_UpdateStatus_click}
     layout_properties: {grid_position: 'TIWELF,FYFLXD'}
     name: btn_UpdateStatus
     properties: {align: full, background: '#0056D6', bold: false, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: null, text: Update Pending StatUS}
     type: Button
+  - layout_properties: {grid_position: 'UMQOJW,SGNGGF'}
+    name: spacer_1
+    properties: {height: '20'}
+    type: Spacer
   - components:
     - layout_properties: {}
+      name: spacer_3
+      properties: {height: '10'}
+      type: Spacer
+    - layout_properties: {}
       name: repeating_panel_1
-      properties: {item_template: ViewTechnicianPortalDetails.RowTemplate}
+      properties:
+        border: ''
+        foreground: theme:Black
+        item_template: ViewTechnicianPortalDetails.RowTemplate
+        role: [glass-panel]
       type: RepeatingPanel
     layout_properties: {full_width_row: false, grid_position: 'AKAKUY,NXYLBT'}
     name: data_grid_1
     properties:
+      border: ''
       columns:
       - {data_key: jobcard, expand: true, id: JKSDUP, title: JobCard Ref}
       - {data_key: message, expand: true, id: VJQQOR, title: Message}
@@ -24,11 +41,12 @@ components:
       - {data_key: active, expand: true, id: EAFWMU, title: Pending}
       - {data_key: column_1, id: IUWOMF, title: '', width: '90'}
       foreground: theme:Black
-      role: null
+      role: glass-panel
     type: DataGrid
   layout_properties: {full_width_row: true, grid_position: 'VEVJGL,WBCQON'}
   name: card_1
-  properties: {role: card}
+  properties:
+    role: [card, glass-panel]
   type: ColumnPanel
 container: {type: ColumnPanel}
 is_package: true

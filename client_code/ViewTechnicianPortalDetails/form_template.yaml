@@ -28,7 +28,7 @@ components:
         border: ''
         foreground: theme:Black
         item_template: ViewTechnicianPortalDetails.RowTemplate
-        role: [glass-panel]
+        role: [wide-card]
       type: RepeatingPanel
     layout_properties: {full_width_row: false, grid_position: 'AKAKUY,NXYLBT'}
     name: data_grid_1
@@ -41,12 +41,15 @@ components:
       - {data_key: active, expand: true, id: EAFWMU, title: Pending}
       - {data_key: column_1, id: IUWOMF, title: '', width: '90'}
       foreground: theme:Black
-      role: glass-panel
+      role: [wide-card, glass-panel]
+      wrap_on: never
     type: DataGrid
   layout_properties: {full_width_row: true, grid_position: 'VEVJGL,WBCQON'}
   name: card_1
   properties:
-    role: [card, glass-panel]
+    background: ''
+    role: [wide-card, glass-panel, card, wide]
+    wrap_on: never
   type: ColumnPanel
 container: {type: ColumnPanel}
 is_package: true

@@ -1383,6 +1383,9 @@ Font: Mozilla Headline | Proportions: Fixed MD3
     color: black !important;
     letter-spacing: -0.5px;
 }
+.modal-header .modal-title::after {
+    white-space: nowrap; /* Prevents the new title from breaking into two lines */
+}
 .modal-header .close { display: none !important; }
 
 /* ── Body (Fields) ─────────────────────────────────────────── */
@@ -1425,26 +1428,6 @@ Font: Mozilla Headline | Proportions: Fixed MD3
 
 .modal-body input::placeholder {
     color: rgba(255, 255, 255, 0.5) !important;
-}
-
-/* ── Password Wrapper Toggle Fix ─────────────────────────── */
-.password-wrapper {
-    position: relative;
-}
-
-.password-toggle {
-    position: absolute;
-    top: 50%;
-    right: 10px;
-    transform: translateY(-50%);
-    width: 34px;
-    height: 34px;
-    background: #0056D6;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
 }
 
 /* ── Footer / Actions ──────────────────────────────────────── */

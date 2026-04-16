@@ -98,63 +98,6 @@ native_deps:
             }
         }
     </script>
-    <script>
-        (function () {
-
-            function init() {
-                // ✅ Find the input ONCE (even after type changes)
-                const password = document.querySelector('input.form-control[placeholder="password"]');
-
-                if (!password || password.dataset.eyeAttached) return;
-
-                password.dataset.eyeAttached = "true";
-
-                // Wrap input
-                const wrapper = document.createElement("div");
-                wrapper.className = "password-wrapper";
-
-                password.parentNode.insertBefore(wrapper, password);
-                wrapper.appendChild(password);
-
-                // Create toggle
-                const toggle = document.createElement("div");
-                toggle.className = "password-toggle";
-
-                toggle.innerHTML = `
-                <svg class="icon-visible" viewBox="0 0 24 24">
-                    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/>
-                    <circle cx="12" cy="12" r="3"/>
-                </svg>
-
-                <svg class="icon-hidden" viewBox="0 0 24 24">
-                    <path d="M17.94 17.94A10.94 10.94 0 0 1 12 19C5 19 1 12 1 12"/>
-                    <line x1="1" y1="1" x2="23" y2="23"/>
-                </svg>
-            `;
-
-                wrapper.appendChild(toggle);
-
-                toggle.addEventListener("click", function () {
-                    const isHidden = password.type === "password";
-
-                    password.type = isHidden ? "text" : "password";
-                    toggle.classList.toggle("hidden");
-
-                    toggle.classList.add("active-glow");
-                    setTimeout(() => toggle.classList.remove("active-glow"), 300);
-                });
-            }
-
-            // Run ONCE + short retry (not aggressive loop)
-            let attempts = 0;
-            const interval = setInterval(() => {
-                init();
-                attempts++;
-                if (attempts > 10) clearInterval(interval);
-            }, 300);
-
-        })();
-    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Mozilla+Headline:wght@200..700&display=swap" rel="stylesheet">

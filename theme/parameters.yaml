@@ -191,3 +191,4 @@ roles:
 - components: [LinearPanel]
   name: volume-bar-container
 - {name: wide-card}
+- {components: null, name: glass-panel}

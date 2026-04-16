@@ -631,7 +631,7 @@ This can create unwanted scrollbars; we compensate for this at the top level wit
 .modal-body {
     padding: 20px 24px 24px;
     font-size: 16px;
-    color: #747474;
+    color: #000000;
 }
 
 .modal-footer {
@@ -1254,196 +1254,298 @@ BMA AUTO - LIVE ASSISTANT PREMIUM UI
 }
 
 /* ============================================================
-BMA AUTO ACCESSORIES — MATERIAL 3 PROFESSIONAL LOGIN
-Updated for Material 3 (MD3) Design Tokens
+BMA AUTO ACCESSORIES — GLASSMORPHISM LOGIN (ENHANCED)
+Font: Mozilla Headline
 ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap');
-
-/* ── Backdrop: Deeper, modern scrim ────────────────────────── */
-.modal-backdrop {
-    background-color: #1a1c1e !important;
-    opacity: 0.4 !important; /* MD3 standard scrim opacity */
+/* ── Custom Font Declaration ───────────────────────────────── */
+@font-face {
+    font-family: 'Mozilla Headline';
+    src: url("_/theme/fonts/MozillaHeadline.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
 }
 
-/* ── Modal Container ────────────────────────────────────────── */
+/* Google fallback */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&display=swap');
+
+/* ── Full Page Background ──────────────────────────────────── */
+.modal-backdrop {
+    background: url("_/theme/screen.png") no-repeat center center fixed !important;
+    background-size: cover !important;
+    opacity: 1 !important;
+}
+
+/* ── Modal Shell ───────────────────────────────────────────── */
 .modal-dialog {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: calc(100vh - 40px);
+    min-height: 100vh;
 }
 
+/* ── GLASS CARD ───────────────────────────────────────────── */
 .modal-content {
-    font-family: 'Outfit', sans-serif !important;
-    border: none !important;
-    border-radius: 28px !important; /* MD3 Extra Large Corner */
-    background-color: #f3f3f8 !important; /* MD3 Surface Container */
-    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1), 0px 4px 8px rgba(0, 0, 0, 0.05) !important;
-    padding: 0 !important;
-    max-width: 420px;
-    width: 100%;
+    font-family: 'Mozilla Headline', 'Outfit', sans-serif !important;
+
+    border-radius: 28px !important;
+
+    /* Glass base */
+    background: rgba(255, 255, 255, 0.12) !important;
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+
+    /* Glass edge + depth */
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.35),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+
+    width: 100% !important;
+    max-width: 600px !important;
+
+    padding: 48px !important;
+    margin: 20px;
     overflow: hidden;
+
+    position: relative;
 }
 
-/* ── Branding Header ───────────────────────────────────────── */
+/* ── Glass Reflection Overlay ─────────────────────────────── */
+.modal-content::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 28px;
+
+    background: linear-gradient(
+        120deg,
+        rgba(255,255,255,0.35) 0%,
+        rgba(255,255,255,0.08) 30%,
+        rgba(255,255,255,0.02) 60%,
+        transparent 100%
+    );
+
+    pointer-events: none;
+}
+
+/* ── Header ──────────────────────────────────────────────── */
 .modal-header {
     border: none !important;
-    padding: 40px 32px 16px 32px !important;
+    padding: 0 0 24px 0 !important;
     text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-/* Logo placeholder / Icon circle */
+/* Logo */
 .modal-header::before {
-    content: "B"; /* Replace with logo image if available */
+    content: "BMA";
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 48px;
-    height: 48px;
+    width: 90px;
+    height: 90px;
+
     background: #0056D6;
+    box-shadow: 0 8px 20px rgba(0, 86, 214, 0.6);
+
     color: white;
-    border-radius: 12px;
+    border-radius: 16px;
+
+    font-family: 'Mozilla Headline', sans-serif !important;
     font-weight: 600;
-    font-size: 24px;
-    margin-bottom: 16px;
-    box-shadow: 0 4px 12px rgba(0, 86, 214, 0.2);
+    font-size: 32px;
+
+    margin-bottom: 20px;
 }
 
-.modal-header .modal-title, .modal-header h3 {
-    font-size: 24px !important;
-    font-weight: 500 !important;
-    color: #1a1c1e !important;
-    margin: 0 !important;
+/* Title */
+.modal-header .modal-title,
+.modal-header h3 {
+    font-size: 30px !important;
+    font-weight: 600 !important;
+    color: #ffffff !important;
+    letter-spacing: -0.5px;
 }
 
-.modal-header::after {
-    content: "Sign in to BMA Auto Accessories";
-    display: block;
-    font-size: 14px;
-    color: #44474f;
-    margin-top: 8px;
-}
-
-.modal-header .close { display: none !important; }
-
-/* ── Body & Form Fields ────────────────────────────────────── */
+/* ── Body ─────────────────────────────────────────────────── */
 .modal-body {
-    padding: 8px 32px 16px 32px !important;
+    padding: 0 !important;
 }
 
-/* MD3 Label Style */
 .modal-body label {
     font-size: 14px !important;
     font-weight: 500 !important;
-    color: #44474f !important;
-    margin-left: 4px;
+    color: rgba(255,255,255,0.8) !important;
     margin-bottom: 8px !important;
+    display: block;
 }
 
-/* ── MD3 Outlined Inputs ───────────────────────────────────── */
+/* ── Glass Inputs ─────────────────────────────────────────── */
 .modal-body input.form-control {
     font-family: 'Outfit', sans-serif !important;
-    background-color: transparent !important;
-    border: 1px solid #74777f !important; /* MD3 Outline color */
-    border-radius: 12px !important; /* MD3 Medium Corner */
-    height: 52px !important;
-    padding: 12px 16px !important;
+
+    background: rgba(255, 255, 255, 0.15) !important;
+    backdrop-filter: blur(10px);
+
+    border: 1px solid rgba(255,255,255,0.25) !important;
+    border-radius: 12px !important;
+
+    height: 56px !important;
+    padding: 0 16px !important;
     font-size: 16px !important;
-    color: #1a1c1e !important;
-    transition: border 0.2s, box-shadow 0.2s;
     margin-bottom: 20px !important;
+
+    color: #ffffff !important;
+    transition: all 0.2s ease;
 }
 
+/* Placeholder color */
+.modal-body input::placeholder {
+    color: rgba(255,255,255,0.6) !important;
+}
+
+/* Focus state */
 .modal-body input.form-control:focus {
-    border: 2px solid #0056D6 !important;
-    box-shadow: none !important;
-    padding: 11px 15px !important; /* Adjust for 2px border */
+    border: 1px solid rgba(58, 141, 255, 0.9) !important;
+    background: rgba(255,255,255,0.25) !important;
+    box-shadow: 0 0 0 2px rgba(58, 141, 255, 0.2);
 }
 
-/* ── Links ─────────────────────────────────────────────────── */
-.modal-body a {
-    color: #0056D6 !important;
-    font-weight: 500;
-    font-size: 14px;
-    text-decoration: none !important;
-    transition: opacity 0.2s;
-}
-
-.modal-body a:hover {
-    opacity: 0.8;
-    text-decoration: underline !important;
-}
-
-/* ── Footer & Action Buttons ───────────────────────────────── */
+/* ── Footer ───────────────────────────────────────────────── */
 .modal-footer {
     border: none !important;
-    padding: 0 32px 40px 32px !important;
-    flex-direction: column !important; /* Stacked buttons for mobile-first MD3 */
+    padding: 24px 0 0 0 !important;
     display: flex;
+    flex-direction: column;
     gap: 12px;
 }
 
-/* Primary "Log In" Button */
-.modal-footer .btn-primary, 
+/* Button */
+.modal-footer .btn-primary,
 .modal-footer button:not(.btn-default) {
+    font-family: 'Mozilla Headline', sans-serif !important;
+
     width: 100% !important;
-    height: 48px !important;
+    height: 52px !important;
     border-radius: 100px !important;
-    background-color: #0056D6 !important;
-    color: #ffffff !important;
+
+    background: #0056D6 !important;
+    box-shadow: 0 8px 20px rgba(0, 86, 214, 0.5);
+
+    font-size: 16px !important;
     font-weight: 600 !important;
-    font-size: 15px !important;
-    letter-spacing: 0.1px !important;
-    text-transform: none !important; /* MD3 moves away from all-caps */
     border: none !important;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.modal-footer .btn-primary:hover {
-    background-color: #0049b5 !important;
-    box-shadow: 0 4px 12px rgba(0, 86, 214, 0.25) !important;
+/* ── Links ────────────────────────────────────────────────── */
+.modal-body a,
+.anvil-users-signup {
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+
+    color: rgba(255,255,255,0.85) !important;
+    font-size: 14px;
+    text-decoration: none !important;
 }
 
-/* Secondary "Cancel/Back" Button */
-.modal-footer .btn-default {
-    width: 100% !important;
-    background: transparent !important;
-    color: #0056D6 !important;
-    border: 1px solid #74777f !important;
-    border-radius: 100px !important;
-    height: 48px !important;
-    font-weight: 500 !important;
-    text-transform: none !important;
+.modal-body a:hover {
+    text-decoration: underline !important;
 }
 
-.modal-footer .btn-default:hover {
-    background-color: rgba(0, 86, 214, 0.05) !important;
+
+/* ── Start Password Wrapper ───────────────────────────── */
+.password-wrapper {
+    position: relative;
+    display: block;
 }
 
-/* ── Alerts ────────────────────────────────────────────────── */
-.modal-body .alert {
-    background-color: #ffdad6 !important; /* MD3 Error Container */
-    color: #410002 !important; /* MD3 On Error Container */
-    border: none !important;
-    border-radius: 12px !important;
-    padding: 12px 16px !important;
-    font-size: 14px !important;
+/* Space for icon */
+.password-wrapper input.form-control {
+    padding-right: 54px !important;
+}
+
+/* ── Toggle Button (Glass + Interaction) ───────── */
+.password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 14px;
+    transform: translateY(-50%) scale(1);
+
+    width: 36px;
+    height: 36px;
+
     display: flex;
     align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    /* 🔵 New background */
+    background: #0056D6;
+
+    cursor: pointer;
+
+    transition: 
+        transform 0.15s ease,
+        box-shadow 0.25s ease,
+        background 0.25s ease;
+    z-index: 5;
 }
 
-/* ── Animation ─────────────────────────────────────────────── */
-.modal.fade .modal-dialog {
-    transform: scale(0.9) translateY(20px) !important;
-    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease !important;
+/* Hover */
+.password-toggle:hover {
+    background: #0A66FF;
 }
 
-.modal.in .modal-dialog {
-    transform: scale(1) translateY(0) !important;
+/* Click (press effect) */
+.password-toggle:active {
+    transform: translateY(-50%) scale(0.92);
+}
+
+/* Focus glow */
+.password-toggle.active-glow {
+    box-shadow: 
+        0 0 0 2px rgba(58,141,255,0.25),
+        0 0 12px rgba(58,141,255,0.45);
+}
+
+/* ── SVG Icons ─────────────────────────────────── */
+.password-toggle svg {
+    width: 18px;
+    height: 18px;
+    stroke: rgba(255,255,255,0.85);
+    stroke-width: 2;
+    fill: none;
+
     opacity: 1;
+    transform: scale(1);
+
+    transition: 
+        opacity 0.2s ease,
+        transform 0.2s ease;
 }
+
+/* Hidden icon initially */
+.password-toggle .icon-hidden {
+    position: absolute;
+    opacity: 0;
+    transform: scale(0.7);
+}
+
+/* Toggle state */
+.password-toggle.hidden .icon-visible {
+    opacity: 0;
+    transform: scale(0.7);
+}
+
+.password-toggle.hidden .icon-hidden {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* End Of Password Wrapper */

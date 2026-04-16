@@ -1493,26 +1493,3 @@ Font: Mozilla Headline | Proportions: Fixed MD3
     text-decoration: underline !important;
 }
 
-/* ── Main App Background (All Forms) ──────────────────────── */
-body {
-    background: url("_/theme/screen.png") no-repeat center center fixed !important;
-    background-size: cover !important;
-}
-
-/* Ensure the Anvil content area is transparent so the body background shows through */
-.anvil-role-standard-page, .content {
-    background-color: transparent !important;
-}
-/* Hide body background elements when a modal (Login Form) is active */
-body.modal-open {
-    background: #000 !important; /* Optional: Set to black so the focus is entirely on the glass login card */
-}
-/* Apply this role to any ColumnPanel or Card in your other forms */
-.anvil-role-glass-panel {
-    background: rgba(255, 255, 255, 0.1) !important;
-    backdrop-filter: blur(20px) saturate(150%);
-    -webkit-backdrop-filter: blur(20px) saturate(150%);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 15px;
-    padding: 20px;
-}

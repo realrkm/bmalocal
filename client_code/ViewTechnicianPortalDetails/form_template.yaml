@@ -24,11 +24,7 @@ components:
       type: Spacer
     - layout_properties: {}
       name: repeating_panel_1
-      properties:
-        border: ''
-        foreground: theme:Black
-        item_template: ViewTechnicianPortalDetails.RowTemplate
-        role: [wide-card]
+      properties: {border: '', foreground: 'theme:Black', item_template: ViewTechnicianPortalDetails.RowTemplate, role: null}
       type: RepeatingPanel
     layout_properties: {full_width_row: false, grid_position: 'AKAKUY,NXYLBT'}
     name: data_grid_1
@@ -41,8 +37,8 @@ components:
       - {data_key: active, expand: true, id: EAFWMU, title: Pending}
       - {data_key: column_1, id: IUWOMF, title: '', width: '90'}
       foreground: theme:Black
-      role: [wide-card]
-      wrap_on: never
+      role: wide-card
+      wrap_on: mobile
     type: DataGrid
   layout_properties: {full_width_row: true, grid_position: 'VEVJGL,WBCQON'}
   name: card_1

@@ -1364,28 +1364,7 @@ Font: Mozilla Headline | Proportions: Fixed MD3
     color: #ffffff !important;
     letter-spacing: -0.5px;
 }
-/* Target the title element */
-.modal-header .modal-title {
-    font-size: 0 !important; /* Hides the original "Log In" text */
-    visibility: hidden;
-}
 
-/* Inject the new text */
-.modal-header .modal-title::after {
-    content: "Sign in to BMA Auto Accessories"; /* <--- CHANGE THIS TO YOUR NEW TITLE */
-    display: block;
-    visibility: visible;
-
-    /* Restore font properties */
-    font-family: 'Mozilla Headline', sans-serif !important;
-    font-size: 18px !important; /* Match your previous design size */
-    
-    color: black !important;
-    letter-spacing: -0.5px;
-}
-.modal-header .modal-title::after {
-    white-space: nowrap; /* Prevents the new title from breaking into two lines */
-}
 .modal-header .close { display: none !important; }
 
 /* ── Body (Fields) ─────────────────────────────────────────── */
@@ -1463,6 +1442,9 @@ Font: Mozilla Headline | Proportions: Fixed MD3
     margin: 0 !important; /* Remove Anvil default margins */
     border: none !important;
     transition: all 0.2s ease;
+    flex: 1 1 0px !important; /* Forces both to grow from 0 equally */
+    min-width: 120px !important; /* Sets a standard floor for the width */
+    white-space: nowrap !important;
 }
 
 /* Primary Button (Sign Up) */

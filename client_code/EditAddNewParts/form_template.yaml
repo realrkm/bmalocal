@@ -12,7 +12,7 @@ components:
     - event_bindings: {pressed_enter: btn_Search_click}
       layout_properties: {grid_position: 'RLTSBT,UKADGC'}
       name: text_box_searchPartNo
-      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Gray 900', placeholder: Enter Part Name / Part No To Search *, role: glass-panel}
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Part Name / Part No To Search *, role: null}
       type: TextBox
     - event_bindings: {click: btn_Search_click}
       layout_properties: {grid_position: 'RLTSBT,VCKZYD'}
@@ -46,15 +46,15 @@ components:
       type: Label
     - layout_properties: {grid_position: 'KIZCFB,KEJYOR'}
       name: date_picker_purchase
-      properties: {background: 'theme:Gray 50', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', format: '%d/%m/%Y', pick_time: false, placeholder: Enter Purchase Date *}
+      properties: {background: 'theme:Gray 50', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', format: '%d/%m/%Y', pick_time: false, placeholder: Enter Purchase Date *}
       type: DatePicker
     - layout_properties: {grid_position: 'DMKYTB,RZDQVF'}
       name: txtPartName
-      properties: {background: 'theme:Gray 50', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Part Name Here *}
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Part Name Here *}
       type: TextBox
     - layout_properties: {grid_position: 'GMOROL,FMOZDK'}
       name: txtPartNumber
-      properties: {background: 'theme:Gray 50', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Part Number Here *}
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Part Number Here *}
       type: TextBox
     - layout_properties: {grid_position: 'GBJDQK,XXVYCN', row_background: 'theme:Black'}
       name: spacer_3

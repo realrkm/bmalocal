@@ -1500,7 +1500,7 @@ body {
 }
 
 /* Ensure the Anvil content area is transparent so the body background shows through */
-.anvil-role-standard-page, .content {
+.anvil-role-standard-page, .content, .left-nav, .app-bar{
     background-color: transparent !important;
 }
 /* Hide body background elements when a modal (Login Form) is active */

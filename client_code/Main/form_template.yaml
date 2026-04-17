@@ -2,7 +2,7 @@ components:
 - components:
   - layout_properties: {grid_position: 'CLSJCB,WBKABB TPMBDK,LAAQRC'}
     name: error_label
-    properties: {align: right, foreground: '#e51515', icon_align: left_edge}
+    properties: {align: right, foreground: 'theme:White', icon_align: left_edge, role: text}
     type: Label
   - layout_properties: {grid_position: 'CLSJCB,WBKABB AYVILZ,GEIHUC'}
     name: notification_label
@@ -12,7 +12,7 @@ components:
       bold: true
       border: ''
       font_size: 16
-      foreground: '#000000'
+      foreground: theme:White
       icon: ''
       icon_align: left
       italic: true
@@ -41,7 +41,7 @@ components:
     - event_bindings: {click: btn_IncompleteDefectsInfo_click}
       layout_properties: {grid_position: 'QGIUDM,TNDFYZ'}
       name: btn_IncompleteDefectsInfo
-      properties: {background: '#0056D6', border: '', enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: '', role: raised, spacing_above: none, text: Incomplete DEFECTS, visible: true}
+      properties: {background: '#0056D6', border: '', enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: '', role: raised, spacing_above: none, text: INC. DEFECTS, visible: true}
       type: Button
     - event_bindings: {click: btn_ViewTechnicianPortalDetails_click}
       layout_properties: {grid_position: 'QGIUDM,XDTSLI'}
@@ -55,7 +55,7 @@ components:
       type: Button
     layout_properties: {grid_position: 'CLSJCB,WBKABB EXJVCC,PMZDAH'}
     name: card_2
-    properties: {role: wide, wrap_on: never}
+    properties: {background: '', role: null, wrap_on: never}
     type: ColumnPanel
   - event_bindings: {click: fab_btn_click}
     layout_properties: {grid_position: 'CLSJCB,FGQTDK'}
@@ -137,7 +137,7 @@ components:
     event_bindings: {click: link_1_click}
     layout_properties: {}
     name: link_1
-    properties: {background: '', border: solid, font: Mozilla Headline, font_size: 20, foreground: 'theme:White', role: selected, text: FAQs, underline: true}
+    properties: {background: '', border: '', font: Mozilla Headline, font_size: 20, foreground: 'theme:White', role: null, text: FAQs, underline: true}
     type: Link
   layout_properties: {slot: nav-right}
   name: navbar_links
@@ -213,6 +213,7 @@ components:
   properties: {background: 'theme:White', border: '', role: glass-panel}
   type: ColumnPanel
 container:
-  properties: {html: '@theme:standard-page.html', role: glass-panel}
+  event_bindings: {}
+  properties: {html: '@theme:standard-page.html', role: null}
   type: HtmlTemplate
 is_package: true

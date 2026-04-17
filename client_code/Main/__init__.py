@@ -8,6 +8,7 @@ from anvil.tables import app_tables
 from .. import ModNavigation
 from .. import ModGetData
 import anvil.js
+from anvil.js import window
 from anvil.js.window import navigator, setTimeout
 from ..FAQ import FAQ
 from ..Alerts import Alerts
@@ -45,7 +46,8 @@ class Main(MainTemplate):
             set_default_error_handling(
                 lambda exc: ModGetData.handle_server_errors(exc, self.error_label)
             )
-            
+
+        
         self.live_popup.visible = False
         self.fab_btn.tooltip = "Click to talk"
         self.fab_btn.enabled = True
@@ -267,5 +269,3 @@ class Main(MainTemplate):
         self.btn_ViewBuyingPriceExceedsSelling.enabled=True
 
     
-
-   

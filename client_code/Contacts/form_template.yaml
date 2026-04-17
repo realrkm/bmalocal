@@ -17,11 +17,14 @@ components:
     type: Button
   layout_properties: {full_width_row: true, grid_position: 'JZBVFT,RUNOIA', row_background: 'theme:Black'}
   name: card_1
-  properties: {background: 'theme:White', role: wide, wrap_on: never}
+  properties:
+    background: theme:White
+    role: [wide-card]
+    wrap_on: never
   type: ColumnPanel
 - layout_properties: {full_width_row: true, grid_position: 'YGOXWJ,QYCVVH'}
   name: card_2
-  properties: {col_spacing: huge, role: card, wrap_on: never}
+  properties: {col_spacing: huge, role: null, wrap_on: never}
   type: ColumnPanel
 container:
   properties: {role: wide-card}

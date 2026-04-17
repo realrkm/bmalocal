@@ -72,10 +72,10 @@ components:
         name: image_1
         properties:
           border_radius: '50'
-          display_mode: original_size
-          height: 384.1999816894531
+          display_mode: zoom_to_fill
+          height: 472
           horizontal_align: center
-          margin: [null, '0', null, '0']
+          margin: [null, '0', null, 0]
           role: null
           source: _/theme/BMAAutoAccessories.bmp
           vertical_align: center
@@ -87,6 +87,8 @@ components:
         border: ''
         col_widths: '{}'
         role: [glass-panel]
+        spacing:
+          padding: [0, 0, 0, 0]
       type: ColumnPanel
     layout_properties: {full_width_row: true, grid_position: 'CLSJCB,WBKABB PFXQBN,DICXDA'}
     name: column_panel_content

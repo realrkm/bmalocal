@@ -1516,4 +1516,6 @@ body.modal-open {
     border-radius: 15px;
     padding: 20px;
 }
-
+.left-nav {
+    left: -100%; /* Keeps it off-screen before the JS even kicks in */
+}

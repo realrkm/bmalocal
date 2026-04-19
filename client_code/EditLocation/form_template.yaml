@@ -7,7 +7,7 @@ components:
   - event_bindings: {change: drop_down_select_change}
     layout_properties: {grid_position: 'IYRDZW,KFAUWH'}
     name: drop_down_select
-    properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Location To Edit *}
+    properties: {background: 'theme:White', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Location To Edit *}
     type: DropDown
   - layout_properties: {grid_position: 'IZJDPN,ZJGVAS'}
     name: spacer_2
@@ -39,11 +39,11 @@ components:
     name: spacer_3_copy
     properties: {height: 14}
     type: Spacer
-  layout_properties: {grid_position: 'HEOFNJ,KNGYLD', row_background: 'theme:White'}
+  layout_properties: {grid_position: 'HEOFNJ,KNGYLD', row_background: ''}
   name: card_1
-  properties: {border: solid, role: card}
+  properties: {border: solid, role: glass-panel}
   type: ColumnPanel
 container:
-  properties: {background: ''}
+  properties: {background: '', role: glass-panel}
   type: ColumnPanel
 is_package: true

@@ -1,8 +1,10 @@
 components: []
 container:
   properties:
+    border: solid
     html: |2-
 
       <div anvil-slot="default"></div>
+    role: glass-panel
   type: HtmlTemplate
 is_package: true

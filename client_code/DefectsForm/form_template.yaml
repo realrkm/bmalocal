@@ -214,7 +214,7 @@ components:
       type: TextBox
     layout_properties: {grid_position: 'QDUYRT,WGANLZ'}
     name: card_2
-    properties: {background: 'theme:Gray 600', border: solid, col_widths: '{"VEHYEH":45,"FXOPCI":15}', role: card}
+    properties: {background: '', border: '', col_widths: '{"VEHYEH":45,"FXOPCI":15}', role: glass-panel}
     type: ColumnPanel
   - layout_properties: {grid_position: 'WDPLYB,KRIBON'}
     name: label_title_2_copy
@@ -285,13 +285,13 @@ components:
       type: Spacer
     layout_properties: {grid_position: 'HTQWAK,XOCZMP'}
     name: column_panel_update_signature
-    properties: {col_widths: '{"APLRNS":15,"BKIYUI":30,"LCYZAU":15}'}
+    properties: {col_widths: '{"APLRNS":15,"BKIYUI":30,"LCYZAU":15}', role: null}
     type: ColumnPanel
-  layout_properties: {grid_position: 'HEOFNJ,KNGYLD', row_background: 'theme:White'}
+  layout_properties: {full_width_row: false, grid_position: 'HEOFNJ,KNGYLD', row_background: ''}
   name: card_1
-  properties: {border: solid, col_widths: '{"FOZOKD":45,"VGHXWP":45,"EJPTOZ":45}', role: card}
+  properties: {border: '', col_widths: '{"FOZOKD":45,"VGHXWP":45,"EJPTOZ":45}', role: glass-panel}
   type: ColumnPanel
 container:
-  properties: {background: ''}
+  properties: {background: '', role: glass-panel}
   type: ColumnPanel
 is_package: true

@@ -32,7 +32,7 @@ components:
     type: Button
   layout_properties: {grid_position: 'HEOFNJ,KNGYLD'}
   name: card_1
-  properties: {border: solid, role: card}
+  properties: {border: '', role: glass-panel}
   type: ColumnPanel
 container:
   properties: {background: ''}

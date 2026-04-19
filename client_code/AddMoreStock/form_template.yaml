@@ -17,7 +17,7 @@ components:
   - event_bindings: {change: drop_down_selectPart_change}
     layout_properties: {grid_position: 'WZBKRG,BKMGNZ'}
     name: drop_down_selectPart
-    properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Part *}
+    properties: {background: 'theme:White', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Part *}
     type: DropDown
   - layout_properties: {grid_position: 'AIFPMN,BCWJWG', row_background: 'theme:Black'}
     name: spacer_3_copy_2
@@ -25,12 +25,12 @@ components:
     type: Spacer
   - layout_properties: {grid_position: 'TIZFDW,LVRQWX'}
     name: date_picker_1
-    properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:bBlack', format: '%d/%m/%Y', placeholder: Enter Date *}
+    properties: {align: center, background: 'theme:White', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:bBlack', format: '%d/%m/%Y', placeholder: Enter Date *}
     type: DatePicker
   - event_bindings: {}
     layout_properties: {grid_position: 'IRDXSF,GYYVSC'}
     name: drop_down_selectSupplier
-    properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Part Supplier *}
+    properties: {background: 'theme:White', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Part Supplier *}
     type: DropDown
   - layout_properties: {grid_position: 'VQUCCX,KAMCLP'}
     name: txt_NoOfUnits
@@ -82,11 +82,11 @@ components:
     name: spacer_3_copy
     properties: {height: 14}
     type: Spacer
-  layout_properties: {grid_position: 'HEOFNJ,KNGYLD', row_background: 'theme:Black'}
+  layout_properties: {grid_position: 'HEOFNJ,KNGYLD', row_background: ''}
   name: card_1
-  properties: {border: solid, col_widths: '{"ZNLMTP":40,"FZTFWO":20,"TCYJXE":40}', role: card}
+  properties: {border: '', col_widths: '{"ZNLMTP":40,"FZTFWO":20,"TCYJXE":40}', role: glass-panel}
   type: ColumnPanel
 container:
-  properties: {background: ''}
+  properties: {background: '', role: glass-panel}
   type: ColumnPanel
 is_package: true

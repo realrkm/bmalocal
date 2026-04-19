@@ -22,7 +22,7 @@ components:
     - event_bindings: {change: drop_down_selectPart_change}
       layout_properties: {grid_position: 'XQVDCS,UTJUFB'}
       name: drop_down_selectPart
-      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Part *}
+      properties: {background: 'theme:White', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Part *}
       type: DropDown
     - layout_properties: {grid_position: 'LAXGBC,SBKCQH'}
       name: lbl_ID
@@ -46,7 +46,7 @@ components:
       type: Label
     - layout_properties: {grid_position: 'KIZCFB,KEJYOR'}
       name: date_picker_purchase
-      properties: {background: 'theme:Gray 50', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', format: '%d/%m/%Y', pick_time: false, placeholder: Enter Purchase Date *}
+      properties: {background: 'theme:Gray 50', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', format: '%d/%m/%Y', pick_time: false, placeholder: Enter Purchase Date *}
       type: DatePicker
     - layout_properties: {grid_position: 'DMKYTB,RZDQVF'}
       name: txtPartName
@@ -66,11 +66,11 @@ components:
       type: Label
     - layout_properties: {grid_position: 'PYRZEI,KVQRPY'}
       name: drop_down_location
-      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Storage Location *}
+      properties: {background: 'theme:White', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Storage Location *}
       type: DropDown
     - layout_properties: {grid_position: 'BRAUUK,ZWHJIK'}
       name: drop_down_supplier
-      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Supplier *}
+      properties: {background: 'theme:White', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Supplier *}
       type: DropDown
     - layout_properties: {grid_position: 'NHUKGN,LPBXPM', row_background: 'theme:Black'}
       name: spacer_3_copy

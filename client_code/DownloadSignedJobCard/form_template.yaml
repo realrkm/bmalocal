@@ -7,7 +7,7 @@ components:
       type: Label
     - layout_properties: {grid_position: ''}
       name: label_3
-      properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, foreground: '#dc1818', text: Only Jobcards Under Checked-In Can be Signed}
+      properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: '#dc1818', text: Only Jobcards Under Checked-In Can be Signed}
       type: Label
     - components:
       - layout_properties: {grid_position: 'RFHQPV,FTGPVR'}
@@ -52,7 +52,7 @@ components:
           type: ColumnPanel
         layout_properties: {grid_position: 'RGPBFT,ORYBJY'}
         name: card_4
-        properties: {border: solid, col_widths: '{"PFYNST":15,"PDUYLC":30,"CWGYYF":15}', role: card}
+        properties: {border: solid, col_widths: '{"PFYNST":15,"PDUYLC":30,"CWGYYF":15}', role: glass-panel}
         type: ColumnPanel
       - layout_properties: {grid_position: 'BLPMFJ,MYXOWO', row_background: 'theme:Black'}
         name: spacer_3
@@ -78,15 +78,15 @@ components:
         type: Spacer
       layout_properties: {grid_position: 'ILOTUD,YGDRHM'}
       name: card_3
-      properties: {border: solid, col_widths: '{"ZHVJMR":40,"BREWUZ":20}', role: card}
+      properties: {border: '', col_widths: '{"ZHVJMR":40,"BREWUZ":20}', role: glass-panel}
       type: ColumnPanel
-    layout_properties: {grid_position: 'UAMNOW,EODTTC', row_background: 'theme:White'}
+    layout_properties: {grid_position: 'UAMNOW,EODTTC', row_background: ''}
     name: card_2
-    properties: {border: solid, role: card}
+    properties: {border: '', role: glass-panel}
     type: ColumnPanel
-  layout_properties: {full_width_row: true, grid_position: 'HYCCIB,RSNKQN', row_background: 'theme:Black'}
+  layout_properties: {full_width_row: true, grid_position: 'HYCCIB,RSNKQN', row_background: ''}
   name: card_1
-  properties: {role: card}
+  properties: {role: glass-panel}
   type: ColumnPanel
 container: {type: ColumnPanel}
 is_package: true

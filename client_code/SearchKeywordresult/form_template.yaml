@@ -4,5 +4,7 @@ components:
   name: link_search_result
   properties: {align: left, background: '', bold: false, border: '', col_spacing: medium, col_widths: '', font: Mozilla Headline, font_size: 16, foreground: '', icon: '', icon_align: left, italic: false, role: null, spacing_above: small, spacing_below: small, text: link_search_result, underline: false, visible: true, wrap_on: mobile}
   type: Link
-container: {type: ColumnPanel}
+container:
+  properties: {role: glass-panel}
+  type: ColumnPanel
 is_package: true

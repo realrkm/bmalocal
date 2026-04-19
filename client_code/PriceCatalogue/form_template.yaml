@@ -60,9 +60,13 @@ components:
       name: spacer_2_copy_copy
       properties: {height: '16'}
       type: Spacer
-    layout_properties: {grid_position: 'NWEUAS,CHNGLZ', row_background: 'theme:Black'}
+    layout_properties: {grid_position: 'NWEUAS,CHNGLZ', row_background: ''}
     name: card_2
-    properties: {background: 'theme:White', border: solid, role: wide, wrap_on: never}
+    properties:
+      background: theme:White
+      border: ''
+      role: [wide, glass-panel]
+      wrap_on: never
     type: ColumnPanel
   - layout_properties: {grid_position: 'JWDAPA,KTCTNR'}
     name: spacer_1_copy
@@ -70,7 +74,7 @@ components:
     type: Spacer
   - layout_properties: {grid_position: 'LUCTYP,GKXCRI'}
     name: label_3
-    properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, foreground: '#dc1818', text: Ensure all parts have both buying and selling prices in order to appear in the Price Catalogue.}
+    properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: '#dc1818', text: Ensure all parts have both buying and selling prices in order to appear in the Price Catalogue.}
     type: Label
   - layout_properties: {grid_position: 'NUUINT,NLZUFC'}
     name: spacer_1_copy_copy
@@ -114,9 +118,9 @@ components:
       role: wide
       wrap_on: mobile
     type: DataGrid
-  layout_properties: {full_width_row: true, grid_position: 'AWGLFW,UVUHMI', row_background: 'theme:Black'}
+  layout_properties: {full_width_row: true, grid_position: 'AWGLFW,UVUHMI', row_background: ''}
   name: card_1
-  properties: {background: 'theme:White', col_widths: '{"NAGFFN":40,"GLYMLM":20}', role: card, wrap_on: never}
+  properties: {background: 'theme:White', col_widths: '{"NAGFFN":40,"GLYMLM":20}', role: glass-panel, wrap_on: never}
   type: ColumnPanel
 container:
   properties: {role: wide, wrap_on: never}

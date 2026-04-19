@@ -7,7 +7,7 @@ components:
     type: Button
   - layout_properties: {grid_position: 'KFQRXH,HHYOXM'}
     name: image_1
-    properties: {source: _/theme/Invoice Header Logo.jpg}
+    properties: {role: glass-panel, source: _/theme/Invoice Header Logo.jpg}
     type: Image
   - layout_properties: {grid_position: 'ZDGEVH,QKSOLJ'}
     name: label_2
@@ -30,7 +30,7 @@ components:
   - event_bindings: {change: drop_down_select_change}
     layout_properties: {grid_position: 'XSDZJY,HKZUUI'}
     name: drop_down_select
-    properties: {border: solid, font: Mozilla Headline, font_size: 16, include_placeholder: true, placeholder: Select Reg No *}
+    properties: {border: '', font: Mozilla Headline, font_size: 16, include_placeholder: true, placeholder: Select Reg No *}
     type: DropDown
   - layout_properties: {grid_position: 'BECDLV,OPWWPQ'}
     name: spacer_1_copy
@@ -83,7 +83,7 @@ components:
       name: drop_down_selectPriority
       properties:
         background: theme:White
-        border: solid
+        border: ''
         font: Mozilla Headline
         font_size: 16
         foreground: theme:Black
@@ -124,7 +124,7 @@ components:
       name: drop_down_selectPriorityService
       properties:
         background: theme:White
-        border: solid
+        border: ''
         font: Mozilla Headline
         font_size: 16
         foreground: theme:Black
@@ -189,11 +189,11 @@ components:
       type: Button
     layout_properties: {grid_position: 'TYGUWU,YJMZRA'}
     name: card_2
-    properties: {col_widths: '{"undefined":40,"RUAYED":20}', role: card}
+    properties: {col_widths: '{"undefined":40,"RUAYED":20}', role: glass-panel}
     type: ColumnPanel
   layout_properties: {grid_position: 'ZBOKPB,TZXUHH'}
   name: card_1
-  properties: {col_widths: '{"XCNMEF":40,"GQBNEX":20}', role: card}
+  properties: {col_widths: '{"XCNMEF":40,"GQBNEX":20}', role: glass-panel}
   type: ColumnPanel
 container: {type: ColumnPanel}
 is_package: true

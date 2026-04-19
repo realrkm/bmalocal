@@ -7,7 +7,7 @@ components:
   - event_bindings: {change: cmbJobCardRef_change}
     layout_properties: {grid_position: 'MXOMMF,YKLUZP'}
     name: cmbJobCardRef
-    properties: {background: 'theme:White', border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: false, placeholder: Select Job Card Ref}
+    properties: {background: 'theme:White', border: '', enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: false, placeholder: Select Job Card Ref}
     type: DropDown
   - layout_properties: {grid_position: 'SICJFP,MYGIBQ', row_background: 'theme:Black'}
     name: spacer_1
@@ -53,9 +53,9 @@ components:
     name: txtRequestedParts
     properties: {background: 'theme:White', border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black'}
     type: TextArea
-  layout_properties: {grid_position: 'VZEDQW,PIQWRN', row_background: 'theme:White'}
+  layout_properties: {grid_position: 'VZEDQW,PIQWRN', row_background: ''}
   name: card_1
-  properties: {border: solid, role: card}
+  properties: {border: '', role: glass-panel}
   type: ColumnPanel
 - components:
   - layout_properties: {grid_position: 'VMCUTK,CRESEO'}
@@ -83,9 +83,9 @@ components:
       show_page_controls: false
       wrap_on: mobile
     type: DataGrid
-  layout_properties: {grid_position: 'UGCJBE,NJHZDA', row_background: 'theme:White'}
+  layout_properties: {grid_position: 'UGCJBE,NJHZDA', row_background: ''}
   name: card_2
-  properties: {border: solid, role: card}
+  properties: {border: solid, role: glass-panel}
   type: ColumnPanel
 - components:
   - layout_properties: {grid_position: 'AKCRRX,BAUKLE'}
@@ -103,7 +103,7 @@ components:
   - layout_properties: {grid_position: 'LGYGAX,UJCOYV'}
     name: cmbWorkflow
     properties:
-      border: solid
+      border: ''
       font: Mozilla Headline
       font_size: 16
       foreground: theme:Black
@@ -112,11 +112,11 @@ components:
       placeholder: 'Select Next Workflow Status * '
       role: null
     type: DropDown
-  layout_properties: {grid_position: 'JBSVYL,XPSHIZ', row_background: 'theme:White'}
+  layout_properties: {grid_position: 'JBSVYL,XPSHIZ', row_background: ''}
   name: card_3
-  properties: {border: solid, role: card}
+  properties: {border: '', role: glass-panel}
   type: ColumnPanel
-- layout_properties: {grid_position: 'CHYEGR,USBRPY', row_background: 'theme:White'}
+- layout_properties: {grid_position: 'CHYEGR,USBRPY', row_background: ''}
   name: spacer_3
   properties: {height: 32}
   type: Spacer

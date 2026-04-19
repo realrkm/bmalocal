@@ -7,7 +7,7 @@ components:
 - components:
   - layout_properties: {grid_position: 'WSBGFB,VWUVVR'}
     name: image_1
-    properties: {source: _/theme/Invoice Header Logo.jpg}
+    properties: {role: null, source: _/theme/Invoice Header Logo.jpg}
     type: Image
   - layout_properties: {grid_position: 'UOYLKG,UWOXRN'}
     name: label_2
@@ -15,11 +15,11 @@ components:
     type: Label
   - layout_properties: {grid_position: 'RXCXDG,YJXWIF'}
     name: label_3_copy
-    properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, foreground: '#dc1818', text: Only Invoices With Pending Payment Can Be Amended}
+    properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: '#dc1818', text: Only Invoices With Pending Payment Can Be Amended}
     type: Label
   - layout_properties: {grid_position: 'SDEGHM,VJWRFV'}
     name: label_3_copy_copy
-    properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, foreground: '#dc1818', text: 'To Add VAT And Previous Balance, Start By Adding VAT, Then Add Previous Balance. '}
+    properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: '#dc1818', text: 'To Add VAT And Previous Balance, Start By Adding VAT, Then Add Previous Balance. '}
     type: Label
   - components:
     - event_bindings: {pressed_enter: btn_SearchCustomer_click}
@@ -35,7 +35,7 @@ components:
     - event_bindings: {change: drop_down_JobCardRefDetails_change}
       layout_properties: {grid_position: 'SGROJS,SWLEFZ'}
       name: drop_down_JobCardRefDetails
-      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select  Job Card Ref Details*}
+      properties: {background: 'theme:White', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select  Job Card Ref Details*}
       type: DropDown
     - layout_properties: {grid_position: 'PBWULM,YLEZPQ'}
       name: label_makeandmodel
@@ -75,7 +75,7 @@ components:
       type: Label
     - layout_properties: {grid_position: 'NQOKWP,MJGTMP RYNRSD,LZMOUA'}
       name: date_picker_1
-      properties: {background: 'theme:White', border: solid, font: Roboto, font_size: 16, foreground: 'theme:Black', placeholder: Enter Date Here *}
+      properties: {background: 'theme:White', border: '', font: Roboto, font_size: 16, foreground: 'theme:Black', placeholder: Enter Date Here *}
       type: DatePicker
     - layout_properties: {grid_position: 'NQOKWP,OFZXGJ FMPBRA,UIOWFD'}
       name: label_mileage
@@ -107,7 +107,7 @@ components:
       - event_bindings: {change: drop_down_selectPart_change}
         layout_properties: {grid_position: ',undefined'}
         name: drop_down_selectPart
-        properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Part *}
+        properties: {background: 'theme:White', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Part *}
         type: DropDown
       - layout_properties: {grid_position: 'VXTPVL,RNMSBP'}
         name: lbl_ID
@@ -227,9 +227,9 @@ components:
           spacing_above: medium
           text: ADD PREVIOUS BALANCE
         type: Button
-      layout_properties: {grid_position: 'VEOYCL,IDSJYS', row_background: 'theme:Black'}
+      layout_properties: {grid_position: 'VEOYCL,IDSJYS', row_background: ''}
       name: card_2
-      properties: {border: solid, col_widths: '{"CSVHRM":40,"EDBLMM":20}', role: card}
+      properties: {border: solid, col_widths: '{"CSVHRM":40,"EDBLMM":20}', role: glass-panel}
       type: ColumnPanel
     - layout_properties: {grid_position: 'JRGGHE,AMQLQO'}
       name: label_ViewAssignedParts
@@ -271,7 +271,7 @@ components:
     type: ColumnPanel
   layout_properties: {grid_position: 'SATMTE,MAAWTJ'}
   name: card_1
-  properties: {role: card}
+  properties: {role: glass-panel}
   type: ColumnPanel
 container: {type: ColumnPanel}
 is_package: true

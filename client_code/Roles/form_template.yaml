@@ -54,9 +54,9 @@ components:
     name: spacer_1_copy_2
     properties: {height: 32}
     type: Spacer
-  layout_properties: {full_width_row: true, grid_position: 'PMMEHW,MUKYFK', row_background: 'theme:Black'}
+  layout_properties: {full_width_row: true, grid_position: 'PMMEHW,MUKYFK', row_background: ''}
   name: card_1
-  properties: {role: card}
+  properties: {role: null}
   type: ColumnPanel
 container: {type: ColumnPanel}
 is_package: true

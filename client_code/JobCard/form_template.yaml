@@ -44,9 +44,9 @@ components:
     name: drop_down_selectRegNo
     properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: 'Select RegNo ', visible: true}
     type: DropDown
-  layout_properties: {grid_position: 'XVKHJI,SEEHRE', row_background: 'theme:Black'}
+  layout_properties: {grid_position: 'XVKHJI,SEEHRE', row_background: ''}
   name: card_1
-  properties: {border: solid, col_widths: '{"GPWLOO":40,"MNQEYD":20}', role: card}
+  properties: {border: '', col_widths: '{"GPWLOO":40,"MNQEYD":20}', role: glass-panel}
   type: ColumnPanel
 - components:
   - layout_properties: {grid_position: 'BNFTYV,MEDNKT'}
@@ -80,9 +80,9 @@ components:
     name: txt_Email
     properties: {align: center, background: 'theme:Gray 300', bold: false, border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Email}
     type: TextBox
-  layout_properties: {grid_position: 'EZZHHZ,BHIMFS', row_background: 'theme:Black'}
+  layout_properties: {grid_position: 'EZZHHZ,BHIMFS', row_background: ''}
   name: card_2
-  properties: {border: solid, col_widths: '{"UNZOMA":40,"VQAIKI":20}', role: card}
+  properties: {border: solid, col_widths: '{"UNZOMA":40,"VQAIKI":20}', role: glass-panel}
   type: ColumnPanel
 - components:
   - layout_properties: {grid_position: 'FZCTPV,KKNIML'}
@@ -112,9 +112,9 @@ components:
     name: search_keyword_4
     properties: {}
     type: form:SearchKeyword
-  layout_properties: {grid_position: 'BTAWMS,JUZSLX', row_background: 'theme:Black'}
+  layout_properties: {grid_position: 'BTAWMS,JUZSLX', row_background: ''}
   name: card_3
-  properties: {border: solid, role: card}
+  properties: {border: solid, role: glass-panel}
   type: ColumnPanel
 - components:
   - layout_properties: {grid_position: 'AJQXMG,AFOBBW'}
@@ -131,9 +131,9 @@ components:
     name: chkTPO
     properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Third Party Only}
     type: CheckBox
-  layout_properties: {grid_position: 'PWWTUQ,YMQEEB', row_background: 'theme:Black'}
+  layout_properties: {grid_position: 'PWWTUQ,YMQEEB', row_background: ''}
   name: card_4
-  properties: {border: solid, role: card}
+  properties: {border: solid, role: glass-panel}
   type: ColumnPanel
 - components:
   - layout_properties: {grid_position: 'PVNOXJ,FIIJRI'}
@@ -152,9 +152,9 @@ components:
     name: chkBrace
     properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Brace}
     type: CheckBox
-  layout_properties: {grid_position: 'XYTJZM,UCZCPK', row_background: 'theme:Black'}
+  layout_properties: {grid_position: 'XYTJZM,UCZCPK', row_background: ''}
   name: card_5
-  properties: {border: solid, role: card}
+  properties: {border: solid, role: glass-panel}
   type: ColumnPanel
 - components:
   - layout_properties: {grid_position: 'PTLTWR,UYGRVE'}
@@ -195,9 +195,9 @@ components:
     name: txtPaintCode
     properties: {align: center, background: 'theme:White', bold: false, border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Paint Code, text: ''}
     type: TextBox
-  layout_properties: {grid_position: 'BVAUZX,PSKBKS', row_background: 'theme:Black'}
+  layout_properties: {grid_position: 'BVAUZX,PSKBKS', row_background: ''}
   name: card_6
-  properties: {border: solid, role: card}
+  properties: {border: solid, role: glass-panel}
   type: ColumnPanel
 - components:
   - layout_properties: {grid_position: 'WSLEQC,EGQKKN'}
@@ -214,9 +214,9 @@ components:
     name: chkAuto
     properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Auto}
     type: CheckBox
-  layout_properties: {grid_position: 'VEINEW,UHSTPN', row_background: 'theme:Black'}
+  layout_properties: {grid_position: 'VEINEW,UHSTPN', row_background: ''}
   name: card_7
-  properties: {border: solid, role: card}
+  properties: {border: '', role: glass-panel}
   type: ColumnPanel
 - components:
   - layout_properties: {grid_position: 'WSLEQC,EGQKKN'}
@@ -248,9 +248,9 @@ components:
     name: chkFull
     properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Full}
     type: CheckBox
-  layout_properties: {grid_position: 'VEINEW,VJJXCW', row_background: 'theme:Black'}
+  layout_properties: {grid_position: 'VEINEW,VJJXCW', row_background: ''}
   name: card_7_copy
-  properties: {border: solid, role: card}
+  properties: {border: '', role: glass-panel}
   type: ColumnPanel
 - components:
   - layout_properties: {grid_position: 'DAVMIS,PHEAAA'}
@@ -276,7 +276,7 @@ components:
   - layout_properties: {grid_position: 'FJTNLD,JGSIFW'}
     name: cmbWorkflow
     properties:
-      border: solid
+      border: ''
       font: Mozilla Headline
       font_size: 16
       foreground: theme:Black
@@ -285,9 +285,9 @@ components:
       placeholder: 'Select Next Workflow Status * '
       role: null
     type: DropDown
-  layout_properties: {grid_position: 'RISTBB,BXUBFN', row_background: 'theme:Black'}
+  layout_properties: {grid_position: 'RISTBB,BXUBFN', row_background: ''}
   name: card_8
-  properties: {border: solid, role: card}
+  properties: {border: '', role: glass-panel}
   type: ColumnPanel
 - layout_properties: {grid_position: 'YMVACX,JOZZCV', row_background: 'theme:Black'}
   name: spacer_1
@@ -306,5 +306,7 @@ components:
   name: spacer_2
   properties: {height: '6.18182373046875'}
   type: Spacer
-container: {type: ColumnPanel}
+container:
+  properties: {role: glass-panel}
+  type: ColumnPanel
 is_package: true

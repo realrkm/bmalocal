@@ -26,7 +26,7 @@ components:
     - event_bindings: {change: drop_down_selectPart_change}
       layout_properties: {grid_position: 'FHYJNC,WYPJUH'}
       name: drop_down_selectPart
-      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select PartNo Here}
+      properties: {background: 'theme:White', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select PartNo Here}
       type: DropDown
     - layout_properties: {grid_position: 'GQRBRY,KVWZRU'}
       name: lbl_PartNumber
@@ -59,13 +59,13 @@ components:
       name: spacer_3_copy
       properties: {height: '10'}
       type: Spacer
-    layout_properties: {grid_position: 'VHLTAB,MZGTEY', row_background: 'theme:White'}
+    layout_properties: {grid_position: 'VHLTAB,MZGTEY', row_background: ''}
     name: card_2
-    properties: {border: solid, col_widths: '{"WKQFPO":45,"KOXHHL":15}', role: card}
+    properties: {border: '', col_widths: '{"WKQFPO":45,"KOXHHL":15}', role: glass-panel}
     type: ColumnPanel
-  layout_properties: {full_width_row: true, grid_position: 'XRBFZR,OVVGEX', row_background: 'theme:Black'}
+  layout_properties: {full_width_row: true, grid_position: 'XRBFZR,OVVGEX', row_background: ''}
   name: card_1
-  properties: {role: card}
+  properties: {role: glass-panel}
   type: ColumnPanel
 container: {type: ColumnPanel}
 is_package: true

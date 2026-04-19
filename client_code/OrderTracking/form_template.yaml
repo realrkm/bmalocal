@@ -36,11 +36,11 @@ components:
         type: Button
       - layout_properties: {grid_position: 'GVCZHE,FXQXJF'}
         name: drop_down_selectrole
-        properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: 'Select Client * '}
+        properties: {background: 'theme:White', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: 'Select Client * '}
         type: DropDown
       layout_properties: {grid_position: 'FEUGGA,ZCQAWM'}
       name: card_3
-      properties: {border: solid, col_widths: '{"TGRRSI":40,"KGMSAL":20}', role: card}
+      properties: {border: '', col_widths: '{"TGRRSI":40,"KGMSAL":20}', role: glass-panel}
       type: ColumnPanel
     - layout_properties: {grid_position: 'AOYZZW,ZLAFHM', row_background: 'theme:Black'}
       name: spacer_1
@@ -48,7 +48,7 @@ components:
       type: Spacer
     - layout_properties: {grid_position: 'DVROZK,JEPJAN'}
       name: date_picker_1
-      properties: {background: 'theme:White', border: solid, foreground: 'theme:Black', placeholder: Select Date *}
+      properties: {background: 'theme:White', border: '', foreground: 'theme:Black', placeholder: Select Date *}
       type: DatePicker
     - layout_properties: {grid_position: 'JQRUYR,WLTXQK', row_background: 'theme:Black'}
       name: spacer_1_copy
@@ -68,7 +68,7 @@ components:
       - event_bindings: {change: drop_down_selectPart_change}
         layout_properties: {grid_position: 'HTQOMO,SERSIH'}
         name: drop_down_selectPart
-        properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Part *}
+        properties: {background: 'theme:White', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Part *}
         type: DropDown
       - layout_properties: {grid_position: 'IPPKSM,MJCKQA'}
         name: lbl_ID
@@ -101,7 +101,7 @@ components:
         type: Spacer
       layout_properties: {grid_position: 'MHZXQP,RJOCED'}
       name: card_5
-      properties: {border: solid, col_widths: '{"GQAFKW":40,"SREFON":20}', role: card}
+      properties: {border: '', col_widths: '{"GQAFKW":40,"SREFON":20}', role: glass-panel}
       type: ColumnPanel
     - layout_properties: {grid_position: 'PIWLGW,MOHNDQ', row_background: 'theme:Black'}
       name: spacer_2
@@ -140,7 +140,7 @@ components:
         type: DataGrid
       layout_properties: {grid_position: 'YQFQEP,RKFLFM'}
       name: card_4
-      properties: {border: solid, role: wide}
+      properties: {border: '', role: wide}
       type: ColumnPanel
     - layout_properties: {grid_position: 'HMXEZU,WEXJFI'}
       name: spacer_4
@@ -155,13 +155,13 @@ components:
       name: spacer_4_copy
       properties: {height: '10'}
       type: Spacer
-    layout_properties: {grid_position: 'TOBBOG,LRRUZZ', row_background: 'theme:Black'}
+    layout_properties: {grid_position: 'TOBBOG,LRRUZZ', row_background: ''}
     name: card_2
-    properties: {border: solid, col_widths: '{}', role: card}
+    properties: {border: '', col_widths: '{}', role: glass-panel}
     type: ColumnPanel
-  layout_properties: {full_width_row: true, grid_position: 'LKOSUU,IYPISS', row_background: 'theme:Black'}
+  layout_properties: {full_width_row: true, grid_position: 'LKOSUU,IYPISS', row_background: ''}
   name: card_1
-  properties: {role: card}
+  properties: {role: null}
   type: ColumnPanel
 container: {type: ColumnPanel}
 is_package: true

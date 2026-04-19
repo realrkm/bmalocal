@@ -7,7 +7,7 @@ components:
 - components:
   - layout_properties: {grid_position: 'WSBGFB,VWUVVR'}
     name: image_1
-    properties: {source: _/theme/Invoice Header Logo.jpg}
+    properties: {role: glass-panel, source: _/theme/Invoice Header Logo.jpg}
     type: Image
   - layout_properties: {grid_position: 'UOYLKG,UWOXRN'}
     name: label_2
@@ -19,11 +19,11 @@ components:
     type: Spacer
   - layout_properties: {grid_position: 'PBUQRR,ZVFRZT'}
     name: label_3_copy
-    properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, foreground: '#dc1818', text: 'To facilitate easier searching, Interim Quotations will have ''IQ'' as a suffix in their Job Card reference.'}
+    properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: '#dc1818', text: 'To facilitate easier searching, Interim Quotations will have ''IQ'' as a suffix in their Job Card reference.'}
     type: Label
   - layout_properties: {grid_position: 'HYJAMN,EERWAP'}
     name: label_3_copy_copy
-    properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, foreground: '#dc1818', text: All key details (marked * below) must match the original Interim Quotation to allow edits.}
+    properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: '#dc1818', text: All key details (marked * below) must match the original Interim Quotation to allow edits.}
     type: Label
   - layout_properties: {grid_position: 'OLBBEB,LXCUUB'}
     name: spacer_1_copy_copy
@@ -61,7 +61,7 @@ components:
       - event_bindings: {change: drop_down_CustomerDetails_change}
         layout_properties: {grid_position: 'VZACSD,LXJFTD'}
         name: drop_down_CustomerDetails
-        properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Customer Details *}
+        properties: {background: 'theme:White', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Customer Details *}
         type: DropDown
       - layout_properties: {grid_position: 'DNMNVZ,HHGNPC'}
         name: label_makeandmodel
@@ -92,7 +92,7 @@ components:
         event_bindings: {change: date_picker_1_change}
         layout_properties: {grid_position: 'PONMQB,YQVQRM TRXZQN,EXOBQH'}
         name: date_picker_1
-        properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Date Here *}
+        properties: {background: 'theme:White', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Date Here *}
         type: DatePicker
       - event_bindings: {lost_focus: txtChassis_lost_focus}
         layout_properties: {grid_position: 'PONMQB,RNLTKB ANENIX,ZTKSPL'}
@@ -121,7 +121,7 @@ components:
         type: Spacer
       layout_properties: {grid_position: 'CLYKAO,LJNPRA'}
       name: card_3
-      properties: {border: solid, role: card}
+      properties: {border: '', role: glass-panel}
       type: ColumnPanel
     - layout_properties: {grid_position: 'ZDPUGX,KKQABZ'}
       name: txt_CustomerID
@@ -149,7 +149,7 @@ components:
       type: Spacer
     - layout_properties: {grid_position: 'NCFWHR,IVEPUO'}
       name: drop_down_CheckInstaff
-      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Staff Preparing The Quotation *}
+      properties: {background: 'theme:White', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Staff Preparing The Quotation *}
       type: DropDown
     - layout_properties: {grid_position: 'OZXWIN,BJHMZV', row_background: 'theme:Black'}
       name: spacer_4
@@ -173,7 +173,7 @@ components:
       - event_bindings: {change: drop_down_selectPart_change}
         layout_properties: {grid_position: ''}
         name: drop_down_selectPart
-        properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Part *}
+        properties: {background: 'theme:White', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Part *}
         type: DropDown
       - layout_properties: {grid_position: 'VXTPVL,RNMSBP'}
         name: lbl_ID
@@ -189,7 +189,7 @@ components:
         type: Label
       - layout_properties: {grid_position: 'RKGHWU,QUFXQA'}
         name: label_3_copy_2
-        properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, foreground: '#dc1818', text: Enter Zero (0) If Selling Price Is To Be Confirmed}
+        properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: '#dc1818', text: Enter Zero (0) If Selling Price Is To Be Confirmed}
         type: Label
       - data_bindings: []
         layout_properties: {grid_position: 'OOIUAC,GFTDTI'}
@@ -253,9 +253,9 @@ components:
           spacing_above: medium
           text: Add Services
         type: Button
-      layout_properties: {grid_position: 'VEOYCL,IDSJYS', row_background: 'theme:Black'}
+      layout_properties: {grid_position: 'VEOYCL,IDSJYS', row_background: ''}
       name: card_2
-      properties: {border: solid, col_widths: '{"CSVHRM":40,"EDBLMM":20}', role: card}
+      properties: {border: '', col_widths: '{"CSVHRM":40,"EDBLMM":20}', role: glass-panel}
       type: ColumnPanel
     - layout_properties: {grid_position: 'JRGGHE,AMQLQO'}
       name: label_ViewAssignedParts
@@ -307,11 +307,11 @@ components:
       type: Label
     layout_properties: {grid_position: 'VMGHTZ,PEEQHL'}
     name: column_panel_1
-    properties: {border: '', col_widths: '{}'}
+    properties: {border: '', col_widths: '{}', role: glass-panel}
     type: ColumnPanel
   layout_properties: {grid_position: 'SATMTE,MAAWTJ'}
   name: card_1
-  properties: {role: card}
+  properties: {role: glass-panel}
   type: ColumnPanel
 container: {type: ColumnPanel}
 is_package: true

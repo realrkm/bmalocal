@@ -55,7 +55,9 @@ components:
     type: DataGrid
   layout_properties: {grid_position: 'AWGLFW,UVUHMI'}
   name: card_1
-  properties: {col_widths: '{"NAGFFN":40,"GLYMLM":20}', role: wide}
+  properties:
+    col_widths: '{"NAGFFN":40,"GLYMLM":20}'
+    role: [wide, glass-panel]
   type: ColumnPanel
 container: {type: ColumnPanel}
 is_package: true

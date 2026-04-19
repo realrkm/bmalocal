@@ -21,7 +21,7 @@ components:
     type: Label
   - layout_properties: {grid_position: 'WWJZZE,FCGGXF'}
     name: image_1
-    properties: {source: _/theme/Invoice Header Logo.jpg, visible: true}
+    properties: {role: glass-panel, source: _/theme/Invoice Header Logo.jpg, visible: true}
     type: Image
   - layout_properties: {full_width_row: false, grid_position: 'SFINNH,IGSHCK'}
     name: spacer_2
@@ -60,7 +60,7 @@ components:
     type: DataGrid
   layout_properties: {full_width_row: false, grid_position: 'BHYZFO,GONIBV'}
   name: card_1
-  properties: {border: solid, role: card, wrap_on: mobile}
+  properties: {border: '', role: glass-panel, wrap_on: mobile}
   type: ColumnPanel
 container:
   properties: {role: full-screen-form}

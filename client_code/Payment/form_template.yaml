@@ -10,11 +10,11 @@ components:
 - components:
   - layout_properties: {grid_position: 'DCEPRQ,OSAYWN'}
     name: start_date
-    properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', format: '%d/%m/%Y', placeholder: Enter Invoice Start Date, role: null}
+    properties: {align: center, background: 'theme:White', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', format: '%d/%m/%Y', placeholder: Enter Invoice Start Date, role: null}
     type: DatePicker
   - layout_properties: {grid_position: 'DCEPRQ,ZDKYFX'}
     name: end_date
-    properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', format: '%d/%m/%Y', placeholder: Enter Invoice End Date, role: null}
+    properties: {align: center, background: 'theme:White', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', format: '%d/%m/%Y', placeholder: Enter Invoice End Date, role: null}
     type: DatePicker
   - event_bindings: {click: btn_Search_click}
     layout_properties: {grid_position: 'DCEPRQ,FZMPBI'}
@@ -23,7 +23,7 @@ components:
     type: Button
   layout_properties: {grid_position: 'EKLMZZ,FJRMSG'}
   name: column_panel_1
-  properties: {background: 'theme:Gray 600', border: solid}
+  properties: {background: 'theme:Gray 600', border: '', role: glass-panel}
   type: ColumnPanel
 - components:
   - components:
@@ -48,7 +48,7 @@ components:
     type: ColumnPanel
   layout_properties: {grid_position: 'BAVPFF,YREBEP'}
   name: column_panel_2
-  properties: {background: 'theme:Gray 600'}
+  properties: {background: 'theme:Gray 600', role: glass-panel}
   type: ColumnPanel
 - layout_properties: {grid_position: 'IGKUYF,TETMWK', row_background: 'theme:Black'}
   name: spacer_3_copy
@@ -74,7 +74,7 @@ components:
   - components:
     - layout_properties: {grid_position: 'NTPGDQ,TGYSAQ'}
       name: date_picker_1
-      properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Payment Date *}
+      properties: {align: center, background: 'theme:White', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Payment Date *}
       type: DatePicker
     - layout_properties: {grid_position: 'NTPGDQ,DEYVIU'}
       name: txt_InvoicedAmount
@@ -104,7 +104,7 @@ components:
       type: TextBox
     layout_properties: {grid_position: 'CUORVL,KVKOAH'}
     name: card_2
-    properties: {background: 'theme:White', border: solid, foreground: 'theme:Black', role: card}
+    properties: {background: 'theme:White', border: '', foreground: 'theme:Black', role: glass-panel}
     type: ColumnPanel
   - layout_properties: {grid_position: 'WJJVFC,TGMQMI'}
     name: spacer_2
@@ -121,7 +121,7 @@ components:
     type: Spacer
   layout_properties: {grid_position: 'URHBWD,BOVKMB'}
   name: card_1
-  properties: {border: solid, role: card}
+  properties: {border: '', role: glass-panel}
   type: ColumnPanel
 container: {type: ColumnPanel}
 is_package: true

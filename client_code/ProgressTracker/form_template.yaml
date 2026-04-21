@@ -25,7 +25,7 @@ components:
     type: Spacer
   - layout_properties: {full_width_row: false, grid_position: 'NZUIBS,IGKOYR', row_background: ''}
     name: image_1
-    properties: {background: 'theme:White', border_radius: '', display_mode: zoom_to_fill, role: null, source: _/theme/unnamed.png, vertical_align: center}
+    properties: {background: '', border: solid, border_radius: '6000', display_mode: zoom_to_fill, role: null, source: _/theme/unnamed.png, vertical_align: center}
     type: Image
   - components:
     - components:

@@ -87,7 +87,7 @@ components:
     type: ColumnPanel
   layout_properties: {grid_position: 'WPWCTX,JDYOEV'}
   name: column_panel_2
-  properties: {background: 'theme:White'}
+  properties: {background: 'theme:White', role: glass-panel}
   type: ColumnPanel
 - layout_properties: {full_width_row: true, grid_position: 'OYDUUP,VHWMUV', row_background: 'theme:Black'}
   name: spacer_1
@@ -126,7 +126,7 @@ components:
         layout_properties: {grid_position: 'JWLDNY,SYMFAR'}
         name: cmbRegNo
         properties:
-          border: solid
+          border: ''
           font: Mozilla Headline
           font_size: 16
           foreground: theme:Black
@@ -135,21 +135,21 @@ components:
           placeholder: Select RegNo
           visible: true
         type: DropDown
-      layout_properties: {grid_position: 'HDYRBO,YYOOUK', row_background: 'theme:Black'}
+      layout_properties: {grid_position: 'HDYRBO,YYOOUK', row_background: ''}
       name: card_8
-      properties: {border: solid, col_widths: '{"LDNVBJ":45,"PQRNED":15}', role: card}
+      properties: {border: solid, col_widths: '{"LDNVBJ":45,"PQRNED":15}', role: glass-panel}
       type: ColumnPanel
     layout_properties: {width: 967.2727355957031}
     name: column_panel_1
-    properties: {col_widths: '{}'}
+    properties: {col_widths: '{}', role: glass-panel}
     type: ColumnPanel
-  layout_properties: {full_width_row: false, grid_position: 'VDDAWN,FLEOCZ', row_background: 'theme:White'}
+  layout_properties: {full_width_row: false, grid_position: 'VDDAWN,FLEOCZ', row_background: ''}
   name: flow_panel_1
   properties: {border: solid, role: null}
   type: FlowPanel
-- layout_properties: {full_width_row: true, grid_position: 'BQRPXV,PCVMZL', row_background: 'theme:Black'}
+- layout_properties: {full_width_row: true, grid_position: 'BQRPXV,PCVMZL', row_background: ''}
   name: vehicle_repeater
-  properties: {border: solid, foreground: '', item_template: Workflow.ItemTemplate1, role: card, visible: false}
+  properties: {border: solid, foreground: '', item_template: Workflow.ItemTemplate1, role: glass-panel, visible: false}
   type: RepeatingPanel
 container:
   event_bindings: {show: form_show}

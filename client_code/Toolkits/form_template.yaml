@@ -39,11 +39,11 @@ components:
     name: btn_Close
     properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: CLOSE}
     type: Button
-  layout_properties: {full_width_row: false, grid_position: 'HEOFNJ,KNGYLD', row_background: 'theme:White'}
+  layout_properties: {full_width_row: false, grid_position: 'HEOFNJ,KNGYLD', row_background: ''}
   name: card_1
-  properties: {border: solid, role: card}
+  properties: {border: '', role: glass-panel}
   type: ColumnPanel
 container:
-  properties: {background: ''}
+  properties: {background: '', role: null}
   type: ColumnPanel
 is_package: true

@@ -34,7 +34,7 @@ components:
       - layout_properties: {grid_position: 'PKJELQ,ZIDLYY'}
         name: cmbWorkflow
         properties:
-          border: solid
+          border: ''
           font: Mozilla Headline
           font_size: 16
           foreground: theme:Black
@@ -43,9 +43,9 @@ components:
           placeholder: 'Select Next Workflow Status * '
           role: null
         type: DropDown
-      layout_properties: {grid_position: 'CHPFGK,VBWIJU', row_background: 'theme:Black'}
+      layout_properties: {grid_position: 'CHPFGK,VBWIJU', row_background: ''}
       name: card_2
-      properties: {border: solid, role: card}
+      properties: {border: solid, role: glass-panel}
       type: ColumnPanel
     - layout_properties: {grid_position: 'EACYZH,CWNHTK', row_background: 'theme:Black'}
       name: spacer_3
@@ -71,16 +71,18 @@ components:
       type: Button
     layout_properties: {grid_position: 'XZUUES,QUHGQS'}
     name: column_panel_1
-    properties: {col_widths: '{"YSQNDF":15,"MJWYAV":45}'}
+    properties: {col_widths: '{"YSQNDF":15,"MJWYAV":45}', role: null}
     type: ColumnPanel
-  layout_properties: {grid_position: 'OJZQEO,AZBHWJ', row_background: 'theme:White'}
+  layout_properties: {grid_position: 'OJZQEO,AZBHWJ', row_background: ''}
   name: card_1
-  properties: {border: solid, role: card}
+  properties: {border: solid, role: glass-panel}
   type: ColumnPanel
 - components: []
   layout_properties: {grid_position: 'AKVOUS,MVGKPA'}
   name: column_panel_2
   properties: {}
   type: ColumnPanel
-container: {type: ColumnPanel}
+container:
+  properties: {role: null}
+  type: ColumnPanel
 is_package: true

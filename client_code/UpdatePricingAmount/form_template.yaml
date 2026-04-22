@@ -18,7 +18,7 @@ components:
     - event_bindings: {change: drop_down_selectPart_change}
       layout_properties: {grid_position: 'XQVDCS,UTJUFB'}
       name: drop_down_selectPart
-      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Part *}
+      properties: {background: 'theme:White', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Part *}
       type: DropDown
     - layout_properties: {grid_position: 'LAXGBC,SBKCQH'}
       name: lbl_ID
@@ -42,7 +42,7 @@ components:
       type: Label
     - layout_properties: {grid_position: 'KIZCFB,KEJYOR'}
       name: date_picker_purchase
-      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', format: '%d/%m/%Y', pick_time: false, placeholder: Enter Purchase Date *}
+      properties: {background: 'theme:White', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', format: '%d/%m/%Y', pick_time: false, placeholder: Enter Purchase Date *}
       type: DatePicker
     - layout_properties: {grid_position: 'DMKYTB,RZDQVF'}
       name: txtPartName
@@ -62,11 +62,11 @@ components:
       type: Label
     - layout_properties: {grid_position: 'PYRZEI,KVQRPY'}
       name: drop_down_location
-      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Storage Location *}
+      properties: {background: 'theme:White', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Storage Location *}
       type: DropDown
     - layout_properties: {grid_position: 'BRAUUK,ZWHJIK'}
       name: drop_down_supplier
-      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Supplier *}
+      properties: {background: 'theme:White', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Supplier *}
       type: DropDown
     - layout_properties: {grid_position: 'NHUKGN,LPBXPM', row_background: 'theme:Black'}
       name: spacer_3_copy
@@ -127,15 +127,15 @@ components:
       name: spacer_3_copy_copy
       properties: {height: 14}
       type: Spacer
-    layout_properties: {grid_position: 'EIEDFU,NMXMNZ', row_background: 'theme:Black'}
+    layout_properties: {grid_position: 'EIEDFU,NMXMNZ', row_background: ''}
     name: card_2
-    properties: {col_widths: '{"ZWHJIK":45,"KVQRPY":45,"SCXLXB":15,"YROGDQ":15,"NVTZPF":15,"RKAFTU":15,"UKADGC":45,"VCKZYD":15}', role: card}
+    properties: {col_widths: '{"ZWHJIK":45,"KVQRPY":45,"SCXLXB":15,"YROGDQ":15,"NVTZPF":15,"RKAFTU":15,"UKADGC":45,"VCKZYD":15}', role: glass-panel}
     type: ColumnPanel
-  layout_properties: {full_width_row: true, grid_position: 'KJTCDK,FBNTHH', row_background: 'theme:Black'}
+  layout_properties: {full_width_row: true, grid_position: 'KJTCDK,FBNTHH', row_background: ''}
   name: card_1
-  properties: {role: card}
+  properties: {role: glass-panel}
   type: ColumnPanel
 container:
-  properties: {background: 'theme:White', border: solid, foreground: 'theme:Black'}
+  properties: {background: 'theme:White', border: '', foreground: 'theme:Black', role: glass-panel}
   type: ColumnPanel
 is_package: true

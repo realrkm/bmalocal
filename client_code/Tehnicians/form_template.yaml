@@ -14,7 +14,7 @@ components:
     type: TextBox
   - layout_properties: {grid_position: 'ZRUYIL,YMNAVM'}
     name: dropdown_toolkits
-    properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select assigned toolkit *}
+    properties: {background: 'theme:White', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select assigned toolkit *}
     type: DropDown
   - layout_properties: {grid_position: 'ZRUYIL,VTHSTH'}
     name: spacer_2
@@ -48,13 +48,13 @@ components:
       name: btn_Toolkit
       properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: raised, text: Add Toolkits}
       type: Button
-    layout_properties: {grid_position: 'CACIQO,RSITOB', row_background: 'theme:Black'}
+    layout_properties: {grid_position: 'CACIQO,RSITOB', row_background: ''}
     name: card_2
-    properties: {border: solid, role: card}
+    properties: {border: solid, role: glass-panel}
     type: ColumnPanel
-  layout_properties: {grid_position: 'HEOFNJ,KNGYLD', row_background: 'theme:Black'}
+  layout_properties: {grid_position: 'HEOFNJ,KNGYLD', row_background: ''}
   name: card_1
-  properties: {background: '', border: solid, role: card}
+  properties: {background: '', border: '', role: glass-panel}
   type: ColumnPanel
 container:
   properties: {background: ''}

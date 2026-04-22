@@ -7,7 +7,7 @@ components:
 - components:
   - layout_properties: {grid_position: 'WSBGFB,VWUVVR'}
     name: image_1
-    properties: {role: glass-panel, source: _/theme/Invoice Header Logo.jpg}
+    properties: {height: '200', role: null, source: _/theme/Invoice Header Logo.jpg}
     type: Image
   - layout_properties: {grid_position: 'UOYLKG,UWOXRN'}
     name: label_2
@@ -121,7 +121,7 @@ components:
         type: Spacer
       layout_properties: {grid_position: 'CLYKAO,LJNPRA'}
       name: card_3
-      properties: {border: '', role: glass-panel}
+      properties: {border: '', role: null}
       type: ColumnPanel
     - layout_properties: {grid_position: 'ZDPUGX,KKQABZ'}
       name: txt_CustomerID
@@ -226,7 +226,7 @@ components:
         type: Label
       - layout_properties: {grid_position: 'FXNSLT,EXCVAM'}
         name: label_3_copy_3
-        properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, foreground: '#dc1818', text: Enter Zero (0) If Amount Is To Be Confirmed}
+        properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: '#dc1818', text: Enter Zero (0) If Amount Is To Be Confirmed}
         type: Label
       - data_bindings: []
         layout_properties: {grid_position: 'VULJSO,GSWAZN'}
@@ -255,7 +255,7 @@ components:
         type: Button
       layout_properties: {grid_position: 'VEOYCL,IDSJYS', row_background: ''}
       name: card_2
-      properties: {border: '', col_widths: '{"CSVHRM":40,"EDBLMM":20}', role: glass-panel}
+      properties: {border: '', col_widths: '{"CSVHRM":40,"EDBLMM":20}', role: null}
       type: ColumnPanel
     - layout_properties: {grid_position: 'JRGGHE,AMQLQO'}
       name: label_ViewAssignedParts
@@ -307,11 +307,13 @@ components:
       type: Label
     layout_properties: {grid_position: 'VMGHTZ,PEEQHL'}
     name: column_panel_1
-    properties: {border: '', col_widths: '{}', role: glass-panel}
+    properties: {border: '', col_widths: '{}', role: null}
     type: ColumnPanel
   layout_properties: {grid_position: 'SATMTE,MAAWTJ'}
   name: card_1
-  properties: {role: glass-panel}
+  properties: {role: null}
   type: ColumnPanel
-container: {type: ColumnPanel}
+container:
+  properties: {role: null}
+  type: ColumnPanel
 is_package: true

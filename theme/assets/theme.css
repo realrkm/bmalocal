@@ -1524,3 +1524,26 @@ body.modal-open {
 .left-nav {
     left: -100%; /* Keeps it off-screen before the JS even kicks in */
 }
+
+
+/* Styling for a Large Flexible App Bar */
+.anvil-role-large-app-bar {
+    padding: 24px 16px 28px 16px;
+    background-color: var(--surface);
+    min-height: 152px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    transition: background-color 0.2s, min-height 0.2s;
+}
+
+/* The title text inside the bar */
+.anvil-role-large-app-bar .anvil-component {
+    font-size: 32px;
+    font-weight: 400;
+    color: var(--on-surface);
+}
+.anvil-role-app-bar-elevated {
+    background-color: var(--surface-container); /* M3 tonal elevation */
+    box-shadow: none; /* Remember: M3 avoids shadows */
+}

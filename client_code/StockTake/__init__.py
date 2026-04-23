@@ -125,9 +125,9 @@ class StockTake(StockTakeTemplate):
 
     def btn_Export_click(self, **event_args):
         """This method is called when the button is clicked"""
-        excel_file = anvil.server.call("export_current_selling_prices_and_reorder_levels")
+        excel_file = anvil.server.call("export_current_parts_and_partno")
         anvil.media.download(excel_file)
-        alert("Selling Prices and Reorder Levels exported successfully.", title="Success", large=False)
+        alert("Car part details exported successfully.", title="Success", large=False)
 
 
     def file_loader_import_change(self, file, **event_args):

@@ -130,10 +130,10 @@ components:
   layout_properties: {slot: default}
   name: column_panel_main
   properties:
-    background: theme:White
+    background: ''
     border: ''
     col_widths: '{"WBKABB":73,"FGQTDK":2,"ZSCHZU":5}'
-    role: [wide-card, glass-panel]
+    role: null
     spacing:
       padding: [null, 8, null, 8]
     spacing_above: large

@@ -31,27 +31,27 @@ components:
       - components:
         - layout_properties: {grid_position: 'IHJJMH,CUICUY'}
           name: headline_1_copy_copy
-          properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, role: null, text: Make}
+          properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', role: null, text: Make}
           type: Label
         - layout_properties: {grid_position: 'IHJJMH,GJAXTN'}
           name: label_MakeAndModel
-          properties: {align: center, border: 'border-right-width: thick;', font: Mozilla Headline, font_size: 16, role: null}
+          properties: {align: center, border: 'border-right-width: thick;', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', role: null}
           type: Label
         - layout_properties: {grid_position: 'BOUQWW,GXKUAT'}
           name: headline_1_copy_copy_2
-          properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, role: null, text: Mileage}
+          properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', role: null, text: Mileage}
           type: Label
         - layout_properties: {grid_position: 'BOUQWW,PMFWQY'}
           name: label_Mileage
-          properties: {align: center, border: 'border-right-width: thick;', font: Mozilla Headline, font_size: 16, role: null}
+          properties: {align: center, border: 'border-right-width: thick;', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', role: null}
           type: Label
         - layout_properties: {grid_position: 'UBPMJJ,HCYSIV'}
           name: headline_1_copy
-          properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, role: null, text: Plate}
+          properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', role: null, text: Plate}
           type: Label
         - layout_properties: {grid_position: 'UBPMJJ,DMSPWF'}
           name: label_RegNo
-          properties: {align: center, border: '', font: Mozilla Headline, font_size: 16, role: null}
+          properties: {align: center, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', role: null}
           type: Label
         layout_properties: {grid_position: 'HPQEGH,MCBIAC', row_background: ''}
         name: card_5
@@ -60,27 +60,27 @@ components:
       - components:
         - layout_properties: {grid_position: 'OIWYVL,KFQZEK'}
           name: headline_1_copy_2_copy
-          properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, role: null, text: Date Rec.}
+          properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', role: null, text: Date Rec.}
           type: Label
         - layout_properties: {grid_position: 'OIWYVL,TJXZJB'}
           name: label_date_received
-          properties: {align: center, border: '', font: Mozilla Headline, font_size: 16, role: null, text: ''}
+          properties: {align: center, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', role: null, text: ''}
           type: Label
         - layout_properties: {grid_position: 'DEWOZY,YZEDCV'}
           name: headline_1_copy_2
-          properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, role: null, text: Name}
+          properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', role: null, text: Name}
           type: Label
         - layout_properties: {grid_position: 'DEWOZY,JRBJSB'}
           name: label_Owner
-          properties: {align: center, border: '', font: Mozilla Headline, font_size: 16, role: null, text: ''}
+          properties: {align: center, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', role: null, text: ''}
           type: Label
         - layout_properties: {grid_position: 'ZRNMQY,AOKFKW'}
           name: headline_1
-          properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, role: null, text: Phone}
+          properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', role: null, text: Phone}
           type: Label
         - layout_properties: {grid_position: 'ZRNMQY,VAFSSM'}
           name: label_Phone
-          properties: {align: center, border: '', font: Mozilla Headline, font_size: 16, role: null, text: ''}
+          properties: {align: center, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', role: null, text: ''}
           type: Label
         layout_properties: {grid_position: 'HPQEGH,TTYTAE', row_background: ''}
         name: card_4
@@ -89,35 +89,35 @@ components:
       - components:
         - layout_properties: {grid_position: 'JIMJBR,IUOTET'}
           name: headline_1_copy_copy_copy
-          properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, role: null, text: Due}
+          properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', role: null, text: Due}
           type: Label
         - layout_properties: {grid_position: 'JIMJBR,REAMVI'}
           name: label_Due
-          properties: {align: center, border: 'border-right-width: thick;', font: Mozilla Headline, font_size: 16, role: null}
+          properties: {align: center, border: 'border-right-width: thick;', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', role: null}
           type: Label
         - layout_properties: {grid_position: 'OTMNYY,BEUWTJ'}
           name: headline_1_copy_copy_2_copy
-          properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, role: null, text: Paid}
+          properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', role: null, text: Paid}
           type: Label
         - layout_properties: {grid_position: 'OTMNYY,AWXVUN'}
           name: label_Paid
-          properties: {align: center, border: 'border-right-width: thick;', font: Mozilla Headline, font_size: 16, role: display-4}
+          properties: {align: center, border: 'border-right-width: thick;', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', role: display-4}
           type: Label
         - layout_properties: {grid_position: 'HXHBBR,SZNZKT'}
           name: headline_discount
-          properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, role: null, text: Discount}
+          properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', role: null, text: Discount}
           type: Label
         - layout_properties: {grid_position: 'HXHBBR,RMKWTQ'}
           name: label_Discount
-          properties: {align: center, border: '', font: Mozilla Headline, font_size: 16, role: null}
+          properties: {align: center, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', role: null}
           type: Label
         - layout_properties: {grid_position: 'VJEXFD,NTUVAB'}
           name: headline_1_copy_copy_3
-          properties: {align: center, border: solid, font: Roboto, font_size: 16, role: null, text: Balance}
+          properties: {align: center, border: solid, font: Roboto, font_size: 16, foreground: 'theme:Black', role: null, text: Balance}
           type: Label
         - layout_properties: {grid_position: 'VJEXFD,MYLQNY'}
           name: label_Balance
-          properties: {align: center, border: '', font: Mozilla Headline, font_size: 16, role: null}
+          properties: {align: center, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', role: null}
           type: Label
         layout_properties: {grid_position: 'SFXWRW,AEXAJA', row_background: ''}
         name: card_5_copy
@@ -189,7 +189,7 @@ components:
       - event_bindings: {click: btn_Quotation_click}
         layout_properties: {grid_position: 'GOPPPW,PCODYN'}
         name: btn_Quotation
-        properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:file-text', role: primary-color, text: QUOTATION}
+        properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:file-text', role: primary-color, text: QUOTE}
         type: Button
       - event_bindings: {click: btn_Confirmed_click}
         layout_properties: {grid_position: 'GOPPPW,OXORMY'}

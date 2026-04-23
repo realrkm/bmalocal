@@ -212,7 +212,7 @@ components:
       type: ColumnPanel
     layout_properties: {full_width_row: true, grid_position: 'MUWGDE,XDGYOJ', row_background: ''}
     name: card_2
-    properties: {role: glass-panel}
+    properties: {role: null}
     type: ColumnPanel
   layout_properties: {full_width_row: true, grid_position: 'RITPNN,XAQHGR', row_background: ''}
   name: card_1

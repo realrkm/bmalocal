@@ -37,7 +37,7 @@ components:
   layout_properties: {full_width_row: false, grid_position: 'BHYZFO,GONIBV'}
   name: card_1
   properties:
-    border: solid
+    border: ''
     role: [wide]
     wrap_on: mobile
   type: ColumnPanel

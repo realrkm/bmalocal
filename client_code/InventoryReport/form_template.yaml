@@ -27,7 +27,7 @@ components:
     type: Button
   layout_properties: {full_width_row: true, grid_position: 'JZBVFT,RUNOIA', row_background: ''}
   name: card_1
-  properties: {background: 'theme:White', role: glass-panel}
+  properties: {background: '', role: null}
   type: ColumnPanel
 - layout_properties: {full_width_row: true, grid_position: 'YGOXWJ,QYCVVH'}
   name: card_2

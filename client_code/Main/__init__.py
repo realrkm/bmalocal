@@ -34,6 +34,7 @@ class Main(MainTemplate):
                 self.refresh()
             else:
                 self.notification_label.visible = False
+                self.error_label.visible=False
                 self.btn_alerts.visible = False
                 self.btn_IncompleteDefectsInfo.visible = False
 

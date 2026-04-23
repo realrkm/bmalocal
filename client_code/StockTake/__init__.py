@@ -129,7 +129,10 @@ class StockTake(StockTakeTemplate):
         anvil.media.download(excel_file)
         alert("Car part details exported successfully.", title="Success", large=False)
 
-
+    def _reset_file_uploader(self):
+        """Resets the file uploader using the built-in clear method."""
+        self.file_loader_import.clear()
+        
     def file_loader_import_change(self, file, **event_args):
         """This method is called when a new file is selected for upload."""
         if file is None:
@@ -148,7 +151,7 @@ class StockTake(StockTakeTemplate):
         # Confirm before proceeding
         confirmed = confirm(
             f"You are about to import '{file.name}'. "
-            "This will update selling prices, discount prices, and reorder levels in the database. "
+            "This will update car part details and quantities in the database. "
             "Do you want to proceed?",
             title="Confirm Import",
             buttons=[("Yes, Import", True), ("Cancel", False)]

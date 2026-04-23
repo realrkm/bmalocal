@@ -8,26 +8,26 @@ components:
     name: spacer_1_copy_copy
     properties: {height: 7}
     type: Spacer
-  - layout_properties: {grid_position: 'NFZDQQ,VFOVXL GGCQTE,BSCEWA'}
-    name: text_box_1
-    properties: {align: center, background: 'theme:Gray 600', border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Supplier}
-    type: TextBox
-  - layout_properties: {grid_position: 'NFZDQQ,VFOVXL RZNJEM,LJYXPR'}
-    name: text_box_2
-    properties: {align: center, background: 'theme:Gray 600', border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Part Name}
-    type: TextBox
-  - layout_properties: {grid_position: 'NFZDQQ,VFOVXL GSICSF,PJQPTA'}
-    name: text_box_3
-    properties: {align: center, background: 'theme:Gray 600', border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Part No}
-    type: TextBox
-  - layout_properties: {grid_position: 'NFZDQQ,VFOVXL GJWFSZ,NEUJLF'}
+  - layout_properties: {grid_position: 'NFZDQQ,VFOVXL FKXSNG,QHKRKB'}
+    name: label_1
+    properties: {align: center, background: 'theme:Gray 600', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Supplier}
+    type: Label
+  - layout_properties: {grid_position: 'NFZDQQ,VFOVXL ZJSRJV,RXCBYF'}
+    name: label_2
+    properties: {align: center, background: 'theme:Gray 600', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Part Name}
+    type: Label
+  - layout_properties: {grid_position: 'NFZDQQ,VFOVXL DKKPRL,PYLWKT'}
+    name: label_3
+    properties: {align: center, background: 'theme:Gray 600', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Part No}
+    type: Label
+  - layout_properties: {grid_position: 'NFZDQQ,VFOVXL NMCXYD,YYZTIZ'}
     name: label_Price
-    properties: {align: center, background: 'theme:Gray 600', border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Price}
-    type: TextBox
-  - layout_properties: {grid_position: 'NFZDQQ,VFOVXL VVHIII,CCROZN'}
+    properties: {align: center, background: 'theme:Gray 600', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Price}
+    type: Label
+  - layout_properties: {grid_position: 'NFZDQQ,VFOVXL NBOXUN,GZIHKP'}
     name: label_Discount
-    properties: {align: center, background: 'theme:Gray 600', border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Discount}
-    type: TextBox
+    properties: {align: center, background: 'theme:Gray 600', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Discount}
+    type: Label
   - layout_properties: {grid_position: 'NFZDQQ,WIVCWY WFSLEY,WMECDP'}
     name: txt_Supplier
     properties: {align: center, background: 'theme:White', border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: ''}

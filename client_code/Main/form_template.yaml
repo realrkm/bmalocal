@@ -107,7 +107,7 @@ components:
     col_widths: '{"WBKABB":73,"FGQTDK":2,"ZSCHZU":5}'
     role: null
     spacing:
-      padding: [null, 8, null, 8]
+      padding: [null, '1', null, '1']
     spacing_above: large
     spacing_below: large
     visible: true
@@ -199,7 +199,7 @@ components:
     type: Button
   layout_properties: {slot: left-nav}
   name: column_panel_navigation
-  properties: {background: 'theme:White', border: '', role: glass-panel}
+  properties: {background: 'theme:White', border: '', role: glass-panel, visible: true}
   type: ColumnPanel
 container:
   event_bindings: {}

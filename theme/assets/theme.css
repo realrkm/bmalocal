@@ -1385,7 +1385,7 @@ Font: Mozilla Headline | Proportions: Fixed MD3
 }
 
 /* Glass Inputs */
-.modal-body input.form-control {
+.modal-body input.form-control .anvil-dropdown .anvil-label {
     font-family: 'Outfit', sans-serif !important;
     background:white !important;
     border: 1px solid black !important;

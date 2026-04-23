@@ -46,7 +46,7 @@ components:
     type: DropDown
   layout_properties: {grid_position: 'XVKHJI,SEEHRE', row_background: ''}
   name: card_1
-  properties: {border: '', col_widths: '{"GPWLOO":40,"MNQEYD":20}', role: glass-panel}
+  properties: {border: solid, col_widths: '{"GPWLOO":40,"MNQEYD":20}', role: glass-panel}
   type: ColumnPanel
 - components:
   - layout_properties: {grid_position: 'BNFTYV,MEDNKT'}
@@ -307,6 +307,6 @@ components:
   properties: {height: '6.18182373046875'}
   type: Spacer
 container:
-  properties: {role: glass-panel}
+  properties: {role: null}
   type: ColumnPanel
 is_package: true

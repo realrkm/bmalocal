@@ -201,6 +201,10 @@ components:
   name: column_panel_navigation
   properties: {background: 'theme:White', border: '', role: glass-panel, visible: true}
   type: ColumnPanel
+- layout_properties: {slot: title}
+  name: label_2
+  properties: {text: BMA AUTO ACCESSORIES}
+  type: Label
 container:
   event_bindings: {}
   properties: {html: '@theme:standard-page.html', role: null}

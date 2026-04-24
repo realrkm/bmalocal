@@ -42,10 +42,8 @@ class StocktakeAnalysis(StocktakeAnalysisTemplate):
 
             # 3. Both dates provided but startDate > endDate
             if startDate and endDate and startDate > endDate:
-                alert("Sorry, end date should be greater or equal to start date.", 
+                alert(f"Sorry, end date {endDate} should be greater or equal to start date {startDate}.", 
                       title="Date Mismatch", large=False)
-                alert(f"{startDate}")
-                alert(f"{endDate}")
                 return
 
             # 4. Fetch based on provided filters

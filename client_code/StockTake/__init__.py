@@ -171,7 +171,7 @@ class StockTake(StockTakeTemplate):
 
         try:
             summary = anvil.server.call(
-                "import_selling_prices_and_reorder_levels", file
+                "import_counting_stock_quantity", file
             )
             if "skipped" in summary.lower():
                 alert(summary, title="Import Completed with Warnings", large=True)
@@ -186,7 +186,4 @@ class StockTake(StockTakeTemplate):
         finally:
             notification.hide()           # Dismiss notification when processing is done
             self._reset_file_uploader()   # Clear after processing completes
-        """Refresh the repeating panel with the latest data from the database."""
-        self.repeating_panel_1.items = anvil.server.call("get_filtered_parts")
-
-   
+        

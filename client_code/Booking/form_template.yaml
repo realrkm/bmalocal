@@ -41,6 +41,10 @@ components:
     name: card_2
     properties: {col_widths: '{"GABUYK":40,"GOWPIC":20}', role: glass-panel}
     type: ColumnPanel
+  - layout_properties: {full_width_row: true, grid_position: 'YJEFEW,ZOBWAE'}
+    name: label_2
+    properties: {align: center, background: 'theme:White', font: Mozilla Headline, font_size: 16, foreground: '#ff0000', text: Only Current And Future Appointments Are Displayed}
+    type: Label
   - components:
     - components:
       - name: repeating_panel_1

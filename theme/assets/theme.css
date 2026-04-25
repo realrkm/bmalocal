@@ -1520,6 +1520,9 @@ body.modal-open {
     border-radius: 15px;
     padding: 20px;
 }
+/* Display the left-nav from view
 .left-nav {
-    left: -100%; /* Keeps it off-screen before the JS even kicks in */
+    left: -100%;
 }
+*/
+

@@ -15,13 +15,21 @@ class Booking(BookingTemplate):
 
         # Any code you write here will run before the form opens.
         anvil.js.call('replaceBanner')#Set focus into technician
-        self.search_keyword_1.text_box_search.focus()
 
-        # Attach the event that fetches technicians
-        self.search_keyword_1.set_event_handler('x-get-search-keys', self.getCustomerName)
-        self.search_keyword_1.text_box_search.placeholder = "Search Client's Name *"
+    def btn_SearchCustomer_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        valueCustomer = self.txt_ClientName.text
+        if valueCustomer is None:
+            alert("Enter Customer's name to proceed", title="Blank Field Found")
+            return
+        else:
+            result = anvil.server.call("getClientFullnameFromSearchWord", valueCustomer)
+            self.drop_down_selectCustomer.items = result
 
-    def getCustomerName(self,  **event_args):
-        """Return customer records to SearchKeyword."""
-        results = anvil.server.call("getTechnicians")
-        return [{'entry': r['Fullname'], 'ID': r['ID']} for r in results]
+    def drop_down_selectCustomer_change(self, **event_args):
+        """This method is called when an item is selected"""
+        if self.drop_down_selectCustomer.selected_value:
+            alert(self.drop_down_selectCustomer.selected_value)
+        #results = anvil.server.call("",self.drop_down_selectCustomer.selected_value)
+
+        

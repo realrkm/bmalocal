@@ -52,8 +52,9 @@ components:
         background: theme:Black
         border: solid
         columns:
-        - {data_key: Client, expand: true, id: JKSDUP, title: Client}
+        - {data_key: Fullname, expand: true, id: JKSDUP, title: Client}
         - {data_key: RegNo, expand: true, id: VJQQOR, title: RegNo}
+        - {data_key: Period, expand: true, id: GNQKCR, title: Date And Time}
         - {data_key: Details, expand: true, id: OJLQEN, title: Details}
         - {data_key: '', id: BALGFU, title: '', width: '90'}
         foreground: theme:White

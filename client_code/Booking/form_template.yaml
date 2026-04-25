@@ -18,21 +18,22 @@ components:
     - event_bindings: {change: drop_down_selectCustomer_change}
       layout_properties: {grid_position: 'ARWGEZ,FLSNIM'}
       name: drop_down_selectCustomer
-      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Customer, visible: true}
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Customer *, visible: true}
       type: DropDown
     - layout_properties: {grid_position: 'CRLMDG,FOLVMX'}
-      name: drop_down_1
-      properties: {background: 'theme:White', foreground: 'theme:Black', include_placeholder: true, placeholder: Select Vehicle RegNo}
+      name: drop_down_car_reg
+      properties: {background: 'theme:White', foreground: 'theme:Black', include_placeholder: true, placeholder: Select Vehicle RegNo *}
       type: DropDown
     - layout_properties: {grid_position: 'CRLMDG,HIWXJI'}
-      name: date_picker_1
-      properties: {background: 'theme:White', foreground: 'theme:Black', pick_time: true, placeholder: Select Date And Time}
+      name: date_picker_period
+      properties: {background: 'theme:White', foreground: 'theme:Black', pick_time: true, placeholder: Select Date And Time *}
       type: DatePicker
     - layout_properties: {grid_position: 'DMGRDB,FJPDBW'}
-      name: text_area_1
-      properties: {auto_expand: true, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter service details}
+      name: txt_area_details
+      properties: {auto_expand: true, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter service details *}
       type: TextArea
-    - layout_properties: {full_width_row: false, grid_position: 'DRIQMO,XDVGXT'}
+    - event_bindings: {click: btn_Save_click}
+      layout_properties: {full_width_row: false, grid_position: 'DRIQMO,XDVGXT'}
       name: btn_Save
       properties: {align: full, background: '#0056D6', font: Mozilla Headline1, font_size: 16, foreground: 'theme:White', text: SAVE}
       type: Button

@@ -1,7 +1,7 @@
 components:
 - layout_properties: {column: BALGFU}
-  name: button_1
-  properties: {background: '#075E54', foreground: '#25D366', icon: 'fa:whatsapp', text: ''}
+  name: btn_SendWhatsAppMessage
+  properties: {background: '#075E54', foreground: '#25D366', icon: 'fa:whatsapp', text: '', tooltip: Click To Send Reminder To WhatsApp}
   type: Button
 container:
   properties: {font: Mozilla Headline, font_size: 16}

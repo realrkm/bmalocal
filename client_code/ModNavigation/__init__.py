@@ -6,6 +6,7 @@ from anvil.tables import app_tables
 from anvil import *
 from ..Client import Client
 from ..JobCard import JobCard
+from ..Booking import Booking
 from ..Workflow import Workflow
 from ..Payment import Payment
 from ..Report import Report
@@ -16,6 +17,7 @@ from ..ProgressTracker import ProgressTracker
 from ..ProgressTrackerMobileView import ProgressTrackerMobileView
 from ..Inventory import Inventory
 from ..PartsHub import PartsHub
+
 
 
 home_form = None
@@ -37,6 +39,11 @@ def go_JobCard():
     form = get_form()
     form.load_component(JobCard())
 
+#Load Booking Form
+def go_Booking():
+    form = get_form()
+    form.load_component(Booking())
+    
 #Load Workflowt Form
 def go_Workflow(permissions):
     form = get_form()

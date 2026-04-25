@@ -130,6 +130,14 @@ class Main(MainTemplate):
         #Additional function in standard-page.html
         self.call_js('hideSidebarIfModal') 
         
+    def btn_Booking_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        self.highlight_active_button("BOOKING")
+        ModNavigation.go_JobCard()
+        #Now hide sidebar after clicking link. 
+        #Additional function in standard-page.html
+        self.call_js('hideSidebarIfModal') 
+
     def btn_Workflow_click(self, **event_args):
         self.highlight_active_button("WORKFLOW")
         """This method is called when the button is clicked"""

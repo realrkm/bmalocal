@@ -147,10 +147,10 @@ components:
     name: btn_JobCard
     properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:clipboard', role: raised, text: JOB CARD}
     type: Button
-  - event_bindings: {click: btn_JobCard_click}
+  - event_bindings: {click: btn_Booking_click}
     layout_properties: {grid_position: 'ULGDMT,ZWCOSG'}
-    name: btn_JobCard_2
-    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:clipboard', role: raised, text: BOOKING}
+    name: btn_Booking
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:calendar', role: raised, text: BOOKING}
     type: Button
   - event_bindings: {click: btn_Workflow_click}
     layout_properties: {grid_position: 'DGUCNL,KLUVCT'}

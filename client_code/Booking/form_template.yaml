@@ -1,0 +1,21 @@
+components:
+- components:
+  - components:
+    - layout_properties: {grid_position: 'JHGKDX,LOCSXL'}
+      name: button_1
+      properties: {text: button_1}
+      type: Button
+    - layout_properties: {grid_position: 'JHGKDX,ONIOYU'}
+      name: button_2
+      properties: {text: button_2}
+      type: Button
+    layout_properties: {full_width_row: true, grid_position: 'GDCEQW,CTCRMP'}
+    name: card_2
+    properties: {role: wide-card}
+    type: ColumnPanel
+  layout_properties: {full_width_row: true, grid_position: 'ZJVONF,GUMGUK'}
+  name: card_1
+  properties: {role: null}
+  type: ColumnPanel
+container: {type: ColumnPanel}
+is_package: true

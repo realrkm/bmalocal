@@ -1,21 +1,55 @@
 components:
 - components:
-  - layout_properties: {full_width_row: true, grid_position: 'QFDSSJ,QHXEPW'}
-    name: search_keyword_1
-    properties: {}
-    type: form:SearchKeyword
-  - layout_properties: {grid_position: 'LPRFKX,GDEZUP'}
-    name: drop_down_1
-    properties: {background: 'theme:White', foreground: 'theme:Black', include_placeholder: true, placeholder: Select Vehicle RegNo}
-    type: DropDown
-  - layout_properties: {grid_position: 'LPRFKX,EZWWCK'}
-    name: date_picker_1
-    properties: {background: 'theme:White', foreground: 'theme:Black', pick_time: true, placeholder: Select Date And Time}
-    type: DatePicker
-  - components: []
+  - components:
+    - layout_properties: {grid_position: 'CHMDKK,MAFCQP'}
+      name: label_1
+      properties: {align: center, background: '#0056D6', font: Mozilla Headline, font_size: 20, foreground: 'theme:White', text: Service Appointment Booking}
+      type: Label
+    - layout_properties: {grid_position: 'URXFMW,VOVGZT'}
+      name: search_keyword_1
+      properties: {}
+      type: form:SearchKeyword
+    - layout_properties: {grid_position: 'WYZXPC,MKRJYD'}
+      name: drop_down_1
+      properties: {background: 'theme:White', foreground: 'theme:Black', include_placeholder: true, placeholder: Select Vehicle RegNo}
+      type: DropDown
+    - layout_properties: {grid_position: 'WYZXPC,SQWGLG'}
+      name: date_picker_1
+      properties: {background: 'theme:White', foreground: 'theme:Black', pick_time: true, placeholder: Select Date And Time}
+      type: DatePicker
+    - layout_properties: {grid_position: 'DMGRDB,FJPDBW'}
+      name: text_area_1
+      properties: {auto_expand: true, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter service details}
+      type: TextArea
+    - layout_properties: {full_width_row: false, grid_position: 'DRIQMO,XDVGXT'}
+      name: btn_Save
+      properties: {align: full, background: '#0056D6', font: Mozilla Headline1, font_size: 16, foreground: 'theme:White', text: SAVE}
+      type: Button
     layout_properties: {full_width_row: true, grid_position: 'GDCEQW,CTCRMP'}
     name: card_2
-    properties: {role: wide-card}
+    properties: {role: glass-panel}
+    type: ColumnPanel
+  - components:
+    - components:
+      - name: repeating_panel_1
+        properties: {item_template: Booking.RowTemplate24}
+        type: RepeatingPanel
+      layout_properties: {full_width_row: true, grid_position: 'PPEOCD,LRZUJS'}
+      name: data_grid_1
+      properties:
+        background: theme:Black
+        border: solid
+        columns:
+        - {data_key: Client, expand: true, id: JKSDUP, title: Client}
+        - {data_key: RegNo, expand: true, id: VJQQOR, title: RegNo}
+        - {data_key: Details, expand: true, id: OJLQEN, title: Details}
+        - {data_key: '', id: BALGFU, title: '', width: '90'}
+        foreground: theme:White
+        role: null
+      type: DataGrid
+    layout_properties: {full_width_row: true, grid_position: 'GMSFYC,OBBQHR'}
+    name: card_3
+    properties: {role: glass-panel}
     type: ColumnPanel
   layout_properties: {full_width_row: true, grid_position: 'ZJVONF,GUMGUK'}
   name: card_1

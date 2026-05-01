@@ -27,17 +27,14 @@ class RowTemplate24(RowTemplate24Template):
         message = (
             f"Hi {customer_name},\n\n"
             f"This is a reminder for your appointment.\n\n"
-            f"🚗 Vehicle: {vehicle}\n"
-            f"📍 Location: Be Ce LTD, Along Ngo Road\n"
+            f"🚗 Vehicle: {vehicle}\n\n"
+            f"📍 Location: BMW CENTER LTD, Along Ngong Road\n\n"
             f"🕒 Date & Time: {schedule}\n\n"
             f"We look forward to seeing you."
         )
 
         encoded_message = anvil.js.window.encodeURIComponent(message)
     
-        url = f"https://wa.me/{phone}?text={encoded_message}"
+        url = f"whatsapp://send?phone={phone}&text={encoded_message}"
     
-        win = anvil.js.window.open(url, "_blank")
-
-        # Try closing after delay
-        anvil.js.window.setTimeout(lambda: win.close(), 3000)
+        anvil.js.window.open(url, "_blank")

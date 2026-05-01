@@ -5,8 +5,6 @@ import anvil.users
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
-from urllib.parse import quote
-import anvil.js.window as window
 
 
 class RowTemplate24(RowTemplate24Template):
@@ -18,25 +16,25 @@ class RowTemplate24(RowTemplate24Template):
 
     def btn_SendWhatsAppMessage_click(self, **event_args):
         phone = self.item['Phone']
-        customer_name = self.item["Client"]
+        customer_name = self.item["Fullname"]
         vehicle = self.item["RegNo"]
         schedule = self.item["FormattedSchedule"]
     
         # Normalize phone (remove + and non-digits)
         phone = ''.join(filter(str.isdigit, phone))
     
-        # Proper message formatting
+        # Build message
         message = (
             f"Hi {customer_name},\n\n"
-            f"This is a reminder that you have an appointment for vehicle {vehicle} scheduled as follows:\n\n"
-            f"Location: BMW CENTER LTD, Along Ngong Road\n"
-            f"Date & Time: {schedule}\n\n"
-            f"We look forward to seeing you soon."
+            f"This is a reminder for your appointment.\n\n"
+            f"🚗 Vehicle: {vehicle}\n"
+            f"📍 Location: Be Ce LTD, Along Ngo Road\n"
+            f"🕒 Date & Time: {schedule}\n\n"
+            f"We look forward to seeing you."
         )
+
+        encoded_message = anvil.js.window.encodeURIComponent(message)
     
-        encoded_message = quote(message)
+        url = f"https://wa.me/{phone}?text={encoded_message}"
     
-        url = f"https://api.whatsapp.com/send?phone={phone}&text={encoded_message}"
-    
-        # Open WhatsApp
-        window.open(url, "_blank")
+        anvil.js.window.open(url, "_blank")

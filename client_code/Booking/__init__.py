@@ -21,7 +21,7 @@ class Booking(BookingTemplate):
     def refresh_data_grid(self):
         """Helper method to reload the history table"""
         self.repeating_panel_1.items = anvil.server.call("getBookingDetails")
-
+    
     def btn_SearchCustomer_click(self, **event_args):
         """Search for customers based on the text input"""
         valueCustomer = self.txt_ClientName.text

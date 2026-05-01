@@ -56,8 +56,9 @@ components:
         background: theme:Black
         border: solid
         columns:
-        - {data_key: 'No', id: ORJKYJ, title: 'No', width: '80'}
+        - {data_key: 'No', id: ORJKYJ, title: 'No', width: '50'}
         - {data_key: Fullname, expand: true, id: JKSDUP, title: Client}
+        - {data_key: Phone, expand: true, id: FBQCCA, title: Phone, width: ''}
         - {data_key: RegNo, expand: true, id: VJQQOR, title: RegNo}
         - {data_key: FormattedSchedule, expand: true, id: GNQKCR, title: Date And Time}
         - {data_key: Details, expand: true, id: OJLQEN, title: Details}

@@ -1,5 +1,6 @@
 components:
-- layout_properties: {column: BALGFU}
+- event_bindings: {click: btn_SendWhatsAppMessage_click}
+  layout_properties: {column: BALGFU}
   name: btn_SendWhatsAppMessage
   properties: {background: '#075E54', foreground: '#25D366', icon: 'fa:whatsapp', text: '', tooltip: Click To Send Reminder To WhatsApp}
   type: Button

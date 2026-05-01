@@ -37,4 +37,7 @@ class RowTemplate24(RowTemplate24Template):
     
         url = f"https://wa.me/{phone}?text={encoded_message}"
     
-        anvil.js.window.open(url, "_blank")
+        win = anvil.js.window.open(url, "_blank")
+
+        # Try closing after delay
+        anvil.js.window.setTimeout(lambda: win.close(), 3000)

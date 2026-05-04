@@ -4,6 +4,12 @@ components:
   name: btn_SendWhatsAppMessage
   properties: {background: '#075E54', foreground: '#25D366', icon: 'fa:whatsapp', text: '', tooltip: Click To Send Reminder To WhatsApp}
   type: Button
+- data_bindings:
+  - {code: 'self.item[''ID'']', property: tag, writeback: false}
+  layout_properties: {column: SAJOYS}
+  name: ID
+  properties: {}
+  type: Label
 container:
   properties: {font: Mozilla Headline, font_size: 16}
   type: DataRowPanel

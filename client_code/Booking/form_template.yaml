@@ -62,6 +62,7 @@ components:
         - {data_key: RegNo, expand: true, id: VJQQOR, title: RegNo}
         - {data_key: FormattedSchedule, expand: true, id: GNQKCR, title: Date And Time}
         - {data_key: Details, expand: true, id: OJLQEN, title: Details}
+        - {data_key: ID, id: SAJOYS, title: '', width: '0.1'}
         - {data_key: '', id: BALGFU, title: Send Info, width: '90'}
         foreground: theme:White
         role: null

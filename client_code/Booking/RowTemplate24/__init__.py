@@ -34,7 +34,7 @@ class RowTemplate24(RowTemplate24Template):
         )
 
         encoded_message = anvil.js.window.encodeURIComponent(message)
-    
+        #Ensure WhatsApp Desktop is installed
         url = f"whatsapp://send?phone={phone}&text={encoded_message}"
     
         anvil.js.window.open(url, "_blank")

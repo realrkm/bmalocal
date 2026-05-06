@@ -75,6 +75,7 @@ class Main(MainTemplate):
         section_map = {
             "CONTACT": self.btn_Contact,
             "JOB CARD": self.btn_JobCard,
+            "BOOKING": self.btn_Booking,
             "WORKFLOW": self.btn_Workflow,
             "TRACKER": self.btn_Tracker,
             "REVISION": self.btn_Revision,
@@ -129,7 +130,7 @@ class Main(MainTemplate):
         #Now hide sidebar after clicking link. 
         #Additional function in standard-page.html
         self.call_js('hideSidebarIfModal') 
-        
+     
     def btn_Booking_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.highlight_active_button("BOOKING")

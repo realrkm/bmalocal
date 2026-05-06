@@ -21,6 +21,7 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
         self.chk_technicians.tag = "Technicians"
         self.chk_staffs.tag = "Staff"
         self.chk_jobcard.tag = "JOB CARD"
+        self.chk_booking.tag = "BOOKING"
         self.chk_workflow.tag = "WORKFLOW"
         self.chk_checkedin.tag = "Checked In"
         self.chk_createquote.tag = "Create Quote"
@@ -62,6 +63,7 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
         self.sections = {
             "CONTACT": [self.chk_clients, self.chk_technicians, self.chk_staffs],
             "JOB CARD": [],
+            "BOOKING": [],
             "WORKFLOW": [
                 self.chk_checkedin, self.chk_createquote, self.chk_confirmquote,
                 self.chk_inservice, self.chk_verifytask, self.chk_issueinvoice, self.chk_readyforpickup
@@ -88,6 +90,7 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
         self.main_checkboxes = {
             "CONTACT": self.chk_contact,
             "JOB CARD": self.chk_jobcard,
+            "BOOKING": self.chk_booking,
             "WORKFLOW": self.chk_workflow,
             "TRACKER": self.chk_tracker,
             "REVISION": self.chk_revision,

@@ -426,7 +426,19 @@ class EditJobCard(EditJobCardTemplate):
         
         # Close form
         self.btn_Close_click()
-        get_open_form().btn_Tracker_click()
+
+        #Get current dropdown selected item in Progress Tracker
+        value = get_open_form().column_panel_content.get_components()[0].drop_down_JobCardRefDetails.selected_value
+        
+        # Click Search buton on Progress Tracker to get latest items
+        get_open_form().column_panel_content.get_components()[0].btn_SearchCustomer_click()
+        
+        #Assign old dropdown value to dropdown
+        get_open_form().column_panel_content.get_components()[0].drop_down_JobCardRefDetails.selected_value=value
+
+        #Update the form display details matching the selected dropdown details
+        get_open_form().column_panel_content.get_components()[0].drop_down_JobCardRefDetails_change()
+        
 
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""

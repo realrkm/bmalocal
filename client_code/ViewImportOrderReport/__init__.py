@@ -13,6 +13,8 @@ class ViewImportOrderReport(ViewImportOrderReportTemplate):
         self.init_components(**properties)
 
         # Any code you write here will run before the form opens.
+        orders = anvil.server.call("get_import_orders_for_selection")
+        self.repeating_panel_1.items = orders
 
     def btn_SearchClient_click(self, **event_args):
         """This method is called when the button is clicked"""

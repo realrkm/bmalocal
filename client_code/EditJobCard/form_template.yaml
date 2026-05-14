@@ -276,6 +276,6 @@ components:
   properties: {height: '6.18182373046875'}
   type: Spacer
 container:
-  properties: {border: solid, role: glass-panel}
+  properties: {border: '', role: null}
   type: ColumnPanel
 is_package: true

@@ -85,10 +85,7 @@ db_schema:
       type: number
     server: full
     title: Users
-dependencies:
-- dep_id: dep_x11mm9udfhn8t9
-  resolution_hints: {app_id: RE2R4HYBFE7BBAFM, name: Clone of responsive, package_name: responsive}
-  version: {branch: master}
+dependencies: []
 metadata: {logo_img: 'asset:BMAAutoAccessories.ico', title: BMA Auto Accessories}
 name: BMALocal
 native_deps:

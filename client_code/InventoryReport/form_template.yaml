@@ -6,7 +6,7 @@ components:
     properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 13, role: primary-color, text: PRICE CATALOGUE}
     type: Button
   - event_bindings: {click: btn_Location_click}
-    layout_properties: {grid_position: 'ICYPZW,KRTETZ'}
+    layout_properties: {full_width_row: true, grid_position: 'ICYPZW,KRTETZ'}
     name: btn_Location
     properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 13, role: primary-color, text: STOCK LOCATION, visible: true}
     type: Button
@@ -16,12 +16,12 @@ components:
     properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 13, foreground: 'theme:White', role: primary-color, text: STOCK BALANCE, visible: true}
     type: Button
   - event_bindings: {click: btn_StocktakeAnalysis_click}
-    layout_properties: {grid_position: 'ICYPZW,WYYDDS'}
+    layout_properties: {full_width_row: true, grid_position: 'ICYPZW,WYYDDS'}
     name: btn_StocktakeAnalysis
     properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 13, foreground: 'theme:White', role: primary-color, text: STOCK ANALYSIS, visible: true}
     type: Button
   - event_bindings: {click: btn_CarPartsUsed_click}
-    layout_properties: {grid_position: 'ICYPZW,DHFQST'}
+    layout_properties: {full_width_row: true, grid_position: 'ICYPZW,DHFQST'}
     name: btn_CarPartsUsed
     properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 13, foreground: 'theme:White', role: primary-color, text: CAR PARTS USED, visible: true}
     type: Button

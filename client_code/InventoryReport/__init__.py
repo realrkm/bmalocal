@@ -47,7 +47,7 @@ class InventoryReport(InventoryReportTemplate):
         """This method is called when the button is clicked"""
         self.highlight_active_button("PRICE CATALOGUE")
         self.card_2.clear()
-        self.card_2.add_component(PriceCatalogue())
+        self.card_2.add_component(PriceCatalogue(), full_width_row=True)
         self.btn_PriceCatalogue.background = "#000000"
 
     def btn_Location_click(self, **event_args):

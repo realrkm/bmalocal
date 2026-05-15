@@ -110,7 +110,7 @@ class Main(MainTemplate):
                     
     def load_component(self, cmpt):
         self.column_panel_content.clear()
-        self.column_panel_content.add_component(cmpt)
+        self.column_panel_content.add_component(cmpt,full_width_row=True)
         # Now refresh the page
         self.refresh_data_bindings()
         

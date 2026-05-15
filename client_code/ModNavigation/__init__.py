@@ -42,7 +42,7 @@ def go_JobCard():
 #Load Booking Form
 def go_Booking():
     form = get_form()
-    form.load_component(Booking())
+    form.load_component(Booking(),full_width_row=True)
     
 #Load Workflowt Form
 def go_Workflow(permissions):

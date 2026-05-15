@@ -1,5 +1,4 @@
 from ._anvil_designer import MainTemplate
-import asyncio
 from anvil import *
 import anvil.server
 import anvil.users
@@ -22,6 +21,7 @@ class Main(MainTemplate):
     def __init__(self, **properties):
         self.init_components(**properties)
         anvil.js.call('replaceBanner')
+        alert(anvil.server.get_app_origin())
 
         while anvil.users.get_user() is None:
             anvil.users.login_with_form()

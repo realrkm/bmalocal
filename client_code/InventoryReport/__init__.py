@@ -54,28 +54,28 @@ class InventoryReport(InventoryReportTemplate):
         """This method is called when the button is clicked"""
         self.highlight_active_button("STOCK LOCATION")
         self.card_2.clear()
-        self.card_2.add_component(StockLocation())
+        self.card_2.add_component(StockLocation(), full_width_row=True)
         self.btn_Location.background = "#000000"
 
     def btn_StockBalance_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.highlight_active_button("STOCK BALANCE")
         self.card_2.clear()
-        self.card_2.add_component(StockBalance())
+        self.card_2.add_component(StockBalance(), full_width_row=True)
         self.btn_StockBalance.background = "#000000"
 
     def btn_StocktakeAnalysis_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.highlight_active_button("STOCK ANALYSIS")
         self.card_2.clear()
-        self.card_2.add_component(StocktakeAnalysis())
+        self.card_2.add_component(StocktakeAnalysis(), full_width_row=True)
         self.btn_StocktakeAnalysis.background = "#000000"
 
     def btn_CarPartsUsed_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.highlight_active_button("CAR PARTS USED")
         self.card_2.clear()
-        self.card_2.add_component(CarPartsUsed())
+        self.card_2.add_component(CarPartsUsed(), full_width_row=True)
         self.btn_CarPartsUsed.background = "#000000"
 
     

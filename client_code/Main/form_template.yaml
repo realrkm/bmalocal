@@ -104,6 +104,7 @@ components:
   properties:
     background: ''
     border: ''
+    col_spacing: huge
     col_widths: '{"WBKABB":73,"FGQTDK":2,"ZSCHZU":5}'
     role: null
     spacing:

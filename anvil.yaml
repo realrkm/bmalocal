@@ -85,10 +85,7 @@ db_schema:
       type: number
     server: full
     title: Users
-dependencies:
-- dep_id: dep_m0z64ucu0dlftc
-  resolution_hints: {app_id: U45SSEC5WK4FQISE, name: M3 App 3, package_name: M3_App_3}
-  version: {branch: master}
+dependencies: []
 metadata: {logo_img: 'asset:BMAAutoAccessories.ico', title: BMA Auto Accessories}
 name: BMALocal
 native_deps:

@@ -1,4 +1,5 @@
 from ._anvil_designer import MainTemplate
+import asyncio
 from anvil import *
 import anvil.server
 import anvil.users

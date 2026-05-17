@@ -10,13 +10,13 @@ components:
     name: btn_AssignedJobCards
     properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, role: primary-color, text: ASSIGNED JOB CARDS}
     type: Button
-  layout_properties: {full_width_row: true, grid_position: 'JZBVFT,RUNOIA', row_background: ''}
+  layout_properties: {full_width_row: false, grid_position: 'JZBVFT,RUNOIA', row_background: ''}
   name: card_1
   properties: {background: 'theme:White', role: glass-panel}
   type: ColumnPanel
 - layout_properties: {full_width_row: true, grid_position: 'YGOXWJ,QYCVVH'}
   name: card_2
-  properties: {col_spacing: huge, role: glass-panel, visible: false}
+  properties: {col_spacing: huge, role: null, visible: false}
   type: ColumnPanel
 container: {type: ColumnPanel}
 is_package: true

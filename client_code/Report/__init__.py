@@ -110,21 +110,21 @@ class Report(ReportTemplate):
             self.search_keyword_1.text_box_search.placeholder = "Search Client's Name"
             self.search_keyword_1.text_box_search.focus()
             self.card_panel.clear()
-            self.card_panel.add_component(ClientContactReport(None))
+            self.card_panel.add_component(ClientContactReport(None), full_width_row=True)
             self.card_panel.visible = True
 
         elif self.cmbReport.selected_value == "Car Details":
             self.search_keyword_1.text_box_search.visible = False
             self.search_keyword_1.repeating_panel_results.visible = False
             self.card_panel.clear()
-            self.card_panel.add_component(CarDetailsReport())
+            self.card_panel.add_component(CarDetailsReport(), full_width_row=True)
             self.card_panel.visible = True
         
         elif self.cmbReport.selected_value == "Technicians":
             self.search_keyword_1.text_box_search.visible = False
             self.search_keyword_1.repeating_panel_results.visible = False
             self.card_panel.clear()
-            self.card_panel.add_component(TechnicianJobCardDetails("Technician"))
+            self.card_panel.add_component(TechnicianJobCardDetails("Technician"), full_width_row=True)
             self.card_panel.visible = True
 
         elif self.cmbReport.selected_value == "Staffs":
@@ -134,35 +134,35 @@ class Report(ReportTemplate):
             self.search_keyword_1.text_box_search.placeholder = "Search Staff's Name"
             self.search_keyword_1.text_box_search.focus()
             self.card_panel.clear()
-            self.card_panel.add_component(StaffDetailsReport(None))
+            self.card_panel.add_component(StaffDetailsReport(None), full_width_row=True)
             self.card_panel.visible = True
 
         elif self.cmbReport.selected_value == "Inventory":
             self.search_keyword_1.text_box_search.visible = False
             self.search_keyword_1.repeating_panel_results.visible = False
             self.card_panel.clear()
-            self.card_panel.add_component(InventoryReport("Catalogue"))
+            self.card_panel.add_component(InventoryReport("Catalogue"), full_width_row=True)
             self.card_panel.visible = True
 
         elif self.cmbReport.selected_value == "Periodic Quote And Invoice":
             self.search_keyword_1.text_box_search.visible = False
             self.search_keyword_1.repeating_panel_results.visible = False
             self.card_panel.clear()
-            self.card_panel.add_component(PeriodicQuoteVsInvoice())
+            self.card_panel.add_component(PeriodicQuoteVsInvoice(), full_width_row=True)
             self.card_panel.visible = True
 
         elif self.cmbReport.selected_value == "Periodic Payment Details":
             self.search_keyword_1.text_box_search.visible = False
             self.search_keyword_1.repeating_panel_results.visible = False
             self.card_panel.clear()
-            self.card_panel.add_component(PeriodicPayment())
+            self.card_panel.add_component(PeriodicPayment(), full_width_row=True)
             self.card_panel.visible = True
 
         elif self.cmbReport.selected_value == "Monthly Performance Schedule":
             self.search_keyword_1.text_box_search.visible = False
             self.search_keyword_1.repeating_panel_results.visible = False
             self.card_panel.clear()
-            self.card_panel.add_component(MonthlyPerformanceSchedule())
+            self.card_panel.add_component(MonthlyPerformanceSchedule(), full_width_row=True)
             self.card_panel.visible = True
 
 
@@ -198,7 +198,7 @@ class Report(ReportTemplate):
                 self.card_panel.visible = False
             else:
                 self.card_panel.clear()
-                self.card_panel.add_component(ClientContactReport(self.search_keyword_1.selected_result["ID"]))
+                self.card_panel.add_component(ClientContactReport(self.search_keyword_1.selected_result["ID"]), full_width_row=True)
                 self.card_panel.visible = True
 
                 
@@ -209,7 +209,7 @@ class Report(ReportTemplate):
                 self.card_panel.visible = False
             else:
                 self.card_panel.clear()
-                self.card_panel.add_component(TechnicianJobCardDetails())
+                self.card_panel.add_component(TechnicianJobCardDetails(), full_width_row=True)
                 self.card_panel.visible = True
 
         elif self.cmbReport.selected_value == "Staffs":
@@ -219,7 +219,7 @@ class Report(ReportTemplate):
                 self.card_panel.visible = False
             else:
                 self.card_panel.clear()
-                self.card_panel.add_component(StaffDetailsReport(self.search_keyword_1.selected_result["ID"]))
+                self.card_panel.add_component(StaffDetailsReport(self.search_keyword_1.selected_result["ID"]), full_width_row=True)
                 self.card_panel.visible = True
                 
        

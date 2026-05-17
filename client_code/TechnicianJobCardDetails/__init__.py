@@ -43,7 +43,7 @@ class TechnicianJobCardDetails(TechnicianJobCardDetailsTemplate):
         self.btn_AssignedJobCards.enabled = False #Prevent clicking before current data content loads
         self.highlight_active_button("TECHNICIANS")
         self.card_2.clear()
-        self.card_2.add_component(TechniciansDetailsReport())
+        self.card_2.add_component(TechniciansDetailsReport(), full_width_row=True)
         self.card_2.visible = True
         self.btn_Technician.background = "#000000"
         self.btn_AssignedJobCards.enabled = True
@@ -53,7 +53,7 @@ class TechnicianJobCardDetails(TechnicianJobCardDetailsTemplate):
         self.btn_Technician.enabled = False #Prevent clicking before current data content loads
         self.highlight_active_button("ASSIGNED JOB CARDS")
         self.card_2.clear()
-        self.card_2.add_component(AssignedJobCards())
+        self.card_2.add_component(AssignedJobCards(), full_width_row=True)
         self.card_2.visible = True
         self.btn_AssignedJobCards.background = "#000000"
         self.btn_Technician.enabled = True

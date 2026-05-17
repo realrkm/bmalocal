@@ -58,12 +58,17 @@ components:
     name: btn_Search
     properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: SEARCH}
     type: Button
+  layout_properties: {full_width_row: false, grid_position: 'AWGLFW,UVUHMI', row_background: ''}
+  name: card_1
+  properties: {background: 'theme:White', col_widths: '{"NAGFFN":40,"GLYMLM":20}', role: glass-panel, wrap_on: never}
+  type: ColumnPanel
+- components:
   - components:
     - layout_properties: {pinned: false}
       name: repeating_panel_1
       properties: {background: '', border: '', foreground: '', item_template: PriceCatalogue.RowTemplate9, role: null}
       type: RepeatingPanel
-    layout_properties: {full_width_row: true, grid_position: 'NMRTRA,IOXZSL'}
+    layout_properties: {full_width_row: true, grid_position: 'WWPTKN,TRKECS'}
     name: data_grid_1
     properties:
       background: theme:Black
@@ -82,9 +87,9 @@ components:
       role: wide
       wrap_on: mobile
     type: DataGrid
-  layout_properties: {full_width_row: true, grid_position: 'AWGLFW,UVUHMI', row_background: ''}
-  name: card_1
-  properties: {background: 'theme:White', col_widths: '{"NAGFFN":40,"GLYMLM":20}', role: glass-panel, wrap_on: never}
+  layout_properties: {full_width_row: true, grid_position: 'LSEXDQ,QWKXNB'}
+  name: card_3
+  properties: {role: glass-panel}
   type: ColumnPanel
 container:
   properties: {role: wide, wrap_on: never}

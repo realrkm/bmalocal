@@ -49,12 +49,21 @@ components:
       name: spacer_3_copy
       properties: {height: '10'}
       type: Spacer
+    - layout_properties: {grid_position: 'MTKDUL,ESCYVB'}
+      name: spacer_3_copy_3
+      properties: {height: '10'}
+      type: Spacer
+    layout_properties: {grid_position: 'ZJIVZQ,PWNTXO'}
+    name: card_3
+    properties: {border: '', role: null}
+    type: ColumnPanel
+  - components:
     - components:
       - layout_properties: {}
         name: repeating_panel_1
         properties: {item_template: StockTake.RowTemplate17, role: wide}
         type: RepeatingPanel
-      layout_properties: {grid_position: 'YVWHBP,DDFMXA'}
+      layout_properties: {full_width_row: true, grid_position: 'JUEKXC,IUTOAB'}
       name: data_grid_1
       properties:
         background: theme:Black
@@ -71,22 +80,18 @@ components:
         role: wide
         wrap_on: mobile
       type: DataGrid
-    - layout_properties: {grid_position: 'VDDQOB,JIRKVX'}
+    - layout_properties: {grid_position: 'QYDYTY,UTLRVM'}
       name: spacer_3_copy_2
       properties: {height: '10'}
       type: Spacer
     - event_bindings: {click: btn_Upload_click}
-      layout_properties: {grid_position: 'RYXNYL,BIBKNK'}
+      layout_properties: {full_width_row: true, grid_position: 'AGBZGH,NFHPHC'}
       name: btn_Upload
       properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: UPLOAD STOCK TAKE}
       type: Button
-    - layout_properties: {grid_position: 'MTKDUL,ESCYVB'}
-      name: spacer_3_copy_3
-      properties: {height: '10'}
-      type: Spacer
-    layout_properties: {grid_position: 'ZJIVZQ,PWNTXO'}
-    name: card_3
-    properties: {border: '', role: null}
+    layout_properties: {full_width_row: true, grid_position: 'TJTDEE,JOQLUH'}
+    name: card_4
+    properties: {role: glass-panel}
     type: ColumnPanel
   layout_properties: {full_width_row: true, grid_position: 'ANCFAM,MDCSDB', row_background: ''}
   name: card_2

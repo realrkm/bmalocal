@@ -7,7 +7,7 @@ components:
       type: Label
     - layout_properties: {grid_position: 'OOYBGD,EOFTAN'}
       name: label_3
-      properties: {align: center, border: solid, font: Mozilla Headline, font_size: 16, foreground: '#dc1818', text: 'Search Date Period Only, Technician Only Or Both Date Period And Technician'}
+      properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: '#dc1818', text: 'Search Date Period Only, Technician Only Or Both Date Period And Technician'}
       type: Label
     - layout_properties: {grid_position: 'YTJFAT,KYHHUZ'}
       name: spacer_1
@@ -53,12 +53,17 @@ components:
       type: Spacer
     layout_properties: {grid_position: 'LLTWBQ,PVTCFM', row_background: ''}
     name: card_2
-    properties: {border: solid, role: glass-panel}
+    properties: {border: '', role: glass-panel}
     type: ColumnPanel
   - layout_properties: {grid_position: 'IFFMDX,QPPQUZ'}
     name: spacer_3_copy_copy_copy
     properties: {height: 14}
     type: Spacer
+  layout_properties: {grid_position: 'IZDBAG,YJKGEX'}
+  name: card_1
+  properties: {role: null}
+  type: ColumnPanel
+- components:
   - components:
     - name: repeating_panel_1
       properties: {item_template: AssignedJobCards.RowTemplate13}
@@ -79,7 +84,7 @@ components:
       name: data_row_panel_1
       properties: {}
       type: DataRowPanel
-    layout_properties: {grid_position: 'JZILFQ,CQZOVD'}
+    layout_properties: {full_width_row: true, grid_position: 'SHYJCR,JMCOTP'}
     name: data_grid_1
     properties:
       background: theme:Black
@@ -95,9 +100,9 @@ components:
       foreground: theme:White
       wrap_on: mobile
     type: DataGrid
-  layout_properties: {full_width_row: true, grid_position: 'JHIYPT,YXHMTD', row_background: ''}
-  name: card_1
-  properties: {role: null}
+  layout_properties: {full_width_row: true, grid_position: 'YPWMCV,WBXMUE'}
+  name: card_3
+  properties: {role: glass-panel}
   type: ColumnPanel
 container: {type: ColumnPanel}
 is_package: true

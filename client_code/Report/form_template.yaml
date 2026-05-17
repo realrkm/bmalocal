@@ -3,7 +3,7 @@ components:
   - components:
     - layout_properties: {grid_position: 'CUQCLK,UTRBED'}
       name: label_1_copy
-      properties: {align: center, background: '#0056D6', bold: false, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: null, text: Reports}
+      properties: {align: center, background: '#0056D6', bold: false, border: '', font: Mozilla Headline, font_size: 20, foreground: 'theme:White', role: null, text: Reports}
       type: Label
     - event_bindings: {change: cmbReport_change}
       layout_properties: {grid_position: 'IVALPC,NUPWUH'}
@@ -27,14 +27,14 @@ components:
     name: column_panel_1
     properties: {}
     type: ColumnPanel
-  layout_properties: {full_width_row: true, grid_position: 'VDDAWN,FLEOCZ'}
+  layout_properties: {full_width_row: false, grid_position: 'VDDAWN,FLEOCZ'}
   name: flow_panel_1
   properties: {border: '', role: null}
   type: FlowPanel
 - layout_properties: {full_width_row: true, grid_position: 'XJQITE,DWZCKT'}
   name: card_panel
   properties:
-    role: [wide-card, glass-panel]
+    role: [wide-card]
   type: ColumnPanel
 container:
   event_bindings: {}

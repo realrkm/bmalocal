@@ -24,7 +24,7 @@ class NotificationsAndAlerts(NotificationsAndAlertsTemplate):
         pricing_alert = data.get("pricing_alert", [])
 
         if not bool(notifications) and not bool(incomplete_defects) and not bool(tech_portal_info) and not bool(pricing_alert):
-            self.label_1.text = "No Alerts Found"
+            self.label_1.text = "No Information Found"
         else:
             self.label_1.visible=False
             self.btn_alerts.visible = bool(notifications)

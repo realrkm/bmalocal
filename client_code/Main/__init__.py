@@ -260,9 +260,11 @@ class Main(MainTemplate):
                 notice = notice + 1
 
             if notice > 0:
+                self.link_1.visible=True
                 self.link_1.text = notice
                 self.link_1.foreground = "#00FF00"
             else:
+                self.link_1.visible=True
                 self.link_1.text = None
                 self.link_1.foreground = "#FFFFFF"
             

@@ -102,7 +102,7 @@ components:
     event_bindings: {click: link_1_click}
     layout_properties: {}
     name: link_1
-    properties: {background: '', border: solid, font: Mozilla Headline, font_size: 20, foreground: 'theme:White', icon: 'fa:bell', role: null, text: '', underline: true, visible: false}
+    properties: {background: '', border: solid, font: Mozilla Headline, font_size: 20, foreground: 'theme:White', icon: 'fa:bell', italic: true, role: null, text: '', tooltip: View Notifications And Alerts, underline: true, visible: false}
     type: Link
   layout_properties: {slot: nav-right}
   name: navbar_links

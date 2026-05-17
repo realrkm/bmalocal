@@ -27,10 +27,10 @@ class NotificationsAndAlerts(NotificationsAndAlertsTemplate):
             self.label_1.text = "No Information Found"
         else:
             self.label_1.visible=False
-            self.btn_alerts.visible = bool(notifications)
-            self.btn_IncompleteDefectsInfo.visible = bool(incomplete_defects)
-            self.btn_ViewTechnicianPortalDetails.visible = bool(tech_portal_info)
-            self.btn_ViewBuyingPriceExceedsSelling.visible = bool(pricing_alert)
+            self.btn_alerts.enabled = bool(notifications)
+            self.btn_IncompleteDefectsInfo.enabled = bool(incomplete_defects)
+            self.btn_ViewTechnicianPortalDetails.enabled = bool(tech_portal_info)
+            self.btn_ViewBuyingPriceExceedsSelling.enabled = bool(pricing_alert)
 
     def btn_alerts_click(self, **event_args):
         """This method is called when the button is clicked"""

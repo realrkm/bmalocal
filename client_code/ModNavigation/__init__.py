@@ -102,12 +102,6 @@ def go_Notification():
     form.notification_timer.enabled = True
     form.notification_timer_tick()
 
-#Load Incomplete Defects Button
-def go_Disable_Incomplete_Defects_Info():
-    form = get_open_form()
-    form.btn_IncompleteDefectsInfo.enabled = False
 
-def go_Enable_Incomplete_Defects_Info():
-    form = get_open_form()
-    form.btn_IncompleteDefectsInfo.enabled = True
+
 

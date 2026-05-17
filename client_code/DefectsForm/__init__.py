@@ -252,7 +252,7 @@ class DefectsForm(DefectsFormTemplate):
         """This method is called when the button is clicked"""
         anvil.server.call("publish_defects_notification",self.defects_data[0]["ID"], "defects list incomplete" )
         alert("Incomplete defects list updated ", title="Success")
-        ModNavigation.go_Enable_Incomplete_Defects_Info()
+        
 
     def btn_AddMorePartsAndServicesInConfirmedQuote_click(self, **event_args):
         """This method is called when the button is clicked"""

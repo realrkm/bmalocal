@@ -25,4 +25,4 @@ class IncompleteDefectsInfo(IncompleteDefectsInfoTemplate):
         anvil.server.call_s("deactivate_incomplete_defects_info")
         alert("Incomplete defects info is updated successfully", title="Success")
         self.raise_event("x-close-alert", value=True)
-        ModNavigation.go_Disable_Incomplete_Defects_Info()
+       

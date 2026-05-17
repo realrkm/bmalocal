@@ -1526,3 +1526,7 @@ body.modal-open {
 }
 */
 
+/* Removes underlines from all link components */
+a.anvil-role-link, .anvil-label > .label-text, a > .link-text {
+    text-decoration: none !important;
+}

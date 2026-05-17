@@ -248,11 +248,27 @@ class Main(MainTemplate):
             pricing_alert = data.get("pricing_alert", [])
             
             # Simplify boolean logic (if list has items, bool() is True, else False)
-            self.btn_alerts.enabled = bool(notifications)
-            self.btn_IncompleteDefectsInfo.enabled = bool(incomplete_defects)
-            self.btn_ViewTechnicianPortalDetails.enabled = bool(tech_portal_info)
-            self.btn_ViewBuyingPriceExceedsSelling.enabled = bool(pricing_alert)
+            notice = 0
+            
+            if bool(notifications):
+                notice = notice + 1
+                
+            if bool(incomplete_defects):
+                notice = notice + 1
+                
+            if bool(tech_portal_info):
+                notice = notice + 1
+                
+            if bool(pricing_alert):
+                notice = notice + 1
 
+            if notice > 0:
+                self.link_1.text = notice
+                self.link_1.foreground = "#00FF00"
+            else:
+                self.link_1.text = None
+                self.link_1.foreground = "#FFFFFF"
+            
             # Handle the notification label text
             for n in notifications:
                 self.notification_label.text = f"{n['jobcard']} - {n['message']}"

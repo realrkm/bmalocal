@@ -5,31 +5,6 @@ components:
     name: notification_timer
     properties: {interval: 5}
     type: Timer
-  - components:
-    - event_bindings: {click: btn_alerts_click}
-      layout_properties: {grid_position: 'QGIUDM,DKTQMK'}
-      name: btn_alerts
-      properties: {background: '#0056D6', border: '', enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: '', role: raised, spacing_above: none, text: Invoice Alerts, visible: true}
-      type: Button
-    - event_bindings: {click: btn_IncompleteDefectsInfo_click}
-      layout_properties: {grid_position: 'QGIUDM,TNDFYZ'}
-      name: btn_IncompleteDefectsInfo
-      properties: {background: '#0056D6', border: '', enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: '', role: raised, spacing_above: none, text: INC. DEFECTS, visible: true}
-      type: Button
-    - event_bindings: {click: btn_ViewTechnicianPortalDetails_click}
-      layout_properties: {grid_position: 'QGIUDM,XDTSLI'}
-      name: btn_ViewTechnicianPortalDetails
-      properties: {background: '#0056D6', border: '', enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: '', role: raised, spacing_above: none, text: Tech Portal, visible: true}
-      type: Button
-    - event_bindings: {click: btn_ViewBuyingPriceExceedsSelling_click}
-      layout_properties: {grid_position: 'QGIUDM,LVPSMI'}
-      name: btn_ViewBuyingPriceExceedsSelling
-      properties: {background: '#f20000', border: '', enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: '', role: raised, spacing_above: none, text: Pricing Alert, visible: true}
-      type: Button
-    layout_properties: {grid_position: 'CLSJCB,WBKABB EXJVCC,PMZDAH'}
-    name: card_2
-    properties: {background: '', role: null, wrap_on: never}
-    type: ColumnPanel
   - event_bindings: {click: fab_btn_click}
     layout_properties: {grid_position: 'CLSJCB,FGQTDK'}
     name: fab_btn
@@ -124,10 +99,10 @@ components:
     properties: {border: ''}
     type: Link
   - components: []
-    event_bindings: {}
+    event_bindings: {click: link_1_click}
     layout_properties: {}
     name: link_1
-    properties: {background: '', border: solid, font: Mozilla Headline, font_size: 20, foreground: 'theme:White', icon: 'fa:bell', role: null, text: '', underline: true}
+    properties: {background: '', border: solid, font: Mozilla Headline, font_size: 20, foreground: 'theme:White', icon: 'fa:bell', role: null, text: '', underline: true, visible: false}
     type: Link
   layout_properties: {slot: nav-right}
   name: navbar_links

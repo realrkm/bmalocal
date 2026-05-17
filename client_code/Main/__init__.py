@@ -10,10 +10,7 @@ from .. import ModGetData
 import anvil.js
 from anvil.js import window
 from anvil.js.window import navigator, setTimeout
-from ..Alerts import Alerts
-from ..IncompleteDefectsInfo import IncompleteDefectsInfo
-from ..ViewTechnicianPortalDetails import ViewTechnicianPortalDetails
-from ..ViewPricingAlertDetails import ViewPricingAlertDetails
+from ..NotificationsAndAlerts import NotificationsAndAlerts
 
 class Main(MainTemplate):
 
@@ -34,8 +31,8 @@ class Main(MainTemplate):
             else:
                 self.notification_label.visible = False
                 self.error_label.visible=False
-                self.btn_alerts.visible = False
-                self.btn_IncompleteDefectsInfo.visible = False
+                self.notificationsandalerts = None
+                
 
             user_agent = navigator.userAgent
             anvil.server.call_s('get_stats', user_agent)
@@ -225,8 +222,6 @@ class Main(MainTemplate):
         if result == "ok":
             self.timer_keepalive.interval = 300
 
-    
-        
     def notification_timer_tick(self, **event_args):
         """This method is called Every [interval] seconds. Does not trigger if [interval] is 0."""
 
@@ -239,7 +234,9 @@ class Main(MainTemplate):
             self.notification_label.text = ""
 
             # Make ONE server call to get all data
-            data = anvil.server.call_s('fetch_all_dashboard_notifications', user)
+            self.notificationsandalerts = anvil.server.call_s('fetch_all_dashboard_notifications', user)
+
+            data = self.notificationsandalerts
             
             # Extract the lists from the returned dictionary
             notifications = data.get("notifications", [])
@@ -274,30 +271,11 @@ class Main(MainTemplate):
                 self.notification_label.text = f"{n['jobcard']} - {n['message']}"
                 self.refresh()
 
-    def btn_alerts_click(self, **event_args):
-        """This method is called when the button is clicked"""
-        self.btn_alerts.enabled=False
-        alert(content=Alerts(), dismissible=False,large=True)
-        self.btn_alerts.enabled=True
+    
 
-    def btn_IncompleteDefectsInfo_click(self, **event_args):
-        """This method is called when the button is clicked"""
-        self.btn_IncompleteDefectsInfo.enabled=False
-        alert(content=IncompleteDefectsInfo(), dismissible=False,large=True)
-        self.btn_IncompleteDefectsInfo.enabled=True
+    def link_1_click(self, **event_args):
+        """This method is called when the link is clicked"""
+        alert(content=NotificationsAndAlerts(self.notificationsandalerts), title="Notifications And Alerts", dismissible=False,large=False)
 
     
-    def btn_ViewTechnicianPortalDetails_click(self, **event_args):
-        """This method is called when the button is clicked"""
-        self.btn_ViewTechnicianPortalDetails.enabled=False
-        alert(content=ViewTechnicianPortalDetails(), dismissible=False,large=True)
-        self.btn_ViewTechnicianPortalDetails.enabled=True
-
-
-    def btn_ViewBuyingPriceExceedsSelling_click(self, **event_args):
-        """This method is called when the button is clicked"""
-        self.btn_ViewBuyingPriceExceedsSelling.enabled=False
-        alert(content=ViewPricingAlertDetails(), dismissible=False,large=True)
-        self.btn_ViewBuyingPriceExceedsSelling.enabled=True
-
     

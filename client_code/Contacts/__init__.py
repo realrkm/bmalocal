@@ -80,16 +80,16 @@ class Contacts(ContactsTemplate):
         """Load Clients subform."""
         self.highlight_active_button("CLIENTS")
         self.card_2.clear()
-        self.card_2.add_component(Client())
+        self.card_2.add_component(Client(), full_width_row=True)
 
     def btn_Technician_click(self, **event_args):
         """Load Technicians subform."""
         self.highlight_active_button("TECHNICIANS")
         self.card_2.clear()
-        self.card_2.add_component(Tehnicians())
+        self.card_2.add_component(Tehnicians(), full_width_row=True)
 
     def btn_Staff_click(self, **event_args):
         """Load Staff subform."""
         self.highlight_active_button("STAFF")
         self.card_2.clear()
-        self.card_2.add_component(Staffs())
+        self.card_2.add_component(Staffs(), full_width_row=True)

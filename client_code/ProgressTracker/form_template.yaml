@@ -221,7 +221,7 @@ components:
     name: card_2
     properties: {role: null}
     type: ColumnPanel
-  layout_properties: {full_width_row: false, grid_position: 'RITPNN,XAQHGR', row_background: ''}
+  layout_properties: {full_width_row: true, grid_position: 'RITPNN,XAQHGR', row_background: ''}
   name: card_1
   properties: {col_widths: '{"NJPDYL":40,"LZQOZW":20}', role: null}
   type: ColumnPanel

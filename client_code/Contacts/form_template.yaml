@@ -15,11 +15,11 @@ components:
     name: btn_Staff
     properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, role: primary-color, text: STAFF}
     type: Button
-  layout_properties: {full_width_row: true, grid_position: 'JZBVFT,RUNOIA', row_background: ''}
+  layout_properties: {full_width_row: false, grid_position: 'JZBVFT,RUNOIA', row_background: ''}
   name: card_1
   properties: {background: '', role: glass-panel, wrap_on: never}
   type: ColumnPanel
-- layout_properties: {full_width_row: true, grid_position: 'YGOXWJ,QYCVVH'}
+- layout_properties: {full_width_row: false, grid_position: 'YGOXWJ,QYCVVH'}
   name: card_2
   properties: {col_spacing: huge, role: null, wrap_on: never}
   type: ColumnPanel

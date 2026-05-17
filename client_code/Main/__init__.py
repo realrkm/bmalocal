@@ -10,7 +10,6 @@ from .. import ModGetData
 import anvil.js
 from anvil.js import window
 from anvil.js.window import navigator, setTimeout
-from ..FAQ import FAQ
 from ..Alerts import Alerts
 from ..IncompleteDefectsInfo import IncompleteDefectsInfo
 from ..ViewTechnicianPortalDetails import ViewTechnicianPortalDetails
@@ -85,6 +84,7 @@ class Main(MainTemplate):
             "PARTS HUB": self.btn_PartsHub,
             "SETTINGS": self.btn_Settings,
             "RESET": self.btn_ResetPassword,
+            "FAQs":self.btn_FAQs,
         }
     
         for section, button in section_map.items():
@@ -205,7 +205,7 @@ class Main(MainTemplate):
 
     def btn_FAQs_click(self, **event_args):
         self.highlight_active_button("FAQs")
-        ModNavigation.go_FAQs(self.permissions)
+        ModNavigation.go_FAQs()
         #Now hide sidebar after clicking link. 
         #Additional function in standard-page.html
         self.call_js('hideSidebarIfModal') 
@@ -216,9 +216,6 @@ class Main(MainTemplate):
         anvil.users.logout()
         open_form("Launcher")
 
-    def link_1_click(self, **event_args):
-        """This method is called when the link is clicked"""
-        alert(content=FAQ(), dismissible=False,large=True)
 
     #Avoid constant session refresh
     def timer_keepalive_tick(self, **event_args):

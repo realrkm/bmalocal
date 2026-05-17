@@ -92,9 +92,9 @@ def go_Settings(permissions):
     form.load_component(Settings(permissions))
 
 #Load FAQs Form
-def go_FAQs(permissions):
+def go_FAQs():
     form = get_form()
-    form.load_component(FAQ(permissions))
+    form.load_component(FAQ())
     
 #Load Notification
 def go_Notification():

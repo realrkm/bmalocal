@@ -8,7 +8,7 @@ from anvil.tables import app_tables
 import anvil.js
 
 class FAQ(FAQTemplate):
-    def __init__(self, **properties):
+    def __init__(self,  **properties):
         # Set Form properties and Data Bindings.
         self.init_components(**properties)
 

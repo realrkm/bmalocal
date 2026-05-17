@@ -57,6 +57,7 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
         self.chk_useraccounts.tag = "User Accounts"
         self.chk_roleasandpermissions.tag = "Roles And Permissions"
         self.chk_reset.tag = "RESET"
+        self.chk_faq.tag = "FAQs"
         self.chk_technician_portal.tag="TECHNICIAN PORTAL"
 
         # Define sections with their subsections
@@ -83,6 +84,7 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
             "PARTS HUB": [self.chk_partscatalog, self.chk_ordertracking],
             "SETTINGS": [self.chk_useraccounts, self.chk_roleasandpermissions],
             "RESET": [],
+            "FAQs": [],
             "TECHNICIAN PORTAL": [self.chk_technician_portal],
         }
 
@@ -100,6 +102,7 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
             "PARTS HUB": self.chk_partshub,
             "SETTINGS": self.chk_settings,
             "RESET": self.chk_reset,
+            "FAQs":self.chk_faq,
             "TECHNICIAN PORTAL": self.chk_technician_portal,
         }
 

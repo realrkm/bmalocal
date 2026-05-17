@@ -84,7 +84,7 @@ class Inventory(InventoryTemplate):
         """This method is called when the button is clicked"""
         self.highlight_active_button("ADD MORE STOCK")
         self.card_2.clear()
-        self.card_2.add_component(AddMoreStock())
+        self.card_2.add_component(AddMoreStock(), full_width_row=True)
         self.btn_AddMoreStock.background = "#000000"
 
     def btn_StockTaking_click(self, **event_args):

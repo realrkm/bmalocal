@@ -18,10 +18,6 @@ components:
     name: drop_down_JobCardRefDetails
     properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select  Job Card Ref Details*}
     type: DropDown
-  - layout_properties: {grid_position: 'FQLXZN,KPQOYN', row_background: 'theme:Black'}
-    name: spacer_2_copy
-    properties: {height: 5}
-    type: Spacer
   - layout_properties: {full_width_row: false, grid_position: 'NZUIBS,IGKOYR', row_background: ''}
     name: image_1
     properties: {background: '', border: solid, border_radius: '1000', display_mode: zoom_to_fill, role: null, source: _/theme/unnamed.png, vertical_align: center}
@@ -126,31 +122,31 @@ components:
       - components:
         - layout_properties: {grid_position: 'TSCEFA,PKDXHG RYFWAV,VSWGVM'}
           name: label_checked_in
-          properties: {align: center, font: Mozilla Headline, font_size: 16, icon: 'fa:check-circle-o', icon_align: left, text: Checked In}
+          properties: {align: center, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: 'fa:check-circle-o', icon_align: left, text: Checked In}
           type: Label
         - layout_properties: {grid_position: 'TSCEFA,PKDXHG PKCXMC,YOKMGP'}
           name: label_in_service
-          properties: {align: center, font: Mozilla Headline, font_size: 16, icon: 'fa:wrench', text: In Service}
+          properties: {align: center, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: 'fa:wrench', text: In Service}
           type: Label
         - layout_properties: {grid_position: 'TSCEFA,FUAVPP AEYEMB,DBWJFZ'}
           name: label_create_quote
-          properties: {align: center, font: Mozilla Headline, font_size: 16, icon: 'fa:file-text', text: Create Quote}
+          properties: {align: center, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: 'fa:file-text', text: Create Quote}
           type: Label
         - layout_properties: {grid_position: 'TSCEFA,FUAVPP USKGCV,TPRMKD'}
           name: label_verify_task
-          properties: {align: center, font: Mozilla Headline, font_size: 16, icon: 'fa:tasks', text: Verify Task}
+          properties: {align: center, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: 'fa:tasks', text: Verify Task}
           type: Label
         - layout_properties: {grid_position: 'TSCEFA,VLMCQX EKBGND,UFIQHL'}
           name: label_confirm_quote
-          properties: {align: center, font: Mozilla Headline, font_size: 16, icon: 'fa:files-o', text: Confirm Quote}
+          properties: {align: center, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: 'fa:files-o', text: Confirm Quote}
           type: Label
         - layout_properties: {grid_position: 'TSCEFA,VLMCQX FBTUOZ,BRURGH'}
           name: label_issue_invoice
-          properties: {align: center, font: Mozilla Headline, font_size: 16, icon: 'fa:dollar', text: Issue Invoice}
+          properties: {align: center, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: 'fa:dollar', text: Issue Invoice}
           type: Label
         - layout_properties: {grid_position: 'XTMJKH,BQLOLG'}
           name: label_cancelled
-          properties: {align: center, font: Mozilla Headline, font_size: 16, icon: 'fa:times', text: Cancelled Jobcard}
+          properties: {align: center, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: 'fa:times', text: Cancelled Jobcard}
           type: Label
         - layout_properties: {grid_position: 'SIORKJ,AXMCWC'}
           name: text_area_1
@@ -162,11 +158,15 @@ components:
           type: Spacer
         - layout_properties: {grid_position: 'XLUBOJ,IWOYRX'}
           name: label_payment_due
-          properties: {align: center, font: Mozilla Headline, font_size: 16, icon: 'fa:clock-o', text: Payment Due}
+          properties: {align: center, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: 'fa:clock-o', text: Payment Due}
           type: Label
         - layout_properties: {grid_position: 'XLUBOJ,UKASSG'}
           name: label_payment_done
-          properties: {align: center, font: Mozilla Headline, font_size: 16, icon: 'fa:check-square', text: Payment Done}
+          properties: {align: center, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: 'fa:check-square', text: Payment Done}
+          type: Label
+        - layout_properties: {grid_position: 'XLUBOJ,JUWYLU'}
+          name: label_completed
+          properties: {align: center, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: 'fa:check-square', text: Complete}
           type: Label
         layout_properties: {grid_position: 'RGDOSG,VMRFAU'}
         name: card_3

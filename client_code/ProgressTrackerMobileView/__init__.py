@@ -92,6 +92,7 @@ class ProgressTrackerMobileView(ProgressTrackerMobileViewTemplate):
             "Cancelled Jobcard": self.label_cancelled,
             "Pending": self.label_payment_due,
             "Paid": self.label_payment_done,
+            "Complete": self.label_completed
         }
 
         # Loop over all labels and set styles

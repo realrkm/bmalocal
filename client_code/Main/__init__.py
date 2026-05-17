@@ -21,8 +21,7 @@ class Main(MainTemplate):
     def __init__(self, **properties):
         self.init_components(**properties)
         anvil.js.call('replaceBanner')
-        alert(anvil.server.get_app_origin())
-
+        
         while anvil.users.get_user() is None:
             anvil.users.login_with_form()
 
@@ -199,7 +198,18 @@ class Main(MainTemplate):
         #Now hide sidebar after clicking link. 
         #Additional function in standard-page.html
         self.call_js('hideSidebarIfModal') 
+        
+    def btn_ResetPassword_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        anvil.users.change_password_with_form()
 
+    def btn_FAQs_click(self, **event_args):
+        self.highlight_active_button("FAQs")
+        ModNavigation.go_FAQs(self.permissions)
+        #Now hide sidebar after clicking link. 
+        #Additional function in standard-page.html
+        self.call_js('hideSidebarIfModal') 
+        
     def btn_Logout_click(self, **event_args):
         self.highlight_active_button("LOGOUT")
         open_form('LogoutBackground')
@@ -218,9 +228,7 @@ class Main(MainTemplate):
         if result == "ok":
             self.timer_keepalive.interval = 300
 
-    def btn_ResetPassword_click(self, **event_args):
-        """This method is called when the button is clicked"""
-        anvil.users.change_password_with_form()
+    
         
     def notification_timer_tick(self, **event_args):
         """This method is called Every [interval] seconds. Does not trigger if [interval] is 0."""

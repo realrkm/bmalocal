@@ -198,6 +198,10 @@ components:
     name: btn_ResetPassword
     properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:key', role: raised, text: 'RESET '}
     type: Button
+  - layout_properties: {grid_position: 'GFLXZD,FBAMAK'}
+    name: btn_FAQs
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:question', role: raised, text: FAQs}
+    type: Button
   - event_bindings: {click: btn_Logout_click}
     layout_properties: {grid_position: 'BEMCGF,VNEXVK'}
     name: btn_Logout

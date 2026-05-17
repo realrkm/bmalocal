@@ -17,6 +17,7 @@ from ..ProgressTracker import ProgressTracker
 from ..ProgressTrackerMobileView import ProgressTrackerMobileView
 from ..Inventory import Inventory
 from ..PartsHub import PartsHub
+from ..FAQ import FAQ
 
 
 
@@ -90,6 +91,10 @@ def go_Settings(permissions):
     form = get_form()
     form.load_component(Settings(permissions))
 
+#Load FAQs Form
+def go_FAQs(permissions):
+    form = get_form()
+    form.load_component(FAQ(permissions))
     
 #Load Notification
 def go_Notification():

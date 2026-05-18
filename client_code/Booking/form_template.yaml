@@ -8,7 +8,7 @@ components:
     - event_bindings: {pressed_enter: btn_SearchCustomer_click}
       layout_properties: {grid_position: 'FGGFSN,GABUYK'}
       name: txt_ClientName
-      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Customer Name, visible: true}
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: 'Enter Customer Name Or Phone Number ', visible: true}
       type: TextBox
     - event_bindings: {click: btn_SearchCustomer_click}
       layout_properties: {grid_position: 'FGGFSN,GOWPIC'}

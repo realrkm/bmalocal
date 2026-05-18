@@ -140,6 +140,6 @@ components:
   properties: {role: null}
   type: ColumnPanel
 container:
-  properties: {background: '', border: solid, foreground: '', role: glass-panel}
+  properties: {background: '', border: solid, foreground: '', role: null}
   type: ColumnPanel
 is_package: true

@@ -17,7 +17,7 @@ class NotificationsAndAlerts(NotificationsAndAlertsTemplate):
         self.init_components(**properties)
 
         # Any code you write here will run before the form opens.
-        self.refresh()
+       
         data = notificationsandalerts
         notifications = data.get("notifications", [])
         incomplete_defects = data.get("incomplete_defects", [])

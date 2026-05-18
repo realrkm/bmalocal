@@ -8,6 +8,7 @@ from anvil.tables import app_tables
 from ..AddLocation import AddLocation
 from ..AddSupplier import AddSupplier
 import anvil.js
+from .. import ModNavigation
 
 
 class EditAddNewParts(EditAddNewPartsTemplate):
@@ -191,6 +192,10 @@ class EditAddNewParts(EditAddNewPartsTemplate):
             self.lbl_SupplierId.text
         )
         alert("Part Updated Successfully", title="Success", large=False)
+        #Update notification timer
+        if sellingPrice < buyingPrice:
+            ModNavigation.go_Notification()
+            
         self.btn_Close_click()
 
 

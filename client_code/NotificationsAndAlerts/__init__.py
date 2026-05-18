@@ -32,6 +32,7 @@ class NotificationsAndAlerts(NotificationsAndAlertsTemplate):
             self.btn_ViewTechnicianPortalDetails.enabled = bool(tech_portal_info)
             self.btn_ViewBuyingPriceExceedsSelling.enabled = bool(pricing_alert)
 
+    
     def btn_alerts_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.btn_alerts.enabled=False

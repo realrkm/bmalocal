@@ -14,9 +14,10 @@ from ..ViewPricingAlertDetails import ViewPricingAlertDetails
 class NotificationsAndAlerts(NotificationsAndAlertsTemplate):
     def __init__(self, notificationsandalerts, **properties):
         # Set Form properties and Data Bindings.
-        super().__init__(**properties)
+        self.init_components(**properties)
 
         # Any code you write here will run before the form opens.
+        self.refresh()
         data = notificationsandalerts
         notifications = data.get("notifications", [])
         incomplete_defects = data.get("incomplete_defects", [])
@@ -32,6 +33,9 @@ class NotificationsAndAlerts(NotificationsAndAlertsTemplate):
             self.btn_ViewTechnicianPortalDetails.enabled = bool(tech_portal_info)
             self.btn_ViewBuyingPriceExceedsSelling.enabled = bool(pricing_alert)
 
+    def refresh(self, **event_args):
+        self.set_event_handler("x-refresh", self.refresh)
+        
     def btn_alerts_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.btn_alerts.enabled=False

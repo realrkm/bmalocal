@@ -264,7 +264,7 @@ class Main(MainTemplate):
                 self.link_1.text = notice
                 self.link_1.foreground = "#00FF00"
             else:
-                self.link_1.visible=True
+                self.link_1.visible=False
                 self.link_1.text = None
                 self.link_1.foreground = "#FFFFFF"
             

@@ -17,7 +17,16 @@ class NotificationsAndAlerts(NotificationsAndAlertsTemplate):
         self.init_components(**properties)
 
         # Any code you write here will run before the form opens.
-        self.refresh()
+        user = anvil.users.get_user()
+        if not user:
+            return
+
+        with anvil.server.no_loading_indicator:
+            self.notification_label.text = ""
+
+            # Make ONE server call to get all data
+            self.notificationsandalerts = anvil.server.call_s('fetch_all_dashboard_notifications', user)
+
         data = notificationsandalerts
         notifications = data.get("notifications", [])
         incomplete_defects = data.get("incomplete_defects", [])

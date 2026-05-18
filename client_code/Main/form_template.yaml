@@ -5,6 +5,10 @@ components:
     name: notification_timer
     properties: {interval: 5}
     type: Timer
+  - layout_properties: {grid_position: 'BBJTAN,HSAYVM'}
+    name: notification_label
+    properties: {}
+    type: Label
   - event_bindings: {click: fab_btn_click}
     layout_properties: {grid_position: 'CLSJCB,FGQTDK'}
     name: fab_btn
@@ -90,10 +94,6 @@ components:
     wrap_on: never
   type: ColumnPanel
 - components:
-  - layout_properties: {}
-    name: notification_label
-    properties: {border: '', role: null}
-    type: Link
   - layout_properties: {}
     name: error_label
     properties: {border: ''}

@@ -56,7 +56,7 @@ components:
         background: theme:Black
         border: solid
         columns:
-        - {data_key: 'No', id: ORJKYJ, title: 'No', width: '50'}
+        - {data_key: 'No', expand: true, id: ORJKYJ, title: 'No', width: ''}
         - {data_key: Fullname, expand: true, id: JKSDUP, title: Client}
         - {data_key: Phone, expand: true, id: FBQCCA, title: Phone, width: ''}
         - {data_key: RegNo, expand: true, id: VJQQOR, title: RegNo}

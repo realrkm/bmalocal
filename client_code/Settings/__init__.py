@@ -66,7 +66,7 @@ class Settings(SettingsTemplate):
         self.highlight_active_button("USER ACCOUNT")
         self.card_2.visible=True
         self.card_2.clear()
-        self.card_2.add_component(UserAccounts())
+        self.card_2.add_component(UserAccounts(), full_width_row=True)
         self.btn_AddUser.background = "#000000"
 
     def btn_UserRoles_click(self, **event_args):
@@ -74,7 +74,7 @@ class Settings(SettingsTemplate):
         self.highlight_active_button("ROLES AND PERMISSIONS")
         self.card_2.visible=True
         self.card_2.clear()
-        self.card_2.add_component(UserRolesAndPermissions())
+        self.card_2.add_component(UserRolesAndPermissions(), full_width_row=True)
         self.btn_UserRoles.background = "#000000"
        
    

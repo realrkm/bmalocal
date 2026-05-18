@@ -1,11 +1,11 @@
 components:
 - components:
   - components:
-    - layout_properties: {grid_position: 'OMELDZ,YNRQFV'}
+    - layout_properties: {full_width_row: true, grid_position: 'OMELDZ,YNRQFV'}
       name: content_panel
-      properties: {border: '', role: null}
+      properties: {border: '', role: glass-panel}
       type: ColumnPanel
-    layout_properties: {grid_position: 'EUBXOD,KGWSQC'}
+    layout_properties: {full_width_row: true, grid_position: 'EUBXOD,KGWSQC'}
     name: card_1
     properties: {border: '', role: null}
     type: ColumnPanel

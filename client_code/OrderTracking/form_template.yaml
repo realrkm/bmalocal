@@ -5,10 +5,6 @@ components:
       name: label_title
       properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', role: null, text: IMPORT ORDER DETAILS}
       type: Label
-    - layout_properties: {grid_position: 'FQOFAI,LFJMDF'}
-      name: spacer_3_copy_3_copy_copy
-      properties: {height: '10'}
-      type: Spacer
     - event_bindings: {click: btn_UpdateOrderTracking_click}
       layout_properties: {grid_position: 'OELZRW,XAOXJD'}
       name: btn_UpdateOrderTracking
@@ -19,10 +15,6 @@ components:
       name: btn_OrderReport
       properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: VIEW ORDERS}
       type: Button
-    - layout_properties: {grid_position: 'LVISBB,MDFPLK'}
-      name: spacer_3_copy_3_copy
-      properties: {height: '10'}
-      type: Spacer
     - components:
       - event_bindings: {pressed_enter: btn_SearchClient_click}
         layout_properties: {grid_position: 'FFBFFG,TGRRSI'}
@@ -42,18 +34,10 @@ components:
       name: card_3
       properties: {border: '', col_widths: '{"TGRRSI":40,"KGMSAL":20}', role: glass-panel}
       type: ColumnPanel
-    - layout_properties: {grid_position: 'AOYZZW,ZLAFHM', row_background: 'theme:Black'}
-      name: spacer_1
-      properties: {height: '10'}
-      type: Spacer
     - layout_properties: {grid_position: 'DVROZK,JEPJAN'}
       name: date_picker_1
       properties: {background: 'theme:White', border: '', foreground: 'theme:Black', placeholder: Select Date *}
       type: DatePicker
-    - layout_properties: {grid_position: 'JQRUYR,WLTXQK', row_background: 'theme:Black'}
-      name: spacer_1_copy
-      properties: {height: '10'}
-      type: Spacer
     - components:
       - event_bindings: {pressed_enter: btn_SearchParts_click}
         layout_properties: {grid_position: 'VNUUES,GQAFKW'}
@@ -82,82 +66,54 @@ components:
         name: lbl_PartNumber
         properties: {visible: false}
         type: Label
-      - layout_properties: {grid_position: 'NKXRIC,YFTRQG', row_background: 'theme:Black'}
-        name: spacer_3_copy
-        properties: {height: '10'}
-        type: Spacer
       - event_bindings: {}
         layout_properties: {grid_position: 'BKGFQL,UIGAEE'}
         name: txt_Quantity
         properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Quantity *}
         type: TextBox
-      - layout_properties: {grid_position: 'FWVFYV,JESSRD', row_background: 'theme:Black'}
-        name: spacer_3_copy_2
-        properties: {height: '10'}
-        type: Spacer
-      - layout_properties: {grid_position: 'TBRHQW,RVYPZH'}
-        name: spacer_3_copy_3
-        properties: {height: '10'}
-        type: Spacer
       layout_properties: {grid_position: 'MHZXQP,RJOCED'}
       name: card_5
       properties: {border: '', col_widths: '{"GQAFKW":40,"SREFON":20}', role: glass-panel}
       type: ColumnPanel
-    - layout_properties: {grid_position: 'PIWLGW,MOHNDQ', row_background: 'theme:Black'}
-      name: spacer_2
-      properties: {height: '10'}
-      type: Spacer
     - event_bindings: {click: btn_AddOrder_click}
       layout_properties: {grid_position: 'KMMJLY,AAZVIB'}
       name: btn_AddOrder
       properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: ADD ORDER}
       type: Button
-    - layout_properties: {grid_position: 'ZZPYCK,NYAIGE', row_background: 'theme:Black'}
-      name: spacer_3
-      properties: {height: '10'}
-      type: Spacer
-    - components:
-      - components:
-        - layout_properties: {}
-          name: repeating_panel_1
-          properties: {item_template: OrderTracking.RowTemplate18, role: wide}
-          type: RepeatingPanel
-        layout_properties: {grid_position: 'INTVUQ,CWCXZO'}
-        name: data_grid_1
-        properties:
-          background: theme:Black
-          border: solid
-          columns:
-          - {data_key: Name, expand: true, id: JKSDUP, title: Name}
-          - {data_key: Part_No, id: VJQQOR, title: Part No}
-          - {data_key: '', id: WBTRSP, title: '', width: '40'}
-          - {data_key: Quantity, expand: true, id: OJLQEN, title: Quantity}
-          - {data_key: Status, expand: true, id: PSOVFO, title: Status}
-          - {data_key: '', id: IBXJHQ, title: '', width: '90'}
-          foreground: theme:White
-          role: wide
-          wrap_on: mobile
-        type: DataGrid
-      layout_properties: {grid_position: 'YQFQEP,RKFLFM'}
-      name: card_4
-      properties: {border: '', role: wide}
-      type: ColumnPanel
-    - layout_properties: {grid_position: 'HMXEZU,WEXJFI'}
-      name: spacer_4
-      properties: {height: '10'}
-      type: Spacer
-    - event_bindings: {click: btn_SaveAndNew_click}
-      layout_properties: {grid_position: 'YQATBY,GCVBTH'}
-      name: btn_SaveAndNew
-      properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: SAVE AND NEW}
-      type: Button
-    - layout_properties: {grid_position: 'XTOVEX,QBDTAL'}
-      name: spacer_4_copy
-      properties: {height: '10'}
-      type: Spacer
     layout_properties: {grid_position: 'TOBBOG,LRRUZZ', row_background: ''}
     name: card_2
     properties: {border: '', col_widths: '{}', role: glass-panel}
+    type: ColumnPanel
+  - components:
+    - components:
+      - layout_properties: {}
+        name: repeating_panel_1
+        properties: {item_template: OrderTracking.RowTemplate18, role: wide}
+        type: RepeatingPanel
+      layout_properties: {full_width_row: true, grid_position: 'ELEQNZ,SAPTQJ'}
+      name: data_grid_1
+      properties:
+        background: theme:Black
+        border: solid
+        columns:
+        - {data_key: Name, expand: true, id: JKSDUP, title: Name}
+        - {data_key: Part_No, expand: true, id: VJQQOR, title: Part No}
+        - {data_key: '', id: WBTRSP, title: '', width: '40'}
+        - {data_key: Quantity, expand: true, id: OJLQEN, title: Quantity}
+        - {data_key: Status, expand: true, id: PSOVFO, title: Status}
+        - {data_key: '', id: IBXJHQ, title: '', width: '90'}
+        foreground: theme:White
+        role: wide
+        wrap_on: mobile
+      type: DataGrid
+    - event_bindings: {click: btn_SaveAndNew_click}
+      layout_properties: {full_width_row: true, grid_position: 'HKMSIP,SEJJCR'}
+      name: btn_SaveAndNew
+      properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: SAVE AND NEW}
+      type: Button
+    layout_properties: {full_width_row: true, grid_position: 'WVGGPL,TGQXYN'}
+    name: card_6
+    properties: {role: glass-panel}
     type: ColumnPanel
   layout_properties: {full_width_row: true, grid_position: 'LKOSUU,IYPISS', row_background: ''}
   name: card_1

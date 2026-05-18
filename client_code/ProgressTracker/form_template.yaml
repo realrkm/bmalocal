@@ -7,7 +7,7 @@ components:
   - event_bindings: {pressed_enter: btn_SearchCustomer_click}
     layout_properties: {grid_position: 'YOTKWG,NJPDYL'}
     name: txtJobCardRef
-    properties: {align: left, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Gray 900', placeholder: Search Job Card Ref Or Client Name *}
+    properties: {align: left, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Search Job Card Ref Or Client Name *}
     type: TextBox
   - event_bindings: {click: btn_SearchCustomer_click}
     layout_properties: {grid_position: 'YOTKWG,LZQOZW'}

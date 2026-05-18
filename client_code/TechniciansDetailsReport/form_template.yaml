@@ -31,7 +31,7 @@ components:
       background: theme:Black
       border: solid
       columns:
-      - {data_key: 'No', expand: false, id: LXRVOX, title: 'No', width: 86.19999694824219}
+      - {data_key: 'No', expand: true, id: LXRVOX, title: 'No', width: ''}
       - {data_key: Fullname, expand: true, id: CUNVFB, title: Fullname, width: ''}
       - {data_key: Phone, expand: true, id: IUBBKG, title: Phone, width: ''}
       - {data_key: Toolkit, expand: true, id: HUCZPN, title: Toolkit}

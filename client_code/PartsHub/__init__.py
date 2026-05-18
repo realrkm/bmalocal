@@ -71,11 +71,11 @@ class PartsHub(PartsHubTemplate):
         """Load Parts Catalog subform."""
         self.highlight_active_button("PARTS CATALOG")
         self.card_2.clear()
-        self.card_2.add_component(PartsCatalog())
+        self.card_2.add_component(PartsCatalog(), full_width_row=True)
 
     def btn_OrderTracking_click(self, **event_args):
         """Load Order Tracking subform."""
         self.highlight_active_button("ORDER TRACKING")
         self.card_2.clear()
-        self.card_2.add_component(OrderTracking())
+        self.card_2.add_component(OrderTracking(), full_width_row=True)
 

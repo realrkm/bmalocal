@@ -49,7 +49,7 @@ components:
       background: theme:Black
       border: solid
       columns:
-      - {data_key: 'No', expand: false, id: LXRVOX, title: 'No', width: 49}
+      - {data_key: 'No', expand: true, id: LXRVOX, title: 'No', width: ''}
       - {data_key: Fullname, expand: true, id: CUNVFB, title: Client, width: ''}
       - {data_key: Phone, expand: true, id: IUBBKG, title: Phone, width: ''}
       - {data_key: RegNo, expand: true, id: BDLZGZ, title: Reg No, width: ''}

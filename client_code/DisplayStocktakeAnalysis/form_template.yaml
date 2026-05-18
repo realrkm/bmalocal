@@ -6,6 +6,6 @@ container:
         (Insert your custom HTML here)
       </center>
       <div anvil-slot="default"></div>
-    role: glass-panel
+    role: null
   type: HtmlTemplate
 is_package: true

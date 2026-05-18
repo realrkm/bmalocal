@@ -21,20 +21,17 @@ components:
     name: txt_JobCardRef
     properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: 'Enter Job Card Ref '}
     type: TextBox
-  - layout_properties: {grid_position: 'BZYYEI,OUQMWZ'}
-    name: spacer_1_copy
-    properties: {height: 20}
-    type: Spacer
   - event_bindings: {click: btn_Search_click}
     layout_properties: {grid_position: 'PSOLLB,VLMCYF'}
     name: btn_Search
     properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: primary-color, text: Search}
     type: Button
-  - layout_properties: {grid_position: 'SRVQPN,VOLAVZ'}
-    name: spacer_1_copy_copy
-    properties: {height: 20}
-    type: Spacer
-  - layout_properties: {grid_position: 'IYRAFT,PLQPNT'}
+  layout_properties: {grid_position: 'XYWEIJ,IBIVEX', row_background: ''}
+  name: card_1
+  properties: {col_widths: '{"SJOBFD":40}', role: glass-panel}
+  type: ColumnPanel
+- components:
+  - layout_properties: {grid_position: 'TWQIGR,OOMKCH'}
     name: label_1
     properties: {align: center, background: 'theme:White', border: solid, foreground: '#dc1818', text: Only jobcards that have both quotes and invoices are displayed.}
     type: Label
@@ -42,23 +39,23 @@ components:
     - name: repeating_panel_1
       properties: {item_template: PeriodicQuoteVsInvoice.RowTemplate15}
       type: RepeatingPanel
-    layout_properties: {grid_position: 'QGCYQI,ZZTAQR'}
+    layout_properties: {full_width_row: true, grid_position: 'AOYKDK,TZLEBV'}
     name: data_grid_1
     properties:
       background: theme:Black
       border: solid
       columns:
-      - {data_key: 'No', expand: false, id: CCGWTX, title: 'No', width: 89}
-      - {data_key: ReceivedDate, expand: false, id: JKSDUP, title: Received Date, width: 172}
+      - {data_key: 'No', expand: true, id: CCGWTX, title: 'No', width: ''}
+      - {data_key: ReceivedDate, expand: true, id: JKSDUP, title: Received Date, width: ''}
       - {data_key: JobCardRef, expand: true, id: VJQQOR, title: Job Card Ref}
       - {data_key: QuotationTotal, expand: true, id: OJLQEN, title: Quotation Total}
       - {data_key: InvoiceTotal, expand: true, id: SVVCAY, title: Invoice Total}
       foreground: theme:White
       wrap_on: mobile
     type: DataGrid
-  layout_properties: {grid_position: 'XYWEIJ,IBIVEX', row_background: ''}
-  name: card_1
-  properties: {col_widths: '{"SJOBFD":40}', role: glass-panel}
+  layout_properties: {full_width_row: true, grid_position: 'TWFLGZ,UVJUUS'}
+  name: card_2
+  properties: {role: glass-panel}
   type: ColumnPanel
 container: {type: ColumnPanel}
 is_package: true

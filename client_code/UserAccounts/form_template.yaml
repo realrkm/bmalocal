@@ -11,8 +11,8 @@ components:
     properties:
       background: theme:Black
       columns:
-      - {data_key: 'No', expand: false, id: QCDZOW, title: 'No', width: 60}
-      - {data_key: email, expand: false, id: JKSDUP, title: Account, width: 170.5}
+      - {data_key: 'No', expand: true, id: QCDZOW, title: 'No', width: ''}
+      - {data_key: email, expand: true, id: JKSDUP, title: Account, width: ''}
       - {data_key: '', expand: false, id: MYUHOR, title: '', width: 40}
       - {data_key: last_login, expand: true, id: VJQQOR, title: Last Login}
       - {data_key: signed_up, expand: true, id: OJLQEN, title: Created At}
@@ -26,9 +26,9 @@ components:
       role: wide
       wrap_on: mobile
     type: DataGrid
-  layout_properties: {full_width_row: true, grid_position: 'HBBMXX,VAVFQV', row_background: 'theme:Black'}
+  layout_properties: {full_width_row: true, grid_position: 'RUMOZS,BSEBLH'}
   name: card_1
-  properties: {role: wide, wrap_on: mobile}
+  properties: {background: '', role: glass-panel, wrap_on: mobile}
   type: ColumnPanel
 container:
   properties: {wrap_on: mobile}

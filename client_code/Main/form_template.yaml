@@ -5,10 +5,6 @@ components:
     name: notification_timer
     properties: {interval: 5}
     type: Timer
-  - layout_properties: {grid_position: 'BBJTAN,HSAYVM'}
-    name: notification_label
-    properties: {}
-    type: Label
   - event_bindings: {click: fab_btn_click}
     layout_properties: {grid_position: 'CLSJCB,FGQTDK'}
     name: fab_btn
@@ -42,7 +38,7 @@ components:
         spacing:
           padding: [0, 0, 0, 0]
       type: ColumnPanel
-    layout_properties: {full_width_row: true, grid_position: 'CLSJCB,WBKABB PFXQBN,DICXDA'}
+    layout_properties: {full_width_row: true, grid_position: 'CLSJCB,WBKABB'}
     name: column_panel_content
     properties:
       role: null
@@ -95,9 +91,13 @@ components:
   type: ColumnPanel
 - components:
   - layout_properties: {}
+    name: notification_label
+    properties: {}
+    type: Label
+  - layout_properties: {}
     name: error_label
-    properties: {border: ''}
-    type: Link
+    properties: {}
+    type: Label
   - components: []
     event_bindings: {click: link_1_click}
     layout_properties: {}

@@ -40,22 +40,19 @@ class NotificationsAndAlerts(NotificationsAndAlertsTemplate):
         """This method is called when the button is clicked"""
         self.btn_alerts.enabled=False
         alert(content=Alerts(), dismissible=False,large=True)
-        self.btn_alerts.enabled=True
-
+        
     def btn_IncompleteDefectsInfo_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.btn_IncompleteDefectsInfo.enabled=False
         alert(content=IncompleteDefectsInfo(), dismissible=False,large=True)
-        self.btn_IncompleteDefectsInfo.enabled=True
-
+       
     def btn_ViewBuyingPriceExceedsSelling_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.btn_ViewBuyingPriceExceedsSelling.enabled=False
         alert(content=ViewPricingAlertDetails(), dismissible=False,large=True)
-        self.btn_ViewBuyingPriceExceedsSelling.enabled=True
-
+        
     def btn_ViewTechnicianPortalDetails_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.btn_ViewTechnicianPortalDetails.enabled=False
         alert(content=ViewTechnicianPortalDetails(), dismissible=False,large=True)
-        self.btn_ViewTechnicianPortalDetails.enabled=True
+       

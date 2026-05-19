@@ -226,15 +226,15 @@ class Main(MainTemplate):
         """This method is called Every [interval] seconds. Does not trigger if [interval] is 0."""
 
         # Call get_user() once to save local database checks
-        user = anvil.users.get_user()
-        if not user:
+        self.user = anvil.users.get_user()
+        if not self.user:
             return
 
         with anvil.server.no_loading_indicator:
             self.notification_label.text = ""
 
             # Make ONE server call to get all data
-            self.notificationsandalerts = anvil.server.call_s('fetch_all_dashboard_notifications', user)
+            self.notificationsandalerts = anvil.server.call_s('fetch_all_dashboard_notifications', self.user)
 
             data = self.notificationsandalerts
             
@@ -277,7 +277,7 @@ class Main(MainTemplate):
 
     def link_1_click(self, **event_args):
         """This method is called when the link is clicked"""
-        alert(content=NotificationsAndAlerts(self.notificationsandalerts), title="Notifications And Alerts", dismissible=False,large=False)
+        alert(content=NotificationsAndAlerts(self.user), title="Notifications And Alerts", dismissible=False,large=False)
 
     
     

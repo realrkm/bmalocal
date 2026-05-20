@@ -55,21 +55,25 @@ class NotificationsAndAlerts(NotificationsAndAlertsTemplate):
 
     def btn_alerts_click(self, **event_args):
         """This method is called when the button is clicked"""
-        alert(content=Alerts(),dismissible=False,large=True)
-        self.raise_event("x-close-alert", value=True)
-        
+        result = alert(content=Alerts(),dismissible=False,large=True)
+        if result:
+            self.refresh()
+            
     def btn_IncompleteDefectsInfo_click(self, **event_args):
         """This method is called when the button is clicked"""
-        alert(content=IncompleteDefectsInfo(), dismissible=False,large=True)
-        self.raise_event("x-close-alert", value=True)
+        result = alert(content=IncompleteDefectsInfo(), dismissible=False,large=True)
+        if result:
+            self.refresh()
        
     def btn_ViewBuyingPriceExceedsSelling_click(self, **event_args):
         """This method is called when the button is clicked"""
-        alert(content=ViewPricingAlertDetails(), dismissible=False,large=True)
-        self.raise_event("x-close-alert", value=True)
+        result = alert(content=ViewPricingAlertDetails(), dismissible=False,large=True)
+        if result:
+            self.refresh()
         
     def btn_ViewTechnicianPortalDetails_click(self, **event_args):
         """This method is called when the button is clicked"""
-        alert(content=ViewTechnicianPortalDetails(), dismissible=False,large=True)
-        self.raise_event("x-close-alert", value=True)
+        result = alert(content=ViewTechnicianPortalDetails(), dismissible=False,large=True)
+        if result:
+            self.refresh()
        

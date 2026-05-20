@@ -22,5 +22,5 @@ class Alerts(AlertsTemplate):
         anvil.server.call_s("deactivate_notifications")
         alert("Pending statuses have been updated successfully", title="Success")
         self.raise_event("x-close-alert", value=True)
-        open_form('NotificationsAndAlerts')
+        
         

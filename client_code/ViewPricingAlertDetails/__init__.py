@@ -15,19 +15,21 @@ class ViewPricingAlertDetails(ViewPricingAlertDetailsTemplate):
 
         anvil.js.call("replaceBanner")
         self.user = anvil.users.get_user()
-
+        self.refresh()
+        
+    def refresh(self,**event_args):
         self.repeating_panel_1.items = anvil.server.call_s(
             "getPartsWhereBuyingPriceExceedsSelling", self.user
         )
 
     def open_edit_form(self, partNo):
-        """Close this form and open UpdatePricingAmount"""
-
+        
         # Open next alert
-        alert(
+        result = alert(
             content=UpdatePricingAmount(partNo),
             buttons=[],
             dismissible=False,
             large=True
         )
-        
+        if result:
+            self.refresh()

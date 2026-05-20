@@ -23,9 +23,6 @@ class ViewPricingAlertDetails(ViewPricingAlertDetailsTemplate):
     def open_edit_form(self, partNo):
         """Close this form and open UpdatePricingAmount"""
 
-        # Close this alert
-        self.raise_event("x-close-alert", value=True)
-
         # Open next alert
         alert(
             content=UpdatePricingAmount(partNo),
@@ -33,3 +30,4 @@ class ViewPricingAlertDetails(ViewPricingAlertDetailsTemplate):
             dismissible=False,
             large=True
         )
+        

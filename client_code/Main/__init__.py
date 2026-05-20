@@ -277,7 +277,9 @@ class Main(MainTemplate):
 
     def link_1_click(self, **event_args):
         """This method is called when the link is clicked"""
-        alert(content=NotificationsAndAlerts(self.user), title="Notifications And Alerts", dismissible=False,large=False)
+        result = alert(content=NotificationsAndAlerts(self.user), title="Notifications And Alerts", dismissible=False,large=False)
+        if result:
+            self.notification_timer_tick()
 
     
     

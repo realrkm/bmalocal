@@ -155,6 +155,6 @@ components:
   properties: {gap: huge, spacing_above: medium, spacing_below: medium}
   type: FlowPanel
 container:
-  properties: {background: 'theme:Gray 300', col_spacing: huge, role: null, spacing_above: large, spacing_below: large}
+  properties: {background: 'theme:Gray 300', col_spacing: huge, role: glass-panel, spacing_above: large, spacing_below: large}
   type: ColumnPanel
 is_package: true

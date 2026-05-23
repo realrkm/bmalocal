@@ -775,6 +775,141 @@ body>div[data-notify="container"].alert-warning>span[data-notify="title"]{
     background-color: %color:Secondary 700%;
 }
 
+/* ============================================================
+BUTTONS — Mobile Responsive (max-width: 600px)
+============================================================ */
+
+@media (max-width: 600px) {
+
+    /* ── Base Button ── */
+    .btn, .btn-default, .file-loader>label {
+        min-height: 44px;
+        padding: 10px 16px;
+        font-size: 13px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        white-space: normal;       /* Allow text wrapping on small screens */
+        word-break: break-word;
+        border-radius: 12px;       /* Slightly less pill-shaped on mobile */
+    }
+
+    /* ── Raised / Primary / Secondary ── */
+    .anvil-role-raised > .btn,
+    .anvil-role-primary-color > .btn,
+    .anvil-role-secondary-color > .btn,
+    .anvil-role-raised.file-loader>label,
+    .anvil-role-primary-color.file-loader>label,
+    .anvil-role-secondary-color.file-loader>label,
+    .btn-primary, .btn-success,
+    .btn-info, .btn-warning, .btn-danger {
+        width: 100%;
+        font-size: 13px;
+        padding: 10px 16px;
+        min-height: 44px;
+    }
+
+    /* ── Disabled States ── */
+    .btn[disabled],
+    .anvil-role-raised > .btn[disabled],
+    .anvil-role-primary-color > .btn[disabled],
+    .anvil-role-secondary-color > .btn[disabled] {
+        width: 100%;
+        opacity: 0.6;
+        pointer-events: none;
+    }
+
+    /* ── Signature Pad Buttons ── */
+    .clear-button, .save-button {
+        width: 100%;
+        min-height: 44px;
+        font-size: 13px;
+        padding: 10px 16px;
+        border-radius: 12px;
+    }
+
+    /* Stack signature buttons vertically on very small screens */
+    .signature-button-group {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    /* ── Modal Footer Buttons ── */
+    .modal-footer {
+        flex-direction: column !important;
+        gap: 8px !important;
+        padding: 16px 0 0 0 !important;
+    }
+    .modal-footer .btn {
+        width: 100% !important;
+        min-width: unset !important;
+        height: 48px !important;
+        font-size: 13px !important;
+        flex: unset !important;
+    }
+
+    /* ── FAB — slightly smaller on mobile ── */
+    .anvil-role-fab > .btn,
+    .anvil-role-fab-active > .btn,
+    .anvil-role-fab-thinking > .btn {
+        width: 52px !important;
+        height: 52px !important;
+        min-height: 52px !important;
+        font-size: 20px !important;
+    }
+    .anvil-role-fab,
+    .anvil-role-fab-active,
+    .anvil-role-fab-thinking {
+        bottom: 16px;
+        right: 16px;
+    }
+
+    /* ── App Bar Buttons / Links ── */
+    .app-bar a, .app-bar a.anvil-component {
+        font-size: 12px;
+        padding: 4px 6px;
+        min-height: 44px;
+        min-width: 36px;
+        margin: 4px 2px 0;
+        border-radius: 12px;
+    }
+
+    /* ── Live Assistant Close Button ── */
+    .anvil-role-close-popup-btn {
+        min-width: 36px !important;
+        min-height: 36px !important;
+    }
+
+    /* ── Flow Panel Buttons (inline button groups) ── */
+    .flow-panel > .flow-panel-gutter > .flow-panel-item > .anvil-component > .btn {
+        width: 100%;
+        min-height: 44px;
+    }
+}
+
+
+/* ── Extra small screens (phones ≤ 360px) ── */
+@media (max-width: 360px) {
+    .btn, .btn-default, .file-loader>label {
+        font-size: 12px;
+        padding: 10px 12px;
+        border-radius: 10px;
+    }
+    .modal-footer .btn {
+        font-size: 12px !important;
+        height: 44px !important;
+    }
+    .anvil-role-fab > .btn,
+    .anvil-role-fab-active > .btn,
+    .anvil-role-fab-thinking > .btn {
+        width: 48px !important;
+        height: 48px !important;
+        min-height: 48px !important;
+        font-size: 18px !important;
+    }
+}
 /* Component: Card */
 
 .anvil-role-card {

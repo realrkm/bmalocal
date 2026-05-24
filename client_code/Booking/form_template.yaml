@@ -65,11 +65,11 @@ components:
         - {data_key: ID, id: SAJOYS, title: '', width: '0.1'}
         - {data_key: '', id: BALGFU, title: Send Info, width: '90'}
         foreground: theme:White
-        role: null
+        role: wide
       type: DataGrid
     layout_properties: {full_width_row: true, grid_position: 'GMSFYC,OBBQHR'}
     name: card_3
-    properties: {role: glass-panel}
+    properties: {role: glass-panel, wrap_on: never}
     type: ColumnPanel
   layout_properties: {full_width_row: true, grid_position: 'ZJVONF,GUMGUK'}
   name: card_1

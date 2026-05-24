@@ -87,14 +87,12 @@ components:
   type: ColumnPanel
 - components:
   - components:
-    - layout_properties: {grid_position: 'IVALPC,UGDDPF'}
-      name: total_label
-      properties: {align: center, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:car', icon_align: left, visible: true}
-      type: Label
     - event_bindings: {change: cmbStatus_change}
       layout_properties: {grid_position: 'IVALPC,NUPWUH'}
       name: cmbStatus
       properties:
+        align: full
+        background: theme:White
         border: ''
         font: Mozilla Headline
         font_size: 16

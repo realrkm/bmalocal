@@ -292,6 +292,6 @@ components:
   properties: {border: '', col_widths: '{"FOZOKD":45,"VGHXWP":45,"EJPTOZ":45}', role: glass-panel}
   type: ColumnPanel
 container:
-  properties: {background: '', role: glass-panel}
+  properties: {background: '', role: null}
   type: ColumnPanel
 is_package: true

@@ -17,7 +17,6 @@ class Workflow(WorkflowTemplate):
         anvil.js.call('replaceBanner')
         
         self.load_dashboard_data()
-        self.total_label.text = "Total Vehicles: 0"
         self.permissions = permissions
 
         # Apply permissions to buttons and load the first available subform
@@ -114,11 +113,7 @@ class Workflow(WorkflowTemplate):
         self.refresh()
 
         vehicle_data_source = ModGetData.getTechnicianJobCards(status, regNo)
-                    
-        # Set the total
-        self.total_label.text = f"Total Vehicles: {len(vehicle_data_source)}"
-        self.total_label.visible = True
-    
+                        
         # Group vehicles into pairs
         group_size = 3 #Since we are displaying 3 items per row
         grouped_vehicles = []

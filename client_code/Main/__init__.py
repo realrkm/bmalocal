@@ -229,8 +229,10 @@ class Main(MainTemplate):
         self.user = anvil.users.get_user()
         if not self.user:
             return
-
+        counter = 0
         with anvil.server.no_loading_indicator:
+            counter = counter + 1
+            alert(counter)
             self.notification_label.text = ""
 
             # Make ONE server call to get all data

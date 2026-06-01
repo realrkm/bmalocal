@@ -50,7 +50,6 @@ class NotificationsAndAlerts(NotificationsAndAlertsTemplate):
         self.btn_ViewBuyingPriceExceedsSelling.enabled = bool(pricing_alert)
 
     def refresh(self, **event_args):
-
         self.load_notifications()
 
     def btn_alerts_click(self, **event_args):

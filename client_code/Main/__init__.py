@@ -282,6 +282,17 @@ class Main(MainTemplate):
         anvil.users.logout()
         open_form("Launcher")
 
+    def form_show(self, **events_args):
+        """Optional: Ensure polling restarts if the form is re-shown"""
+        if not self.polling_active:
+            self.start_notification_loop()
+
+    def form_hide(self, **events_args):
+        """CRITICAL: Clean up the timer when the user lives this form to prevent memory leaks"""
+        self.polling_active = False
+        if self.timeout_id is not None:
+            anvil.js.window.clearTimeOut(self.timeout_id)
+            self.timeout_id = None
 
    
     

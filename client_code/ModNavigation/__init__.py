@@ -96,12 +96,3 @@ def go_FAQs():
     form = get_form()
     form.load_component(FAQ())
     
-#Load Notification
-def go_Notification():
-    form=get_form()
-    form.notification_timer.enabled = True
-    form.notification_timer_tick()
-
-
-
-

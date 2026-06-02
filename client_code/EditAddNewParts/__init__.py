@@ -192,10 +192,7 @@ class EditAddNewParts(EditAddNewPartsTemplate):
             self.lbl_SupplierId.text
         )
         alert("Part Updated Successfully", title="Success", large=False)
-        #Update notification timer
-        if sellingPrice < buyingPrice:
-            ModNavigation.go_Notification()
-            
+                    
         self.btn_Close_click()
 
 

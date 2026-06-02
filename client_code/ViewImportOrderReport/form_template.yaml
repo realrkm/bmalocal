@@ -1,7 +1,7 @@
 components:
 - components:
   - components:
-    - layout_properties: {grid_position: 'BYCLFG,GGMUSL'}
+    - layout_properties: {full_width_row: true, grid_position: 'BYCLFG,GGMUSL'}
       name: label_title
       properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', role: null, text: VIEW IMPORT ORDERS}
       type: Label
@@ -11,21 +11,21 @@ components:
       type: Spacer
     - components:
       - event_bindings: {pressed_enter: btn_SearchClient_click}
-        layout_properties: {grid_position: 'FFBFFG,TGRRSI'}
+        layout_properties: {full_width_row: true, grid_position: 'FFBFFG,TGRRSI'}
         name: text_box_searchPartNo
         properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: 'Enter Client Name / Phone To Search * '}
         type: TextBox
       - event_bindings: {click: btn_SearchClient_click}
-        layout_properties: {grid_position: 'FFBFFG,KGMSAL'}
+        layout_properties: {full_width_row: true, grid_position: 'FFBFFG,KGMSAL'}
         name: btn_SearchClient
         properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: SEARCH}
         type: Button
       - event_bindings: {change: drop_down_selectDetails_change}
-        layout_properties: {grid_position: 'GVCZHE,FXQXJF'}
+        layout_properties: {full_width_row: true, grid_position: 'GVCZHE,FXQXJF'}
         name: drop_down_selectDetails
         properties: {background: 'theme:White', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: 'Select Client * '}
         type: DropDown
-      layout_properties: {grid_position: 'RYCGYF,JTKICF'}
+      layout_properties: {full_width_row: true, grid_position: 'RYCGYF,JTKICF'}
       name: card_3_copy
       properties: {border: '', col_widths: '{"TGRRSI":40,"KGMSAL":20}', role: glass-panel}
       type: ColumnPanel
@@ -39,7 +39,7 @@ components:
           name: repeating_panel_1
           properties: {item_template: ViewImportOrderReport.RowTemplate}
           type: RepeatingPanel
-        layout_properties: {grid_position: 'INTVUQ,CWCXZO'}
+        layout_properties: {full_width_row: true, grid_position: 'INTVUQ,CWCXZO'}
         name: data_grid_1
         properties:
           background: theme:Black
@@ -58,16 +58,16 @@ components:
           role: null
           wrap_on: mobile
         type: DataGrid
-      layout_properties: {grid_position: 'EXINPW,QGDJSI'}
+      layout_properties: {full_width_row: true, grid_position: 'EXINPW,QGDJSI'}
       name: card_4
-      properties: {border: solid, role: glass-panel}
+      properties: {border: '', role: glass-panel}
       type: ColumnPanel
     - layout_properties: {grid_position: 'IGECCF,AIWFUA'}
       name: spacer_3
       properties: {height: 32}
       type: Spacer
     - event_bindings: {click: btn_Close_click}
-      layout_properties: {grid_position: 'BMBIJA,QEFPXX'}
+      layout_properties: {full_width_row: true, grid_position: 'BMBIJA,QEFPXX'}
       name: btn_Close
       properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: CLOSE}
       type: Button
@@ -75,9 +75,9 @@ components:
       name: spacer_4
       properties: {height: 32}
       type: Spacer
-    layout_properties: {grid_position: 'MTGWJR,NNKOBM'}
+    layout_properties: {full_width_row: true, grid_position: 'MTGWJR,NNKOBM'}
     name: card_2
-    properties: {border: '', role: glass-panel}
+    properties: {border: '', role: null}
     type: ColumnPanel
   layout_properties: {full_width_row: true, grid_position: 'THVYYM,AUFDDO', row_background: ''}
   name: card_1

@@ -44,12 +44,81 @@ class Main(MainTemplate):
                 lambda exc: ModGetData.handle_server_errors(exc, self.error_label)
             )
 
+            self.polling_active = True
+            self.timeout_id = None
+
+            #Start the loop immediately when the form opens
+            self.start_notification_loop()
         
         self.live_popup.visible = False
         self.fab_btn.tooltip = "Click to talk"
         self.fab_btn.enabled = True
         self.is_open = False
 
+    def start_notification_loop(self):
+        self.polling_active=True
+        self.run_notification_poll()
+
+    def run_notification_poll(self, *args):
+        """The core polling block. Safe from server request stacking."""
+        if not self.polling_active:
+            return
+
+        try:
+            self.user = anvil.users.get_user()
+            if not self.user:
+                return
+
+            # Keep server calls silent in the background
+            with anvil.server.no_loading_indicator:
+                self.notification_label.text = ""
+
+                # Make ONE server call to get all data
+                self.notificationsandalerts = anvil.server.call_s('fetch_all_dashboard_notifications', self.user)
+                data = self.notificationsandalerts
+
+                # Extract the lists from the returned dictionary
+                notifications = data.get("notifications", [])
+                incomplete_defects = data.get("incomplete_defects", [])
+                tech_portal_info = data.get("technician_portal", [])
+                pricing_alert = data.get("pricing_alert", [])
+
+                # Simplify boolean logic
+                notice = sum([bool(notifications), bool(incomplete_defects), bool(tech_portal_info), bool(pricing_alert)])
+
+                if notice > 0:
+                    self.link_1.visible = True
+                    self.link_1.text = str(notice)
+                    self.link_1.foreground = "#00FF00"
+                else:
+                    self.link_1.visible = False
+                    self.link_1.text = None
+                    self.link_1.foreground = "#FFFFFF"
+
+                # Handle the notification label text
+                for n in notifications:
+                    self.notification_label.text = f"{n['jobcard']} - {n['message']}"
+                    # Note: self.refresh() inside a fast loop can cause UI stuttering. 
+                    # Consider removing it if your text updates cleanly without it.
+                    self.refresh()
+
+        except Exception as e:
+            # Prevent app crashes if the network momentarily drops
+            print(f"Notification poll failed temporarily: {e}")
+
+        finally:
+            # Only queue the NEXT poll if the form is still active
+            # 5000 milliseconds = 5 seconds. Change this value to match your desired interval.
+            if self.polling_active:
+                self.timeout_id = anvil.js.window.setTimeout(self.run_notification_poll, 5000)
+
+    def link_1_click(self, **event_args):
+        """This method is called when the alert link is clicked"""
+        result = alert(content=NotificationsAndAlerts(self.user), title="Notifications And Alerts", dismissible=False, large=False)
+        if result:
+            # Instead of recursively calling a tick, we manually fire one iteration instantly
+            self.run_notification_poll()
+            
     # ─────────────────────────────────────────────
     # FAB CLICK: Display / Hide Chat Window
     # ─────────────────────────────────────────────
@@ -222,63 +291,8 @@ class Main(MainTemplate):
         if result == "ok":
             self.timer_keepalive.interval = 300
 
-    def notification_timer_tick(self, **event_args):
-        """This method is called Every [interval] seconds. Does not trigger if [interval] is 0."""
-
-        # Call get_user() once to save local database checks
-        self.user = anvil.users.get_user()
-        if not self.user:
-            return
-        with anvil.server.no_loading_indicator:
-            self.notification_label.text = ""
-
-            # Make ONE server call to get all data
-            self.notificationsandalerts = anvil.server.call_s('fetch_all_dashboard_notifications', self.user)
-
-            data = self.notificationsandalerts
-            
-            # Extract the lists from the returned dictionary
-            notifications = data.get("notifications", [])
-            incomplete_defects = data.get("incomplete_defects", [])
-            tech_portal_info = data.get("technician_portal", [])
-            pricing_alert = data.get("pricing_alert", [])
-            
-            # Simplify boolean logic (if list has items, bool() is True, else False)
-            notice = 0
-            
-            if bool(notifications):
-                notice = notice + 1
-                
-            if bool(incomplete_defects):
-                notice = notice + 1
-                
-            if bool(tech_portal_info):
-                notice = notice + 1
-                
-            if bool(pricing_alert):
-                notice = notice + 1
-
-            if notice > 0:
-                self.link_1.visible=True
-                self.link_1.text = notice
-                self.link_1.foreground = "#00FF00"
-            else:
-                self.link_1.visible=False
-                self.link_1.text = None
-                self.link_1.foreground = "#FFFFFF"
-            
-            # Handle the notification label text
-            for n in notifications:
-                self.notification_label.text = f"{n['jobcard']} - {n['message']}"
-                self.refresh()
+    
 
     
 
-    def link_1_click(self, **event_args):
-        """This method is called when the link is clicked"""
-        result = alert(content=NotificationsAndAlerts(self.user), title="Notifications And Alerts", dismissible=False,large=False)
-        if result:
-            self.notification_timer_tick()
-
-    
     

@@ -283,16 +283,5 @@ class Main(MainTemplate):
         open_form("Launcher")
 
 
-    #Avoid constant session refresh
-    def timer_keepalive_tick(self, **event_args):
-        """This method is called Every [interval] seconds. Does not trigger if [interval] is 0."""
-        self.timer_keepalive.interval= 0
-        result=anvil.server.call('fe_keepalive')
-        if result == "ok":
-            self.timer_keepalive.interval = 300
-
-    
-
-    
-
+   
     

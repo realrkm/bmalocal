@@ -81,7 +81,7 @@ components:
     type: ColumnPanel
   layout_properties: {full_width_row: true, grid_position: 'THVYYM,AUFDDO', row_background: ''}
   name: card_1
-  properties: {role: glass-panel}
+  properties: {role: null}
   type: ColumnPanel
 container:
   properties: {role: null}

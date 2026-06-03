@@ -13,11 +13,15 @@ class RowTemplate(RowTemplateTemplate):
         self.init_components(**properties)
 
         # Any code you write here will run before the form opens.
-        self.txt_Amount.text = self.parent.items["Amount"]
-       
+            
 
     def btn_DeleteRow_click(self, **event_args):
         """This method is called when the button is clicked"""
         items = list(self.parent.items)
         del items[list(self.parent.items).index(self.item)]
         self.parent.items = items
+
+    def form_refreshing_data_bindings(self, **event_args):
+        """This method is called when refresh_data_bindings is called"""
+        self.txt_Amount.text = self.item['Amount']
+        self.txt_Quantity.text = self.item['Quantity']

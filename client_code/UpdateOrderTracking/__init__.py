@@ -41,12 +41,11 @@ class UpdateOrderTracking(UpdateOrderTrackingTemplate):
             val["order_date"]
         )
         self.repeating_panel_1.items = orders
-        print(orders)
-        
+        self.refresh_data_bindings()
 
     def btn_Update_click(self, **event_args):
         """This method is called when the button is clicked"""
-        self.btn_Update.enabled = True
+        self.btn_Update.enabled = False
     
         val = self.drop_down_selectDetails.selected_value
         if not val:
@@ -64,13 +63,13 @@ class UpdateOrderTracking(UpdateOrderTrackingTemplate):
                 brand = row.get('Brand', "")
                 
                 # --- Safe handling of Amount ---
-                raw_amount = row.get("Amount", None)
+                raw_amount = row.get("Amount", "")
                 if raw_amount is None or raw_amount == "":
                     amount = None
                 else:
                     amount_str = str(raw_amount)
                     amount = float(amount_str.replace(",", ""))
-    
+                                
                 status = row.get("Status", "")   # fixed row.get["Status"] -> row.get("Status")
     
                 items.append({

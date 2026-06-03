@@ -15,7 +15,10 @@ class RowTemplate(RowTemplateTemplate):
 
     def btn_Edit_click(self, **event_args):
         """This method is called when the button is clicked"""
+        print("Testing")
+        self.raise_event('x-close-alert', value = True)
         self.parent.raise_event('x-edit_order', order=self.item)
+        
 
     def btn_DeleteRow_click(self, **event_args):
         """This method is called when the button is clicked"""

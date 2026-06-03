@@ -48,15 +48,7 @@ class UpdateOrderTracking(UpdateOrderTrackingTemplate):
         item = dict(order)
         editing_form = EditImportOrder(item=item)
         alert(content=editing_form, large=True)
-        anvil.server.call('update_movie', order, item)
         
-        val = self.drop_down_selectDetails.selected_value  # {"client_id": ..., "order_date": ...}
-        orders = anvil.server.call(
-            'get_import_orders_for_selection',
-            val["client_id"],
-            val["order_date"]
-        )
-        self.repeating_panel_1.items = orders
         
     def btn_Update_click(self, **event_args):
         """This method is called when the button is clicked"""

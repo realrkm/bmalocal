@@ -14,6 +14,7 @@ class UpdateOrderTracking(UpdateOrderTrackingTemplate):
         self.init_components(**properties)
 
         # Any code you write here will run before the form opens.
+        self.repeating_panel_1.add_event_handler('x-edit_order', self.edit_order)
 
     def btn_SearchClient_click(self, **event_args):
         """This method is called when the button is clicked"""

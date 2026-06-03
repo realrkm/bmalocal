@@ -12,11 +12,10 @@ class RowTemplate(RowTemplateTemplate):
         # Set Form properties and Data Bindings.
         self.init_components(**properties)
         # Any code you write here will run before the form opens.
+        
 
     def btn_Edit_click(self, **event_args):
         """This method is called when the button is clicked"""
-        print("Testing")
-        self.raise_event('x-close-alert', value = True)
         self.parent.raise_event('x-edit_order', order=self.item)
         
 

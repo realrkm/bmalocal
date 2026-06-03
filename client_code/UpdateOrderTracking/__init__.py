@@ -59,7 +59,8 @@ class UpdateOrderTracking(UpdateOrderTrackingTemplate):
                 item_name = row.get('Name', '')
                 part_no = row.get('Part_No', "")
                 quantity = float(row["Quantity"]) if row.get("Quantity") not in (None, "") else None
-    
+                brand = row.get('Brand', "")
+                
                 # --- Safe handling of Amount ---
                 raw_amount = row.get("Amount", None)
                 if raw_amount is None or raw_amount == "":
@@ -74,13 +75,14 @@ class UpdateOrderTracking(UpdateOrderTrackingTemplate):
                     "name": item_name,
                     "number": part_no,
                     "quantity": quantity,
+                    "brand":brand,
                     "amount": amount,
                     "status": status
                 })
   
-        anvil.server.call("updateImportOrderTracking", val["order_date"], val["client_id"],  items)
-        alert("Import order updated successfully", title="Success")
-        self.btn_Close_click()
+                anvil.server.call("updateImportOrderTracking", val["order_date"], val["client_id"],  items)
+                alert("Import order updated successfully", title="Success")
+                self.btn_Close_click()
 
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""

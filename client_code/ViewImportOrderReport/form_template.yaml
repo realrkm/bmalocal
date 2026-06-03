@@ -29,38 +29,41 @@ components:
       name: card_3_copy
       properties: {border: '', col_widths: '{"TGRRSI":40,"KGMSAL":20}', role: glass-panel}
       type: ColumnPanel
-    - layout_properties: {grid_position: 'NHOJYK,GBQTLH'}
-      name: spacer_2
-      properties: {height: 32}
-      type: Spacer
+    - event_bindings: {click: btn_ExportExcel_click}
+      layout_properties: {grid_position: 'XVOFTM,IEMIWE'}
+      name: btn_ExportExcel
+      properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: EXPORT AS EXCEL}
+      type: Button
     - components:
       - components:
         - layout_properties: {}
           name: repeating_panel_1
-          properties: {item_template: ViewImportOrderReport.RowTemplate}
+          properties: {background: 'theme:Black', border: '', foreground: 'theme:White', item_template: ViewImportOrderReport.RowTemplate}
           type: RepeatingPanel
         layout_properties: {full_width_row: true, grid_position: 'INTVUQ,CWCXZO'}
         name: data_grid_1
         properties:
           background: theme:Black
-          border: solid
+          border: ''
           columns:
           - {data_key: 'No', id: EIYIIX, title: 'No', width: '50'}
           - {data_key: OrderDate, expand: true, id: IBXJHQ, title: Date, width: ''}
           - {data_key: Client, expand: true, id: IRUPVT, title: Client}
           - {data_key: Name, expand: true, id: JKSDUP, title: Name}
+          - {data_key: '', id: KBZLLG, title: '', width: '30'}
           - {data_key: Part_No, id: VJQQOR, title: Part No}
-          - {data_key: '', id: XNKPJB, title: '', width: '40'}
+          - {data_key: '', id: XNKPJB, title: '', width: '10'}
           - {data_key: Quantity, expand: true, id: OJLQEN, title: Quantity}
+          - {data_key: Brand, expand: true, id: AMQPMU, title: Brand}
           - {data_key: Amount, expand: true, id: LQWTXJ, title: Amount (Kshs)}
           - {data_key: Status, expand: true, id: PSOVFO, title: Status}
           foreground: theme:White
-          role: null
+          role: wide
           wrap_on: mobile
         type: DataGrid
       layout_properties: {full_width_row: true, grid_position: 'EXINPW,QGDJSI'}
       name: card_4
-      properties: {border: '', role: glass-panel}
+      properties: {border: '', role: null}
       type: ColumnPanel
     - layout_properties: {grid_position: 'IGECCF,AIWFUA'}
       name: spacer_3

@@ -43,6 +43,17 @@ class ViewImportOrderReport(ViewImportOrderReportTemplate):
             "get_import_orders_for_selection", val["client_id"], val["order_date"]
         )
         self.repeating_panel_1.items = orders
+   
+    def btn_ExportExcel_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        rows = list(self.repeating_panel_1.items)
+
+        if not rows:
+            alert("No data to export.")
+            return
+
+        excel_file = anvil.server.call("export_import_orders", rows)
+        anvil.media.download(excel_file)
 
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""

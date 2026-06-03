@@ -73,6 +73,10 @@ class OrderTracking(OrderTrackingTemplate):
             alert("Sorry, please enter quantity to proceed.", title="Blank Field(s) Found", large=False)
             self.txt_Quantity.focus()
             return
+        if not self.drop_down_brand.selected_value:
+            alert("Sorry, please select car part brand to proceed.", title="Blank Field(s) Found", large=False)
+            self.drop_down_brand.focus()
+            return
         
 
         #Populate data grid with assigned parts
@@ -80,6 +84,7 @@ class OrderTracking(OrderTrackingTemplate):
             "Name": self.lbl_PartName.text,
             "Part_No": self.lbl_PartNumber.text,
             "Quantity": self.txt_Quantity.text,
+            "Brand": self.drop_down_brand.selected_value,
             "Status": "Pending"
         }
 
@@ -95,6 +100,7 @@ class OrderTracking(OrderTrackingTemplate):
         self.text_box_searchPartNo.text = ""
         self.drop_down_selectPart.items = []
         self.txt_Quantity.text =""
+        self.drop_down_brand.selected_value = None
         
 
     def btn_SaveAndNew_click(self, **event_args):
@@ -129,8 +135,9 @@ class OrderTracking(OrderTrackingTemplate):
             name= row['Name']
             number = row.get('Part_No', "")
             quantity = None if row.get('Quantity') is None else float(row['Quantity'])
+            brand=row['Brand']
             status = row["Status"]
-            anvil.server.call('saveImportOrderTracking', orderDate, clientID, name, number, quantity, status)
+            anvil.server.call('saveImportOrderTracking', orderDate, clientID, name, number, quantity, brand, status)
 
         alert("Import order saved successfully.", title="Success")
         self.clearForm()

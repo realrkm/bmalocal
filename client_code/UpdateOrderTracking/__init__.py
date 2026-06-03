@@ -41,6 +41,7 @@ class UpdateOrderTracking(UpdateOrderTrackingTemplate):
             val["order_date"]
         )
         self.repeating_panel_1.items = orders
+        print(orders)
         self.refresh_data_bindings()
 
     def btn_Update_click(self, **event_args):
@@ -69,7 +70,7 @@ class UpdateOrderTracking(UpdateOrderTrackingTemplate):
                 else:
                     amount_str = str(raw_amount)
                     amount = float(amount_str.replace(",", ""))
-                                
+                        
                 status = row.get("Status", "")   # fixed row.get["Status"] -> row.get("Status")
     
                 items.append({

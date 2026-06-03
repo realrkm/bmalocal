@@ -13,12 +13,6 @@ class RowTemplate(RowTemplateTemplate):
         self.init_components(**properties)
         # Any code you write here will run before the form opens.
         
-
-    def btn_Edit_click(self, **event_args):
-        """This method is called when the button is clicked"""
-        self.parent.raise_event('x-edit_order', order=self.item)
-        
-
     def btn_DeleteRow_click(self, **event_args):
         """This method is called when the button is clicked"""
         items = list(self.parent.items)

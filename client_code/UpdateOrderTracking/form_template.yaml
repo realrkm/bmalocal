@@ -35,7 +35,8 @@ components:
       type: Spacer
     - components:
       - components:
-        - layout_properties: {}
+        - data_bindings: []
+          layout_properties: {}
           name: repeating_panel_1
           properties: {background: 'theme:Black', foreground: 'theme:Black', item_template: UpdateOrderTracking.RowTemplate}
           type: RepeatingPanel
@@ -51,7 +52,6 @@ components:
           - {data_key: Brand, expand: true, id: GNTUHZ, title: Brand}
           - {data_key: Amount, expand: true, id: LQWTXJ, title: Amount}
           - {data_key: Status, expand: true, id: PSOVFO, title: Status}
-          - {data_key: '', id: WKJCAL, title: '', width: '90'}
           - {data_key: '', id: IBXJHQ, title: '', width: '90'}
           foreground: theme:White
           role: wide

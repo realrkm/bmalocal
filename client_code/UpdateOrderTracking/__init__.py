@@ -5,7 +5,7 @@ import anvil.users
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
-from ..EditImportOrder import EditImportOrder
+
 
 
 class UpdateOrderTracking(UpdateOrderTrackingTemplate):
@@ -14,7 +14,7 @@ class UpdateOrderTracking(UpdateOrderTrackingTemplate):
         self.init_components(**properties)
 
         # Any code you write here will run before the form opens.
-        self.repeating_panel_1.add_event_handler('x-edit_order', self.edit_order)
+        
 
     def btn_SearchClient_click(self, **event_args):
         """This method is called when the button is clicked"""
@@ -43,13 +43,7 @@ class UpdateOrderTracking(UpdateOrderTrackingTemplate):
             val["order_date"]
         )
         self.repeating_panel_1.items = orders
-        self.refresh_data_bindings()
-
-    def edit_order(self, order, **event_args):
-        item = dict(order)
-        editing_form = EditImportOrder(item=item)
-        alert(content=editing_form, large=True)
-        
+                
         
     def btn_Update_click(self, **event_args):
         """This method is called when the button is clicked"""

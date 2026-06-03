@@ -4,11 +4,49 @@ components:
   name: btn_DeleteRow
   properties: {background: '#0056D6', foreground: 'theme:White', icon: 'fa:trash-o', icon_align: right, text: '', tooltip: Delete Row}
   type: Button
-- event_bindings: {click: btn_Edit_click}
-  layout_properties: {column: WKJCAL}
-  name: btn_Edit
-  properties: {background: '#0056D6', foreground: 'theme:White', icon: 'fa:pencil', text: ''}
-  type: Button
+- data_bindings:
+  - {code: 'self.item[''Brand'']', property: selected_value, writeback: true}
+  layout_properties: {column: GNTUHZ}
+  name: drop_down_brand
+  properties:
+    background: theme:White
+    border: ''
+    font: Mozilla Headline
+    font_size: 12
+    foreground: theme:Black
+    include_placeholder: true
+    items: [ATE, Bosch, Continental, FAG, Hella, Hengst, INA, Lemförder, LuK, Mahle, MANN-FILTER, Pierburg, Sachs, SKF, Textar, ZF]
+    placeholder: Select Brand *
+    spacing_above: small
+  type: DropDown
+- data_bindings:
+  - {code: 'self.item[''Status'']', property: selected_value, writeback: true}
+  layout_properties: {column: PSOVFO}
+  name: drop_down_status
+  properties:
+    align: full
+    background: theme:White
+    border: ''
+    font: Mozilla Headline
+    font_size: 14
+    foreground: theme:Black
+    include_placeholder: true
+    items: [Arrived, Pending]
+    placeholder: Select Status *
+    spacing_above: small
+  type: DropDown
+- data_bindings:
+  - {code: 'self.item[''Quantity'']', property: text, writeback: true}
+  layout_properties: {column: OJLQEN}
+  name: txt_Quantity
+  properties: {align: center, background: 'theme:White', font: Mozilla Headline, font_size: 12, foreground: 'theme:Black', placeholder: Enter Quantity *, spacing_above: large, type: number}
+  type: TextBox
+- data_bindings:
+  - {code: 'self.item[''Amount'']', property: text, writeback: true}
+  layout_properties: {column: LQWTXJ}
+  name: text_box_Amount
+  properties: {align: center, background: 'theme:White', font: Mozilla Headline, font_size: 13, foreground: 'theme:Black', placeholder: Enter Amount, spacing_above: large}
+  type: TextBox
 container:
   event_bindings: {}
   properties: {align: center, background: 'theme:Gray 600', border: solid, font: Mozilla Headline, font_size: 12, foreground: 'theme:Black'}

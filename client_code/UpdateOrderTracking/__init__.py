@@ -80,9 +80,9 @@ class UpdateOrderTracking(UpdateOrderTrackingTemplate):
                     "status": status
                 })
   
-                anvil.server.call("updateImportOrderTracking", val["order_date"], val["client_id"],  items)
-                alert("Import order updated successfully", title="Success")
-                self.btn_Close_click()
+            anvil.server.call("updateImportOrderTracking", val["order_date"], val["client_id"],  items)
+            alert("Import order updated successfully", title="Success")
+            self.btn_Close_click()
 
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""

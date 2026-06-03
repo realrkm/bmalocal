@@ -8,7 +8,7 @@ components:
   - {code: 'self.item[''Amount'']', property: text, writeback: true}
   layout_properties: {column: LQWTXJ}
   name: txt_Amount
-  properties: {align: center, background: 'theme:White', font: Mozilla Headline, font_size: 14, foreground: 'theme:Black', placeholder: 'Enter Amount ', type: number}
+  properties: {align: center, background: 'theme:White', font: Mozilla Headline, font_size: 14, foreground: 'theme:Black', placeholder: 'Enter Amount ', spacing_above: large, type: number}
   type: TextBox
 - data_bindings:
   - {code: 'self.item[''Status'']', property: selected_value, writeback: true}

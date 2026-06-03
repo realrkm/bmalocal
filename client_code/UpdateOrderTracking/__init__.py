@@ -41,6 +41,8 @@ class UpdateOrderTracking(UpdateOrderTrackingTemplate):
             val["order_date"]
         )
         self.repeating_panel_1.items = orders
+        print(orders)
+        
 
     def btn_Update_click(self, **event_args):
         """This method is called when the button is clicked"""

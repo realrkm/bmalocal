@@ -37,7 +37,7 @@ components:
       - components:
         - layout_properties: {}
           name: repeating_panel_1
-          properties: {item_template: UpdateOrderTracking.RowTemplate}
+          properties: {background: 'theme:Black', foreground: 'theme:Black', item_template: UpdateOrderTracking.RowTemplate}
           type: RepeatingPanel
         layout_properties: {full_width_row: true, grid_position: 'INTVUQ,CWCXZO'}
         name: data_grid_1

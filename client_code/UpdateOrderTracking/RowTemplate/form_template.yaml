@@ -8,7 +8,7 @@ components:
   - {code: 'self.item[''Amount'']', property: text, writeback: true}
   layout_properties: {column: LQWTXJ}
   name: txt_Amount
-  properties: {align: center, background: 'theme:White', font: Mozilla Headline, font_size: 14, foreground: 'theme:Black', placeholder: 'Enter Amount ', spacing_above: large, type: number}
+  properties: {align: center, background: 'theme:White', font: Mozilla Headline, font_size: 14, foreground: '', placeholder: 'Enter Amount ', spacing_above: large, type: number}
   type: TextBox
 - data_bindings:
   - {code: 'self.item[''Status'']', property: selected_value, writeback: true}
@@ -22,6 +22,6 @@ components:
     items: [Arrived, Pending]
   type: DropDown
 container:
-  properties: {align: center, background: 'theme:Black', border: solid, font: Mozilla Headline, font_size: 14, foreground: 'theme:White'}
+  properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 14, foreground: 'theme:Black'}
   type: DataRowPanel
 is_package: true

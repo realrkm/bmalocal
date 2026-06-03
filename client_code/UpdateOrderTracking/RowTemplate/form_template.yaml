@@ -22,6 +22,6 @@ components:
     items: [Arrived, Pending]
   type: DropDown
 container:
-  properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 14, foreground: 'theme:Black'}
+  properties: {align: center, background: 'theme:Gray 600', border: solid, font: Mozilla Headline, font_size: 14, foreground: 'theme:Black'}
   type: DataRowPanel
 is_package: true

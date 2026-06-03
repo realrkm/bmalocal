@@ -19,7 +19,6 @@ class RowTemplate(RowTemplateTemplate):
         del items[list(self.parent.items).index(self.item)]
         self.parent.items = items
 
-    def form_refreshing_data_bindings(self, **event_args):
-        """This method is called when refresh_data_bindings is called"""
-        self.txt_Amount.text = self.item['Amount']
-        self.txt_Quantity.text = self.item['Quantity']
+    def btn_Edit_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        self.parent.raise_event('x-edit-movie', movie=self.item)

@@ -44,8 +44,13 @@ components:
     placeholder: Select brand *
     spacing_above: small
   type: DropDown
+- event_bindings: {click: btn_Edit_click}
+  layout_properties: {column: WKJCAL}
+  name: btn_Edit
+  properties: {background: '#0056D6', foreground: 'theme:White', icon: 'fa:pencil', text: ''}
+  type: Button
 container:
-  event_bindings: {refreshing_data_bindings: form_refreshing_data_bindings}
+  event_bindings: {}
   properties: {align: center, background: 'theme:Gray 600', border: solid, font: Mozilla Headline, font_size: 12, foreground: 'theme:Black'}
   type: DataRowPanel
 is_package: true

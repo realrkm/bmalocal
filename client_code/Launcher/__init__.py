@@ -29,5 +29,5 @@ class Launcher(LauncherTemplate):
                 anvil.server.call_s('get_stats', user_agent)
                 return
             else:
-                open_form("Main")
+                open_form("Main", permissions=self.permissions, user=user)
         

@@ -14,42 +14,42 @@ from ..NotificationsAndAlerts import NotificationsAndAlerts
 
 class Main(MainTemplate):
 
-    def __init__(self, **properties):
+    def __init__(self, permissions=None, user=None, **properties):
         self.init_components(**properties)
         anvil.js.call('replaceBanner')
-        
-        while anvil.users.get_user() is None:
-            anvil.users.login_with_form()
-
-        user = anvil.users.get_user()
-        if user:
-            self.permissions = anvil.server.call("get_user_permissions", user["role_id"])
+    
+        self.user = user
+        if self.user is None:
+            while anvil.users.get_user() is None:
+                anvil.users.login_with_form()
+            self.user = anvil.users.get_user()
+    
+        if self.user:
+            self.permissions = permissions or anvil.server.call("get_user_permissions", self.user["role_id"])
             self.apply_permissions()
-
-            if user['role_id'] == 1:
+    
+            if self.user['role_id'] == 1:
                 self.refresh()
             else:
                 self.notification_label.visible = False
-                self.error_label.visible=False
+                self.error_label.visible = False
                 self.notificationsandalerts = None
-                
-
+    
             user_agent = navigator.userAgent
-            anvil.server.call_s('get_stats', user_agent)
-
+            anvil.js.window.setTimeout(lambda: anvil.server.call_s('get_stats', user_agent), 0)
+    
             ModNavigation.home_form = self
             self.error_label.visible = False
-
+    
             set_default_error_handling(
                 lambda exc: ModGetData.handle_server_errors(exc, self.error_label)
             )
-
+    
             self.polling_active = True
+            self.poll_running = False   # ← new guard
             self.timeout_id = None
-
-            #Start the loop immediately when the form opens
-            self.start_notification_loop()
-        
+            anvil.js.window.setTimeout(self.start_notification_loop, 0)
+    
         self.live_popup.visible = False
         self.fab_btn.tooltip = "Click to talk"
         self.fab_btn.enabled = True
@@ -60,32 +60,26 @@ class Main(MainTemplate):
         self.run_notification_poll()
 
     def run_notification_poll(self, *args):
-        """The core polling block. Safe from server request stacking."""
-        if not self.polling_active:
+        """The core polling block — guarded against stacking."""
+        if not self.polling_active or self.poll_running:
             return
-
+    
+        self.poll_running = True
         try:
-            self.user = anvil.users.get_user()
-            if not self.user:
-                return
-
-            # Keep server calls silent in the background
             with anvil.server.no_loading_indicator:
                 self.notification_label.text = ""
-
-                # Make ONE server call to get all data
-                self.notificationsandalerts = anvil.server.call_s('fetch_all_dashboard_notifications', self.user)
+                self.notificationsandalerts = anvil.server.call_s(
+                    'fetch_all_dashboard_notifications', self.user
+                )
                 data = self.notificationsandalerts
-
-                # Extract the lists from the returned dictionary
+    
                 notifications = data.get("notifications", [])
                 incomplete_defects = data.get("incomplete_defects", [])
                 tech_portal_info = data.get("technician_portal", [])
                 pricing_alert = data.get("pricing_alert", [])
-
-                # Simplify boolean logic
+    
                 notice = sum([bool(notifications), bool(incomplete_defects), bool(tech_portal_info), bool(pricing_alert)])
-
+    
                 if notice > 0:
                     self.link_1.visible = True
                     self.link_1.text = str(notice)
@@ -94,21 +88,19 @@ class Main(MainTemplate):
                     self.link_1.visible = False
                     self.link_1.text = None
                     self.link_1.foreground = "#FFFFFF"
-
-                # Handle the notification label text
+    
                 for n in notifications:
                     self.notification_label.text = f"{n['jobcard']} - {n['message']}"
-                    # Note: self.refresh() inside a fast loop can cause UI stuttering. 
-                    # Consider removing it if your text updates cleanly without it.
                     self.refresh()
-
+    
         except Exception as e:
-            # Prevent app crashes if the network momentarily drops
+            if "Authentication" in str(e) or "auth" in str(e).lower():
+                self.polling_active = False
+                self.timeout_id = None
+                return
             print(f"Notification poll failed temporarily: {e}")
-
         finally:
-            # Only queue the NEXT poll if the form is still active
-            # 5000 milliseconds = 5 seconds. Change this value to match your desired interval.
+            self.poll_running = False   # ← releases the guard
             if self.polling_active:
                 self.timeout_id = anvil.js.window.setTimeout(self.run_notification_poll, 5000)
 
@@ -277,10 +269,17 @@ class Main(MainTemplate):
         self.call_js('hideSidebarIfModal') 
         
     def btn_Logout_click(self, **event_args):
+        # Stop the poll first, before anything else
+        self.polling_active = False
+        if self.timeout_id is not None:
+            anvil.js.window.clearTimeout(self.timeout_id)
+            self.timeout_id = None
+        self.user = None  # Clear the user reference immediately
+
         self.highlight_active_button("LOGOUT")
         open_form('LogoutBackground')
         anvil.users.logout()
-        open_form("Launcher")
+        open_form("Launcher")    
 
     def form_show(self, **events_args):
         """Optional: Ensure polling restarts if the form is re-shown"""
@@ -288,10 +287,9 @@ class Main(MainTemplate):
             self.start_notification_loop()
 
     def form_hide(self, **events_args):
-        """CRITICAL: Clean up the timer when the user lives this form to prevent memory leaks"""
         self.polling_active = False
         if self.timeout_id is not None:
-            anvil.js.window.clearTimeOut(self.timeout_id)
+            anvil.js.window.clearTimeout(self.timeout_id)  # ← lowercase 't', was clearTimeOut
             self.timeout_id = None
 
    

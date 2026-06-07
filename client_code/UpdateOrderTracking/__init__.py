@@ -64,13 +64,6 @@ class UpdateOrderTracking(UpdateOrderTrackingTemplate):
                 quantity = float(row["Quantity"]) if row.get("Quantity") not in (None, "") else None
                 brand = row.get('Brand', "")
                 
-                # --- Safe handling of Amount ---
-                raw_amount = row.get("Amount", "")
-                if raw_amount is None or raw_amount == "":
-                    amount = None
-                else:
-                    amount_str = str(raw_amount)
-                    amount = float(amount_str.replace(",", ""))
                         
                 status = row.get("Status", "")   # fixed row.get["Status"] -> row.get("Status")
     
@@ -79,7 +72,6 @@ class UpdateOrderTracking(UpdateOrderTrackingTemplate):
                     "number": part_no,
                     "quantity": quantity,
                     "brand":brand,
-                    "amount": amount,
                     "status": status
                 })
   

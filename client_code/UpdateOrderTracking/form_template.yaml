@@ -50,7 +50,6 @@ components:
           - {data_key: Part_No, id: VJQQOR, title: Part No}
           - {data_key: Quantity, expand: true, id: OJLQEN, title: Quantity}
           - {data_key: Brand, expand: true, id: GNTUHZ, title: Brand}
-          - {data_key: Amount, expand: true, id: LQWTXJ, title: Amount}
           - {data_key: Status, expand: true, id: PSOVFO, title: Status}
           - {data_key: '', id: IBXJHQ, title: '', width: '90'}
           foreground: theme:White

@@ -55,7 +55,6 @@ components:
           - {data_key: '', id: XNKPJB, title: '', width: '10'}
           - {data_key: Quantity, expand: true, id: OJLQEN, title: Quantity}
           - {data_key: Brand, expand: true, id: AMQPMU, title: Brand}
-          - {data_key: Amount, expand: true, id: LQWTXJ, title: Amount (Kshs)}
           - {data_key: Status, expand: true, id: PSOVFO, title: Status}
           foreground: theme:White
           role: wide

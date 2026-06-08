@@ -174,10 +174,14 @@ class OrderTracking(OrderTrackingTemplate):
         self.text_box_searchPartNo.text =""
         self.drop_down_selectPart.items=[]
         self.drop_down_selectPart.selected_value = None
+        self.flow_panel_partNumber.clear()
         self.lbl_ID.text=""
         self.lbl_PartName.text=""
         self.lbl_PartNumber.text=""
         self.txt_Quantity.text=""
+        self.drop_down_brand.items = []
+        self.drop_down_brand.selected_value = None
+        self.flow_panel_brand.clear()
         self.repeating_panel_1.items=[]
 
     def btn_UpdateOrderTracking_click(self, **event_args):

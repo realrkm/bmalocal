@@ -42,7 +42,7 @@ components:
       - event_bindings: {pressed_enter: btn_SearchParts_click}
         layout_properties: {grid_position: 'VNUUES,GQAFKW'}
         name: text_box_searchPartNo
-        properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Part Name / Part No To Search *}
+        properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Part Name  *}
         type: TextBox
       - event_bindings: {click: btn_SearchParts_click}
         layout_properties: {grid_position: 'VNUUES,SREFON'}
@@ -52,7 +52,7 @@ components:
       - event_bindings: {change: drop_down_selectPart_change}
         layout_properties: {grid_position: 'HTQOMO,SERSIH'}
         name: drop_down_selectPart
-        properties: {background: 'theme:White', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Part *}
+        properties: {background: 'theme:White', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Part  Number *}
         type: DropDown
       - layout_properties: {grid_position: 'HTQOMO,JNMEDV'}
         name: flow_panel_partNumber

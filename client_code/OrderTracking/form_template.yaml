@@ -56,7 +56,7 @@ components:
         type: DropDown
       - layout_properties: {grid_position: 'HTQOMO,JNMEDV'}
         name: flow_panel_partNumber
-        properties: {background: 'theme:White', border: solid, foreground: 'theme:Black'}
+        properties: {background: 'theme:White', border: '', foreground: 'theme:Black'}
         type: FlowPanel
       - layout_properties: {grid_position: 'IPPKSM,MJCKQA'}
         name: lbl_ID
@@ -75,7 +75,8 @@ components:
         name: txt_Quantity
         properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Quantity *}
         type: TextBox
-      - layout_properties: {grid_position: 'WBHAQN,SOCYNI'}
+      - event_bindings: {change: drop_down_brand_change}
+        layout_properties: {grid_position: 'WBHAQN,SOCYNI'}
         name: drop_down_brand
         properties:
           background: theme:White
@@ -88,8 +89,8 @@ components:
           placeholder: Select Brand *
         type: DropDown
       - layout_properties: {grid_position: 'WBHAQN,IPXVBZ'}
-        name: flow_panel_2
-        properties: {background: 'theme:White', border: solid, foreground: 'theme:Black'}
+        name: flow_panel_brand
+        properties: {background: 'theme:White', border: '', foreground: 'theme:Black', gap: medium}
         type: FlowPanel
       layout_properties: {grid_position: 'MHZXQP,RJOCED'}
       name: card_5

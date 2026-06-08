@@ -89,14 +89,23 @@ class OrderTracking(OrderTrackingTemplate):
             alert("Sorry, please select car part brand to proceed.", title="Blank Field(s) Found", large=False)
             self.drop_down_brand.focus()
             return
-        
 
+        #Generate partNumbers joined with a slash (/)
+        partNumbers = self.flow_panel_partNumber.get_components()
+        numbers = [l.text for l in partNumbers]
+        joinedNumbers = " / ".join(numbers)
+
+        #Generate brands joined with a slash (/)
+        selectedBrands = self.flow_panel_brand.get_components()
+        brandNames = [l.text for l in selectedBrands]
+        joinedBrands = " / ".join(brandNames)
+        
         #Populate data grid with assigned parts
         new_part = {
             "Name": self.lbl_PartName.text,
-            "Part_No": self.lbl_PartNumber.text,
+            "Part_No": joinedNumbers,
             "Quantity": self.txt_Quantity.text,
-            "Brand": self.drop_down_brand.selected_value,
+            "Brand": joinedBrands,
             "Status": "Pending"
         }
 
@@ -178,5 +187,17 @@ class OrderTracking(OrderTrackingTemplate):
     def btn_OrderReport_click(self, **event_args):
         """This method is called when the button is clicked"""
         alert(content=ViewImportOrderReport(), dismissible=False, large=True, buttons=[])
+
+    def drop_down_brand_change(self, **event_args):
+        """This method is called when an item is selected"""
+        #Add Selected Part Number in flow panle as a link.
+        l = Link(text=self.drop_down_brand.selected_value)
+        l.icon="fa:times"
+        l.icon_align="left"
+        l.background="#eee"
+        l.role="flowPanelLinks"
+        l.border="1px solid #888"
+        l.set_event_handler("click",self.remove_link)
+        self.flow_panel_brand.add_component(l)
         
         

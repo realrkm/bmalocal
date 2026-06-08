@@ -41,6 +41,12 @@ components:
   name: txt_Quantity
   properties: {align: center, background: 'theme:White', font: Mozilla Headline, font_size: 12, foreground: 'theme:Black', placeholder: Enter Quantity *, spacing_above: large, type: number}
   type: TextBox
+- data_bindings:
+  - {code: 'self.item[''Part_No'']', property: tag, writeback: false}
+  layout_properties: {column: VJQQOR}
+  name: flow_panel_partNo
+  properties: {background: 'theme:White', foreground: 'theme:Black', spacing_above: large}
+  type: FlowPanel
 container:
   event_bindings: {}
   properties: {align: center, background: 'theme:Gray 600', border: solid, font: Mozilla Headline, font_size: 12, foreground: 'theme:Black'}

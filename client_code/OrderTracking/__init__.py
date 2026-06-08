@@ -62,6 +62,18 @@ class OrderTracking(OrderTrackingTemplate):
         partname = anvil.server.call_s("getCarPartNamesWithId", self.drop_down_selectPart.selected_value)
         self.lbl_PartName.text = partname[0]["Name"]
         
+        #Add Selected Part Number in flow panle as a link.
+        l = Link(text=self.lbl_PartNumber.text)
+        l.icon="fa:times"
+        l.icon_align="left"
+        l.background="#eee"
+        l.role="flowPanelLinks"
+        l.border="1px solid #888"
+        l.set_event_handler("click",self.remove_link)
+        self.flow_panel_partNumber.add_component(l)
+
+    def remove_link(self,**event_args):
+        event_args['sender'].remove_from_parent()
 
     def btn_AddOrder_click(self, **event_args):
         """This method is called when the button is clicked"""

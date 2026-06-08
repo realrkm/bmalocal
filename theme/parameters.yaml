@@ -192,3 +192,5 @@ roles:
   name: volume-bar-container
 - {name: wide-card}
 - {name: glass-panel}
+- components: [Link]
+  name: flowPanelLinks

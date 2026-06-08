@@ -54,6 +54,10 @@ components:
         name: drop_down_selectPart
         properties: {background: 'theme:White', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Part *}
         type: DropDown
+      - layout_properties: {grid_position: 'HTQOMO,JNMEDV'}
+        name: flow_panel_partNumber
+        properties: {background: 'theme:White', border: solid, foreground: 'theme:Black'}
+        type: FlowPanel
       - layout_properties: {grid_position: 'IPPKSM,MJCKQA'}
         name: lbl_ID
         properties: {visible: false}
@@ -71,7 +75,7 @@ components:
         name: txt_Quantity
         properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Quantity *}
         type: TextBox
-      - layout_properties: {grid_position: 'BKGFQL,OBRRPQ'}
+      - layout_properties: {grid_position: 'WBHAQN,SOCYNI'}
         name: drop_down_brand
         properties:
           background: theme:White
@@ -83,6 +87,10 @@ components:
           items: [ATE, Bosch, Continental, FAG, Hella, Hengst, INA, Lemförder, LuK, Mahle, MANN-FILTER, Pierburg, Sachs, SKF, Textar, ZF]
           placeholder: Select Brand *
         type: DropDown
+      - layout_properties: {grid_position: 'WBHAQN,IPXVBZ'}
+        name: flow_panel_2
+        properties: {background: 'theme:White', border: solid, foreground: 'theme:Black'}
+        type: FlowPanel
       layout_properties: {grid_position: 'MHZXQP,RJOCED'}
       name: card_5
       properties: {border: '', col_widths: '{"GQAFKW":40,"SREFON":20}', role: glass-panel}

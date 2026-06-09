@@ -1,0 +1,297 @@
+components:
+- components:
+  - layout_properties: {grid_position: 'AFFRHS,KQESMY'}
+    name: label_title
+    properties:
+      align: center
+      background: '#0056D6'
+      bold: false
+      font: Mozilla Headline
+      font_size: 22
+      foreground: theme:White
+      text: |
+        Defects List
+    type: Label
+  - layout_properties: {grid_position: 'AHMQXI,LNIGGJ', row_background: 'theme:Black'}
+    name: spacer_3
+    properties: {height: '11.7'}
+    type: Spacer
+  - layout_properties: {grid_position: 'DBIUUD,CIWCUI'}
+    name: spacer_2_copy
+    properties: {height: 6.18182373046875}
+    type: Spacer
+  - event_bindings: {click: btn_Update_click}
+    layout_properties: {grid_position: 'ZZHUZR,ZXNXXV'}
+    name: btn_Update
+    properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: null, text: UPDATE}
+    type: Button
+  - event_bindings: {click: btn_IssueInvoice_click}
+    layout_properties: {grid_position: 'ZZHUZR,DRQDDE'}
+    name: btn_IssueInvoice
+    properties: {align: full, background: '#00d679', bold: false, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', role: null, text: Issue Invoice}
+    type: Button
+  - event_bindings: {click: btn_Close_click}
+    layout_properties: {grid_position: 'ZZHUZR,CIGQKH'}
+    name: btn_Close
+    properties: {align: full, background: '#0056D6', bold: false, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: null, text: Close}
+    type: Button
+  - layout_properties: {grid_position: 'UBAZQG,BHTDZU'}
+    name: spacer_3_copy
+    properties: {height: 5}
+    type: Spacer
+  - layout_properties: {grid_position: 'NGPYWB,ZCTCWQ'}
+    name: label_title_10
+    properties:
+      align: center
+      background: theme:White
+      bold: false
+      font: Mozilla Headline
+      font_size: 22
+      foreground: theme:Black
+      text: |
+        Client Instructions
+    type: Label
+  - layout_properties: {grid_position: 'BOMLKE,NKQXCH'}
+    name: txtClientInstructions
+    properties: {auto_expand: true, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: ''}
+    type: TextArea
+  - components:
+    - layout_properties: {grid_position: 'FHCLHD,XNMWLR'}
+      name: spacer_13
+      properties: {height: 32}
+      type: Spacer
+    - layout_properties: {grid_position: 'FHCLHD,PMDFAO'}
+      name: latel_TechNotes
+      properties:
+        align: center
+        background: theme:Gray 300
+        bold: false
+        font: Mozilla Headline
+        font_size: 22
+        foreground: theme:Gray 800
+        text: |
+          Technician  Notes
+      type: Label
+    - layout_properties: {grid_position: 'FHCLHD,FMUGOB LGQNVV,HJUWUZ'}
+      name: spacer_1
+      properties: {height: '0.5'}
+      type: Spacer
+    - event_bindings: {click: btn_DownloadTechNotes_click}
+      layout_properties: {full_width_row: true, grid_position: 'FHCLHD,FMUGOB BMNKWN,FYPHKQ'}
+      name: btn_DownloadTechNotes
+      properties: {align: full, background: '#0056D6', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:download', role: null, text: '', tooltip: Download Tech Notes}
+      type: Button
+    - layout_properties: {grid_position: 'FHCLHD,FMUGOB MEIXBH,BZAWXL'}
+      name: spacer_7
+      properties: {height: '0.5'}
+      type: Spacer
+    layout_properties: {grid_position: 'SCRUGR,REGRKK'}
+    name: column_panel_2
+    properties: {background: '#E0E0E0', col_widths: '{"PMDFAO":65,"FMUGOB":18,"XNMWLR":10}', wrap_on: mobile}
+    type: ColumnPanel
+  - layout_properties: {grid_position: 'SCBITU,FOZOKD'}
+    name: txtTechNotes
+    properties: {auto_expand: true, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: ''}
+    type: TextArea
+  - components:
+    - layout_properties: {grid_position: 'YVNINJ,YKJRPH', row_background: 'theme:Gray 300'}
+      name: spacer_16
+      properties: {height: 32}
+      type: Spacer
+    - layout_properties: {grid_position: 'YVNINJ,YDUSWS'}
+      name: label_title_1
+      properties:
+        align: center
+        background: theme:Gray 300
+        bold: false
+        font: Mozilla Headline
+        font_size: 22
+        foreground: theme:Gray 800
+        text: |
+          List of Defects
+      type: Label
+    - event_bindings: {click: btn_DownloadDefectsList_click}
+      layout_properties: {grid_position: 'YVNINJ,HEOZFH'}
+      name: btn_DownloadDefectsList
+      properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:download', text: '', tooltip: Download Defects List}
+      type: Button
+    layout_properties: {grid_position: 'GXZZVI,CRWKOB'}
+    name: column_panel_3
+    properties: {col_widths: '{"YDUSWS":55,"HEOZFH":15,"YKJRPH":5}'}
+    type: ColumnPanel
+  - layout_properties: {grid_position: 'HFIRII,VGHXWP'}
+    name: txtDefectsList
+    properties: {auto_expand: true, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: 'Enter List Of Defects '}
+    type: TextArea
+  - components:
+    - layout_properties: {grid_position: 'WKQJEW,ZNUZYY'}
+      name: spacer_15
+      properties: {height: 32}
+      type: Spacer
+    - layout_properties: {grid_position: 'WKQJEW,QIZAWR'}
+      name: label_title_4
+      properties: {align: center, background: 'theme:Gray 300', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:Gray 800', text: Priced Defects For Quotation}
+      type: Label
+    - layout_properties: {grid_position: 'WKQJEW,CLLVLO HVBARQ,EJZPEJ'}
+      name: spacer_6
+      properties: {height: '0.5'}
+      type: Spacer
+    - event_bindings: {click: btn_DownloadPricedDefectsList_click}
+      layout_properties: {full_width_row: true, grid_position: 'WKQJEW,CLLVLO MBOATE,JFJVKZ'}
+      name: btn_DownloadPricedDefectsList
+      properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:download', text: '', tooltip: 'Download Priced Defects '}
+      type: Button
+    - layout_properties: {grid_position: 'WKQJEW,CLLVLO QJBFLB,EUJWAU'}
+      name: spacer_9
+      properties: {height: '0.5'}
+      type: Spacer
+    layout_properties: {grid_position: 'NRKGDK,TAHEAO'}
+    name: column_panel_4
+    properties: {background: '#E0E0E0', col_widths: '{"QIZAWR":65,"CLLVLO":18,"ZNUZYY":10}', wrap_on: mobile}
+    type: ColumnPanel
+  - layout_properties: {grid_position: 'BVYDWC,EJPTOZ'}
+    name: txtPricedDefectsList
+    properties: {auto_expand: true, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Priced Defects For Quotation}
+    type: TextArea
+  - event_bindings: {click: btn_IncompleteDefectsInfo_click}
+    layout_properties: {grid_position: 'HAHPYI,QSPIXO'}
+    name: btn_IncompleteDefectsInfo
+    properties: {align: full, background: '#00d679', bold: false, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', role: null, text: INCOMPLETE DEFECTS INFO}
+    type: Button
+  - layout_properties: {grid_position: 'NHQIML,PGFXWD'}
+    name: label_title_3
+    properties: {align: center, background: 'theme:Gray 300', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:Gray 800', text: Technician Portal Requested Parts}
+    type: Label
+  - layout_properties: {grid_position: ''}
+    name: txtTechnicianPortalRequestedParts
+    properties: {auto_expand: true, background: 'theme:White', border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: ''}
+    type: TextArea
+  - event_bindings: {click: btn_AddMorePartsAndServicesInConfirmedQuote_click}
+    layout_properties: {grid_position: 'JVADAF,MTACFV'}
+    name: btn_AddMorePartsAndServicesInConfirmedQuote
+    properties: {align: full, background: '#00d679', bold: false, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', role: null, text: Update LIST OF Confirmed PARTS AND SERVICES}
+    type: Button
+  - layout_properties: {grid_position: 'DVYVDN,RBQNHV'}
+    name: label_title_2
+    properties:
+      align: center
+      background: theme:Gray 300
+      bold: false
+      font: Mozilla Headline
+      font_size: 22
+      foreground: theme:Gray 800
+      text: |
+        Priced Requested Parts
+    type: Label
+  - layout_properties: {grid_position: 'YBPPNM,GEEBOX'}
+    name: txtRequestedParts
+    properties: {auto_expand: true, background: 'theme:White', border: solid, enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: 'Enter Requested Parts '}
+    type: TextArea
+  - components:
+    - layout_properties: {grid_position: 'HPZMTI,GRUPUC'}
+      name: label_AssignParts
+      properties: {align: center, background: 'theme:Gray 800', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: '', role: null, text: Search Part Selling Price}
+      type: Label
+    - event_bindings: {pressed_enter: btn_Search_click}
+      layout_properties: {grid_position: 'HQUNCB,VEHYEH'}
+      name: text_box_searchPartNo
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Part Name / Part No To Search *}
+      type: TextBox
+    - event_bindings: {click: btn_Search_click}
+      layout_properties: {grid_position: 'HQUNCB,FXOPCI'}
+      name: btn_Search
+      properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: primary-color, text: Search}
+      type: Button
+    - event_bindings: {change: drop_down_selectPart_change}
+      layout_properties: {grid_position: 'ODDOIT,FSYMIT'}
+      name: drop_down_selectPart
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Part *}
+      type: DropDown
+    - data_bindings: []
+      layout_properties: {grid_position: 'UFUCIX,OKDSHB'}
+      name: txtSellingPrice
+      properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Selling Price Per Unit, type: number}
+      type: TextBox
+    layout_properties: {grid_position: 'QDUYRT,WGANLZ'}
+    name: card_2
+    properties: {background: '', border: '', col_widths: '{"VEHYEH":45,"FXOPCI":15}', role: glass-panel}
+    type: ColumnPanel
+  - layout_properties: {grid_position: 'WDPLYB,KRIBON'}
+    name: label_title_2_copy
+    properties:
+      align: center
+      background: theme:Gray 300
+      bold: false
+      font: Mozilla Headline
+      font_size: 22
+      foreground: theme:Gray 800
+      text: |
+        Defects Prepared By
+    type: Label
+  - event_bindings: {change: drop_down_staff_change}
+    layout_properties: {grid_position: 'XVHJVH,CRLMJN'}
+    name: drop_down_staff
+    properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select Staff *}
+    type: DropDown
+  - layout_properties: {grid_position: 'FQZNLS,BWEYGI'}
+    name: label_staffchanged
+    properties: {visible: false}
+    type: Label
+  - layout_properties: {grid_position: 'PKFRQA,LRPFUS'}
+    name: label_signature
+    properties:
+      align: center
+      background: theme:Gray 300
+      bold: false
+      font: Mozilla Headline
+      font_size: 22
+      foreground: theme:Gray 800
+      text: |
+        Staff Signature
+    type: Label
+  - components:
+    - layout_properties: {grid_position: 'BYISFE,GNWUJN'}
+      name: image_1
+      properties: {border: ''}
+      type: Image
+    layout_properties: {grid_position: 'QXWRFT,QOBQSC'}
+    name: column_panel_1
+    properties: {}
+    type: ColumnPanel
+  - components:
+    - layout_properties: {grid_position: 'JQXJGO,BZFOLG'}
+      name: label_signature_copy
+      properties:
+        align: center
+        background: theme:Gray 300
+        bold: false
+        font: Mozilla Headline
+        font_size: 22
+        foreground: theme:Gray 800
+        text: |
+          Update Signature
+      type: Label
+    - layout_properties: {grid_position: 'PUTIKN,APLRNS'}
+      name: spacer_4
+      properties: {height: 32}
+      type: Spacer
+    - layout_properties: {grid_position: 'PUTIKN,BKIYUI', row_background: ''}
+      name: signature_component_1
+      properties: {}
+      type: form:SignatureComponent
+    - layout_properties: {grid_position: 'PUTIKN,LCYZAU'}
+      name: spacer_5
+      properties: {height: 32}
+      type: Spacer
+    layout_properties: {grid_position: 'HTQWAK,XOCZMP'}
+    name: column_panel_update_signature
+    properties: {col_widths: '{"APLRNS":15,"BKIYUI":30,"LCYZAU":15}', role: null}
+    type: ColumnPanel
+  layout_properties: {full_width_row: false, grid_position: 'HEOFNJ,KNGYLD', row_background: ''}
+  name: card_1
+  properties: {border: '', col_widths: '{"FOZOKD":45,"VGHXWP":45,"EJPTOZ":45}', role: glass-panel}
+  type: ColumnPanel
+container:
+  properties: {background: '', role: null}
+  type: ColumnPanel
+is_package: true

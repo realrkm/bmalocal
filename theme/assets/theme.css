@@ -205,7 +205,7 @@ a:hover, a:active {
 
 .signature-page-body {
     min-height: 100vh;
-    background-color: #fafafa; /* Similar to bg-gray-100 */
+    background-color: #fafafa !important; /* Similar to bg-gray-100 */
     display: flex;
     align-items: center;
     justify-content: center;

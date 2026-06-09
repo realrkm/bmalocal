@@ -120,8 +120,10 @@ class OrderTracking(OrderTrackingTemplate):
         #Clear selected items
         self.text_box_searchPartNo.text = ""
         self.drop_down_selectPart.items = []
+        self.flow_panel_partNumber.clear()
         self.txt_Quantity.text =""
         self.drop_down_brand.selected_value = None
+        self.flow_panel_brand.clear()
         
 
     def btn_SaveAndNew_click(self, **event_args):

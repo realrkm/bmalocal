@@ -43,11 +43,11 @@ components:
     name: label_title_10
     properties:
       align: center
-      background: theme:Gray 300
+      background: theme:White
       bold: false
       font: Mozilla Headline
       font_size: 22
-      foreground: theme:Gray 800
+      foreground: theme:Black
       text: |
         Client Instructions
     type: Label
@@ -275,7 +275,7 @@ components:
       name: spacer_4
       properties: {height: 32}
       type: Spacer
-    - layout_properties: {grid_position: 'PUTIKN,BKIYUI'}
+    - layout_properties: {grid_position: 'PUTIKN,BKIYUI', row_background: ''}
       name: signature_component_1
       properties: {}
       type: form:SignatureComponent

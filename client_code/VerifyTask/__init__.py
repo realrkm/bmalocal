@@ -24,35 +24,6 @@ class VerifyTask(VerifyTaskTemplate):
             # Manually call the change handler
             #self.cmbJobCardID_change()
        
-    def get_signature_image(self):
-        # Wait a short time to ensure JS function is available
-        for _ in range(20):  # Retry for up to 1 seconds
-            if hasattr(window, "getSignatureData"):
-                break
-            time.sleep(0.5)
-        else:
-            alert("Signature pad is not ready. Please try again in a moment.")
-            return
-
-        # Call the JavaScript function
-        data_url = window.getSignatureData()
-
-        if not data_url:
-            alert("No signature was captured. Please draw a signature first.")
-            return
-
-        # Split data URL to get the base64 content
-        header, encoded = data_url.split(",", 1)
-        binary_data = base64.b64decode(encoded)
-
-        # Create an Anvil Media object
-        media = BlobMedia("image/png", binary_data, name="signature.png")
-
-        # Optionally display it on the form (if you have an Image component)
-        #self.signature_preview.source = media
-
-        # Return or store the media for further use
-        return media
 
     def Save_click(self, **event_args):
         """Triggered when user clicks 'Save' button in Anvil UI"""
@@ -70,8 +41,8 @@ class VerifyTask(VerifyTaskTemplate):
             self.Save.enabled = True
             return
                    
-        if not self.get_signature_image():
-            self.get_signature_image()
+        if not self.signature_form_1.get_signature_image():
+            self.signature_form_1.get_signature_image()
             self.Save.enabled = True
             return
         
@@ -83,7 +54,7 @@ class VerifyTask(VerifyTaskTemplate):
             
         jobCardID = self.cmbJobCardID.selected_value['ID']
         remarks = self.txtRemarks.text
-        signature = self.get_signature_image()
+        signature = self.signature_form_1.get_signature_image()
         createdAt = datetime.now()
         status = self.cmbWorkflow.selected_value
             

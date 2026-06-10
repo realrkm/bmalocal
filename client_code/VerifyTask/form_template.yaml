@@ -22,10 +22,14 @@ components:
       name: spacer_2
       properties: {height: 32}
       type: Spacer
-    - layout_properties: {grid_position: 'UWOZJM,MJWYAV'}
-      name: signature_component_1
+    - layout_properties: {grid_position: 'UWOZJM,KQLESU'}
+      name: signature_form_1
       properties: {}
-      type: form:SignatureComponent
+      type: form:SignatureForm
+    - layout_properties: {grid_position: 'UWOZJM,PLCEPT'}
+      name: spacer_5
+      properties: {height: 32}
+      type: Spacer
     - components:
       - layout_properties: {grid_position: 'FTYCAO,CSPJGG'}
         name: label_Workflow
@@ -71,7 +75,7 @@ components:
       type: Button
     layout_properties: {grid_position: 'XZUUES,QUHGQS'}
     name: column_panel_1
-    properties: {col_widths: '{"YSQNDF":15,"MJWYAV":45}', role: null}
+    properties: {col_widths: '{"YSQNDF":15,"KQLESU":32,"PLCEPT":13}', role: null}
     type: ColumnPanel
   layout_properties: {grid_position: 'OJZQEO,AZBHWJ', row_background: ''}
   name: card_1

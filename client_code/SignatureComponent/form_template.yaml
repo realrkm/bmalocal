@@ -1,6 +1,6 @@
 components: []
 container:
-  properties: {background: '', border: '', foreground: '', html: '@theme:signature.html', role: glass-panel}
+  properties: {background: '', border: '', foreground: '', html: '@theme:signature.html', role: null}
   type: HtmlTemplate
 custom_component: true
 custom_component_container: true

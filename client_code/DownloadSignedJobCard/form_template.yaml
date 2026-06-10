@@ -33,26 +33,22 @@ components:
         name: spacer_6
         properties: {height: '10'}
         type: Spacer
-      - layout_properties: {grid_position: 'FNRTPW,JDKWYP', row_background: 'theme:Black'}
-        name: spacer_2
-        properties: {height: '10'}
-        type: Spacer
       - components:
         - layout_properties: {grid_position: 'VWNMSG,PFYNST'}
           name: column_panel_2
           properties: {}
           type: ColumnPanel
-        - layout_properties: {grid_position: 'VWNMSG,PDUYLC'}
-          name: signature_component_1
+        - layout_properties: {grid_position: 'VWNMSG,JRNLSR'}
+          name: signature_form_1
           properties: {}
-          type: form:SignatureComponent
+          type: form:SignatureForm
         - layout_properties: {grid_position: 'VWNMSG,CWGYYF'}
           name: column_panel_1
           properties: {}
           type: ColumnPanel
         layout_properties: {grid_position: 'RGPBFT,ORYBJY'}
         name: card_4
-        properties: {border: solid, col_widths: '{"PFYNST":15,"PDUYLC":30,"CWGYYF":15}', role: glass-panel}
+        properties: {border: solid, col_widths: '{"PFYNST":11,"CWGYYF":14,"JRNLSR":29}', role: glass-panel}
         type: ColumnPanel
       - layout_properties: {grid_position: 'BLPMFJ,MYXOWO', row_background: 'theme:Black'}
         name: spacer_3

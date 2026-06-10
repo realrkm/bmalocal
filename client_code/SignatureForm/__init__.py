@@ -177,10 +177,11 @@ class SignatureForm(SignatureFormTemplate):
         """Public method — call from other forms to retrieve signature PNG"""
         return self._get_white_background_data_url()
 
-    def save_signature_to_table(self):
+    def get_signature_image(self):
         """Optional — saves signature as Anvil media to a Data Table"""
         data_url = self._get_white_background_data_url()
         header, encoded = data_url.split(',', 1)
         binary_data = base64.b64decode(encoded)
         media = anvil.BlobMedia('image/png', binary_data, name='signature.png')
-        anvil.server.call('save_signature', media)
+        # Return or store the media for further use
+        return media

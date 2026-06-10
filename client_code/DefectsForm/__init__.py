@@ -61,33 +61,6 @@ class DefectsForm(DefectsFormTemplate):
         #if result: #Return existing details
         #    self.image_1.source = result[0]["Signature"]
 
-    
-    def get_signature_image(self):
-        # Wait a short time to ensure JS function is available
-        for _ in range(20):  # Retry for up to 1 seconds
-            if hasattr(window, "getSignatureData"):
-                break
-            time.sleep(0.5)
-        else:
-            alert("Signature pad is not ready. Please try again in a moment.")
-            return
-
-        # Call the JavaScript function
-        data_url = window.getSignatureData()
-
-        if not data_url:
-            alert("No signature was captured. Please draw a signature first.")
-            return
-
-        # Split data URL to get the base64 content
-        header, encoded = data_url.split(",", 1)
-        binary_data = base64.b64decode(encoded)
-
-        # Create an Anvil Media object
-        media = BlobMedia("image/png", binary_data, name="signature.png")
-
-        # Return or store the media for further use
-        return media
         
     def btn_Update_click(self,  **event_args):
         """This method is called when the button is clicked"""
@@ -100,6 +73,7 @@ class DefectsForm(DefectsFormTemplate):
         parts=self.txtRequestedParts.text
         staffID = self.drop_down_staff.selected_value
         signature = None
+            
         
         if not staffID:
             alert("Sorry, please select staff to proceed", title="Blank Field Found")
@@ -108,7 +82,7 @@ class DefectsForm(DefectsFormTemplate):
             return
             
         if self.label_staffchanged.text == "Yes":
-            signature = self.get_signature_image()
+            signature = self.signature_form_1.get_signature_image()
             if not signature:
                 self.btn_Update.enabled = True
                 return
@@ -127,6 +101,8 @@ class DefectsForm(DefectsFormTemplate):
         anvil.server.call_s("updateBlankDefectsAndRequestedParts")
         
         alert("Update is successful", title="Success")
+        self.column_panel_update_signature.visible=False
+        self.populateForm(self.defects_data)
         self.btn_Update.enabled = True
         
     def btn_DownloadTechNotes_click(self, **event_args):
@@ -216,6 +192,7 @@ class DefectsForm(DefectsFormTemplate):
         if self.drop_down_staff.selected_value:
             self.label_staffchanged.text = "Yes"
             alert("Update Signature", title="Staff Name Changed")
+            self.column_panel_update_signature.visible=True
 
     def btn_Search_click(self, **event_args):
         """This method is called when the text in this text box is edited"""

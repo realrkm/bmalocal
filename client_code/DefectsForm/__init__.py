@@ -101,15 +101,12 @@ class DefectsForm(DefectsFormTemplate):
         anvil.server.call_s("updateBlankDefectsAndRequestedParts")
         
         alert("Update is successful", title="Success")
+        self.label_staffchanged.text = ""
+        self.column_panel_update_signature.visible=False
+        defectListData=anvil.server.call("getDefectsList", self.defects_data[0]["ID"])
+        self.image_1.source = defectListData[0]["Signature"]
+        self.image_1.visible=True
         self.btn_Update.enabled = True
-        self.label_signature.visible=True
-        self.label_signature_copy.visible=False
-        self.signature_form_1.card_1.title_label.visible = False
-        self.signature_form_1.card_1.message_label.visible = False
-        self.signature_form_1.card_1.signature_canvas.visible = False
-        self.signature_form_1.card_1.clear_button.visible = False
-        self.signature_form_1.card_1.preview_button.visible = False
-        self.signature_form_1.card_1.preview_image.visible = True
         
         
     def btn_DownloadTechNotes_click(self, **event_args):

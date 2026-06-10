@@ -101,9 +101,16 @@ class DefectsForm(DefectsFormTemplate):
         anvil.server.call_s("updateBlankDefectsAndRequestedParts")
         
         alert("Update is successful", title="Success")
-        self.column_panel_update_signature.visible=False
-        self.populateForm(self.defects_data)
         self.btn_Update.enabled = True
+        self.label_signature.visible=True
+        self.label_signature_copy.visible=False
+        self.signature_form_1.card_1.title_label.visible = False
+        self.signature_form_1.card_1.message_label.visible = False
+        self.signature_form_1.card_1.signature_canvas.visible = False
+        self.signature_form_1.card_1.clear_button.visible = False
+        self.signature_form_1.card_1.preview_button.visible = False
+        self.signature_form_1.card_1.preview_image.visible = True
+        
         
     def btn_DownloadTechNotes_click(self, **event_args):
         """This method is called when the button is clicked"""
@@ -191,7 +198,15 @@ class DefectsForm(DefectsFormTemplate):
         """This method is called when an item is selected"""
         if self.drop_down_staff.selected_value:
             self.label_staffchanged.text = "Yes"
-            alert("Update Signature", title="Staff Name Changed")
+            notification = Notification(
+                "Staff Name Changed",
+                title="Update Signature",
+                style="danger",
+                timeout=None
+                )
+            notification.show()
+            self.label_signature.visible=False
+            self.image_1.visible=False
             self.column_panel_update_signature.visible=True
 
     def btn_Search_click(self, **event_args):

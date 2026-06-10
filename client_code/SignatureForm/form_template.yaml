@@ -1,0 +1,32 @@
+components:
+- components:
+  - layout_properties: {grid_position: 'DMWFTI,CDDCVA'}
+    name: title_label
+    properties: {}
+    type: Label
+  - layout_properties: {grid_position: 'PHRXYY,ZWTVDT'}
+    name: message_label
+    properties: {}
+    type: Label
+  - layout_properties: {grid_position: 'IRTWVZ,ZPZOUW'}
+    name: signature_canvas
+    properties: {background: 'theme:White', border: solid, height: 100}
+    type: Canvas
+  - layout_properties: {grid_position: 'QHWQFG,EOKNPO DPRUMN,ATXTUW'}
+    name: clear_button
+    properties: {background: 'theme:Primary 700', border: solid, foreground: 'theme:White', text: Clear}
+    type: Button
+  - layout_properties: {grid_position: 'QHWQFG,EOKNPO LCZNIV,FDYKWZ'}
+    name: preview_image
+    properties: {}
+    type: Image
+  - layout_properties: {grid_position: 'QHWQFG,QPVZHF'}
+    name: save_button
+    properties: {background: 'theme:Primary 700', border: solid, foreground: 'theme:Black', text: Save}
+    type: Button
+  layout_properties: {full_width_row: true, grid_position: 'MZAPYF,HDMPEL'}
+  name: card_1
+  properties: {background: '', role: null}
+  type: ColumnPanel
+container: {type: ColumnPanel}
+is_package: true

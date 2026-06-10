@@ -2,6 +2,6 @@ components: []
 container:
   properties: {background: '', border: '', foreground: '', html: '@theme:signature.html', role: null}
   type: HtmlTemplate
-custom_component: true
-custom_component_container: true
-is_package: true
+custom_component: false
+custom_component_container: false
+is_package: false

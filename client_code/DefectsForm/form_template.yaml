@@ -275,17 +275,17 @@ components:
       name: spacer_4
       properties: {height: 32}
       type: Spacer
-    - layout_properties: {grid_position: 'PUTIKN,BKIYUI', row_background: ''}
-      name: signature_component_1
+    - layout_properties: {grid_position: 'PUTIKN,SCKPPZ'}
+      name: signature_form_1
       properties: {}
-      type: form:SignatureComponent
+      type: form:SignatureForm
     - layout_properties: {grid_position: 'PUTIKN,LCYZAU'}
       name: spacer_5
       properties: {height: 32}
       type: Spacer
     layout_properties: {grid_position: 'HTQWAK,XOCZMP'}
     name: column_panel_update_signature
-    properties: {background: '', col_widths: '{"APLRNS":15,"BKIYUI":30,"LCYZAU":15}', role: null}
+    properties: {background: '', col_widths: '{"APLRNS":11,"LCYZAU":13,"SCKPPZ":24}', role: null}
     type: ColumnPanel
   layout_properties: {full_width_row: false, grid_position: 'HEOFNJ,KNGYLD', row_background: ''}
   name: card_1

@@ -199,9 +199,10 @@ class DefectsForm(DefectsFormTemplate):
                 "Staff Name Changed",
                 title="Update Signature",
                 style="danger",
-                timeout=None
+                timeout=3
                 )
             notification.show()
+            notification.hide()
             self.label_signature.visible=False
             self.image_1.visible=False
             self.column_panel_update_signature.visible=True

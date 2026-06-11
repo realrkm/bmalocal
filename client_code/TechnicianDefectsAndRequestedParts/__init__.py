@@ -35,32 +35,7 @@ class TechnicianDefectsAndRequestedParts(TechnicianDefectsAndRequestedPartsTempl
         self.txtClientInstructions.text = ModGetData.getJobCardInstructions(self.cmbJobCardRef.selected_value['ID'])
         self.txtTechNotes.text= ModGetData.getJobCardTechNotes(self.cmbJobCardRef.selected_value['ID'])  
 
-    def get_signature_image(self):
-        # Wait a short time to ensure JS function is available
-        for _ in range(20):  # Retry for up to 1 seconds
-            if hasattr(window, "getSignatureData"):
-                break
-            time.sleep(0.5)
-        else:
-            alert("Signature pad is not ready. Please try again in a moment.")
-            return
-
-        # Call the JavaScript function
-        data_url = window.getSignatureData()
-
-        if not data_url:
-            alert("No signature was captured. Please draw a signature first.")
-            return
-
-        # Split data URL to get the base64 content
-        header, encoded = data_url.split(",", 1)
-        binary_data = base64.b64decode(encoded)
-
-        # Create an Anvil Media object
-        media = BlobMedia("image/png", binary_data, name="signature.png")
-
-        # Return or store the media for further use
-        return media
+    
         
     def btn_Save_click(self, **event_args):
         """This method is called when the button is clicked"""
@@ -71,7 +46,7 @@ class TechnicianDefectsAndRequestedParts(TechnicianDefectsAndRequestedPartsTempl
         requestedParts = self.txtRequestedParts.text
         status = self.cmbWorkflow.selected_value
         staffID = self.drop_down_staff.selected_value
-        signature = self.get_signature_image()
+        signature = self.signature_form_1.get_signature_image()
         
         if not self.cmbJobCardRef.selected_value:
             alert("Sorry, please select job card ref to proceed.", title="Blank Field(s) Found")
@@ -103,7 +78,8 @@ class TechnicianDefectsAndRequestedParts(TechnicianDefectsAndRequestedPartsTempl
             self.btn_Save.enabled = True
             return
             
-        if not self.get_signature_image():
+        if not self.signature_form_1.get_signature_image():
+            alert("Sorry, please sign defects list to proceed.", title="Missing Signature", large=False)
             self.btn_Save.enabled = True
             return   
         

@@ -85,7 +85,7 @@ components:
           font_size: 16
           foreground: theme:Black
           include_placeholder: true
-          items: [ATE, Bosch, Continental, FAG, Hella, Hengst, INA, Lemförder, LuK, Mahle, MANN-FILTER, Pierburg, Sachs, SKF, Textar, ZF]
+          items: [ATE, Behr, Bosch, Continental, Elring, FAG, Febi, GST, Hella, Hengst, INA, Lemförder, LuK, Mahle, Mann, Nissen, OE, Pierburg, Sachs, SKF, Textar, ZF]
           placeholder: Select Brand *
         type: DropDown
       - layout_properties: {grid_position: 'WBHAQN,IPXVBZ'}

@@ -211,10 +211,6 @@ components:
   name: card_3
   properties: {border: '', role: glass-panel}
   type: ColumnPanel
-- layout_properties: {full_width_row: false, grid_position: 'CHYEGR,USBRPY', row_background: ''}
-  name: spacer_3
-  properties: {height: 32}
-  type: Spacer
 - layout_properties: {grid_position: 'RLEIPL,WDTVVM'}
   name: spacer_3_copy
   properties: {height: 14}

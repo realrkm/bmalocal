@@ -82,11 +82,13 @@ class DefectsForm(DefectsFormTemplate):
             return
             
         if self.label_staffchanged.text == "Yes":
-            signature = self.signature_form_1.get_signature_image()
-            if not signature:
+            try:
+                signature = self.signature_form_1.get_signature_image()
+            except ValueError:
+                alert("Customer signature is required.")
                 self.btn_Update.enabled = True
                 return
-        
+                
         existingrecord = anvil.server.call("getJobCardDefects", jobcardID)
         if not existingrecord:
             #Create record first in tbl_techniciandefectsandrequestedparts
@@ -202,7 +204,7 @@ class DefectsForm(DefectsFormTemplate):
                 timeout=3
                 )
             notification.show()
-            notification.hide()
+           
             self.label_signature.visible=False
             self.image_1.visible=False
             self.column_panel_update_signature.visible=True

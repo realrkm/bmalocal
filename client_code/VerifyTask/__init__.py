@@ -40,9 +40,11 @@ class VerifyTask(VerifyTaskTemplate):
             self.txtRemarks.focus()
             self.Save.enabled = True
             return
-                   
-        if not self.signature_form_1.get_signature_image():
-            self.signature_form_1.get_signature_image()
+
+        try:
+            signature = self.signature_form_1.get_signature_image()
+        except ValueError:
+            alert("Signature is required.")
             self.Save.enabled = True
             return
         
@@ -54,7 +56,6 @@ class VerifyTask(VerifyTaskTemplate):
             
         jobCardID = self.cmbJobCardID.selected_value['ID']
         remarks = self.txtRemarks.text
-        signature = self.signature_form_1.get_signature_image()
         createdAt = datetime.now()
         status = self.cmbWorkflow.selected_value
             

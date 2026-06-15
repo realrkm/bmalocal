@@ -175,10 +175,14 @@ class SignatureForm(SignatureFormTemplate):
 
     def get_signature_data(self):
         """Public method — call from other forms to retrieve signature PNG"""
+        if self._is_canvas_blank():
+            raise ValueError("No signature captured.")
         return self._get_white_background_data_url()
 
     def get_signature_image(self):
         """Optional — saves signature as Anvil media to a Data Table"""
+        if self._is_canvas_blank():
+            raise ValueError("No signature captured.")
         data_url = self._get_white_background_data_url()
         header, encoded = data_url.split(',', 1)
         binary_data = base64.b64decode(encoded)

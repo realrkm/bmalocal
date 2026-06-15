@@ -37,13 +37,14 @@ class DownloadSignedJobCard(DownloadSignedJobCardTemplate):
             self.btn_DownloadJobCard.enabled = True
             return
 
-        if not self.signature_form_1.get_signature_image():
-            alert("Sorry, please sign job card ref to proceed.", title="Missing Signature", large=False)
+        try:
+            signature = self.signature_form_1.get_signature_image()
+        except ValueError:
+            alert("Sorry, please sign to proceed.", title="Missing Signature", large=False)
             self.btn_DownloadJobCard.enabled = True
             return
-
+            
         jobCardID = self.cmbJobCardID.selected_value
-        signature = self.signature_form_1.get_signature_image()
         createdAt = datetime.now()
         
         anvil.server.call('saveSignedJobCardDetails', jobCardID, signature, createdAt) 

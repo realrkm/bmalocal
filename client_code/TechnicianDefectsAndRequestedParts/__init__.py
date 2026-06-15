@@ -46,7 +46,7 @@ class TechnicianDefectsAndRequestedParts(TechnicianDefectsAndRequestedPartsTempl
         requestedParts = self.txtRequestedParts.text
         status = self.cmbWorkflow.selected_value
         staffID = self.drop_down_staff.selected_value
-        signature = self.signature_form_1.get_signature_image()
+        
         
         if not self.cmbJobCardRef.selected_value:
             alert("Sorry, please select job card ref to proceed.", title="Blank Field(s) Found")
@@ -77,11 +77,14 @@ class TechnicianDefectsAndRequestedParts(TechnicianDefectsAndRequestedPartsTempl
             self.drop_down_staff.focus()
             self.btn_Save.enabled = True
             return
-            
-        if not self.signature_form_1.get_signature_image():
+
+        try:
+            signature = self.signature_form_1.get_signature_image()
+        except ValueError:
             alert("Sorry, please sign defects list to proceed.", title="Missing Signature", large=False)
             self.btn_Save.enabled = True
             return   
+                        
         
         anvil.server.call('saveTecnicianDefectsAndRequestedParts', jobcardref, defects, defects, requestedParts, staffID, signature)
         anvil.server.call_s('updateJobCardStatus', jobcardref, status)

@@ -68,8 +68,13 @@ class MapBarCodePartNo(MapBarCodePartNoTemplate):
             return
 
         result = anvil.server.call("saveBarcodePartNo", barcode,partNo)
-        alert(f"{result}",title="Success", large=False)
-        self.btn_Close_click()
+        
+        # Handle structured response
+        if result["success"]:
+            alert(result["message"], title="Success", large=False)
+            self.btn_Close_click()
+        else:
+            alert(result["message"], title="Error", large=False)
 
         
 

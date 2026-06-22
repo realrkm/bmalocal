@@ -446,17 +446,36 @@ class EditJobCard(EditJobCardTemplate):
         """This method is called when the button is clicked"""
         self.raise_event('x-close-alert', value = True)
 
-    def find_progress_tracker(self, component):
-        if component.__class__.__name__ == "ProgressTracker":
-            print(component)
+    def find_progress_tracker(self, component, level=0):
 
+        indent = "  " * level
+        print(f"{indent}Checking: {component.__class__.__name__}")
+    
+        # Step 1: Found ProgressTracker
+        if component.__class__.__name__ == "ProgressTracker":
+            print(f"{indent}FOUND ProgressTracker -> {component}")
+    
+            # Step 2: Access dropdown inside ProgressTracker
+            if hasattr(component, "drop_down_JobCardRefDetails"):
+                dd = component.drop_down_JobCardRefDetails
+                print(f"{indent}FOUND drop_down_JobCardRefDetails -> {dd}")
+                return dd
+    
+            print(f"{indent}drop_down_JobCardRefDetails NOT FOUND inside ProgressTracker")
+            return None
+    
+        # Step 3: Recurse into children
         if hasattr(component, "get_components"):
             for child in component.get_components():
-                result = self.find_progress_tracker(child)
-                if result:
-                    print(result)
+                print(f"{indent}Descending into: {child.__class__.__name__}")
     
+                result = self.find_progress_tracker(child, level + 1)
+    
+                if result is not None:
+                    return result
+    
+        print(f"{indent}No match in: {component.__class__.__name__}")
         return None
-    
+        
     
     

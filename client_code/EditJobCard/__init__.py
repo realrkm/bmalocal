@@ -427,21 +427,36 @@ class EditJobCard(EditJobCardTemplate):
         # Close form
         self.btn_Close_click()
 
+        self.find_progress_tracker(get_open_form())
+
         #Get current dropdown selected item in Progress Tracker
-        #value = get_open_form().column_panel_content.get_components()[0].drop_down_JobCardRefDetails.selected_value
+        value = get_open_form().column_panel_content.get_components()[0].drop_down_JobCardRefDetails.selected_value
         
         # Click Search buton on Progress Tracker to get latest items
-        #get_open_form().column_panel_content.get_components()[0].btn_SearchCustomer_click()
+        get_open_form().column_panel_content.get_components()[0].btn_SearchCustomer_click()
         
         #Assign old dropdown value to dropdown
-        #get_open_form().column_panel_content.get_components()[0].drop_down_JobCardRefDetails.selected_value=self.label_ID.text
+        get_open_form().column_panel_content.get_components()[0].drop_down_JobCardRefDetails.selected_value=value
 
         #Update the form display details matching the selected dropdown details
-        #get_open_form().column_panel_content.get_components()[0].drop_down_JobCardRefDetails_change()
+        get_open_form().column_panel_content.get_components()[0].drop_down_JobCardRefDetails_change()
         
-
+    
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.raise_event('x-close-alert', value = True)
 
+    def find_progress_tracker(self, component):
+        if component.__class__.__name__ == "ProgressTracker":
+            print(component)
+
+        if hasattr(component, "get_components"):
+            for child in component.get_components():
+                result = self.find_progress_tracker(child)
+                if result:
+                    print(result)
+    
+        return None
+    
+    
     

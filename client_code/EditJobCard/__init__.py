@@ -414,8 +414,6 @@ class EditJobCard(EditJobCardTemplate):
         ClientInstruction = self.txtInstructions.text
         Notes = self.txtTechNotes.text
         workDone = self.text_area_work_done.text
-        alert(f"the work done is {workDone}")
-       
         
         # Call a server-side function to update the data
         # This function updates an existing row in 'tbl_jobcarddetails' and 'tbl_pendingassignedjobs' tables
@@ -428,12 +426,13 @@ class EditJobCard(EditJobCardTemplate):
         # Close form
         self.btn_Close_click()
 
+        
         form = get_open_form()
 
         progress_tracker = self.find_progress_tracker(form)
         
         if not progress_tracker:
-            alert("ProgressTracker not found")
+            print("ProgressTracker not found")
             return
         
         # Save current dropdown value
@@ -448,41 +447,22 @@ class EditJobCard(EditJobCardTemplate):
         # Trigger UI update
         progress_tracker.drop_down_JobCardRefDetails_change()
 
-        #Get current dropdown selected item in Progress Tracker
-        #value = get_open_form().column_panel_content.get_components()[0].drop_down_JobCardRefDetails.selected_value
-        
-        # Click Search buton on Progress Tracker to get latest items
-        #get_open_form().column_panel_content.get_components()[0].btn_SearchCustomer_click()
-        
-        #Assign old dropdown value to dropdown
-        #get_open_form().column_panel_content.get_components()[0].drop_down_JobCardRefDetails.selected_value=value
-
-        #Update the form display details matching the selected dropdown details
-        #get_open_form().column_panel_content.get_components()[0].drop_down_JobCardRefDetails_change()
-        
-    
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.raise_event('x-close-alert', value = True)
 
     def find_progress_tracker(self, component, level=0):
-        indent = "  " * level
-        print(f"{indent}Checking: {component.__class__.__name__}")
-    
         # Step 1: Found ProgressTracker — return it directly
-        if component.__class__.__name__ == "ProgressTracker":
-            print(f"{indent}FOUND ProgressTracker -> {component}")
+        if component.__class__.__name__ == "ProgressTracker" or component.__class__.__name__ == "ProgressTrackerMobileView":
             return component  # ← was returning dd (the dropdown) before
     
         # Step 2: Recurse into children
         if hasattr(component, "get_components"):
             for child in component.get_components():
-                print(f"{indent}Descending into: {child.__class__.__name__}")
                 result = self.find_progress_tracker(child, level + 1)
                 if result is not None:
                     return result
-    
-        print(f"{indent}No match in: {component.__class__.__name__}")
+
         return None
         
     

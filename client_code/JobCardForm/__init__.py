@@ -59,7 +59,7 @@ class JobCardForm(JobCardFormTemplate):
         self.chkFull.checked=result["Full"]
         self.txtInstructions.text=result["ClientInstruction"]
         self.txtTechNotes.text=result["Notes"]
-
+      
         self.text_area_work_done.text = anvil.server.call("getWorkDoneInJobCard", jobcard_data["ID"])
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""

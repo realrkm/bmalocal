@@ -1,0 +1,10 @@
+components: []
+container:
+  properties:
+    border: ''
+    html: |2-
+
+      <div anvil-slot="default"></div>
+    role: null
+  type: HtmlTemplate
+is_package: true

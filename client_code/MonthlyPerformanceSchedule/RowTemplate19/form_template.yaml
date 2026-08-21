@@ -1,0 +1,15 @@
+components:
+- data_bindings:
+  - {code: 'self.item[''Category'']', property: selected_value, writeback: true}
+  layout_properties: {column: UHZAXM}
+  name: drop_down_category
+  properties:
+    background: theme:White
+    border: solid
+    foreground: theme:Black
+    include_placeholder: true
+    items: [Car Parts, Engine Oil, Consumable, Diagnosis, Labour, Engine Wash, Alignment, Transfer / Gearbox Oil, Others, Prev Bal]
+    placeholder: Select Category *
+  type: DropDown
+container: {type: DataRowPanel}
+is_package: true

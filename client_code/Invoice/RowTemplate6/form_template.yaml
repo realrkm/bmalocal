@@ -1,0 +1,5 @@
+components: []
+container:
+  properties: {border: solid, font: Roboto, font_size: 16}
+  type: DataRowPanel
+is_package: true

@@ -1,0 +1,5 @@
+components: []
+container:
+  properties: {border: '', role: wide}
+  type: DataRowPanel
+is_package: true

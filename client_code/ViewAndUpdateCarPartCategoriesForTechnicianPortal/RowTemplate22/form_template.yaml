@@ -1,0 +1,9 @@
+components:
+- data_bindings:
+  - {code: 'self.item[''Patterns'']', property: text, writeback: true}
+  layout_properties: {column: VJQQOR}
+  name: text_area_1
+  properties: {auto_expand: true, border: ''}
+  type: TextArea
+container: {type: DataRowPanel}
+is_package: true

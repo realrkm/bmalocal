@@ -40,40 +40,24 @@ class Client(ClientTemplate):
     
         # Validation
         if not name:
-<<<<<<< HEAD
-            alert("Please enter client's full name.")
-=======
             Notification("Please enter client's full name.", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txt_name.focus()
             self.btn_SaveAndNew.enabled =True
             return
         elif any(char.isdigit() for char in name):
-<<<<<<< HEAD
-            alert("Full name should not contain any numbers.")
-=======
             Notification("Full name should not contain any numbers.", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txt_name.text = ""
             self.txt_name.focus()
             self.btn_SaveAndNew.enabled =True
             return
         elif not phone:
-<<<<<<< HEAD
-            alert("Please enter client's phone number.")
-=======
             Notification("Please enter client's phone number.", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txt_phone.focus()
             self.btn_SaveAndNew.enabled =True
             return
         """
         elif not re.match(r'^\+?1?[-.\s]?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}$', phone):
-<<<<<<< HEAD
-            alert("Please enter a valid phone number")
-=======
             Notification("Please enter a valid phone number", timeout=3).show()
->>>>>>> origin/main
             self.txt_phone.text = ""
             self.txt_phone.focus()
             self.btn_SaveAndNew.enabled =True
@@ -83,11 +67,7 @@ class Client(ClientTemplate):
         # Call server function
         duplicate = anvil.server.call('check_duplicate_contact', "Client", phone)
         if duplicate:
-<<<<<<< HEAD
-            alert("Sorry, a client with that phone number has already been added. Please enter another phone number", title="Duplicate Phone Number", large=False)
-=======
             Notification("Sorry, a client with that phone number has already been added. Please enter another phone number", title="Duplicate Phone Number", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txt_phone.text = ""
             self.txt_name.focus()
             self.btn_SaveAndNew.enabled =True
@@ -95,11 +75,7 @@ class Client(ClientTemplate):
 
         # Save data     
         anvil.server.call('save_client_data', name, phone, address, email, narration)
-<<<<<<< HEAD
-        alert("Client saved successfully.")
-=======
         Notification("Client saved successfully.", style="warning", timeout=3).show()
->>>>>>> origin/main
         
         # Clear form
         self.clear_form_fields()                     

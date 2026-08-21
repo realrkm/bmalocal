@@ -22,7 +22,7 @@ class PeriodicPayment(PeriodicPaymentTemplate):
         try:
             startDate = self.date_picker_start.date
             endDate = self.date_picker_end.date
-            search_term = self.txt_SearchTerm.text
+            search_term = self.txt_SearchTerm.text.strip()
 
             # 1. No filters selected
             if not startDate and not endDate and not search_term:

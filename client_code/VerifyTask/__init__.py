@@ -30,21 +30,13 @@ class VerifyTask(VerifyTaskTemplate):
         self.Save.enabled = False #Prevent multiple clicks 
         
         if not self.cmbJobCardID.selected_value['ID']:
-<<<<<<< HEAD
-            alert("Sorry, please select job card ref to proceed.", title="Blank Field(s) Found", large=False)
-=======
             Notification("Sorry, please select job card ref to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.cmbJobCardID.focus()
             self.Save.enabled = True
             return
 
         if not self.txtRemarks.text:
-<<<<<<< HEAD
-            alert("Sorry, please enter remarks to proceed.", title="Blank Field(s) Found", large=False)
-=======
             Notification("Sorry, please enter remarks to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txtRemarks.focus()
             self.Save.enabled = True
             return
@@ -52,20 +44,12 @@ class VerifyTask(VerifyTaskTemplate):
         try:
             signature = self.signature_form_1.get_signature_image()
         except ValueError:
-<<<<<<< HEAD
-            alert("Signature is required.")
-=======
             Notification("Signature is required.", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.Save.enabled = True
             return
         
         if not self.cmbWorkflow.selected_value:
-<<<<<<< HEAD
-            alert("Sorry, please select workflow status to proceed.", title="Blank Field(s) Found", large=False)
-=======
             Notification("Sorry, please select workflow status to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.cmbWorkflow.focus()
             self.Save.enabled = True
             return
@@ -77,11 +61,7 @@ class VerifyTask(VerifyTaskTemplate):
             
         anvil.server.call('saveConfirmationDetails', jobCardID, remarks, signature, createdAt) #Save confirmation details and Update job card to completed
         anvil.server.call_s('updateJobCardStatus', jobCardID, status)
-<<<<<<< HEAD
-        alert("Verification saved successfully")
-=======
         Notification("Verification saved successfully", style="warning", timeout=3).show()
->>>>>>> origin/main
 
         # Close Form
         self.btn_Close_click()

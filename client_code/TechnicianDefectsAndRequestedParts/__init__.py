@@ -49,11 +49,7 @@ class TechnicianDefectsAndRequestedParts(TechnicianDefectsAndRequestedPartsTempl
         
         
         if not self.cmbJobCardRef.selected_value:
-<<<<<<< HEAD
-            alert("Sorry, please select job card ref to proceed.", title="Blank Field(s) Found")
-=======
             Notification("Sorry, please select job card ref to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.cmbJobCardRef.focus()
             self.btn_Save.enabled = True
             return
@@ -65,31 +61,19 @@ class TechnicianDefectsAndRequestedParts(TechnicianDefectsAndRequestedPartsTempl
             requestedParts="None"
             
         if not self.cmbWorkflow.selected_value:
-<<<<<<< HEAD
-            alert("Sorry, please select workflow status to proceed.", title="Blank Field Found")
-=======
             Notification("Sorry, please select workflow status to proceed.", title="Blank Field Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.cmbWorkflow.focus()
             self.btn_Save.enabled = True
             return
             
         if self.cmbWorkflow.selected_value == "Cancel Jobcard" and not self.text_area_1.text:
-<<<<<<< HEAD
-            alert("Sorry, please enter cancellation reason to proceed.", title="Blank Field Found")
-=======
             Notification("Sorry, please enter cancellation reason to proceed.", title="Blank Field Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.text_area_1.focus()
             self.btn_Save.enabled = True
             return
             
         if not self.drop_down_staff.selected_value:
-<<<<<<< HEAD
-            alert("Sorry, please select staff who prepared the defects list.", title="Blank Field Found")
-=======
             Notification("Sorry, please select staff who prepared the defects list.", title="Blank Field Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.drop_down_staff.focus()
             self.btn_Save.enabled = True
             return
@@ -97,11 +81,7 @@ class TechnicianDefectsAndRequestedParts(TechnicianDefectsAndRequestedPartsTempl
         try:
             signature = self.signature_form_1.get_signature_image()
         except ValueError:
-<<<<<<< HEAD
-            alert("Sorry, please sign defects list to proceed.", title="Missing Signature", large=False)
-=======
             Notification("Sorry, please sign defects list to proceed.", title="Missing Signature", style="danger", timeout=3).show()
->>>>>>> origin/main
             self.btn_Save.enabled = True
             return   
                         
@@ -115,11 +95,7 @@ class TechnicianDefectsAndRequestedParts(TechnicianDefectsAndRequestedPartsTempl
         #Update Blank Defects And Requested Parts
         anvil.server.call_s("updateBlankDefectsAndRequestedParts")
         
-<<<<<<< HEAD
-        alert("Data saved successfully", title="Success")
-=======
         Notification("Data saved successfully", title="Success", style="success", timeout=3).show()
->>>>>>> origin/main
             
         # Close Form 
         self.btn_Close_click()

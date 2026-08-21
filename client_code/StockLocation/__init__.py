@@ -21,11 +21,7 @@ class StockLocation(StockLocationTemplate):
         search_text = self.text_box_search.text.strip()
 
         if not search_text:
-<<<<<<< HEAD
-            alert("Please enter location or part name or part number to search.", title="Missing Location / Part Details")
-=======
             Notification("Please enter location or part name or part number to search.", title="Missing Location / Part Details", style="danger", timeout=3).show()
->>>>>>> origin/main
             self.text_box_search.focus()
             return
 
@@ -37,10 +33,6 @@ class StockLocation(StockLocationTemplate):
             self.repeating_panel_1.items = ""
             self.repeating_panel_1.items = result
         else:
-<<<<<<< HEAD
-            alert("No records found for the entered part detail.", title="Not Found")
-=======
             Notification("No records found for the entered part detail.", title="Not Found", style="danger", timeout=3).show()
->>>>>>> origin/main
 
        

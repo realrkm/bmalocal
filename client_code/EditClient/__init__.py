@@ -24,11 +24,7 @@ class EditClient(EditClientTemplate):
         if self.txt_clientname.text:
             self.drop_down_selectClient.items = anvil.server.call('getClientNameAndPhoneNumber', self.txt_clientname.text)
         else:
-<<<<<<< HEAD
-            alert("Sorry, please enter client name to proceed", title="Blank Field(s) Found")
-=======
             Notification("Sorry, please enter client name to proceed", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             return
             
     def drop_down_selectClient_change(self, **event_args):
@@ -46,11 +42,7 @@ class EditClient(EditClientTemplate):
         self.btn_Update.enabled = False #Disable button to prevent multiple clicks 
 
         if self.drop_down_selectClient.selected_value is None:
-<<<<<<< HEAD
-            alert("Please select client's name to proceed.", large=False)
-=======
             Notification("Please select client's name to proceed.", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.drop_down_selectClient.focus()
             self.btn_Update.enabled =True
             return
@@ -71,40 +63,24 @@ class EditClient(EditClientTemplate):
 
         # Validation
         if not name:
-<<<<<<< HEAD
-            alert("Please enter client's full name.")
-=======
             Notification("Please enter client's full name.", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txt_name.focus()
             self.btn_Update.enabled =True
             return
         elif any(char.isdigit() for char in name):
-<<<<<<< HEAD
-            alert("Full name should not contain any numbers.")
-=======
             Notification("Full name should not contain any numbers.", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txt_name.text = ""
             self.txt_name.focus()
             self.btn_Update.enabled =True
             return
         elif not phone:
-<<<<<<< HEAD
-            alert("Please enter client's phone number.")
-=======
             Notification("Please enter client's phone number.", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txt_phone.focus()
             self.btn_Update.enabled =True
             return
             """
         elif not re.match(r'^\+?1?[-.\s]?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}$', phone):
-<<<<<<< HEAD
-            alert("Please enter a valid phone number")
-=======
             Notification("Please enter a valid phone number", timeout=3).show()
->>>>>>> origin/main
             self.txt_phone.text = ""
             self.txt_phone.focus()
             self.btn_Update.enabled =True
@@ -112,11 +88,7 @@ class EditClient(EditClientTemplate):
             """
         # Update data     
         anvil.server.call('updateClientDetails', client_id, name, phone, address, email, narration)
-<<<<<<< HEAD
-        alert("Client updated successfully.", title="Success", large=False)
-=======
         Notification("Client updated successfully.", title="Success", style="success", timeout=3).show()
->>>>>>> origin/main
 
         # Clear form
         self.btn_Close_click()        

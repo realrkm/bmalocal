@@ -34,41 +34,25 @@ class EditSupplier(EditSupplierTemplate):
 
         # Validation
         if not name:
-<<<<<<< HEAD
-            alert("Please enter supplier's full name.")
-=======
             Notification("Please enter supplier's full name.", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txt_name.focus()
             self.btn_Update.enabled = True
             return
         elif any(char.isdigit() for char in name):
-<<<<<<< HEAD
-            alert("Full name should not contain any numbers.")
-=======
             Notification("Full name should not contain any numbers.", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txt_name.text = ""
             self.txt_name.focus()
             self.btn_Update.enabled = True
             return
         elif not phone:
-<<<<<<< HEAD
-            alert("Please enter supplier's phone number.")
-=======
             Notification("Please enter supplier's phone number.", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txt_phone.focus()
             self.btn_Update.enabled = True
             return
 
         # Update data
         anvil.server.call("updateSupplier",  name, phone, self.drop_down_select.selected_value)
-<<<<<<< HEAD
-        alert("Supplier updated successfully.", title="Success", large=False)
-=======
         Notification("Supplier updated successfully.", title="Success", style="success", timeout=3).show()
->>>>>>> origin/main
 
         # Clear form
         self.btn_Close_click()

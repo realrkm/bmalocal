@@ -21,15 +21,6 @@ class ViewSchedule(ViewScheduleTemplate):
         endDate = self.date_picker_end.date
        
         if startDate is None and endDate is None:
-<<<<<<< HEAD
-            alert("Sorry, please enter date period to proceed", title="Blank Field(s) Found")
-            return
-        elif startDate is None and endDate:
-            alert("Sorry, please enter start date to proceed", title="Blank Field(s) Found")
-            return
-        elif startDate > endDate:
-            alert("Sorry, start date cannot be greater than end date", title="Mismatch Dates")
-=======
             Notification("Sorry, please enter date period to proceed", title="Blank Field(s) Found", style="warning", timeout=3).show()
             return
         elif startDate is None and endDate:
@@ -37,7 +28,6 @@ class ViewSchedule(ViewScheduleTemplate):
             return
         elif startDate > endDate:
             Notification("Sorry, start date cannot be greater than end date", title="Mismatch Dates", style="warning", timeout=3).show()
->>>>>>> origin/main
             return
         else:
             self.repeating_panel_1.items = anvil.server.call("get_monthly_schedule_pivot", startDate, endDate)
@@ -50,11 +40,7 @@ class ViewSchedule(ViewScheduleTemplate):
         rows = list(self.repeating_panel_1.items)
 
         if not rows:
-<<<<<<< HEAD
-            alert("No data to export.")
-=======
             Notification("No data to export.", style="warning", timeout=3).show()
->>>>>>> origin/main
             return
 
         excel_file = anvil.server.call("export_monthly_schedule", rows)

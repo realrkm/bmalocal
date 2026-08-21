@@ -23,10 +23,6 @@ class IncompleteDefectsInfo(IncompleteDefectsInfoTemplate):
     def btn_UpdateStatus_click(self, **event_args):
         """This method is called when the button is clicked"""
         anvil.server.call_s("deactivate_incomplete_defects_info")
-<<<<<<< HEAD
-        alert("Incomplete defects info is updated successfully", title="Success")
-=======
         Notification("Incomplete defects info is updated successfully", title="Success", style="success", timeout=3).show()
->>>>>>> origin/main
         self.raise_event("x-close-alert", value=True)
        

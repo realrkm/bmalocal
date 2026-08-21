@@ -44,11 +44,7 @@ class UpdatePricingAmount(UpdatePricingAmountTemplate):
         if result:
             self.drop_down_selectPart.items = result
         else:
-<<<<<<< HEAD
-            alert("No records found for the entered part detail.", title="Not Found")
-=======
             Notification("No records found for the entered part detail.", title="Not Found", style="danger", timeout=3).show()
->>>>>>> origin/main
 
     def drop_down_selectPart_change(self, **event_args):
         """This method is called when an item is selected"""
@@ -199,11 +195,7 @@ class UpdatePricingAmount(UpdatePricingAmountTemplate):
             self.lbl_ID.text,
             self.lbl_SupplierId.text,
         )
-<<<<<<< HEAD
-        alert("Part Updated Successfully", title="Success", large=False)
-=======
         Notification("Part Updated Successfully", title="Success", style="success", timeout=3).show()
->>>>>>> origin/main
         self.btn_Close_click()
 
     def btn_Close_click(self, **event_args):

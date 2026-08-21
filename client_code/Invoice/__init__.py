@@ -65,11 +65,7 @@ class Invoice(InvoiceTemplate):
         search_value = self.text_box_searchPartNo.text.strip()
 
         if not search_value:
-<<<<<<< HEAD
-            alert("Please enter part name or part no. to proceed.", title="Blank Field(s) Found", large=False)
-=======
             Notification("Please enter part name or part no. to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.text_box_searchPartNo.focus()
             return
 
@@ -81,11 +77,7 @@ class Invoice(InvoiceTemplate):
         if result:
             self.drop_down_selectPart.items = result
         else:
-<<<<<<< HEAD
-            alert("No records found for the entered part detail.", title="Not Found")
-=======
             Notification("No records found for the entered part detail.", title="Not Found", style="danger", timeout=3).show()
->>>>>>> origin/main
 
 
     def drop_down_selectPart_change(self, **event_args):
@@ -104,17 +96,6 @@ class Invoice(InvoiceTemplate):
         textSellingPrice = str(self.txtSellingPrice.text).strip()
     
         if not self.drop_down_selectPart.selected_value:
-<<<<<<< HEAD
-            alert("Sorry, please select car part to proceed.", title="Blank Field(s) Found", large=False)
-            self.drop_down_selectPart.focus()
-            return
-        if not self.txtQuantity.text:
-            alert("Sorry, please enter quantity to proceed.", title="Blank Field(s) Found", large=False)
-            self.txtQuantity.focus()
-            return
-        if textSellingPrice == "":
-            alert("Sorry, please enter the selling price to proceed.", title="Blank Field(s) Found", large=False)
-=======
             Notification("Sorry, please select car part to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
             self.drop_down_selectPart.focus()
             return
@@ -124,7 +105,6 @@ class Invoice(InvoiceTemplate):
             return
         if textSellingPrice == "":
             Notification("Sorry, please enter the selling price to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txtSellingPrice.focus()
             return
     
@@ -177,19 +157,11 @@ class Invoice(InvoiceTemplate):
         textAmount = str(self.txtAmount.text).strip()
     
         if not self.txtServices.text:
-<<<<<<< HEAD
-            alert("Sorry, please enter service name to proceed.", title="Blank Field(s) Found", large=False)
-            self.txtServices.focus()
-            return
-        if textAmount == "":
-            alert("Sorry, please enter amount to proceed.", title="Blank Field(s) Found", large=False)
-=======
             Notification("Sorry, please enter service name to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
             self.txtServices.focus()
             return
         if textAmount == "":
             Notification("Sorry, please enter amount to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txtAmount.focus()
             return
     
@@ -233,32 +205,20 @@ class Invoice(InvoiceTemplate):
     def btn_Save_click(self, **event_args):
         self.btn_Save.enabled = False #Prevent multiple button clicks
         if not self.cmbJobCardRef.selected_value:
-<<<<<<< HEAD
-            alert("Sorry, please select job card ref to proceed.", title="Blank Field(s) Found")
-=======
             Notification("Sorry, please select job card ref to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.cmbJobCardRef.focus()
             self.btn_Save.enabled = True
             return
 
         if not self.cmbWorkflow.selected_value:
-<<<<<<< HEAD
-            alert("Sorry, please select the next workflow status to proceed.", title="Blank Field(s) Found")
-=======
             Notification("Sorry, please select the next workflow status to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.cmbWorkflow.focus()
             self.btn_Save.enabled = True
             return
 
         customerData = self.repeating_panel_assigned_parts.items or []
         if not customerData:
-<<<<<<< HEAD
-            anvil.alert("Sorry, please assign parts or service to proceed.", title="Missing Assigned Parts or Service")
-=======
             Notofication("Sorry, please assign parts or service to proceed.", title="Missing Assigned Parts or Service", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.btn_Save.enabled = True
             return
 
@@ -290,11 +250,7 @@ class Invoice(InvoiceTemplate):
         anvil.server.call('saveInvoice', assignedDate, jobCardID,  items)
         anvil.server.call_s('updateJobCardStatus', jobCardID, status)
 
-<<<<<<< HEAD
-        alert("Invoice saved successfully and download is initiated.", title="Success")
-=======
         Notification("Invoice saved successfully and download is initiated.", title="Success", style="success", timeout=3).show()
->>>>>>> origin/main
         self.insertMissingSellingPrices()
         self.downloadInvoicePdf(jobCardID)
 

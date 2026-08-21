@@ -25,11 +25,7 @@ class ResetForgotPassword(ResetForgotPasswordTemplate):
         
         # Validate inputs
         if not password:
-<<<<<<< HEAD
-            alert("Password is required.", title="Error", large=False)
-=======
             Notification("Password is required.", title="Error", style="danger", timeout=3).show()
->>>>>>> origin/main
             return
         # Call server
         try:

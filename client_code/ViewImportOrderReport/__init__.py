@@ -21,22 +21,14 @@ class ViewImportOrderReport(ViewImportOrderReportTemplate):
         searchTerm = self.text_box_searchPartNo.text
 
         if not searchTerm:
-<<<<<<< HEAD
-            alert("Please enter search term to proceed")
-=======
             Notification("Please enter search term to proceed", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.text_box_searchPartNo.focus()
             return
         else:
             result = anvil.server.call("search_client_import_orders", searchTerm)
 
         if not result:
-<<<<<<< HEAD
-            alert("Sorry, no record was found matching the search term")
-=======
             Notification("Sorry, no record was found matching the search term", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.text_box_searchPartNo.focus()
             return
         else:
@@ -57,11 +49,7 @@ class ViewImportOrderReport(ViewImportOrderReportTemplate):
         rows = list(self.repeating_panel_1.items)
 
         if not rows:
-<<<<<<< HEAD
-            alert("No data to export.")
-=======
             Notification("No data to export.", style="warning", timeout=3).show()
->>>>>>> origin/main
             return
 
         excel_file = anvil.server.call("export_import_orders", rows)

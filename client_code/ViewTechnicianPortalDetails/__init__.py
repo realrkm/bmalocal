@@ -24,10 +24,6 @@ class ViewTechnicianPortalDetails(ViewTechnicianPortalDetailsTemplate):
     def btn_UpdateStatus_click(self, **event_args):
         """This method is called when the button is clicked"""
         anvil.server.call_s("deactivate_technician_portal_info")
-<<<<<<< HEAD
-        alert("Pending technician portal info is updated successfully", title="Success")
-=======
         Notification("Pending technician portal info is updated successfully", title="Success", style="success", timeout=3).show()
->>>>>>> origin/main
         self.raise_event("x-close-alert", value=True)
         

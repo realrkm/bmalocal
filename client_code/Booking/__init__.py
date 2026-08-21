@@ -28,11 +28,7 @@ class Booking(BookingTemplate):
 
         # strip() handles cases where the user just enters spaces
         if not valueCustomer or not valueCustomer.strip():
-<<<<<<< HEAD
-            alert("Enter Customer's name to proceed", title="Blank Field Found")
-=======
             Notification("Enter Customer's name to proceed", title="Blank Field Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             return
 
         result = anvil.server.call("getClientFullnameFromSearchWord", valueCustomer)

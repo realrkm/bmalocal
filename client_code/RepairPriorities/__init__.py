@@ -25,11 +25,7 @@ class RepairPriorities(RepairPrioritiesTemplate):
         search_text = self.txt_SearchRegNo.text.strip()
         
         if not search_text:
-<<<<<<< HEAD
-            alert("Please enter Reg No. to proceed.", title="Blank Field(s) Found", large=False)
-=======
             Notification("Please enter Reg No. to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txt_SearchRegNo.focus()
             return
 
@@ -39,11 +35,7 @@ class RepairPriorities(RepairPrioritiesTemplate):
             self.drop_down_select.items = ""
             self.drop_down_select.items = result
         else:
-<<<<<<< HEAD
-            alert("No records found for the entered Reg No.", title="Not Found")
-=======
             Notification("No records found for the entered Reg No.", title="Not Found", style="danger", timeout=3).show()
->>>>>>> origin/main
 
     def drop_down_select_change(self, **event_args):
         """This method is called when an item is selected"""
@@ -54,11 +46,7 @@ class RepairPriorities(RepairPrioritiesTemplate):
         search_value = self.text_box_searchPartNo.text.strip()
 
         if not search_value:
-<<<<<<< HEAD
-            alert("Please enter part name or part no. to proceed.", title="Blank Field(s) Found", large=False)
-=======
             Notification("Please enter part name or part no. to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.text_box_searchPartNo.focus()
             return
 
@@ -73,11 +61,7 @@ class RepairPriorities(RepairPrioritiesTemplate):
             result2 =  anvil.server.call_s("getCarPartNumberWithID", self.lbl_ID.text)
             self.lbl_PartNumber.text = result2[0]["PartNo"]
         else:
-<<<<<<< HEAD
-            alert("No records found for the entered part detail.", title="Not Found")
-=======
             Notification("No records found for the entered part detail.", title="Not Found", style="danger", timeout=3).show()
->>>>>>> origin/main
 
     def drop_down_selectPart_change(self, **event_args):
         """This method is called when an item is selected"""
@@ -88,17 +72,6 @@ class RepairPriorities(RepairPrioritiesTemplate):
     def btn_AddParts_click(self, **event_args):
         """This method is called when the button is clicked"""
         if not self.drop_down_selectPart.selected_value:
-<<<<<<< HEAD
-            alert("Sorry, please select car part to proceed.", title="Blank Field(s) Found", large=False)
-            self.drop_down_selectPart.focus()
-            return
-        if not self.txtQuantity.text:
-            alert("Sorry, please enter quantity to proceed.", title="Blank Field(s) Found", large=False)
-            self.txtQuantity.focus()
-            return
-        if not self.txtSellingPrice.text:
-            alert("Sorry, please enter selling price to proceed.", title="Blank Field(s) Found", large=False)
-=======
             Notification("Sorry, please select car part to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
             self.drop_down_selectPart.focus()
             return
@@ -108,16 +81,11 @@ class RepairPriorities(RepairPrioritiesTemplate):
             return
         if not self.txtSellingPrice.text:
             Notification("Sorry, please enter selling price to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txtSellingPrice.focus()
             return
 
         if not self.drop_down_selectPriority.selected_value:
-<<<<<<< HEAD
-            alert("Sorry, please select priority to proceed.", title="Blank Field(s) Found", large=False)
-=======
             Notification("Sorry, please select priority to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.drop_down_selectPriority.focus()
             return
             
@@ -148,29 +116,17 @@ class RepairPriorities(RepairPrioritiesTemplate):
     def btn_AddServices_click(self, **event_args):
         """This method is called when the button is clicked"""
         if not self.txtServices.text:
-<<<<<<< HEAD
-            alert("Sorry, please enter service name to proceed.", title="Blank Field(s) Found", large=False)
-=======
             Notification("Sorry, please enter service name to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txtServices.focus()
             return
 
         if not self.txtAmount.text:
-<<<<<<< HEAD
-            alert("Sorry, please enter amount to proceed.", title="Blank Field(s) Found", large=False)
-=======
             Notification("Sorry, please enter amount to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txtAmount.focus()
             return
 
         if not self.drop_down_selectPriorityService.selected_value:
-<<<<<<< HEAD
-            alert("Sorry, please select priority to proceed.", title="Blank Field(s) Found", large=False)
-=======
             Notification("Sorry, please select priority to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.drop_down_selectPriorityService.focus()
             return
             
@@ -199,11 +155,7 @@ class RepairPriorities(RepairPrioritiesTemplate):
         self.btn_Save.enabled = False #Prevent multiple clicks
         
         if not self.drop_down_select.selected_value:
-<<<<<<< HEAD
-            alert("Sorry, please select Reg No to proceed.", title="Blank Field(s) Found", large=False)
-=======
             Notification("Sorry, please select Reg No to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.drop_down_select.focus()
             self.btn_Save.enabled = True
             return
@@ -211,11 +163,7 @@ class RepairPriorities(RepairPrioritiesTemplate):
         rows = self.repeating_panel_assigned_parts.items or []
         
         if not rows:
-<<<<<<< HEAD
-            anvil.alert("Sorry, please assign parts or service to proceed.", title="Missing Assigned Parts or Service", large=False)
-=======
             Notification("Sorry, please assign parts or service to proceed.", title="Missing Assigned Parts or Service", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.btn_Save.enabled = True
             return
          
@@ -233,11 +181,7 @@ class RepairPriorities(RepairPrioritiesTemplate):
             priority = row["Priority"]
             anvil.server.call('savePriority', assignedDate, regNo, name, number, quantity, amount, priority)
             
-<<<<<<< HEAD
-        alert("Priority saved successfully and download is initiated", title="Success")
-=======
         Notification("Priority saved successfully and download is initiated", title="Success", style="success", timeout=3).show()
->>>>>>> origin/main
         self.downloadPriorityPdf(regNo)
         # Clear form
         self.clear_form_fields()
@@ -258,11 +202,7 @@ class RepairPriorities(RepairPrioritiesTemplate):
         """This method is called when the button is clicked"""
     
         if not self.drop_down_select.selected_value:
-<<<<<<< HEAD
-            alert("Sorry, please select Reg No to proceed.", title="Blank Field(s) Found", large=False)
-=======
             Notification("Sorry, please select Reg No to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.drop_down_select.focus()
             return
         
@@ -271,11 +211,7 @@ class RepairPriorities(RepairPrioritiesTemplate):
             if existingData:
                 self.downloadPriorityPdf(self.drop_down_select.selected_value)
             else:
-<<<<<<< HEAD
-                alert("Sorry, there's no priority list found for the Reg No", title="Missing Priority List", large=False)
-=======
                 Notification("Sorry, there's no priority list found for the Reg No", title="Missing Priority List", style="danger", timeout=3).show()
->>>>>>> origin/main
                 self.drop_down_select.focus()
                 return
 

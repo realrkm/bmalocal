@@ -28,11 +28,7 @@ class AddMoreStock(AddMoreStockTemplate):
         search_value = self.text_box_searchPartNo.text.strip()
 
         if not search_value:
-<<<<<<< HEAD
-            alert("Please enter part name or part no. to proceed.", title="Blank Field(s) Found", large=False)
-=======
             Notification("Please enter part name or part no. to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.text_box_searchPartNo.focus()
             return
 
@@ -44,11 +40,7 @@ class AddMoreStock(AddMoreStockTemplate):
         if result:
             self.drop_down_selectPart.items = result
         else:
-<<<<<<< HEAD
-            alert("No records found for the entered part detail.", title="Not Found")
-=======
             Notification("No records found for the entered part detail.", title="Not Found", style="danger", timeout=3).show()
->>>>>>> origin/main
 
 
     def btn_SaveAndNew_click(self, **event_args):
@@ -62,52 +54,32 @@ class AddMoreStock(AddMoreStockTemplate):
         unit_cost = self.txt_UnitCost.text
 
         if not additionDate:
-<<<<<<< HEAD
-            alert("Please enter date to proceed.")
-=======
             Notification("Please enter date to proceed.", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.additionDate.focus()
             self.btn_SaveAndNew.enabled = True
             return
 
         if not supplier:
-<<<<<<< HEAD
-            alert("Please select supplier to proceed.")
-=======
             Notification("Please select supplier to proceed.", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.drop_down_selectSupplier.focus()
             self.btn_SaveAndNew.enabled = True
             return
             
         if not no_of_units:
-<<<<<<< HEAD
-            alert("Please enter number of units to proceed.")
-=======
             Notification("Please enter number of units to proceed.", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txt_NoOfUnits.focus()
             self.btn_SaveAndNew.enabled = True
             return
 
         if not unit_cost:
-<<<<<<< HEAD
-            alert("Please enter unit cost to proceed.")
-=======
             Notification("Please enter unit cost to proceed.", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txt_UnitCost.focus()
             self.btn_SaveAndNew.enabled = True
             return
 
         # Save data
         anvil.server.call("addStock", additionDate, supplier, partID,  no_of_units, unit_cost)
-<<<<<<< HEAD
-        alert("Stock added successfully.")
-=======
         Notification("Stock added successfully.", style="warning", timeout=3).show()
->>>>>>> origin/main
 
         # Clear form
         self.clear_form_fields()
@@ -122,11 +94,7 @@ class AddMoreStock(AddMoreStockTemplate):
             self.repeating_panel_1.items = ""
             self.repeating_panel_1.items = result
         else:
-<<<<<<< HEAD
-            alert("No records found for the entered part detail.", title="Not Found")
-=======
             Notification("No records found for the entered part detail.", title="Not Found", style="danger", timeout=3).show()
->>>>>>> origin/main
 
     def clear_form_fields(self):
         """Reset all fields after saving"""

@@ -31,22 +31,14 @@ class EditLocation(EditLocationTemplate):
         id = self.drop_down_select.selected_value
         # Validation
         if not name:
-<<<<<<< HEAD
-            alert("Please enter location name.")
-=======
             Notification("Please enter location name.", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txt_name.focus()
             self.btn_SaveAndNew.enabled = True
             return
 
         # Save data
         anvil.server.call("updateLocation", name, id)
-<<<<<<< HEAD
-        alert("Location updated successfully.")
-=======
         Notification("Location updated successfully.", style="warning", timeout=3).show()
->>>>>>> origin/main
 
         # Clear form
         self.btn_Close_click()

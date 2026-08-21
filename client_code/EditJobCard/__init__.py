@@ -131,11 +131,7 @@ class EditJobCard(EditJobCardTemplate):
         """This method is called when the button is clicked"""
         valueCustomer = self.txt_ClientName.text
         if valueCustomer is None:
-<<<<<<< HEAD
-            alert("Enter Customer's name to proceed", title="Blank Field Found")
-=======
             Notification("Enter Customer's name to proceed", title="Blank Field Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             return
         else:
             result = anvil.server.call("getClientFullnameFromSearchWord", valueCustomer)
@@ -241,11 +237,7 @@ class EditJobCard(EditJobCardTemplate):
             return
 
         if not self.drop_down_selectCustomer.selected_value:
-<<<<<<< HEAD
-            alert("Sorry, please select the client's name.", title="Blank Field(s) Found")
-=======
             Notification("Sorry, please select the client's name.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txt_ClientName.focus()
             self.btn_Update.enabled = True
             return
@@ -261,11 +253,7 @@ class EditJobCard(EditJobCardTemplate):
             return
 
         if self.txtDueDate.date is None:
-<<<<<<< HEAD
-            alert("Sorry, please select due date to proceed.", title="Due Date Missing")
-=======
             Notification("Sorry, please select due date to proceed.", title="Due Date Missing", style="danger", timeout=3).show()
->>>>>>> origin/main
             self.txtDueDate.focus()
             self.btn_Update.enabled = True
             return
@@ -292,21 +280,13 @@ class EditJobCard(EditJobCardTemplate):
         if (
             not self.txtReceivedDate.date
         ):  # Assuming this is an Anvil DatePicker component
-<<<<<<< HEAD
-            alert("Sorry, please enter received date.", title="Blank Field(s) Found")
-=======
             Notification("Sorry, please enter received date.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txtReceivedDate.focus()
             self.btn_Update.enabled = True
             return
             
         if not self.txtDueDate.date:  # Assuming this is an Anvil DatePicker component
-<<<<<<< HEAD
-            alert("Sorry, please enter due date.", title="Blank Field(s) Found")
-=======
             Notification("Sorry, please enter due date.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txtDueDate.focus()
             self.btn_Update.enabled = True
             return
@@ -349,31 +329,19 @@ class EditJobCard(EditJobCardTemplate):
             return
 
         if not self.txtChassisNo.text:
-<<<<<<< HEAD
-            alert("Sorry, please enter Chassis No.", title="Blank Field(s) Found")
-=======
             Notification("Sorry, please enter Chassis No.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txtChassisNo.focus()
             self.btn_Update.enabled = True
             return
             
         if not self.txtMakeAndModel.text:
-<<<<<<< HEAD
-            alert("Sorry, please enter make and model.", title="Blank Field(s) Found")
-=======
             Notification("Sorry, please enter make and model.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txtMakeAndModel.focus()
             self.btn_Update.enabled = True
             return
 
         if not self.txtMileage.text:
-<<<<<<< HEAD
-            alert("Sorry, please enter mileage.", title="Blank Field(s) Found")
-=======
             Notification("Sorry, please enter mileage.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txtMileage.focus()
             self.btn_Update.enabled = True
             return
@@ -453,11 +421,7 @@ class EditJobCard(EditJobCardTemplate):
                           CheckedInBy,Ins, Comp, TPO, Spare, Jack, Brace,RegNo, Chassis, MakeAndModel, EngineCC, Mileage, EngineNo, 
                           EngineCode,Manual,Auto, Empty, Quarter, Half,ThreeQuarter, Full,PaintCode,ClientInstruction, Notes, workDone)
         
-<<<<<<< HEAD
-        alert("Job card details updated successfully", title="Success")
-=======
         Notification("Job card details updated successfully", title="Success", style="success", timeout=3).show()
->>>>>>> origin/main
         
         # Close form
         self.btn_Close_click()

@@ -27,32 +27,17 @@ class PeriodicQuoteVsInvoice(PeriodicQuoteVsInvoiceTemplate):
 
             # 1. No filters selected
             if not startDate and not endDate and not jobCardRef:
-<<<<<<< HEAD
-                alert("Sorry, please select a date range, job card ref or both to proceed.", 
-                      title="Blank Field(s) Found", large=False)
-=======
                 Notification("Sorry, please select a date range, job card ref or both to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
                 return
 
             # 2. Only one date selected
             if (startDate and not endDate) or (endDate and not startDate):
-<<<<<<< HEAD
-                alert("Please select both start and end dates to proceed.", 
-                      title="Missing Date", large=False)
-=======
                 Notification("Please select both start and end dates to proceed.", title="Missing Date", style="danger", timeout=3).show()
->>>>>>> origin/main
                 return
 
             # 3. Both dates provided but startDate > endDate
             if startDate and endDate and startDate > endDate:
-<<<<<<< HEAD
-                alert("Sorry, end date should be greater or equal to start date.", 
-                      title="Date Mismatch", large=False)
-=======
                 Notification("Sorry, end date should be greater or equal to start date.", title="Date Mismatch", style="warning", timeout=3).show()
->>>>>>> origin/main
                 return
 
             # 4. Fetch based on provided filters
@@ -67,12 +52,7 @@ class PeriodicQuoteVsInvoice(PeriodicQuoteVsInvoiceTemplate):
 
             # 5. Handle empty results
             if not jobs:
-<<<<<<< HEAD
-                alert("No job cards found for the selected filters.", 
-                      title="No Results", large=False)
-=======
                 Notification("No job cards found for the selected filters.", title="No Results", style="warning", timeout=3).show()
->>>>>>> origin/main
                 self.repeating_panel_1.items = []
                 return
 

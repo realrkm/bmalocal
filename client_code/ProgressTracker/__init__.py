@@ -32,11 +32,7 @@ class ProgressTracker(ProgressTrackerTemplate):
     
             self.drop_down_JobCardRefDetails.items = result
         else:
-<<<<<<< HEAD
-            alert("Please enter job card ref to proceed.", title="Blank Field(s) Found", large=False)
-=======
             Notification("Please enter job card ref to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txtJobCardRef.focus()
 
     def drop_down_JobCardRefDetails_change(self, **event_args):
@@ -68,11 +64,7 @@ class ProgressTracker(ProgressTrackerTemplate):
                 self.set_progress_state(result["Status"])
                 
         else:
-<<<<<<< HEAD
-            alert("Please enter job card ref to procced.", title="Blank Field(s) Found", large=False)
-=======
             Notification("Please enter job card ref to procced.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.drop_down_JobCardRefDetails.focus()
 
     def set_progress_state(self, active_state):
@@ -137,11 +129,7 @@ class ProgressTracker(ProgressTrackerTemplate):
         jobcard_data = anvil.server.call("getJobCardRow", job_id)
 
         if not jobcard_data:
-<<<<<<< HEAD
-            alert("No data found for the selected Job ID.", title='Missing Job Card Data', large=False)
-=======
             Notification("No data found for the selected Job ID.", title='Missing Job Card Data', style="danger", timeout=3).show()
->>>>>>> origin/main
             self.btn_JobCard.enabled=True
             return
 
@@ -157,11 +145,7 @@ class ProgressTracker(ProgressTrackerTemplate):
         defects_data = anvil.server.call("getJobCardRef", job_id)
         
         if not defects_data:
-<<<<<<< HEAD
-            alert("No data found for the selected Job ID.", title='Missing Defects Data', large=False)
-=======
             Notification("No data found for the selected Job ID.", title='Missing Defects Data', style="danger", timeout=3).show()
->>>>>>> origin/main
             self.btn_Defects.enabled=True
             return
 
@@ -177,11 +161,7 @@ class ProgressTracker(ProgressTrackerTemplate):
         quote_data = anvil.server.call("get_quote_details_by_job_id", job_id)
 
         if not quote_data:
-<<<<<<< HEAD
-            alert("No data found for the selected Job ID.", title='Missing Quotation Data', large=False)
-=======
             Notification("No data found for the selected Job ID.", title='Missing Quotation Data', style="danger", timeout=3).show()
->>>>>>> origin/main
             self.btn_Quotation.enabled = True
             return
 
@@ -197,11 +177,7 @@ class ProgressTracker(ProgressTrackerTemplate):
         quote_data = anvil.server.call("get_quote_confirmation_details_by_job_id", job_id)
 
         if not quote_data:
-<<<<<<< HEAD
-            alert("No data found for the selected Job ID.", title='Missing Quotation Data', large=False)
-=======
             Notification("No data found for the selected Job ID.", title='Missing Quotation Data', style="danger", timeout=3).show()
->>>>>>> origin/main
             self.btn_Confirmed.enabled = True
             return
 
@@ -217,11 +193,7 @@ class ProgressTracker(ProgressTrackerTemplate):
         quote_data = anvil.server.call("get_invoice_details_by_job_id", job_id)
     
         if not quote_data:
-<<<<<<< HEAD
-            alert("No data found for the selected Job ID.", title='Missing Invoice Data', large=False)
-=======
             Notification("No data found for the selected Job ID.", title='Missing Invoice Data', style="danger", timeout=3).show()
->>>>>>> origin/main
             self.btn_Invoice.enabled = True
             return
     
@@ -237,11 +209,7 @@ class ProgressTracker(ProgressTrackerTemplate):
         payment_data = anvil.server.call('getPaymentsDetails', job_id)
 
         if not payment_data:
-<<<<<<< HEAD
-            alert("No data found for the selected Job ID.", title='Missing Payment Data', large=False)
-=======
             Notification("No data found for the selected Job ID.", title='Missing Payment Data', style="danger", timeout=3).show()
->>>>>>> origin/main
             self.btn_Payment.enabled = True
             return
 

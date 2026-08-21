@@ -20,11 +20,7 @@ class Alerts(AlertsTemplate):
     def btn_UpdateStatus_click(self, **event_args):
         """This method is called when the button is clicked"""
         anvil.server.call_s("deactivate_notifications")
-<<<<<<< HEAD
-        alert("Pending statuses have been updated successfully", title="Success")
-=======
         Notification("Pending statuses have been updated successfully", title="Success", style="success", timeout=3).show()
->>>>>>> origin/main
         self.raise_event("x-close-alert", value=True)
         
         

@@ -27,11 +27,7 @@ class PriceCatalogue(PriceCatalogueTemplate):
         search_text = self.text_box_search.text.strip()
 
         if not search_text:
-<<<<<<< HEAD
-            alert("Please enter part name or part number to search.", title="Missing Part Details")
-=======
             Notification("Please enter part name or part number to search.", title="Missing Part Details", style="danger", timeout=3).show()
->>>>>>> origin/main
             self.text_box_search.focus()
             return
 
@@ -42,11 +38,7 @@ class PriceCatalogue(PriceCatalogueTemplate):
             self.repeating_panel_1.items = ""
             self.repeating_panel_1.items = result
         else:
-<<<<<<< HEAD
-            alert("No records found for the entered part detail.", title="Not Found")
-=======
             Notification("No records found for the entered part detail.", title="Not Found", style="danger", timeout=3).show()
->>>>>>> origin/main
 
     def btn_BuyingPrice_click(self, **event_args):
         """This method is called when the button is clicked"""
@@ -77,11 +69,7 @@ class PriceCatalogue(PriceCatalogueTemplate):
         """This method is called when the button is clicked"""
         excel_file = anvil.server.call("export_current_selling_prices_and_reorder_levels")
         anvil.media.download(excel_file)
-<<<<<<< HEAD
-        alert("Selling Prices and Reorder Levels exported successfully.", title="Success", large=False)
-=======
         Notification("Selling Prices and Reorder Levels exported successfully.", title="Success", style="success", timeout=3).show()
->>>>>>> origin/main
 
 
     def _reset_file_uploader(self):

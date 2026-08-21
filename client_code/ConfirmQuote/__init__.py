@@ -51,11 +51,7 @@ class ConfirmQuote(ConfirmQuoteTemplate):
         search_value = self.text_box_searchPartNo.text.strip()
 
         if not search_value:
-<<<<<<< HEAD
-            alert("Please enter part name or part no. to proceed.", title="Blank Field(s) Found", large=False)
-=======
             Notification("Please enter part name or part no. to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.text_box_searchPartNo.focus()
             return
 
@@ -67,11 +63,7 @@ class ConfirmQuote(ConfirmQuoteTemplate):
         if result:
             self.drop_down_selectPart.items = result
         else:
-<<<<<<< HEAD
-            alert("No records found for the entered part detail.", title="Not Found")
-=======
             Notification("No records found for the entered part detail.", title="Not Found", style="danger", timeout=3).show()
->>>>>>> origin/main
 
 
     def drop_down_selectPart_change(self, **event_args):
@@ -89,17 +81,6 @@ class ConfirmQuote(ConfirmQuoteTemplate):
     def btn_AddParts_click(self, **event_args):
         """This method is called when the button is clicked"""
         if not self.drop_down_selectPart.selected_value:
-<<<<<<< HEAD
-            alert("Sorry, please select car part to proceed.", title="Blank Field(s) Found", large=False)
-            self.drop_down_selectPart.focus()
-            return
-        if not self.txtQuantity.text:
-            alert("Sorry, please enter quantity to proceed.", title="Blank Field(s) Found", large=False)
-            self.txtQuantity.focus()
-            return
-        if not self.txtSellingPrice.text:
-            alert("Sorry, please enter selling price to proceed.", title="Blank Field(s) Found", large=False)
-=======
             Notification("Sorry, please select car part to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
             self.drop_down_selectPart.focus()
             return
@@ -109,7 +90,6 @@ class ConfirmQuote(ConfirmQuoteTemplate):
             return
         if not self.txtSellingPrice.text:
             Notification("Sorry, please enter selling price to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txtSellingPrice.focus()
             return
 
@@ -141,20 +121,12 @@ class ConfirmQuote(ConfirmQuoteTemplate):
     def btn_AddServices_click(self, **event_args):
         """This method is called when the button is clicked"""
         if not self.txtServices.text:
-<<<<<<< HEAD
-            alert("Sorry, please enter service name to proceed.", title="Blank Field(s) Found", large=False)
-=======
             Notification("Sorry, please enter service name to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txtServices.focus()
             return
 
         if not self.txtAmount.text:
-<<<<<<< HEAD
-            alert("Sorry, please enter amount to proceed.", title="Blank Field(s) Found", large=False)
-=======
             Notification("Sorry, please enter amount to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txtAmount.focus()
             return
 
@@ -185,42 +157,26 @@ class ConfirmQuote(ConfirmQuoteTemplate):
         self.btn_Save.enabled = False #Prevent multiple clicks
         
         if not self.cmbJobCardRef.selected_value:
-<<<<<<< HEAD
-            alert("Sorry, please select job card ref to proceed.", title="Blank Field(s) Found")
-=======
             Notification("Sorry, please select job card ref to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.cmbJobCardRef.focus()
             self.btn_Save.enabled=True
             return
     
         if not self.txtQuoteConfirmationFeedback.text:
-<<<<<<< HEAD
-            alert("Sorry, please enter quote confirmation feedback to proceed.", title="Blank Field(s) Found")
-=======
             Notification("Sorry, please enter quote confirmation feedback to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txtQuoteConfirmationFeedback.focus()
             self.btn_Save.enabled=True
             return
 
         if not self.cmbWorkflow.selected_value:
-<<<<<<< HEAD
-            alert("Sorry, please select the next workflow status to proceed.", title="Blank Field(s) Found")
-=======
             Notification("Sorry, please select the next workflow status to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.cmbWorkflow.focus()
             self.btn_Save.enabled=True
             return
     
         rows = self.repeating_panel_assigned_parts.items or []
         if not rows:
-<<<<<<< HEAD
-            anvil.alert("Sorry, please assign parts or service to proceed.", title="Missing Assigned Parts or Service")
-=======
             Notification("Sorry, please assign parts or service to proceed.", title="Missing Assigned Parts or Service", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.btn_Save.enabled=True
             return
     
@@ -254,15 +210,6 @@ class ConfirmQuote(ConfirmQuoteTemplate):
             anvil.server.call_s('saveFullQuotationPartsAndServicesFeedback', assignedDate, jobCardID, remarks, items)
             anvil.server.call_s('updateJobCardStatus', jobCardID, status)
             
-<<<<<<< HEAD
-            alert("Quotation confirmation saved successfully", title="Success")
-        except anvil.server.UplinkDisconnectedError:
-            alert("Connection to server lost. Please check your internet or try again later.", title="Disconnected")
-        except anvil.server.SessionExpiredError:
-            anvil.js.window.location.reload()
-        except anvil.server.AppOfflineError:
-            alert("Please connect to the internet to proceed.", title="No Internet")
-=======
             Notification("Quotation confirmation saved successfully", title="Success", style="success", timeout=3).show()
         except anvil.server.UplinkDisconnectedError:
             Notification("Connection to server lost. Please check your internet or try again later.", title="Disconnected", style="danger", timeout=3).show()
@@ -270,7 +217,6 @@ class ConfirmQuote(ConfirmQuoteTemplate):
             anvil.js.window.location.reload()
         except anvil.server.AppOfflineError:
             Notification("Please connect to the internet to proceed.", title="No Internet", style="warning", timeout=3).show()
->>>>>>> origin/main
         except Exception as e:
             alert(f"An error occurred: {str(e)}", title="Error")
 

@@ -27,11 +27,7 @@ class InterimQuotation(InterimQuotationTemplate):
         search_value = self.txtCustomerName.text.strip()
 
         if not search_value:
-<<<<<<< HEAD
-            alert("Please enter customer name to proceed.", title="Blank Field(s) Found", large=False)
-=======
             Notification("Please enter customer name to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txtCustomerName.focus()
             return
             
@@ -42,11 +38,7 @@ class InterimQuotation(InterimQuotationTemplate):
             self.drop_down_CustomerDetails.items = ""
             self.drop_down_CustomerDetails.items = result
         else:
-<<<<<<< HEAD
-            alert("No records found for the entered customer name.", title="Not Found")
-=======
             Notification("No records found for the entered customer name.", title="Not Found", style="danger", timeout=3).show()
->>>>>>> origin/main
             
     def drop_down_CustomerDetails_change(self, **event_args):
         """This method is called when an item is selected"""
@@ -78,11 +70,7 @@ class InterimQuotation(InterimQuotationTemplate):
         search_value = self.text_box_searchPartNo.text.strip()
         
         if not search_value:
-<<<<<<< HEAD
-            alert("Please enter part name or part no. to proceed.", title="Blank Field(s) Found", large=False)
-=======
             Notification("Please enter part name or part no. to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.text_box_searchPartNo.focus()
             return
             
@@ -94,11 +82,7 @@ class InterimQuotation(InterimQuotationTemplate):
         if result:
             self.drop_down_selectPart.items = result
         else:
-<<<<<<< HEAD
-            alert("No records found for the entered part detail.", title="Not Found")
-=======
             Notification("No records found for the entered part detail.", title="Not Found", style="danger", timeout=3).show()
->>>>>>> origin/main
 
 
     def drop_down_selectPart_change(self, **event_args):
@@ -118,17 +102,6 @@ class InterimQuotation(InterimQuotationTemplate):
         textAmount = str(self.txtSellingPrice.text).strip()
         
         if not self.drop_down_selectPart.selected_value:
-<<<<<<< HEAD
-            alert("Sorry, please select car part to proceed.", title="Blank Field(s) Found", large=False)
-            self.drop_down_selectPart.focus()
-            return
-        if not self.txtQuantity.text:
-            alert("Sorry, please enter quantity to proceed.", title="Blank Field(s) Found", large=False)
-            self.txtQuantity.focus()
-            return
-        if textAmount == "":
-            alert("Sorry, please enter selling price to proceed.", title="Blank Field(s) Found", large=False)
-=======
             Notification("Sorry, please select car part to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
             self.drop_down_selectPart.focus()
             return
@@ -138,7 +111,6 @@ class InterimQuotation(InterimQuotationTemplate):
             return
         if textAmount == "":
             Notification("Sorry, please enter selling price to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txtSellingPrice.focus()
             return
 
@@ -194,20 +166,12 @@ class InterimQuotation(InterimQuotationTemplate):
         textAmount = str(self.txtAmount.text).strip()
 
         if not self.txtServices.text:
-<<<<<<< HEAD
-            alert("Sorry, please enter service name to proceed.", title="Blank Field(s) Found", large=False)
-=======
             Notification("Sorry, please enter service name to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txtServices.focus()
             return
 
         if textAmount == "":
-<<<<<<< HEAD
-            alert("Sorry, please enter amount to proceed.", title="Blank Field(s) Found", large=False)
-=======
             Notification("Sorry, please enter amount to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txtAmount.focus()
             return
 
@@ -256,62 +220,38 @@ class InterimQuotation(InterimQuotationTemplate):
     def btn_SaveAndDownload_click(self, **event_args):
         self.btn_SaveAndDownload.enabled = False
         if not self.drop_down_CustomerDetails.selected_value:
-<<<<<<< HEAD
-            alert("Sorry, please search and select customer to proceed.", title="Blank Field(s) Found")
-=======
             Notification("Sorry, please search and select customer to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txtCustomerName.focus()
             self.btn_SaveAndDownload.enabled = True
             return
 
         if not self.txtMakeAndModel.text:
-<<<<<<< HEAD
-            alert("Sorry, please enter make and model to proceed.", title="Blank Field(s) Found")
-=======
             Notification("Sorry, please enter make and model to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txtMakeAndModel.focus()
             self.btn_SaveAndDownload.enabled = True
             return
 
         if not self.txtChassis.text:
-<<<<<<< HEAD
-            alert("Sorry, please enter chassis number to proceed.", title="Blank Field(s) Found")
-=======
             Notification("Sorry, please enter chassis number to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.txtChassis.focus()
             self.btn_SaveAndDownload.enabled = True
             return
 
         if not self.date_picker_1.date:
-<<<<<<< HEAD
-            alert("Sorry, please enter date to proceed.", title="Blank Field(s) Found")
-=======
             Notification("Sorry, please enter date to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.date_picker_1.focus()
             self.btn_SaveAndDownload.enabled = True
             return
 
         if not self.drop_down_CheckInstaff.selected_value: # Required in tbl_jobcarddetails
-<<<<<<< HEAD
-            alert("Sorry, please select check-in staff to proceed.", title="Blank Field(s) Found", large=False)
-=======
             Notification("Sorry, please select check-in staff to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.drop_down_CheckInstaff.focus()
             self.btn_SaveAndDownload.enabled = True
             return
             
         rows = self.repeating_panel_assigned_parts.items or []
         if not rows:
-<<<<<<< HEAD
-            anvil.alert("Sorry, please assign parts or service to proceed.", title="Missing Assigned Parts or Service")
-=======
             Notification("Sorry, please assign parts or service to proceed.", title="Missing Assigned Parts or Service", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.btn_SaveAndDownload.enabled = True
             return
 
@@ -356,11 +296,7 @@ class InterimQuotation(InterimQuotationTemplate):
         
         job_card_id = anvil.server.call_s('saveJobCardDetailsFromInterimQuotation', customerID, jobcardref, receiveddate, duedate, checkinstaff, regno, makeandmodel, chassis,  enginecode, mileage, oldJobCardId)
         anvil.server.call("saveInterimQuotationPartsAndServices",receiveddate, job_card_id, items)
-<<<<<<< HEAD
-        alert("Interim Quotation Saved Successfully.", title="Success", large=False)
-=======
         Notification("Interim Quotation Saved Successfully.", title="Success", style="success", timeout=3).show()
->>>>>>> origin/main
         self.insertMissingSellingPrices()
         self.downloadQuotationPdf(job_card_id)
         
@@ -451,11 +387,7 @@ class InterimQuotation(InterimQuotationTemplate):
                 # Set parts to repeating panel
                 self.repeating_panel_assigned_parts.items = result["parts"]
             
-<<<<<<< HEAD
-                alert("Previous details loaded successfully", title="Success")
-=======
                 Notification("Previous details loaded successfully", title="Success", style="success", timeout=3).show()
->>>>>>> origin/main
 
     def btn_TransitionInterimQuoteToInvoice_click(self, **event_args):
         """This method is called when the button is clicked"""

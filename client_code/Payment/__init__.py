@@ -30,29 +30,17 @@ class Payment(PaymentTemplate):
     def btn_Search_click(self, **event_args):
         """This method is called when the button is clicked"""
         if self.start_date.date is None:
-<<<<<<< HEAD
-            alert("Enter start date to proceed", title="Blank Field Found", large=False)
-=======
             Notification("Enter start date to proceed", title="Blank Field Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.start_date.focus()
             return
                 
         if self.end_date.date is None:
-<<<<<<< HEAD
-            alert("Enter end date to proceed", title="Blank Field Found", large=False)
-=======
             Notification("Enter end date to proceed", title="Blank Field Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.end_date.focus()
             return
     
         if self.end_date.date < self.start_date.date:
-<<<<<<< HEAD
-            alert("To proceed, ensure end date is be greater or equal to start date", title="Date Mismatch Found", large=False)
-=======
             Notification("To proceed, ensure end date is be greater or equal to start date", title="Date Mismatch Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.start_date.focus()
             self.start_date.date =""
             self.end_date.date=""
@@ -70,15 +58,9 @@ class Payment(PaymentTemplate):
     def button_Paid_click(self, **event_args):
         """This method is called when the link is clicked"""
         if self.start_date.date is None or self.end_date.date is None:
-<<<<<<< HEAD
-            alert("Ensure start date is greater or equal to end date", title="Check Dates", large=False)
-        elif self.button_Paid.text == "Paid: 0.0 KSHS ":
-            alert("Click Search button after entering the dates", title="Click Search Button", large=False)
-=======
             Notification("Ensure start date is greater or equal to end date", title="Check Dates", style="warning", timeout=3).show()
         elif self.button_Paid.text == "Paid: 0.0 KSHS ":
             Notification("Click Search button after entering the dates", title="Click Search Button", style="warning", timeout=3).show()
->>>>>>> origin/main
         elif self.start_date.date is not None and self.end_date.date is not None:
             alert(
                 content=PaidPendingInvoices("Paid", self.start_date.date, self.end_date.date),
@@ -92,15 +74,9 @@ class Payment(PaymentTemplate):
     def button_Pending_click(self, **event_args):
         """This method is called when the link is clicked"""
         if self.start_date.date is None or self.end_date.date is None:
-<<<<<<< HEAD
-            alert("Ensure start date is greater or equal to end date", title="Check Dates", large=False)
-        elif self.button_Paid.text == "Pending: 0.0 KSHS":
-            alert("Click Search button after entering the dates", title="Click Search Button", large=False)
-=======
             Notification("Ensure start date is greater or equal to end date", title="Check Dates", style="warning", timeout=3).show()
         elif self.button_Paid.text == "Pending: 0.0 KSHS":
             Notification("Click Search button after entering the dates", title="Click Search Button", style="warning", timeout=3).show()
->>>>>>> origin/main
         elif self.start_date.date is not None and self.end_date.date is not None:
             alert(
                 content=PaidPendingInvoices("Pending", self.start_date.date, self.end_date.date),
@@ -110,11 +86,7 @@ class Payment(PaymentTemplate):
                 large=True
             )
         else:
-<<<<<<< HEAD
-            alert("Ensure start date is greater or equal to end date", title="Check Dates", large=False)
-=======
             Notification("Ensure start date is greater or equal to end date", title="Check Dates", style="warning", timeout=3).show()
->>>>>>> origin/main
             
     def getInvoices(self,  **event_args):
         """Return invoice records to SearchKeyword."""
@@ -165,41 +137,25 @@ class Payment(PaymentTemplate):
         self.btn_SaveAndNew.enabled = False
         
         if self.search_keyword_1.selected_result is None:
-<<<<<<< HEAD
-            alert("Enter Invoice Job Card Ref to proceed", title="Blank Field Found", large=False)
-=======
             Notification("Enter Invoice Job Card Ref to proceed", title="Blank Field Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.btn_SaveAndNew.enabled = True
             self.search_keyword_1.text_box_search.focus()
             return
             
         if self.date_picker_1.date is None:
-<<<<<<< HEAD
-            alert("Enter Date to proceed", title="Blank Field Found", large=False)
-=======
             Notification("Enter Date to proceed", title="Blank Field Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.btn_SaveAndNew.enabled = True
             self.date_picker_1.focus()
             return
 
         if self.text_box_Amount.text is None:
-<<<<<<< HEAD
-            alert("Enter amount paid to proceed", title="Blank Field Found", large=False)
-=======
             Notification("Enter amount paid to proceed", title="Blank Field Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.btn_SaveAndNew.enabled = True
             self.text_box_Amount.focus()
             return
 
         if not self.text_box_PaymentMode.text.strip():
-<<<<<<< HEAD
-            alert("Enter payment mode details to proceed", title="Blank Field Found", large=False)
-=======
             Notification("Enter payment mode details to proceed", title="Blank Field Found", style="warning", timeout=3).show()
->>>>>>> origin/main
             self.btn_SaveAndNew.enabled = True
             self.text_box_PaymentMode.focus()
             return

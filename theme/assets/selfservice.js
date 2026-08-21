@@ -192,7 +192,7 @@
             setTimeout(() => button.focus(), 100);
         });
     }
-
+    
     function customConfirm(message, title = 'Confirm Action') {
         return new Promise((resolve) => {
             const overlay = document.createElement('div');

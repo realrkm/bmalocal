@@ -71,12 +71,19 @@ class JobCardForm(JobCardFormTemplate):
         #Restrict Editing Job Cards Created For Interim Quotation
         #Instead, create a new job card if the custoner wants to fulfil the quote under Workflow cycle.
         if self.txt_JobCardRef.text.split("-")[-1] == "IQ": #IQ denotes Interim Quotation
+<<<<<<< HEAD
             alert("Sorry, you cannot edit job card created for an interim quotation",title="Edit Restriction", large=False )
+=======
+            Notification("Sorry, you cannot edit job card created for an interim quotation", title="Edit Restriction", style="warning", timeout=3).show()
+>>>>>>> origin/main
             return
         # This feature is retracted after some customer complained of wrong car details during payment.
         # Hence, allow edits to be made 
         #elif self.form_data["Status"] != "Checked In": #Do not edit job card past Checked In status
+<<<<<<< HEAD
         #    alert("Sorry, you can only edit job cards with the 'Checked In' status.",title="Edit Restriction", large=False )
+=======
+>>>>>>> origin/main
         #    return
         else:
             self.btn_Close_click()
@@ -97,9 +104,15 @@ class JobCardForm(JobCardFormTemplate):
         if val_to_check not in invalid_values:
             # Download Tech Notes
             self.downloadTechNotesPdf(self.form_data["ID"])
+<<<<<<< HEAD
             alert("Tech Notes PDF download is successful", title="Success")
         else:
             alert("Jobcard has no tech notes", title="Missing Tech Notes")
+=======
+            Notification("Tech Notes PDF download is successful", title="Success", style="success", timeout=3).show()
+        else:
+            Notification("Jobcard has no tech notes", title="Missing Tech Notes", style="danger", timeout=3).show()
+>>>>>>> origin/main
         self.btn_DownloadTechNotes.enabled=True 
 
     def downloadTechNotesPdf(self, job_card_id):

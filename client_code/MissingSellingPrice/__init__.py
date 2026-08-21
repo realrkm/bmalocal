@@ -23,7 +23,11 @@ class MissingSellingPrice(MissingSellingPriceTemplate):
         search_text = self.text_box_search.text.strip()
 
         if not search_text:
+<<<<<<< HEAD
             alert("Please enter part name or part number to search.", title="Missing Part Details")
+=======
+            Notification("Please enter part name or part number to search.", title="Missing Part Details", style="danger", timeout=3).show()
+>>>>>>> origin/main
             self.text_box_search.focus()
             return
 
@@ -35,7 +39,11 @@ class MissingSellingPrice(MissingSellingPriceTemplate):
             self.repeating_panel_1.items = ""
             self.repeating_panel_1.items = result
         else:
+<<<<<<< HEAD
             alert("No records found for the entered part detail.", title="Not Found")
+=======
+            Notification("No records found for the entered part detail.", title="Not Found", style="danger", timeout=3).show()
+>>>>>>> origin/main
             
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""
@@ -45,7 +53,11 @@ class MissingSellingPrice(MissingSellingPriceTemplate):
         rows = list(self.repeating_panel_1.items)
 
         if not rows:
+<<<<<<< HEAD
             alert("No data to export.")
+=======
+            Notification("No data to export.", style="warning", timeout=3).show()
+>>>>>>> origin/main
             return
 
         excel_file = anvil.server.call("export_missing_selling_prices", rows)

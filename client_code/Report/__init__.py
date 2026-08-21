@@ -193,7 +193,11 @@ class Report(ReportTemplate):
         
         if self.cmbReport.selected_value == "Clients":
             if jobCardID is None:
+<<<<<<< HEAD
                 alert("Client is not found. Enter correct name of the client", title="Missing Client Details", large=False)
+=======
+                Notification("Client is not found. Enter correct name of the client", title="Missing Client Details", style="danger", timeout=3).show()
+>>>>>>> origin/main
                 self.card_panel.clear()
                 self.card_panel.visible = False
             else:
@@ -204,7 +208,11 @@ class Report(ReportTemplate):
                 
         elif self.cmbReport.selected_value == "Technicians":
             if jobCardID is None:
+<<<<<<< HEAD
                 alert("Technician is not found. Enter correct name of the technician", title="Missing Technician Details", large=False)
+=======
+                Notification("Technician is not found. Enter correct name of the technician", title="Missing Technician Details", style="danger", timeout=3).show()
+>>>>>>> origin/main
                 self.card_panel.clear()
                 self.card_panel.visible = False
             else:
@@ -214,7 +222,11 @@ class Report(ReportTemplate):
 
         elif self.cmbReport.selected_value == "Staffs":
             if jobCardID is None:
+<<<<<<< HEAD
                 alert("Staff is not found. Enter correct name of the staff", title="Missing Staff Details", large=False)
+=======
+                Notification("Staff is not found. Enter correct name of the staff", title="Missing Staff Details", style="danger", timeout=3).show()
+>>>>>>> origin/main
                 self.card_panel.clear()
                 self.card_panel.visible = False
             else:

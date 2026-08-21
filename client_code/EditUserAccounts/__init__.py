@@ -33,6 +33,7 @@ class EditUserAccounts(EditUserAccountsTemplate):
     
         # Validate inputs
         if not email:
+<<<<<<< HEAD
             alert("Email is required.", title="Error", large=False)
             return
         if not role:
@@ -40,6 +41,15 @@ class EditUserAccounts(EditUserAccountsTemplate):
             return
         if active not in [True, False]:
             alert("Active status is required.", title="Error", large=False)
+=======
+            Notification("Email is required.", title="Error", style="danger", timeout=3).show()
+            return
+        if not role:
+            Notification("Role is required.", title="Error", style="danger", timeout=3).show()
+            return
+        if active not in [True, False]:
+            Notification("Active status is required.", title="Error", style="danger", timeout=3).show()
+>>>>>>> origin/main
             return
     
         # Call server

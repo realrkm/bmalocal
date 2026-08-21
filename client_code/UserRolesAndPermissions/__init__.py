@@ -134,8 +134,12 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
         role_id = self.drop_down_selectrole.selected_value
 
         if not role_id:
+<<<<<<< HEAD
             alert("Please select a role before saving permissions.",
                   title="Missing Role", large=False)
+=======
+            Notification("Please select a role before saving permissions.", title="Missing Role", style="danger", timeout=3).show()
+>>>>>>> origin/main
             return
 
         selected_permissions = {}
@@ -155,13 +159,21 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
         )
 
         if not any_selected:
+<<<<<<< HEAD
             alert("Please select at least one permission before saving.",
                   title="No Permissions Selected", large=False)
+=======
+            Notification("Please select at least one permission before saving.", title="No Permissions Selected", style="warning", timeout=3).show()
+>>>>>>> origin/main
             return
 
         # Send to server
         anvil.server.call("save_user_permissions", role_id, selected_permissions)
+<<<<<<< HEAD
         alert("Permissions saved successfully", title="Success")
+=======
+        Notification("Permissions saved successfully", title="Success", style="success", timeout=3).show()
+>>>>>>> origin/main
 
         # Reload Form
         self.reset_form()

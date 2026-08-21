@@ -27,7 +27,11 @@ class EditAddNewParts(EditAddNewPartsTemplate):
         search_value = self.text_box_searchPartNo.text.strip()
     
         if not search_value:
+<<<<<<< HEAD
             alert("Please enter part name or part no. to proceed.", title="Blank Field(s) Found", large=False)
+=======
+            Notification("Please enter part name or part no. to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.text_box_searchPartNo.focus()
             return
     
@@ -39,7 +43,11 @@ class EditAddNewParts(EditAddNewPartsTemplate):
         if result:
             self.drop_down_selectPart.items = result
         else:
+<<<<<<< HEAD
             alert("No records found for the entered part detail.", title="Not Found")
+=======
+            Notification("No records found for the entered part detail.", title="Not Found", style="danger", timeout=3).show()
+>>>>>>> origin/main
 
     def drop_down_selectPart_change(self, **event_args):
         """This method is called when an item is selected"""
@@ -191,7 +199,11 @@ class EditAddNewParts(EditAddNewPartsTemplate):
             self.lbl_ID.text,
             self.lbl_SupplierId.text
         )
+<<<<<<< HEAD
         alert("Part Updated Successfully", title="Success", large=False)
+=======
+        Notification("Part Updated Successfully", title="Success", style="success", timeout=3).show()
+>>>>>>> origin/main
                     
         self.btn_Close_click()
 

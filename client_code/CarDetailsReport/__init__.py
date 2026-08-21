@@ -22,7 +22,11 @@ class CarDetailsReport(CarDetailsReportTemplate):
 
         # 1. No filters selected
         if not search_term and not part_name:
+<<<<<<< HEAD
             alert("Sorry, please enter keyword, part name or both to proceed.", title="Blank Field(s) Found", large=False)
+=======
+            Notification("Sorry, please enter keyword, part name or both to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             return
         elif search_term and not part_name:
             cardetails = anvil.server.call('get_car_details', search_term)
@@ -33,4 +37,8 @@ class CarDetailsReport(CarDetailsReportTemplate):
         if cardetails:
             self.car_repeater.items = cardetails
         else:
+<<<<<<< HEAD
             alert("No records found for the entered keyword and or part name.", title="Not Found", large=False)
+=======
+            Notification("No records found for the entered keyword and or part name.", title="Not Found", style="danger", timeout=3).show()
+>>>>>>> origin/main

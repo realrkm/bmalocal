@@ -21,14 +21,22 @@ class UpdateOrderTracking(UpdateOrderTrackingTemplate):
         searchTerm = self.text_box_searchPartNo.text
 
         if not searchTerm:
+<<<<<<< HEAD
             alert("Please enter search term to proceed")
+=======
+            Notification("Please enter search term to proceed", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.text_box_searchPartNo.focus()
             return
         else:
             result = anvil.server.call("search_client_import_orders", searchTerm)
 
         if not result:
+<<<<<<< HEAD
             alert("Sorry, no record was found matching the search term")
+=======
+            Notification("Sorry, no record was found matching the search term", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.text_box_searchPartNo.focus()
             return
         else:
@@ -51,7 +59,11 @@ class UpdateOrderTracking(UpdateOrderTrackingTemplate):
     
         val = self.drop_down_selectDetails.selected_value
         if not val:
+<<<<<<< HEAD
             alert("Sorry, please select client to proceed")
+=======
+            Notification("Sorry, please select client to proceed", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.text_box_searchPartNo.focus()
             self.btn_Update.enabled = True
             return
@@ -76,7 +88,11 @@ class UpdateOrderTracking(UpdateOrderTrackingTemplate):
                 })
   
             anvil.server.call("updateImportOrderTracking", val["order_date"], val["client_id"],  items)
+<<<<<<< HEAD
             alert("Import order updated successfully", title="Success")
+=======
+            Notification("Import order updated successfully", title="Success", style="success", timeout=3).show()
+>>>>>>> origin/main
             self.btn_Close_click()
 
     def btn_Close_click(self, **event_args):

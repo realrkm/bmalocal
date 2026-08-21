@@ -44,7 +44,11 @@ class Quote(QuoteTemplate):
         search_value = self.text_box_searchPartNo.text.strip()
 
         if not search_value:
+<<<<<<< HEAD
             alert("Please enter part name or part no. to proceed.", title="Blank Field(s) Found", large=False)
+=======
+            Notification("Please enter part name or part no. to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.text_box_searchPartNo.focus()
             return
 
@@ -56,7 +60,11 @@ class Quote(QuoteTemplate):
         if result:
             self.drop_down_selectPart.items = result 
         else:
+<<<<<<< HEAD
             alert("No records found for the entered part detail.", title="Not Found")
+=======
+            Notification("No records found for the entered part detail.", title="Not Found", style="danger", timeout=3).show()
+>>>>>>> origin/main
 
 
     def drop_down_selectPart_change(self, **event_args):
@@ -74,6 +82,7 @@ class Quote(QuoteTemplate):
     def btn_AddParts_click(self, **event_args):
         """This method is called when the button is clicked"""
         if not self.drop_down_selectPart.selected_value:
+<<<<<<< HEAD
             alert("Sorry, please select car part to proceed.", title="Blank Field(s) Found", large=False)
             self.drop_down_selectPart.focus()
             return
@@ -83,6 +92,17 @@ class Quote(QuoteTemplate):
             return
         if not self.txtSellingPrice.text:
             alert("Sorry, please enter selling price to proceed.", title="Blank Field(s) Found", large=False)
+=======
+            Notification("Sorry, please select car part to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+            self.drop_down_selectPart.focus()
+            return
+        if not self.txtQuantity.text:
+            Notification("Sorry, please enter quantity to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+            self.txtQuantity.focus()
+            return
+        if not self.txtSellingPrice.text:
+            Notification("Sorry, please enter selling price to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txtSellingPrice.focus()
             return
 
@@ -136,12 +156,20 @@ class Quote(QuoteTemplate):
     def btn_AddServices_click(self, **event_args):
         """This method is called when the button is clicked"""
         if not self.txtServices.text:
+<<<<<<< HEAD
             alert("Sorry, please enter service name to proceed.", title="Blank Field(s) Found", large=False)
+=======
+            Notification("Sorry, please enter service name to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txtServices.focus()
             return
         
         if not self.txtAmount.text:
+<<<<<<< HEAD
             alert("Sorry, please enter amount to proceed.", title="Blank Field(s) Found", large=False)
+=======
+            Notification("Sorry, please enter amount to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txtAmount.focus()
             return
 
@@ -192,7 +220,11 @@ class Quote(QuoteTemplate):
         self.btn_Save.enabled = False  # Prevent multiple clicks
         
         if not self.cmbJobCardRef.selected_value:
+<<<<<<< HEAD
             alert("Sorry, please select job card ref to proceed.", title="Blank Field(s) Found", large=False)
+=======
+            Notification("Sorry, please select job card ref to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.cmbJobCardRef.focus()
             self.btn_Save.enabled = True
             return
@@ -200,12 +232,20 @@ class Quote(QuoteTemplate):
         rows = self.repeating_panel_assigned_parts.items or []
     
         if not rows and self.cmbWorkflow.selected_value != "Checked In":
+<<<<<<< HEAD
             anvil.alert("Sorry, please assign parts or service to proceed.", title="Missing Assigned Parts or Service", large=False)
+=======
+            Notification("Sorry, please assign parts or service to proceed.", title="Missing Assigned Parts or Service", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.btn_Save.enabled = True
             return
         
         if not self.cmbWorkflow.selected_value:
+<<<<<<< HEAD
             alert("Sorry, please select workflow status to proceed.", title="Blank Field(s) Found", large=False)
+=======
+            Notification("Sorry, please select workflow status to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.cmbWorkflow.focus()
             self.btn_Save.enabled = True
             return   
@@ -224,9 +264,15 @@ class Quote(QuoteTemplate):
         anvil.server.call_s('updateJobCardStatus', jobCardID, status)
         if status == "Checked In":
             anvil.server.call_s("deleteDefects", jobCardID)
+<<<<<<< HEAD
             alert("Job reverted back to Checked In", title="Success")
         else:
             alert("Quotation saved successfully and download is initiated", title="Success")
+=======
+            Notification("Job reverted back to Checked In", title="Success", style="success", timeout=3).show()
+        else:
+            Notification("Quotation saved successfully and download is initiated", title="Success", style="success", timeout=3).show()
+>>>>>>> origin/main
             self.insertMissingSellingPrices()
             self.downloadQuotationPdf(jobCardID)
         

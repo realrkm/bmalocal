@@ -28,14 +28,22 @@ class AddLocation(AddLocationTemplate):
 
         # Validation
         if not name:
+<<<<<<< HEAD
             alert("Please enter location name.")
+=======
+            Notification("Please enter location name.", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txt_name.focus()
             self.btn_SaveAndNew.enabled = True
             return
 
         # Save data
         anvil.server.call("addLocation", name)
+<<<<<<< HEAD
         alert("Location saved successfully.")
+=======
+        Notification("Location saved successfully.", style="warning", timeout=3).show()
+>>>>>>> origin/main
         self.btn_SaveAndNew.enabled = False 
 
         # Clear form

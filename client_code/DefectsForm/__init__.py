@@ -76,7 +76,11 @@ class DefectsForm(DefectsFormTemplate):
             
         
         if not staffID:
+<<<<<<< HEAD
             alert("Sorry, please select staff to proceed", title="Blank Field Found")
+=======
+            Notification("Sorry, please select staff to proceed", title="Blank Field Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.drop_down_staff.focus()
             self.btn_Update.enabled = True
             return
@@ -85,7 +89,11 @@ class DefectsForm(DefectsFormTemplate):
             try:
                 signature = self.signature_form_1.get_signature_image()
             except ValueError:
+<<<<<<< HEAD
                 alert("Customer signature is required.")
+=======
+                Notification("Customer signature is required.", style="warning", timeout=3).show()
+>>>>>>> origin/main
                 self.btn_Update.enabled = True
                 return
                 
@@ -102,7 +110,11 @@ class DefectsForm(DefectsFormTemplate):
         #Update Blank Defects And Requested Parts
         anvil.server.call_s("updateBlankDefectsAndRequestedParts")
         
+<<<<<<< HEAD
         alert("Update is successful", title="Success")
+=======
+        Notification("Update is successful", title="Success", style="success", timeout=3).show()
+>>>>>>> origin/main
         self.label_staffchanged.text = ""
         self.column_panel_update_signature.visible=False
         defectListData=anvil.server.call("getDefectsList", self.defects_data[0]["ID"])
@@ -125,9 +137,15 @@ class DefectsForm(DefectsFormTemplate):
         if val_to_check not in invalid_values:
             # Download Tech Notes
             self.downloadTechNotesPdf(self.defects_data[0]["ID"])
+<<<<<<< HEAD
             alert("Tech Notes PDF download is successful", title="Success")
         else:
             alert("Jobcard has no tech notes", title="Missing Tech Notes")
+=======
+            Notification("Tech Notes PDF download is successful", title="Success", style="success", timeout=3).show()
+        else:
+            Notification("Jobcard has no tech notes", title="Missing Tech Notes", style="danger", timeout=3).show()
+>>>>>>> origin/main
         self.btn_DownloadTechNotes.enabled=True 
 
     def downloadTechNotesPdf(self, job_card_id):
@@ -214,7 +232,11 @@ class DefectsForm(DefectsFormTemplate):
         search_value = self.text_box_searchPartNo.text.strip()
 
         if not search_value:
+<<<<<<< HEAD
             alert("Please enter part name or part no. to proceed.", title="Blank Field(s) Found", large=False)
+=======
+            Notification("Please enter part name or part no. to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.text_box_searchPartNo.focus()
             return
 
@@ -226,7 +248,11 @@ class DefectsForm(DefectsFormTemplate):
         if result:
             self.drop_down_selectPart.items = result 
         else:
+<<<<<<< HEAD
             alert("No records found for the entered part detail.", title="Not Found")
+=======
+            Notification("No records found for the entered part detail.", title="Not Found", style="danger", timeout=3).show()
+>>>>>>> origin/main
 
     def drop_down_selectPart_change(self, **event_args):
         """This method is called when an item is selected"""
@@ -236,13 +262,21 @@ class DefectsForm(DefectsFormTemplate):
         """This method is called when the button is clicked"""
         now_str = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
         anvil.server.call("publish_role_notification",self.defects_data[0]["ID"], f"ready for invoicing - {now_str}" )
+<<<<<<< HEAD
         alert("Alert has been sent successfully", title="Issue Invoice")
+=======
+        Notification("Alert has been sent successfully", title="Issue Invoice", style="warning", timeout=3).show()
+>>>>>>> origin/main
 
 
     def btn_IncompleteDefectsInfo_click(self, **event_args):
         """This method is called when the button is clicked"""
         anvil.server.call("publish_defects_notification",self.defects_data[0]["ID"], "defects list incomplete" )
+<<<<<<< HEAD
         alert("Incomplete defects list updated ", title="Success")
+=======
+        Notification("Incomplete defects list updated ", title="Success", style="success", timeout=3).show()
+>>>>>>> origin/main
         
 
     def btn_AddMorePartsAndServicesInConfirmedQuote_click(self, **event_args):
@@ -253,5 +287,9 @@ class DefectsForm(DefectsFormTemplate):
             alert(content=AddMorePartsInConfirmQuote(self.defects_data[0]["ID"]), buttons=[], dismissible=False,large=True)
             self.btn_AddMorePartsAndServicesInConfirmedQuote.enabled=True
         else:
+<<<<<<< HEAD
             alert("Sorry, you can only update In Service, Verify Task or Issue Invoice jobcards.", title="Workflow Action", large=False)
+=======
+            Notification("Sorry, you can only update In Service, Verify Task or Issue Invoice jobcards.", title="Workflow Action", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.btn_AddMorePartsAndServicesInConfirmedQuote.enabled=True

@@ -31,18 +31,30 @@ class Staffs(StaffsTemplate):
        
         # Validation
         if not name:
+<<<<<<< HEAD
             alert("Please enter technician's full name.")
+=======
+            Notification("Please enter technician's full name.", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txt_name.focus()
             self.btn_SaveAndNew.enabled = True
             return
         elif any(char.isdigit() for char in name):
+<<<<<<< HEAD
             alert("Full name should not contain any numbers.")
+=======
+            Notification("Full name should not contain any numbers.", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txt_name.text = ""
             self.txt_name.focus()
             self.btn_SaveAndNew.enabled = True
             return
         elif not phone:
+<<<<<<< HEAD
             alert("Please enter technician's phone number.")
+=======
+            Notification("Please enter technician's phone number.", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txt_phone.focus()
             self.btn_SaveAndNew.enabled = True
             return
@@ -50,7 +62,11 @@ class Staffs(StaffsTemplate):
         elif not re.match(
             r"^\+?1?[-.\s]?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}$", phone
         ):
+<<<<<<< HEAD
             alert("Please enter a valid phone number")
+=======
+            Notification("Please enter a valid phone number", timeout=3).show()
+>>>>>>> origin/main
             self.txt_phone.text = ""
             self.txt_phone.focus()
             self.btn_SaveAndNew.enabled = True
@@ -72,7 +88,11 @@ class Staffs(StaffsTemplate):
 
         # Save data
         anvil.server.call("save_staff_data", name, phone)
+<<<<<<< HEAD
         alert("Staff saved successfully.")
+=======
+        Notification("Staff saved successfully.", style="warning", timeout=3).show()
+>>>>>>> origin/main
 
         # Clear form
         self.clear_form_fields()

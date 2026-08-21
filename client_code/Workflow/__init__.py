@@ -142,7 +142,11 @@ class Workflow(WorkflowTemplate):
     def btn_TransitionToComplete_click(self, **event_args):
         """This method is called when the button is clicked"""
         anvil.server.call("transitionreadyforpickuptocomplete")
+<<<<<<< HEAD
         alert("All 'Ready for Pickup' jobcards have been updated to 'Complete'", title="Success")
+=======
+        Notification("All 'Ready for Pickup' jobcards have been updated to 'Complete'", title="Success", style="success", timeout=3).show()
+>>>>>>> origin/main
 
     def cmbRegNo_change(self, **event_args):
         """This method is called when an item is selected"""
@@ -154,7 +158,11 @@ class Workflow(WorkflowTemplate):
         """This method is called when the button is clicked"""
         regNo = self.txt_RegNo.text
         if not regNo:
+<<<<<<< HEAD
             alert("Sorry, please enter RegNo to proceed", title="Blank Field Found")
+=======
+            Notification("Sorry, please enter RegNo to proceed", title="Blank Field Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txt_RegNo.focus()
             return
         self.cmbRegNo.items = anvil.server.call("getRegNoUsingStatus", None, regNo)

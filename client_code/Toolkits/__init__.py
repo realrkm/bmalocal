@@ -30,13 +30,21 @@ class Toolkits(ToolkitsTemplate):
 
         # Validation
         if not name:
+<<<<<<< HEAD
             alert("Please enter toolkit name.")
+=======
+            Notification("Please enter toolkit name.", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txt_name.focus()
             self.btn_SaveAndNew.enabled = True
             return
        
         elif not amount:
+<<<<<<< HEAD
             alert("Please enter toolkit amount.")
+=======
+            Notification("Please enter toolkit amount.", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txt_amount.focus()
             self.btn_SaveAndNew.enabled = True
             return
@@ -56,7 +64,11 @@ class Toolkits(ToolkitsTemplate):
 
         # Save data
         anvil.server.call("save_toolkit_data", name, amount)
+<<<<<<< HEAD
         alert("Toolkit saved successfully.")
+=======
+        Notification("Toolkit saved successfully.", style="warning", timeout=3).show()
+>>>>>>> origin/main
 
         # Clear form
         self.txt_name.text = ""

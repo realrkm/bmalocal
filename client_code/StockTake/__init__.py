@@ -46,14 +46,22 @@ class StockTake(StockTakeTemplate):
             window.stopScanner()
             window.startScanner()
         else:
+<<<<<<< HEAD
             alert("Scanner not ready – JS not loaded.")
+=======
+            Notification("Scanner not ready – JS not loaded.", style="warning", timeout=3).show()
+>>>>>>> origin/main
 
     def button_stop_click(self, **event_args):
         """Stop scanner when button is clicked manually"""
         if hasattr(window, "stopScanner"):
             window.stopScanner()
         else:
+<<<<<<< HEAD
             alert("Stop scanner not available.")
+=======
+            Notification("Stop scanner not available.", style="warning", timeout=3).show()
+>>>>>>> origin/main
 
     def add_part(self, barcode_or_partno):
         value = str(barcode_or_partno).strip()
@@ -106,7 +114,11 @@ class StockTake(StockTakeTemplate):
     # Triggered when "ADD PART" button is clicked
         barcode_or_partno = self.txt_BarcodePartNo.text.strip()
         if not barcode_or_partno:
+<<<<<<< HEAD
             alert("Please enter a Barcode or Part Number before adding.")
+=======
+            Notification("Please enter a Barcode or Part Number before adding.", style="warning", timeout=3).show()
+>>>>>>> origin/main
             return
     
         self.add_part(barcode_or_partno)
@@ -117,17 +129,29 @@ class StockTake(StockTakeTemplate):
         data = [item for item in self.repeating_panel_1.items]
         if data:
             anvil.server.call("save_stocktake", data)
+<<<<<<< HEAD
             alert("Stocktake saved successfully")
             self.repeating_panel_1.items = []   # clears repeating panel
             self.txt_BarcodePartNo.text = ""
         else:
             alert("Sorry, please enter data to proceed", title="Blank Field(s) Found")
+=======
+            Notification("Stocktake saved successfully", style="warning", timeout=3).show()
+            self.repeating_panel_1.items = []   # clears repeating panel
+            self.txt_BarcodePartNo.text = ""
+        else:
+            Notification("Sorry, please enter data to proceed", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
 
     def btn_Export_click(self, **event_args):
         """This method is called when the button is clicked"""
         excel_file = anvil.server.call("export_current_parts_and_partno")
         anvil.media.download(excel_file)
+<<<<<<< HEAD
         alert("Car part details exported successfully.", title="Success", large=False)
+=======
+        Notification("Car part details exported successfully.", title="Success", style="success", timeout=3).show()
+>>>>>>> origin/main
 
     def _reset_file_uploader(self):
         """Resets the file uploader using the built-in clear method."""

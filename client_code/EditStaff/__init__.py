@@ -30,7 +30,11 @@ class EditStaff(EditStaffTemplate):
         if valueName:
             self.drop_down_selectName.items = anvil.server.call("getStaffByName", valueName)
         else:
+<<<<<<< HEAD
             alert("Sorry, please enter staff name to procced", title="Blank Field(s) Found")
+=======
+            Notification("Sorry, please enter staff name to procced", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             return
             
     def drop_down_selectName_change(self,  **event_args):
@@ -47,7 +51,11 @@ class EditStaff(EditStaffTemplate):
 
 
         if self.drop_down_selectName.selected_value is None:
+<<<<<<< HEAD
             alert("Please select staff's name to proceed.", large=False)
+=======
+            Notification("Please select staff's name to proceed.", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.drop_down_selectName.focus()
             self.btn_Update.enabled = True
             return
@@ -61,33 +69,53 @@ class EditStaff(EditStaffTemplate):
 
         # Validation
         if not name:
+<<<<<<< HEAD
             alert("Please enter staff's fullname.")
+=======
+            Notification("Please enter staff's fullname.", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txt_name.focus()
             self.btn_Update.enabled = True
             return
         elif any(char.isdigit() for char in name):
+<<<<<<< HEAD
             alert("Full name should not contain any numbers.")
+=======
+            Notification("Full name should not contain any numbers.", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txt_name.text = ""
             self.txt_name.focus()
             self.btn_Update.enabled = True
             return
             """
         elif not phone:
+<<<<<<< HEAD
             alert("Please enter staff's phone number.")
+=======
+            Notification("Please enter staff's phone number.", timeout=3).show()
+>>>>>>> origin/main
             self.txt_phone.focus()
             self.btn_Update.enabled = True
             return
         elif not re.match(
             r"^\+?1?[-.\s]?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}$", phone
         ):
+<<<<<<< HEAD
             alert("Please enter a valid phone number")
+=======
+            Notification("Please enter a valid phone number", timeout=3).show()
+>>>>>>> origin/main
             self.txt_phone.text = ""
             self.txt_phone.focus()
             self.btn_Update.enabled = True
             return
             """
         elif not archived:
+<<<<<<< HEAD
             alert("Please select active status.")
+=======
+            Notification("Please select active status.", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.drop_down_archived.focus()
             self.btn_Update.enabled =True
             return
@@ -101,7 +129,11 @@ class EditStaff(EditStaffTemplate):
         anvil.server.call(
             "update_staff_data", name, phone, archived, staff_id
         )
+<<<<<<< HEAD
         alert("Staff updated successfully.", title="Success", large=False)
+=======
+        Notification("Staff updated successfully.", title="Success", style="success", timeout=3).show()
+>>>>>>> origin/main
 
         # Clear form
         self.btn_Close_click()

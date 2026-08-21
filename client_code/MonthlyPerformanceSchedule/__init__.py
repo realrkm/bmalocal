@@ -24,6 +24,7 @@ class MonthlyPerformanceSchedule(MonthlyPerformanceScheduleTemplate):
         if startDate and endDate is None:
             pass #Do nothing
         elif startDate is None and endDate is None:
+<<<<<<< HEAD
             alert("Sorry, please enter date period to proceed", title="Blank Field(s) Found")
             return
         elif startDate is None and endDate:
@@ -31,6 +32,15 @@ class MonthlyPerformanceSchedule(MonthlyPerformanceScheduleTemplate):
             return
         elif startDate > endDate:
             alert("Sorry, start date cannot be greater than end date", title="Mismatch Dates")
+=======
+            Notification("Sorry, please enter date period to proceed", title="Blank Field(s) Found", style="warning", timeout=3).show()
+            return
+        elif startDate is None and endDate:
+            Notification("Sorry, please enter start date to proceed", title="Blank Field(s) Found", style="warning", timeout=3).show()
+            return
+        elif startDate > endDate:
+            Notification("Sorry, start date cannot be greater than end date", title="Mismatch Dates", style="warning", timeout=3).show()
+>>>>>>> origin/main
             return
         else:
             self.drop_down_1.items = anvil.server.call("getMonthlyJobcardRef", startDate, endDate)
@@ -42,6 +52,7 @@ class MonthlyPerformanceSchedule(MonthlyPerformanceScheduleTemplate):
         jobcardrefID = self.drop_down_1.selected_value
         
         if startDate is None and endDate is None:
+<<<<<<< HEAD
             alert("Sorry, please enter date period to proceed", title="Blank Field(s) Found")
             return
         elif startDate is None and endDate:
@@ -49,6 +60,15 @@ class MonthlyPerformanceSchedule(MonthlyPerformanceScheduleTemplate):
             return
         elif startDate > endDate:
             alert("Sorry, start date cannot be greater than end date", title="Mismatch Dates")
+=======
+            Notification("Sorry, please enter date period to proceed", title="Blank Field(s) Found", style="warning", timeout=3).show()
+            return
+        elif startDate is None and endDate:
+            Notification("Sorry, please enter start date to proceed", title="Blank Field(s) Found", style="warning", timeout=3).show()
+            return
+        elif startDate > endDate:
+            Notification("Sorry, start date cannot be greater than end date", title="Mismatch Dates", style="warning", timeout=3).show()
+>>>>>>> origin/main
             return
         else:
             self.repeating_panel_1.items = anvil.server.call("getPeriodicInvoices", startDate, endDate, jobcardrefID)
@@ -78,6 +98,7 @@ class MonthlyPerformanceSchedule(MonthlyPerformanceScheduleTemplate):
     
         # --- Basic validation ---
         if startDate is None and endDate is None:
+<<<<<<< HEAD
             alert("Sorry, please enter date period to proceed", title="Blank Field(s) Found")
             self.btn_SaveAndNew.enabled = True
             return
@@ -96,6 +117,25 @@ class MonthlyPerformanceSchedule(MonthlyPerformanceScheduleTemplate):
         elif not rows:
             alert("Sorry, ensure jobcard ref has parts or services associated with it",
                 title="Missing Assigned Parts or Service", large=False)
+=======
+            Notification("Sorry, please enter date period to proceed", title="Blank Field(s) Found", style="warning", timeout=3).show()
+            self.btn_SaveAndNew.enabled = True
+            return
+        elif startDate is None and endDate:
+            Notification("Sorry, please enter start date to proceed", title="Blank Field(s) Found", style="warning", timeout=3).show()
+            self.btn_SaveAndNew.enabled = True
+            return
+        elif startDate > endDate:
+            Notification("Sorry, start date cannot be greater than end date", title="Mismatch Dates", style="warning", timeout=3).show()
+            self.btn_SaveAndNew.enabled = True
+            return
+        elif jobcardrefID is None:
+            Notification("Sorry, please select the jobcard ref to proceed", title="Blank Field(s) Found", style="warning", timeout=3).show()
+            self.btn_SaveAndNew.enabled = True
+            return
+        elif not rows:
+            Notification("Sorry, ensure jobcard ref has parts or services associated with it", title="Missing Assigned Parts or Service", style="danger", timeout=3).show()
+>>>>>>> origin/main
             self.btn_SaveAndNew.enabled = True
             return
     
@@ -135,7 +175,11 @@ class MonthlyPerformanceSchedule(MonthlyPerformanceScheduleTemplate):
                 quantity, amount, category
             )
     
+<<<<<<< HEAD
         alert("Categorized invoice details saved successfully", title="Success")
+=======
+        Notification("Categorized invoice details saved successfully", title="Success", style="success", timeout=3).show()
+>>>>>>> origin/main
         self.btn_SaveAndNew.enabled = True
         self.clearForm()
 

@@ -31,18 +31,30 @@ class AddSupplier(AddSupplierTemplate):
     
         # Validation
         if not name:
+<<<<<<< HEAD
             alert("Please enter supplier's full name.")
+=======
+            Notification("Please enter supplier's full name.", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txt_name.focus()
             self.btn_SaveAndNew.enabled = True
             return
         elif any(char.isdigit() for char in name):
+<<<<<<< HEAD
             alert("Full name should not contain any numbers.")
+=======
+            Notification("Full name should not contain any numbers.", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txt_name.text = ""
             self.txt_name.focus()
             self.btn_SaveAndNew.enabled = True
             return
         elif not phone:
+<<<<<<< HEAD
             alert("Please enter suppliers's phone number.")
+=======
+            Notification("Please enter suppliers's phone number.", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txt_phone.focus()
             self.btn_SaveAndNew.enabled = True
             return
@@ -51,11 +63,15 @@ class AddSupplier(AddSupplierTemplate):
         # Call server function
         duplicate = anvil.server.call("check_duplicate_contact", "Supplier", phone)
         if duplicate:
+<<<<<<< HEAD
             alert(
                 "Sorry, a supplier with that phone number has already been added. Please enter another phone number",
                 title="Duplicate Phone Number",
                 large=False,
             )
+=======
+            Notification("Sorry, a supplier with that phone number has already been added. Please enter another phone number", title="Duplicate Phone Number", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txt_phone.text = ""
             self.txt_name.focus()
             self.btn_SaveAndNew.enabled = True
@@ -63,7 +79,11 @@ class AddSupplier(AddSupplierTemplate):
 
         # Save data
         anvil.server.call("addSupplier", name, phone)
+<<<<<<< HEAD
         alert("Supplier saved successfully.")
+=======
+        Notification("Supplier saved successfully.", style="warning", timeout=3).show()
+>>>>>>> origin/main
         self.btn_SaveAndNew.enabled = True
         
         # Clear form

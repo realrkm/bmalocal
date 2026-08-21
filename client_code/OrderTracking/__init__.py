@@ -25,7 +25,11 @@ class OrderTracking(OrderTrackingTemplate):
         
         # 1. No filters selected
         if not search_term:
+<<<<<<< HEAD
             alert("Sorry, please enter client details to proceed.", title="Blank Field(s) Found", large=False)
+=======
+            Notification("Sorry, please enter client details to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             return
         else:
             clientdetails = anvil.server.call('getClientNameAndPhoneNumber', search_term)
@@ -33,14 +37,22 @@ class OrderTracking(OrderTrackingTemplate):
         if clientdetails:
             self.drop_down_selectrole.items = clientdetails
         else:
+<<<<<<< HEAD
             alert("No records found for the entered keyword and or part name.", title="Not Found", large=False)
+=======
+            Notification("No records found for the entered keyword and or part name.", title="Not Found", style="danger", timeout=3).show()
+>>>>>>> origin/main
 
     def btn_SearchParts_click(self, **event_args):
         """This method is called when the text in this text box is edited"""
         search_value = self.text_box_searchPartNo.text.strip()
 
         if not search_value:
+<<<<<<< HEAD
             alert("Please enter part name or part no. to proceed.", title="Blank Field(s) Found", large=False)
+=======
+            Notification("Please enter part name or part no. to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.text_box_searchPartNo.focus()
             return
 
@@ -52,7 +64,11 @@ class OrderTracking(OrderTrackingTemplate):
         if result:
             self.drop_down_selectPart.items = result 
         else:
+<<<<<<< HEAD
             alert("No records found for the entered part detail.", title="Not Found")
+=======
+            Notification("No records found for the entered part detail.", title="Not Found", style="danger", timeout=3).show()
+>>>>>>> origin/main
 
     def drop_down_selectPart_change(self, **event_args):
         """This method is called when an item is selected"""
@@ -78,6 +94,7 @@ class OrderTracking(OrderTrackingTemplate):
     def btn_AddOrder_click(self, **event_args):
         """This method is called when the button is clicked"""
         if not self.drop_down_selectPart.selected_value:
+<<<<<<< HEAD
             alert("Sorry, please select car part to proceed.", title="Blank Field(s) Found", large=False)
             self.drop_down_selectPart.focus()
             return
@@ -87,6 +104,17 @@ class OrderTracking(OrderTrackingTemplate):
             return
         if not self.drop_down_brand.selected_value:
             alert("Sorry, please select car part brand to proceed.", title="Blank Field(s) Found", large=False)
+=======
+            Notification("Sorry, please select car part to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+            self.drop_down_selectPart.focus()
+            return
+        if not self.txt_Quantity.text:
+            Notification("Sorry, please enter quantity to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+            self.txt_Quantity.focus()
+            return
+        if not self.drop_down_brand.selected_value:
+            Notification("Sorry, please select car part brand to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.drop_down_brand.focus()
             return
 
@@ -131,13 +159,21 @@ class OrderTracking(OrderTrackingTemplate):
         self.btn_SaveAndNew.enabled = False #Prevent multiple clicks
 
         if not self.drop_down_selectrole.selected_value:
+<<<<<<< HEAD
             alert("Sorry, please select client to proceed.", title="Blank Field(s) Found", large=False)
+=======
+            Notification("Sorry, please select client to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txt_ClientDetails.focus()
             self.btn_SaveAndNew.enabled = True
             return
 
         if not self.date_picker_1.date:
+<<<<<<< HEAD
             alert("Sorry, please select date to proceed.", title="Blank Field(s) Found", large=False)
+=======
+            Notification("Sorry, please select date to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.date_picker_1.focus()
             self.btn_SaveAndNew.enabled = True
             return
@@ -145,7 +181,11 @@ class OrderTracking(OrderTrackingTemplate):
         rows = self.repeating_panel_1.items or []
 
         if not rows:
+<<<<<<< HEAD
             anvil.alert("Sorry, please assign parts to proceed.", title="Missing Assigned Parts", large=False)
+=======
+            Notification("Sorry, please assign parts to proceed.", title="Missing Assigned Parts", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.btn_SaveAndNew.enabled = True
             return
 
@@ -162,7 +202,11 @@ class OrderTracking(OrderTrackingTemplate):
             status = row["Status"]
             anvil.server.call('saveImportOrderTracking', orderDate, clientID, name, number, quantity, brand, status)
 
+<<<<<<< HEAD
         alert("Import order saved successfully.", title="Success")
+=======
+        Notification("Import order saved successfully.", title="Success", style="success", timeout=3).show()
+>>>>>>> origin/main
         self.clearForm()
         self.refresh()
         self.btn_SaveAndNew.enabled = True

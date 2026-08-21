@@ -24,18 +24,30 @@ class TransitionInterimQuoteToInvoice(TransitionInterimQuoteToInvoiceTemplate):
 
             self.drop_down_JobCardRefDetails.items = result
         else:
+<<<<<<< HEAD
             alert("Please enter job card ref to proceed.", title="Blank Field(s) Found", large=False)
+=======
+            Notification("Please enter job card ref to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txtJobCardRef.focus()
 
     def btn_Transition_click(self, **event_args):
         """This method is called when the button is clicked"""
         if self.drop_down_JobCardRefDetails.selected_value:
             anvil.server.call("transitionInterimQuoteToInvoice", self.drop_down_JobCardRefDetails.selected_value)
+<<<<<<< HEAD
             alert("Interim Quote Transitioned To Invoice", title="Success")
             #Close Form
             self.btn_Close_click()
         else:
             alert("Sorry, please select the jobcard ref to proceed", title="Blank Foeld(s) Found")
+=======
+            Notification("Interim Quote Transitioned To Invoice", title="Success", style="success", timeout=3).show()
+            #Close Form
+            self.btn_Close_click()
+        else:
+            Notification("Sorry, please select the jobcard ref to proceed", title="Blank Foeld(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
 
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""

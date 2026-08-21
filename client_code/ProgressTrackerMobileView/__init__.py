@@ -227,7 +227,11 @@ class ProgressTrackerMobileView(ProgressTrackerMobileViewTemplate):
         quote_data = anvil.server.call("get_quote_confirmation_details_by_job_id", job_id)
 
         if not quote_data:
+<<<<<<< HEAD
             alert("No data found for the selected Job ID.", title='Missing Quotation Data', large=False)
+=======
+            Notification("No data found for the selected Job ID.", title='Missing Quotation Data', style="danger", timeout=3).show()
+>>>>>>> origin/main
             return
 
         # If data exists, now show the form and pass the quote_data along

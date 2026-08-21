@@ -47,7 +47,11 @@ class EditToolkit(EditToolkitTemplate):
         self.btn_Update.enabled = False  # Disable button to prevent multiple clicks
 
         if self.search_keyword_1.selected_result is None:
+<<<<<<< HEAD
             alert("Please select toolkit's name to proceed.", large=False)
+=======
+            Notification("Please select toolkit's name to proceed.", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.search_keyword_1.text_box_search.focus()
             self.btn_Update.enabled =True
             return
@@ -59,20 +63,32 @@ class EditToolkit(EditToolkitTemplate):
 
         # Validation
         if not name:
+<<<<<<< HEAD
             alert("Please enter toolkit's name.")
+=======
+            Notification("Please enter toolkit's name.", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txt_name.focus()
             self.btn_Update.enabled = True
             return
         
         elif not amount:
+<<<<<<< HEAD
             alert("Please enter toolkit amount.")
+=======
+            Notification("Please enter toolkit amount.", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txt_amount.focus()
             self.btn_Update.enabled = True
             return
 
         # Save data
         anvil.server.call("update_toolkit_data", name, amount, toolkit_id)
+<<<<<<< HEAD
         alert("Toolkit updated successfully.", title="Success", large=False)
+=======
+        Notification("Toolkit updated successfully.", title="Success", style="success", timeout=3).show()
+>>>>>>> origin/main
 
         # Clear form
         self.btn_Close_click()

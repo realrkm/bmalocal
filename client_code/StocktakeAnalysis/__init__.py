@@ -30,14 +30,22 @@ class StocktakeAnalysis(StocktakeAnalysisTemplate):
 
             # 1. No filters selected
             if not startDate and not endDate and not part_no:
+<<<<<<< HEAD
                 alert("Sorry, please select a date range, part number or both to proceed.", 
                       title="Blank Field(s) Found", large=False)
+=======
+                Notification("Sorry, please select a date range, part number or both to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
                 return
 
             # 2. Only one date selected
             if (startDate and not endDate) or (endDate and not startDate):
+<<<<<<< HEAD
                 alert("Please select both start and end dates to proceed.", 
                       title="Missing Date", large=False)
+=======
+                Notification("Please select both start and end dates to proceed.", title="Missing Date", style="danger", timeout=3).show()
+>>>>>>> origin/main
                 return
 
             # 3. Both dates provided but startDate > endDate

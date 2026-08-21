@@ -32,7 +32,11 @@ class MapBarCodePartNo(MapBarCodePartNoTemplate):
         search_value = self.text_box_searchPartNo.text.strip()
 
         if not search_value:
+<<<<<<< HEAD
             alert("Please enter part name or part no. to proceed.", title="Blank Field(s) Found", large=False)
+=======
+            Notification("Please enter part name or part no. to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.text_box_searchPartNo.focus()
             return
 
@@ -44,7 +48,11 @@ class MapBarCodePartNo(MapBarCodePartNoTemplate):
         if result:
             self.drop_down_selectPart.items = result
         else:
+<<<<<<< HEAD
             alert("No records found for the entered part detail.", title="Not Found")
+=======
+            Notification("No records found for the entered part detail.", title="Not Found", style="danger", timeout=3).show()
+>>>>>>> origin/main
 
     def drop_down_selectPart_change(self, **event_args):
         """This method is called when an item is selected"""
@@ -58,12 +66,20 @@ class MapBarCodePartNo(MapBarCodePartNoTemplate):
         partNo = self.lbl_PartNumber.text.strip()
 
         if not barcode:
+<<<<<<< HEAD
             alert("Sorry, please enter barcode / partno details", large=False)
+=======
+            Notification("Sorry, please enter barcode / partno details", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txt_BarCode.focus()
             return
 
         if not partNo:
+<<<<<<< HEAD
             alert("Sorry, please select partno details", large=False)
+=======
+            Notification("Sorry, please select partno details", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.text_box_searchPartNo.focus()
             return
 

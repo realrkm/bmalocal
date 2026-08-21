@@ -23,7 +23,11 @@ class TechniciansDetailsReport(TechniciansDetailsReportTemplate):
         search_term = self.txt_Search.text.strip()
 
         if not search_term:
+<<<<<<< HEAD
             alert("Please enter technician's name to search.", title="Missing Search Term")
+=======
+            Notification("Please enter technician's name to search.", title="Missing Search Term", style="danger", timeout=3).show()
+>>>>>>> origin/main
             self.txt_Search.focus()
             return
 
@@ -32,4 +36,8 @@ class TechniciansDetailsReport(TechniciansDetailsReportTemplate):
         if cardetails:
             self.client_repeater.items = cardetails
         else:
+<<<<<<< HEAD
             alert("No records found for the entered technician's name.", title="Not Found")
+=======
+            Notification("No records found for the entered technician's name.", title="Not Found", style="danger", timeout=3).show()
+>>>>>>> origin/main

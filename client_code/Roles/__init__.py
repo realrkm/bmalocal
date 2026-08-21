@@ -22,8 +22,12 @@ class Roles(RolesTemplate):
         description = self.txtDescription.text.strip()
     
         if not role or not description:
+<<<<<<< HEAD
             alert("Sorry, please enter both role and description to proceed.", 
                 title="Blank Field(s) Found", large=False)
+=======
+            Notification("Sorry, please enter both role and description to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txtRole.focus()
             return
     

@@ -141,7 +141,11 @@ def getSellingPrice(id):
     sellingPrice = anvil.server.call_s('getSellingPrice', id)
     if sellingPrice is None:
         trackMissingPrice(id)
+<<<<<<< HEAD
         alert("Sorry, please enter selling price to proceed.", title="Blank Field(s) Found", large=False)
+=======
+        Notification("Sorry, please enter selling price to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
         return None
     else:
         return sellingPrice[0]

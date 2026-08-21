@@ -32,7 +32,11 @@ class DownloadSignedJobCard(DownloadSignedJobCardTemplate):
         self.btn_DownloadJobCard.enabled = False #Prevent multiple clicks 
 
         if not self.cmbJobCardID.selected_value:
+<<<<<<< HEAD
             alert("Sorry, please select job card ref to proceed.", title="Blank Field(s) Found", large=False)
+=======
+            Notification("Sorry, please select job card ref to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.cmbJobCardID.focus()
             self.btn_DownloadJobCard.enabled = True
             return
@@ -40,7 +44,11 @@ class DownloadSignedJobCard(DownloadSignedJobCardTemplate):
         try:
             signature = self.signature_form_1.get_signature_image()
         except ValueError:
+<<<<<<< HEAD
             alert("Sorry, please sign to proceed.", title="Missing Signature", large=False)
+=======
+            Notification("Sorry, please sign to proceed.", title="Missing Signature", style="danger", timeout=3).show()
+>>>>>>> origin/main
             self.btn_DownloadJobCard.enabled = True
             return
             
@@ -49,7 +57,11 @@ class DownloadSignedJobCard(DownloadSignedJobCardTemplate):
         
         anvil.server.call('saveSignedJobCardDetails', jobCardID, signature, createdAt) 
         anvil.server.call_s('fillJobCardReport',jobCardID)
+<<<<<<< HEAD
         alert("Signed jobcard saved successfully and download is initiated.", title="Success")
+=======
+        Notification("Signed jobcard saved successfully and download is initiated.", title="Success", style="success", timeout=3).show()
+>>>>>>> origin/main
         self.downloadJobcardPdf(jobCardID)
 
         # Close Form

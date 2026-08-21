@@ -31,7 +31,11 @@ class EditTechnician(EditTechnicianTemplate):
         if valueName:
             self.drop_down_selectName.items = anvil.server.call('getTechnicianNameAndID', valueName)
         else:
+<<<<<<< HEAD
             alert("Sorry, please enter technician name to proceed", title="Blank Field(s) Found")
+=======
+            Notification("Sorry, please enter technician name to proceed", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             return
             
     def drop_down_selectName_change(self,  **event_args):
@@ -49,7 +53,11 @@ class EditTechnician(EditTechnicianTemplate):
         self.btn_Update.enabled = False #Disable button to prevent multiple clicks
         
         if self.drop_down_selectName.selected_value is None:
+<<<<<<< HEAD
             alert("Please select technician's name to proceed.", large=False)
+=======
+            Notification("Please select technician's name to proceed.", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.drop_down_selectName.focus()
             self.btn_Update.enabled =True
             return
@@ -63,36 +71,60 @@ class EditTechnician(EditTechnicianTemplate):
         
         # Validation
         if not name:
+<<<<<<< HEAD
             alert("Please enter technician's full name.")
+=======
+            Notification("Please enter technician's full name.", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txt_name.focus()
             self.btn_Update.enabled =True
             return
         elif any(char.isdigit() for char in name):
+<<<<<<< HEAD
             alert("Full name should not contain any numbers.")
+=======
+            Notification("Full name should not contain any numbers.", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txt_name.text = ""
             self.txt_name.focus()
             self.btn_Update.enabled =True
             return
         elif not phone:
+<<<<<<< HEAD
             alert("Please enter technician's phone number.")
+=======
+            Notification("Please enter technician's phone number.", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txt_phone.focus()
             self.btn_Update.enabled =True
             return
             """
         elif not re.match(r'^\+?1?[-.\s]?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}$', phone):
+<<<<<<< HEAD
             alert("Please enter a valid phone number")
+=======
+            Notification("Please enter a valid phone number", timeout=3).show()
+>>>>>>> origin/main
             self.txt_phone.text = ""
             self.txt_phone.focus()
             self.btn_Update.enabled =True
             return
             """
         elif not toolkit:
+<<<<<<< HEAD
             alert("Please select toolkit.")
+=======
+            Notification("Please select toolkit.", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.dropdown_toolkits.focus()
             self.btn_Update.enabled =True
             return
         elif not archived:
+<<<<<<< HEAD
             alert("Please select active status.")
+=======
+            Notification("Please select active status.", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.drop_down_archived.focus()
             self.btn_Update.enabled =True
             return
@@ -104,7 +136,11 @@ class EditTechnician(EditTechnicianTemplate):
             
         # Save data
         anvil.server.call('update_technician_data', name, phone, toolkit["ID"], archived, technician_id)
+<<<<<<< HEAD
         alert("Technician updated successfully.", title="Success", large=False)
+=======
+        Notification("Technician updated successfully.", title="Success", style="success", timeout=3).show()
+>>>>>>> origin/main
 
         # Clear form
         self.btn_Close_click()        

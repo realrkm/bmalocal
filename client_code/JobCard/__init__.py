@@ -152,7 +152,11 @@ class JobCard(JobCardTemplate):
         """This method is called when the button is clicked"""
         valueReg = self.txt_RegNo.text
         if valueReg is None:
+<<<<<<< HEAD
             alert("Enter RegNo to proceed", title="Blank Field Found")
+=======
+            Notification("Enter RegNo to proceed", title="Blank Field Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             return
         else:
             self.drop_down_selectRegNo.items = anvil.server.call("getCarRegistrationWithPartlyDetails", valueReg)
@@ -191,7 +195,11 @@ class JobCard(JobCardTemplate):
         """This method is called when the button is clicked"""
         valueCustomer = self.txt_ClientName.text
         if valueCustomer is None:
+<<<<<<< HEAD
             alert("Enter Customer's name to proceed", title="Blank Field Found")
+=======
+            Notification("Enter Customer's name to proceed", title="Blank Field Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             return
         else:
             result = anvil.server.call("getClientFullnameFromSearchWord", valueCustomer)
@@ -208,37 +216,61 @@ class JobCard(JobCardTemplate):
         self.btn_Save.enabled = False #Disable button to prevent multiple clicks 
 
         if not self.search_keyword_1.text_box_search.text:
+<<<<<<< HEAD
             alert("Sorry, please select a technician to assign the job card.", title="Blank Field(s) Found")
+=======
+            Notification("Sorry, please select a technician to assign the job card.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.search_keyword_1.text_box_search.focus()
             self.btn_Save.enabled = True
             return
 
         if not self.search_keyword_1.selected_result:
+<<<<<<< HEAD
             alert("Please select an existing technician to proceed.", title="Select Option From List", large=False)
+=======
+            Notification("Please select an existing technician to proceed.", title="Select Option From List", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.search_keyword_1.text_box_search.focus()
             self.btn_Save.enabled = True
             return
 
         if not self.drop_down_selectCustomer.selected_value:
+<<<<<<< HEAD
             alert("Sorry, please select the client's name.", title="Blank Field(s) Found")
+=======
+            Notification("Sorry, please select the client's name.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txt_ClientName.focus()
             self.btn_Save.enabled = True
             return
 
         if self.txtDueDate.date is None:
+<<<<<<< HEAD
             alert("Sorry, please select due date to proceed.", title="Due Date Missing")
+=======
+            Notification("Sorry, please select due date to proceed.", title="Due Date Missing", style="danger", timeout=3).show()
+>>>>>>> origin/main
             self.txtDueDate.focus()
             self.btn_Save.enabled = True
             return
 
         if self.txtReceivedDate.date is None:
+<<<<<<< HEAD
             alert("Sorry, please select received date to proceed.", title="Received Date Missing")
+=======
+            Notification("Sorry, please select received date to proceed.", title="Received Date Missing", style="danger", timeout=3).show()
+>>>>>>> origin/main
             self.txtReceivedDate.focus()
             self.btn_Save.enabled = True
             return
 
         if self.txtDueDate.date < self.txtReceivedDate.date:
+<<<<<<< HEAD
             alert("Sorry, due date should be greater or equal to received date", title="Date Mismatch")
+=======
+            Notification("Sorry, due date should be greater or equal to received date", title="Date Mismatch", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txtDueDate.date = None
             self.txtDueDate.focus()
             self.btn_Save.enabled = True
@@ -246,81 +278,133 @@ class JobCard(JobCardTemplate):
 
             # txtJobCard is derived from txtRegNo and txtMileage,
         if not self.txtRegNo.text or not self.txtMileage.text:
+<<<<<<< HEAD
             alert("Sorry, please enter the registration number and mileage to get job card ref.", title="Blank Field(s) Found")
+=======
+            Notification("Sorry, please enter the registration number and mileage to get job card ref.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txtRegNo.focus()
             self.btn_Save.enabled = True
             return
     
         if not self.txtReceivedDate.date: # Assuming this is an Anvil DatePicker component
+<<<<<<< HEAD
             alert("Sorry, please enter received date.", title="Blank Field(s) Found")
+=======
+            Notification("Sorry, please enter received date.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txtReceivedDate.focus()
             self.btn_Save.enabled = True
             return
     
         if not self.txtDueDate.date: # Assuming this is an Anvil DatePicker component
+<<<<<<< HEAD
             alert("Sorry, please enter due date.", title="Blank Field(s) Found")
+=======
+            Notification("Sorry, please enter due date.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txtDueDate.focus()
             self.btn_Save.enabled = True
             return
     
         if not self.search_keyword_4.text_box_search.text:
+<<<<<<< HEAD
             alert("Sorry, please select checked in by to proceed.", title="Blank Field(s) Found")
+=======
+            Notification("Sorry, please select checked in by to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.search_keyword_4.text_box_search.focus()
             self.btn_Save.enabled = True
             return
 
         if not self.search_keyword_4.selected_result:
+<<<<<<< HEAD
             alert("Please select an existing staff to proceed.", title="Select Option From List", large=False)
+=======
+            Notification("Please select an existing staff to proceed.", title="Select Option From List", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.search_keyword_4.text_box_search.focus()
             self.btn_Save.enabled = True
             return
     
         if not self.chkComp.checked and not self.chkTPO.checked:
+<<<<<<< HEAD
             alert("Sorry, please select insurance type, either comprehensive(Comp) or third party only(T.P.O).", title="Blank Field(s) Found")
+=======
+            Notification("Sorry, please select insurance type, either comprehensive(Comp) or third party only(T.P.O).", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.chkComp.focus() # Or self.chkTPO.focus()
             self.btn_Save.enabled = True
             return
     
         if not self.txtRegNo.text:
+<<<<<<< HEAD
             alert("Sorry, please enter car registration number.", title="Blank Field(s) Found")
+=======
+            Notification("Sorry, please enter car registration number.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txtRegNo.focus()
             self.btn_Save.enabled = True
             return
     
         if not self.txtMakeAndModel.text:
+<<<<<<< HEAD
             alert("Sorry, please enter make and model.", title="Blank Field(s) Found")
+=======
+            Notification("Sorry, please enter make and model.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txtMakeAndModel.focus()
             self.btn_Save.enabled = True
             return
     
         if not self.txtMileage.text:
+<<<<<<< HEAD
             alert("Sorry, please enter mileage.", title="Blank Field(s) Found")
+=======
+            Notification("Sorry, please enter mileage.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txtMileage.focus()
             self.btn_Save.enabled = True
             return
     
             # Check for transmission: either Manual or Auto must be selected
         if not self.chkManual.checked and not self.chkAuto.checked:
+<<<<<<< HEAD
             alert("Sorry, please select one option for transmission.", title="Blank Field(s) Found")
+=======
+            Notification("Sorry, please select one option for transmission.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.chkManual.focus()
             self.btn_Save.enabled = True
             return
     
             # Check for tank level: at least one option must be selected
         if not (self.chkEmpty.checked or self.chkQuarter.checked or self.chkHalf.checked or self.chkThreeQuarter.checked or self.chkFull.checked):
+<<<<<<< HEAD
             alert("Sorry, please select one option for tank level.", title="Blank Field(s) Found")
+=======
+            Notification("Sorry, please select one option for tank level.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.chkFull.focus() # Or any of the tank level checkboxes
             self.btn_Save.enabled = True
             return
     
         if not self.txtInstructions.text:
+<<<<<<< HEAD
             alert("Sorry, please enter client's instructions.", title="Blank Field Found")
+=======
+            Notification("Sorry, please enter client's instructions.", title="Blank Field Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txtInstructions.focus()
             self.btn_Save.enabled = True
             return
             
         if not self.cmbWorkflow.selected_value:
+<<<<<<< HEAD
             alert("Sorry, please select workflow status to proceed.", title="Blank Field Found")
+=======
+            Notification("Sorry, please select workflow status to proceed.", title="Blank Field Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.cmbWorkflow.focus()
             self.btn_Save.enabled = True
             return
@@ -335,7 +419,11 @@ class JobCard(JobCardTemplate):
         is_duplicate = anvil.server.call_s('check_job_card_duplicate', job_card_ref)
 
         if is_duplicate:
+<<<<<<< HEAD
             alert("Sorry, that job card reference number exists. Please enter another one.", title="Identical Number Found.")
+=======
+            Notification("Sorry, that job card reference number exists. Please enter another one.", title="Identical Number Found.", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txt_JobCardRef.text = "" # Clear the job card field
             self.txtRegNo.text = ""
             self.txtMileage.text=""
@@ -387,7 +475,11 @@ class JobCard(JobCardTemplate):
                               Empty, Quarter, Half, ThreeQuarter, Full, PaintCode, ClientInstruction, Notes, IsComplete, Status)
 
 
+<<<<<<< HEAD
             alert("Job card details saved successfully", title="Success")
+=======
+            Notification("Job card details saved successfully", title="Success", style="success", timeout=3).show()
+>>>>>>> origin/main
 
             # Clear form
             self.clear_form_fields()                     

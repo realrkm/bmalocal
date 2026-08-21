@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Signature Pad</title>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="_/theme/theme.css"> <style>
+            body {
+                font-family: 'Inter', sans-serif;
+            }
+            canvas {
+                touch-action: none;
+            }
+        </style>
+    </head>
+    <body class="signature-page-body">
+        <div class="signature-card">
+            <h1 class="signature-title">Sign Here</h1>
+
+            <div class="signature-canvas-container">
+                <canvas id="signatureCanvas" class="signature-canvas"></canvas>
+            </div>
+
+            <div class="signature-button-group">
+                <button id="clearButton" class="clear-button">Clear</button>
+                <button id="saveButton" class="save-button">Preview</button>
+            </div>
+
+            <div id="message" class="signature-message hidden"></div>
+
+            <div id="previewContainer" class="signature-preview-container hidden">
+                <h2 class="signature-preview-heading">Preview Signature:</h2>
+                <img id="signaturePreview" class="signature-preview-image" alt="User Signature" />
+                <p class="signature-preview-text">This is a preview of your signature.</p>
+            </div>
+
+            <script src="_/theme/signature.js"></script>
+        </div>
+    </body>
+</html>

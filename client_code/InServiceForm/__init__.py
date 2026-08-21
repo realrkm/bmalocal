@@ -40,13 +40,21 @@ class InServiceForm(InServiceFormTemplate):
         self.btn_Save.enabled = False #Prevent multiple clicks
         
         if not self.cmbWorkflow.selected_value:
+<<<<<<< HEAD
             alert("Sorry, please select the next workflow status to proceed.", title="Blank Field(s) Found")
+=======
+            Notification("Sorry, please select the next workflow status to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.cmbWorkflow.focus()
             self.btn_Save.enabled = True
             return
             
         if not self.text_area_work_done.text and self.cmbWorkflow.selected_value != "Confirm Quote":
+<<<<<<< HEAD
             alert("Sorry, please enter the work done to proceed.", title="Blank Field(s) Found")
+=======
+            Notification("Sorry, please enter the work done to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.text_area_work_done.focus()
             self.btn_Save.enabled = True
             return
@@ -57,11 +65,19 @@ class InServiceForm(InServiceFormTemplate):
 
         if status == "Confirm Quote":
             anvil.server.call_s('updateJobCardStatus', jobCardID, status)
+<<<<<<< HEAD
             alert("Job reverted back to Confirm Quote", title="Success")
         else:   
             anvil.server.call_s('updateJobCardStatus', jobCardID, status)
             anvil.server.call("saveWorkDoneInJobCard", jobCardID, workDone)
             alert("Service saved successfully", title="Success")
+=======
+            Notification("Job reverted back to Confirm Quote", title="Success", style="success", timeout=3).show()
+        else:   
+            anvil.server.call_s('updateJobCardStatus', jobCardID, status)
+            anvil.server.call("saveWorkDoneInJobCard", jobCardID, workDone)
+            Notification("Service saved successfully", title="Success", style="success", timeout=3).show()
+>>>>>>> origin/main
         # Close Form
         self.btn_Close_click()
 

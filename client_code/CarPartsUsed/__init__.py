@@ -27,7 +27,11 @@ class CarPartsUsed(CarPartsUsedTemplate):
 
             self.drop_down_JobCardRefDetails.items = result
         else:
+<<<<<<< HEAD
             alert("Please enter job card ref to proceed.", title="Blank Field(s) Found", large=False)
+=======
+            Notification("Please enter job card ref to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txtJobCardRef.focus()
 
     def drop_down_JobCardRefDetails_change(self, **event_args):
@@ -37,7 +41,11 @@ class CarPartsUsed(CarPartsUsedTemplate):
             self.repeating_panel_1.items = result
 
         else:
+<<<<<<< HEAD
             alert("Please enter job card ref to procced.", title="Blank Field(s) Found", large=False)
+=======
+            Notification("Please enter job card ref to procced.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.drop_down_JobCardRefDetails.focus()
 
     def btn_SearchPart_click(self, **event_args):
@@ -47,6 +55,10 @@ class CarPartsUsed(CarPartsUsedTemplate):
             self.repeating_panel_1.items = result
            
         else:
+<<<<<<< HEAD
             alert("Please enter part number to procced.", title="Blank Field(s) Found", large=False)
+=======
+            Notification("Please enter part number to procced.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txtSearchPart.focus()
 

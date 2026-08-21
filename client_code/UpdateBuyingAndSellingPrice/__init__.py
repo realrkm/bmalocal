@@ -54,17 +54,28 @@ class UpdateBuyingAndSellingPrice(UpdateBuyingAndSellingPriceTemplate):
             if priceType == "Selling":
                 discount = float(discount_text)
                 if discount >= newPrice:
+<<<<<<< HEAD
                     alert("Sorry, discount should be less than selling price.", title="Mismatch Prices", large=False)
+=======
+                    Notification("Sorry, discount should be less than selling price.", title="Mismatch Prices", style="warning", timeout=3).show()
+>>>>>>> origin/main
                     return
                 else:
                     anvil.server.call_s("updatePrice", priceType, newPrice, discount, partNo)
             else:
                 anvil.server.call_s("updatePrice", priceType, newPrice, 0, partNo)
                 
+<<<<<<< HEAD
             alert("Price Updated Successfully", title="Success", large=False)       
             self.btn_Close_click()
         else:
             alert("Sorry, please update the price to reflect the changes.")
+=======
+            Notification("Price Updated Successfully", title="Success", style="success", timeout=3).show()       
+            self.btn_Close_click()
+        else:
+            Notification("Sorry, please update the price to reflect the changes.", style="warning", timeout=3).show()
+>>>>>>> origin/main
         
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""

@@ -25,7 +25,11 @@ class AmendedInvoice(AmendedInvoiceTemplate):
         search_text = self.txtJobCardRef.text.strip()
 
         if not search_text:
+<<<<<<< HEAD
             alert("Please enter job card ref to search.", title="Missing Job Card Ref")
+=======
+            Notification("Please enter job card ref to search.", title="Missing Job Card Ref", style="danger", timeout=3).show()
+>>>>>>> origin/main
             self.txtJobCardRef.focus()
             return
 
@@ -36,7 +40,11 @@ class AmendedInvoice(AmendedInvoiceTemplate):
             self.drop_down_JobCardRefDetails.items = ""
             self.drop_down_JobCardRefDetails.items = result
         else:
+<<<<<<< HEAD
              alert("No records found for the entered job card ref.", title="Not Found")
+=======
+             Notification("No records found for the entered job card ref.", title="Not Found", style="danger", timeout=3).show()
+>>>>>>> origin/main
 
     def drop_down_JobCardRefDetails_change(self, **event_args):
         """This method is called when an item is selected"""
@@ -78,7 +86,11 @@ class AmendedInvoice(AmendedInvoiceTemplate):
         search_value = self.text_box_searchPartNo.text.strip()
 
         if not search_value:
+<<<<<<< HEAD
             alert("Please enter part name or part number to search.", title="Missing Part Details")
+=======
+            Notification("Please enter part name or part number to search.", title="Missing Part Details", style="danger", timeout=3).show()
+>>>>>>> origin/main
             self.text_box_searchPartNo.focus()
             return
             
@@ -90,7 +102,11 @@ class AmendedInvoice(AmendedInvoiceTemplate):
         if result:
             self.drop_down_selectPart.items = result
         else:
+<<<<<<< HEAD
             alert("No records found for the entered part detail.", title="Not Found")
+=======
+            Notification("No records found for the entered part detail.", title="Not Found", style="danger", timeout=3).show()
+>>>>>>> origin/main
 
     def drop_down_selectPart_change(self, **event_args):
         """This method is called when an item is selected"""
@@ -108,6 +124,7 @@ class AmendedInvoice(AmendedInvoiceTemplate):
     def btn_AddParts_click(self, **event_args):
         """This method is called when the button is clicked"""
         if not self.drop_down_selectPart.selected_value:
+<<<<<<< HEAD
             alert(
                 "Sorry, please select car part to proceed.",
                 title="Blank Field(s) Found",
@@ -129,6 +146,17 @@ class AmendedInvoice(AmendedInvoiceTemplate):
                 title="Blank Field(s) Found",
                 large=False,
             )
+=======
+            Notification("Sorry, please select car part to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+            self.drop_down_selectPart.focus()
+            return
+        if not self.txtQuantity.text:
+            Notification("Sorry, please enter quantity to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+            self.txtQuantity.focus()
+            return
+        if self.txtSellingPrice.text =="":
+            Notification("Sorry, please enter selling price to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txtSellingPrice.focus()
             return
 
@@ -182,20 +210,28 @@ class AmendedInvoice(AmendedInvoiceTemplate):
     def btn_AddServices_click(self, **event_args):
         """This method is called when the button is clicked"""
         if not self.txtServices.text:
+<<<<<<< HEAD
             alert(
                 "Sorry, please enter service name to proceed.",
                 title="Blank Field(s) Found",
                 large=False,
             )
+=======
+            Notification("Sorry, please enter service name to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txtServices.focus()
             return
 
         if self.txtAmount.text =="":
+<<<<<<< HEAD
             alert(
                 "Sorry, please enter amount to proceed.",
                 title="Blank Field(s) Found",
                 large=False,
             )
+=======
+            Notification("Sorry, please enter amount to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txtAmount.focus()
             return
 
@@ -251,7 +287,11 @@ class AmendedInvoice(AmendedInvoiceTemplate):
         try:
             vat_percent = float(str(self.txtVAT.text).replace("%", "").strip())
         except ValueError:
+<<<<<<< HEAD
             alert("Invalid VAT value. Please enter a number like 16 or 16%.")
+=======
+            Notification("Invalid VAT value. Please enter a number like 16 or 16%.", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txtVAT.focus()
             return
     
@@ -383,7 +423,11 @@ class AmendedInvoice(AmendedInvoiceTemplate):
             return
         
         if not self.date_picker_1.date:
+<<<<<<< HEAD
             alert("Sorry, please enter date to proceed.", title="Blank Field(s) Found")
+=======
+            Notification("Sorry, please enter date to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.date_picker_1.focus()
             self.btn_SaveAndDownload.enabled = True
             return
@@ -445,7 +489,11 @@ class AmendedInvoice(AmendedInvoiceTemplate):
         anvil.server.call(
             "updateInvoice", invoicedate, job_card_id, items
         )
+<<<<<<< HEAD
         alert("Amended Invoice Saved Successfully.", title="Success", large=False)
+=======
+        Notification("Amended Invoice Saved Successfully.", title="Success", style="success", timeout=3).show()
+>>>>>>> origin/main
         self.insertMissingSellingPrices()
         self.downloadInvoicePdf(job_card_id)
 

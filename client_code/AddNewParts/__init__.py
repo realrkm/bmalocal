@@ -63,55 +63,91 @@ class AddNewParts(AddNewPartsTemplate):
         reorderLevel = self.txtReorderLevel.text
 
         if not purchaseDate:
+<<<<<<< HEAD
             alert("Sorry, please enter purchase date", title="Blank Field(s) Found", large=False)
+=======
+            Notification("Sorry, please enter purchase date", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.date_picker_purchase.focus()
             self.btn_SaveAndNew.enabled = True
             return
 
         if not partName:
+<<<<<<< HEAD
             alert("Sorry, please enter car part name to proceed", title="Blank Field(s) Found", large=False)
+=======
+            Notification("Sorry, please enter car part name to proceed", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txtPartName.focus()
             self.btn_SaveAndNew.enabled = True
             return
 
         if not partNumber:
+<<<<<<< HEAD
             alert("Sorry, please enter car part number to proceed", title="Blank Field(s) Found", large=False)
+=======
+            Notification("Sorry, please enter car part number to proceed", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txtPartNumber.focus()
             self.btn_SaveAndNew.enabled = True
             return
 
         if not locationID:
+<<<<<<< HEAD
             alert("Sorry, please select storage location to proceed", title="Blank Field(s) Found", large=False)
+=======
+            Notification("Sorry, please select storage location to proceed", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.drop_down_location.focus()
             self.btn_SaveAndNew.enabled = True
             return
             
         if not supplierID:
+<<<<<<< HEAD
             alert("Sorry, please select supplier to proceed", title="Blank Field(s) Found", large=False)
+=======
+            Notification("Sorry, please select supplier to proceed", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.drop_down_supplier.focus()
             self.btn_SaveAndNew.enabled = True
             return    
 
         if not units:
+<<<<<<< HEAD
             alert("Sorry, please enter number of units to proceed", title="Blank Field(s) Found", large=False)
+=======
+            Notification("Sorry, please enter number of units to proceed", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txtNoOfUnits.focus()
             self.btn_SaveAndNew.enabled = True
             return    
 
         if not buyingPrice:
+<<<<<<< HEAD
             alert("Sorry, please enter buying price to proceed", title="Blank Field(s) Found", large=False)
+=======
+            Notification("Sorry, please enter buying price to proceed", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txtBuyingPrice.focus()
             self.btn_SaveAndNew.enabled = True
             return    
 
         if not sellingPrice:
+<<<<<<< HEAD
             alert("Sorry, please enter selling price to proceed", title="Blank Field(s) Found", large=False)
+=======
+            Notification("Sorry, please enter selling price to proceed", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txtSellingPrice.focus()
             self.btn_SaveAndNew.enabled = True
             return    
 
         if not reorderLevel:
+<<<<<<< HEAD
             alert("Sorry, please enter reorder level to proceed", title="Blank Field(s) Found", large=False)
+=======
+            Notification("Sorry, please enter reorder level to proceed", title="Blank Field(s) Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txtReorderLevel.focus()
             self.btn_SaveAndNew.enabled = True
             return    
@@ -120,7 +156,11 @@ class AddNewParts(AddNewPartsTemplate):
         result = anvil.server.call("check_duplicate_number", self.txtPartNumber.text)
 
         if result:
+<<<<<<< HEAD
             alert("This part number is already in use. Please enter a unique part number.", title="Duplicate Part Number Found", large=False)
+=======
+            Notification("This part number is already in use. Please enter a unique part number.", title="Duplicate Part Number Found", style="warning", timeout=3).show()
+>>>>>>> origin/main
             self.txtPartNumber.focus()
             self.btn_SaveAndNew.enabled = True
             return
@@ -128,7 +168,11 @@ class AddNewParts(AddNewPartsTemplate):
         anvil.server.call_s("addNewParts", purchaseDate, partName, partNumber, locationID, supplierID, units, buyingPrice, sellingPrice,discountPrice, reorderLevel)
         #Update Blank Car Part Categories
         anvil.server.call_s("update_null_carpart_categories")
+<<<<<<< HEAD
         alert("Part Saved Successfully", title="Success", large=False)
+=======
+        Notification("Part Saved Successfully", title="Success", style="success", timeout=3).show()
+>>>>>>> origin/main
 
         if self.isPopup is True:
             self.btn_Close_click()

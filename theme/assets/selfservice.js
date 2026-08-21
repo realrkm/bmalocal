@@ -62,7 +62,10 @@
 
         // ⭐ NEW: Track if data has been loaded for current reg and navigation source
         dataLoadedForReg: null,
-        cameFromWorkDone: false
+        cameFromWorkDone: false,
+
+        // ⭐ NEW: Track which Requested Parts row (if any) is currently in inline-edit mode
+        editingCartIndex: null
     };
     // Category display configuration
     const categoryConfig = {
@@ -1058,15 +1061,59 @@
             ${state.cart.length > 0 ? `
                 <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); border-radius:0.8rem; padding:1.5rem;">
                     ${state.cart.map((item, i) => `
-                        <div style="padding:1rem; border-bottom:${i < state.cart.length - 1 ? '1px solid rgba(59, 130, 246, 0.2)' : 'none'}; display:flex; justify-content:space-between; align-items:center; font-size:1.6rem;">
-                            <div style="flex:1;">
+                        <div style="padding:1rem; border-bottom:${i < state.cart.length - 1 ? '1px solid rgba(59, 130, 246, 0.2)' : 'none'}; display:flex; justify-content:space-between; align-items:center; font-size:1.6rem; gap:1rem; flex-wrap:wrap;">
+                            <div style="flex:1; min-width:150px;">
                                 <div style="font-weight:bold; color:#06b6d4; margin-bottom:0.3rem;">${i + 1}. ${sanitizeHTML(item.name)}</div>
                                 ${item.category ? `<div style="color:#94a3b8; font-size:1.4rem;">${sanitizeHTML(item.category)}</div>` : ''}
                             </div>
+                            ${state.editingCartIndex === i ? `
+                            <div style="display:flex; align-items:center; gap:1rem;">
+                                <div style="display:flex; flex-direction:column; align-items:center;">
+                                    <span style="color:#94a3b8; font-size:1.1rem;">QTY</span>
+                                    <input 
+                                        type="number" 
+                                        id="requested-part-qty-${i}"
+                                        value="${item.quantity}" 
+                                        min="0.01"
+                                        step="0.01"
+                                        aria-label="New quantity for ${sanitizeHTML(item.name)}"
+                                        onkeydown="if(event.key==='Enter'){saveCartItemEdit(${i});} else if(event.key==='Escape'){cancelCartItemEdit();}"
+                                        style="width:90px; padding:0.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; text-align:center;"
+                                    >
+                                </div>
+                                <button 
+                                    onclick="saveCartItemEdit(${i})" 
+                                    aria-label="Save quantity for ${sanitizeHTML(item.name)}"
+                                    style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; border:none; border-radius:0.5rem; padding:0.5rem 1rem; cursor:pointer; font-size:1.4rem; font-weight:bold; transition:all 0.3s ease; display:flex; align-items:center; gap:0.3rem;"
+                                    onmouseover="this.style.transform='scale(1.05)'"
+                                    onmouseout="this.style.transform='scale(1)'">
+                                    <i data-lucide="check" style="width:16px; height:16px;"></i>
+                                    Save
+                                </button>
+                                <button 
+                                    onclick="cancelCartItemEdit()" 
+                                    aria-label="Cancel editing ${sanitizeHTML(item.name)}"
+                                    style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; border:none; border-radius:0.5rem; padding:0.5rem 1rem; cursor:pointer; font-size:1.4rem; font-weight:bold; transition:all 0.3s ease; display:flex; align-items:center; gap:0.3rem;"
+                                    onmouseover="this.style.transform='scale(1.05)'"
+                                    onmouseout="this.style.transform='scale(1)'">
+                                    <i data-lucide="x" style="width:16px; height:16px;"></i>
+                                    Cancel
+                                </button>
+                            </div>
+                            ` : `
                             <div style="display:flex; align-items:center; gap:1.5rem;">
                                 <div style="color:#facc15; font-weight:bold; font-size:1.8rem;">
                                     Qty: ${item.quantity}
                                 </div>
+                                <button 
+                                    onclick="editCartItem(${i})" 
+                                    aria-label="Edit ${sanitizeHTML(item.name)}"
+                                    style="background:linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color:white; border:none; border-radius:0.5rem; padding:0.5rem 1rem; cursor:pointer; font-size:1.4rem; font-weight:bold; transition:all 0.3s ease; display:flex; align-items:center; gap:0.3rem;"
+                                    onmouseover="this.style.transform='scale(1.05)'"
+                                    onmouseout="this.style.transform='scale(1)'">
+                                    <i data-lucide="pencil" style="width:16px; height:16px;"></i>
+                                    Edit
+                                </button>
                                 <button 
                                     onclick="removeFromCart(${i})" 
                                     aria-label="Remove ${sanitizeHTML(item.name)} from cart"
@@ -1077,6 +1124,7 @@
                                     Remove
                                 </button>
                             </div>
+                            `}
                         </div>
                     `).join('')}
                     <div style="margin-top:1rem; padding-top:1rem; border-top:2px solid rgba(59, 130, 246, 0.3); display:flex; justify-content:space-between; align-items:center;">
@@ -3031,12 +3079,66 @@ function setupListeners() {
 
     window.removeFromCart = (i) => { 
         state.cart.splice(i, 1);
-        
+        state.editingCartIndex = null; // reset any in-progress edit to avoid stale index references
+
         // Update the badge count immediately
         updateCartBadgeOnly();
 
         // Update UI without a refresh if we are on the Request Parts tab
         // FIXED: Corrected view name from 'request-parts' to 'Request Parts'
+        if (state.currentView === 'Request Parts' && state.activePartsTab === 'request') {
+            updatePartsListDisplay();
+        } else {
+            render();
+        }
+    };
+
+    // ⭐ NEW: Puts a Requested Parts row into inline-edit mode
+    window.editCartItem = (i) => {
+        if (!state.cart[i]) return;
+        state.editingCartIndex = i;
+
+        if (state.currentView === 'Request Parts' && state.activePartsTab === 'request') {
+            updatePartsListDisplay();
+        } else {
+            render();
+        }
+
+        // Focus the quantity input for a smoother editing experience
+        const input = document.getElementById(`requested-part-qty-${i}`);
+        if (input) {
+            input.focus();
+            input.select();
+        }
+    };
+
+    // ⭐ NEW: Cancels inline-edit mode without saving changes
+    window.cancelCartItemEdit = () => {
+        state.editingCartIndex = null;
+
+        if (state.currentView === 'Request Parts' && state.activePartsTab === 'request') {
+            updatePartsListDisplay();
+        } else {
+            render();
+        }
+    };
+
+    // ⭐ NEW: Saves the edited quantity for a Requested Parts row
+    window.saveCartItemEdit = (i) => {
+        const input = document.getElementById(`requested-part-qty-${i}`);
+        const qty = input ? parseFloat(input.value) : NaN;
+
+        if (!input || isNaN(qty) || qty <= 0) {
+            customAlert('Please enter a valid quantity greater than 0.', 'Invalid Quantity');
+            return;
+        }
+
+        state.cart[i].quantity = qty;
+        state.editingCartIndex = null;
+
+        // Update the badge count immediately
+        updateCartBadgeOnly();
+
         if (state.currentView === 'Request Parts' && state.activePartsTab === 'request') {
             updatePartsListDisplay();
         } else {

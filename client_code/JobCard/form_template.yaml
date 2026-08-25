@@ -271,13 +271,13 @@ components:
     type: DropDown
   - layout_properties: {grid_position: 'IMFZZK,WCEKIP'}
     name: label_3
-    properties: {align: center, bold: true, font: Mozilla Headline, font_size: 14, foreground: 'theme:White', text: Terms And Conditions}
+    properties: {align: center, bold: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: Terms And Conditions}
     type: Label
   - layout_properties: {grid_position: 'ZJRPDY,WHPAUO'}
     name: label_4
     properties:
       font: Mozilla Headline
-      font_size: 14
+      font_size: 16
       foreground: theme:White
       text: |-
         (A) Vehicles are driven & stored at owner's risk and the owner must ensure that they are adequately insured while in custody or in control of a member of the motor trade for the purpose of repair or upkeep.

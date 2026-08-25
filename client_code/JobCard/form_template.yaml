@@ -269,6 +269,27 @@ components:
       placeholder: 'Select Next Workflow Status * '
       role: null
     type: DropDown
+  - layout_properties: {grid_position: 'IMFZZK,WCEKIP'}
+    name: label_3
+    properties: {align: center, bold: true, font: Mozilla Headline, font_size: 14, text: Terms And Conditions}
+    type: Label
+  - layout_properties: {grid_position: 'ZJRPDY,WHPAUO'}
+    name: label_4
+    properties:
+      font: Mozilla Headline
+      font_size: 14
+      text: |-
+        (A) Vehicles are driven & stored at owner's risk and the owner must ensure that they are adequately insured while in custody or in control of a member of the motor trade for the purpose of repair or upkeep.
+
+        (B) I agree to pay for all work and parts required for the repairs described above at your retail charge. It is understood that any estimate given is provisional and all repairs are undertaken on a cash basis unless prior arrangements for credit have been approved. Any additional work found to be necessary must be authorised by myself prior to commencement. All goods shall remain the property of the seller until paid for in full.
+
+        (C) Vehicles uncollected within 7 days after completion of instructions or issue of quotation will attract storage charges of Kes. 500 per day. lf not collected after three months, vehicles shall be sold under disposal of unclaimed goods act to defry the company's cost.
+
+        (D) Any claim / complain in respect of work done as per the owner's instructions shall be notified to the company in writing within seven days after vehicle or goods delivery to the owner or after such reason for complaint has come to the knowledge of the owner whichever will be sooner and any claim not so notified shall be deemed waived.
+
+        I hereby authorise and accept your terms and conditions. Nothing herein is designed to nor will it affect a customers statutory rights.
+      underline: true
+    type: Label
   layout_properties: {grid_position: 'RISTBB,BXUBFN', row_background: ''}
   name: card_8
   properties: {border: '', role: glass-panel}

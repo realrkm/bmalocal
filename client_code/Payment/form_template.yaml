@@ -68,7 +68,8 @@ components:
     properties: {visible: false}
     type: Label
   - components:
-    - layout_properties: {grid_position: 'NTPGDQ,TGYSAQ'}
+    - data_bindings: []
+      layout_properties: {grid_position: 'NTPGDQ,TGYSAQ'}
       name: date_picker_1
       properties: {align: center, background: 'theme:White', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Payment Date *}
       type: DatePicker

@@ -176,8 +176,16 @@ class Payment(PaymentTemplate):
             
         alert('Payment saved successfully', title="Success", large=False)
 
+        #Download payment pdf
+        media_object = anvil.server.call('createReportPdf', jobCardRefID, "Payment")
+        anvil.media.download(media_object)
+        self.deleteFile(jobCardRefID, "Payment")
+        
         #Reload page
         get_open_form().btn_Payment_click()
+        
+    def deleteFile(self, jobCardID, docType):
+        anvil.server.call("deleteFile", jobCardID, docType)
 
     
 

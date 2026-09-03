@@ -770,7 +770,11 @@
                             <td data-label="Received">${sanitizeHTML(s.date)}</td>
                             <td data-label="Technician"><strong>${sanitizeHTML(s.tech)}</strong></td>
                             <td data-label="JobCard Ref" style="color:#facc15; font-weight:bold;">${sanitizeHTML(s.jobcardref)}</td>
-                            <td data-label="Instruction">${sanitizeHTML(s.instruction)}</td>
+                            <td data-label="Instruction">
+                                <ul style="margin:0; padding-left:1.2em;">
+                                    ${s.instruction.split('\n').map(line => `<li>${sanitizeHTML(line)}</li>`).join('')}
+                                </ul>
+                            </td>
                             <td data-label="Status"><span class="status-badge ${s.status === 'In-Service' ? 'status-in-service' : s.status === 'Create Quote' ? 'status-create-quote' : s.status === 'Confirm Quote' ? 'status-confirm-quote' : s.status === 'Completed' ? 'status-completed' : 'status-checked-in'}">${s.status}</span></td>
                             <td data-label="Action">
                                 ${s.status === 'Completed' ? '✅ Finished' : s.status === 'In-Service' ? `
@@ -838,7 +842,11 @@
                     <td data-label="Received">${sanitizeHTML(s.date)}</td>
                     <td data-label="Technician"><strong>${sanitizeHTML(s.tech)}</strong></td>
                     <td data-label="JobCard Ref" style="color:#facc15; font-weight:bold;">${sanitizeHTML(s.jobcardref)}</td>
-                    <td data-label="Instruction">${sanitizeHTML(s.instruction)}</td>
+                    <td data-label="Instruction">
+                        <ul style="margin:0; padding-left:1.2em;">
+                            ${s.instruction.split('\n').map(line => `<li>${sanitizeHTML(line)}</li>`).join('')}
+                        </ul>
+                    </td>
                     <td data-label="Status"><span class="status-badge ${s.status === 'In-Service' ? 'status-in-service' : s.status === 'Create Quote' ? 'status-create-quote' : s.status === 'Confirm Quote' ? 'status-confirm-quote' : s.status === 'Completed' ? 'status-completed' : 'status-checked-in'}">${s.status}</span></td>
                     <td data-label="Action">
                         ${s.status === 'Completed' ? '✅ Finished' : s.status === 'In-Service' ? `

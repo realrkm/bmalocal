@@ -875,7 +875,10 @@
                         <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); padding:1.5rem; border-radius:1rem; margin-bottom:2rem; border:2px solid rgba(129, 196, 255, 0.2);">
                             <p style="font-size:1.8rem;"><strong>Registration:</strong> <span style="color:#e7222e;">${sanitizeHTML(service.jobcardref)}</span></p>
                             <p style="font-size:1.8rem;"><strong>Technician:</strong> ${sanitizeHTML(service.tech)}</p>
-                            <p style="font-size:1.8rem;"><strong>Instruction:</strong> ${sanitizeHTML(service.instruction)}</p>
+                            <p style="font-size:1.8rem;"><strong>Instruction:</strong></p>
+                            <ul style="font-size:1.8rem; margin:0.5rem 0 0 2rem; padding:0;">
+                                ${(service.instruction || '').split('\n').map(line => `<li>${sanitizeHTML(line)}</li>`).join('')}
+                            </ul>
                         </div>
                     </div>
                     
@@ -1559,9 +1562,12 @@
                     <p style="font-size:1.8rem; color:#000000; margin-bottom:0.8rem;">
                         <strong style="color:#16588e;">Technician:</strong> ${sanitizeHTML(service.tech)}
                     </p>
-                    <p style="font-size:1.8rem; color:#000000;">
-                        <strong style="color:#16588e;">Instruction:</strong> ${sanitizeHTML(service.instruction)}
+                    <p style="font-size:1.8rem; color:#000000; margin-bottom:0.5rem;">
+                        <strong style="color:#16588e;">Instruction:</strong>
                     </p>
+                    <ul style="font-size:1.8rem; color:#000000; margin:0 0 0 2rem; padding:0;">
+                        ${(service.instruction || '').split('\n').map(line => `<li>${sanitizeHTML(line)}</li>`).join('')}
+                    </ul>
                 </div>
                 <div style="margin-bottom:2rem;">
                 <label for="workdone-textarea" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; font-size:2rem; font-weight:bold; color:#16588e;">

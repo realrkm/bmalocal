@@ -1,10 +1,10 @@
 from ._anvil_designer import AddNewPartsTemplate
 from anvil import *
-import anvil.server
-import anvil.users
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
+import anvil.server
+import anvil.users
 from ..AddLocation import AddLocation
 from ..AddSupplier import AddSupplier
 from ..EditAddNewParts import EditAddNewParts

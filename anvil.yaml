@@ -5,84 +5,110 @@ db_schema:
     client: none
     columns:
     - admin_ui: {width: 200}
+      client_hidden: null
       name: signature_file
       type: media
     - admin_ui: {width: 200}
+      client_hidden: null
       name: created_at
       type: datetime
+    indexes: []
     server: full
     title: Signatures
   tbl_stats:
     client: none
     columns:
     - admin_ui: {width: 200}
+      client_hidden: null
       name: OperatingSystem
       type: string
     - admin_ui: {width: 200}
+      client_hidden: null
       name: WindowsVersion
       type: string
     - admin_ui: {width: 200}
+      client_hidden: null
       name: AccessedVia
       type: string
     - admin_ui: {width: 200}
+      client_hidden: null
       name: Browser
       type: string
     - admin_ui: {width: 200}
+      client_hidden: null
       name: LoggedDate
       type: string
     - admin_ui: {width: 200}
+      client_hidden: null
       name: User
       type: string
     - admin_ui: {width: 200}
+      client_hidden: null
       name: UserAgentString
       type: string
     - admin_ui: {width: 200}
+      client_hidden: null
       name: IPAddress
       type: string
     - admin_ui: {width: 200}
+      client_hidden: null
       name: IPGeoCountry
       type: string
     - admin_ui: {width: 200}
+      client_hidden: null
       name: IPGeoCity
       type: string
     - admin_ui: {width: 200}
+      client_hidden: null
       name: IPGeoRegion
       type: string
     - admin_ui: {width: 200}
+      client_hidden: null
       name: IPGeoCoordinates
       type: string
     - admin_ui: {width: 200}
+      client_hidden: null
       name: BrowserProvidedLocation
       type: string
+    indexes: []
     server: full
     title: tbl_stats
   users:
     client: none
     columns:
     - admin_ui: {width: 200}
+      client_hidden: null
       name: email
       type: string
     - admin_ui: {width: 200}
+      client_hidden: null
       name: enabled
       type: bool
     - admin_ui: {width: 200}
+      client_hidden: null
       name: last_login
       type: datetime
     - admin_ui: {width: 200}
+      client_hidden: null
       name: password_hash
       type: string
     - admin_ui: {width: 200}
+      client_hidden: null
       name: n_password_failures
       type: number
     - admin_ui: {width: 200}
+      client_hidden: null
       name: confirmed_email
       type: bool
     - admin_ui: {width: 200}
+      client_hidden: null
       name: signed_up
       type: datetime
     - admin_ui: {width: 200}
+      client_hidden: null
       name: role_id
       type: number
+    indexes: []
     server: full
     title: Users
 dependencies: []

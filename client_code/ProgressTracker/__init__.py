@@ -20,6 +20,13 @@ class ProgressTracker(ProgressTrackerTemplate):
 
         # Any code you write here will run before the form opens.
         anvil.js.call('replaceBanner')
+
+    def form_show(self, **event_args):
+        self.timer_update.interval = 30
+        self.timer_update.enabled = True
+
+    def timer_update_tick(self, **event_args):
+        self.refresh_selected_job_card()
         
     def btn_SearchCustomer_click(self, **event_args):
         """This method is called when the text in this text box is edited"""
@@ -38,34 +45,36 @@ class ProgressTracker(ProgressTrackerTemplate):
     def drop_down_JobCardRefDetails_change(self, **event_args):
         """This method is called when an item is selected"""
         if self.drop_down_JobCardRefDetails.selected_value:
-            
-            result = anvil.server.call('getJobCardRow', self.drop_down_JobCardRefDetails.selected_value)
-          
-            #Populate vehicle details
-            self.label_MakeAndModel.text = result["MakeAndModel"]
-            self.label_Mileage.text = result["Mileage"] 
-            self.label_RegNo.text = result["RegNo"] 
-            self.label_date_received.text = result["ReceivedDate"]
-            
-            #Populate vehicle owner details
-            clientDetails = anvil.server.call("getClientReport", result["ClientDetails"])
-           
-            self.label_Owner.text = clientDetails[0]["Fullname"]
-            self.label_Phone.text = clientDetails[0]["Phone"]
-
-            #Populate payment details
-            self.populatePaymentDetails(self.drop_down_JobCardRefDetails.selected_value)
-            
-            #Populate progress tracker
-            if result["Status"] == "Ready for Pickup":
-                invoice_status = anvil.server.call("getInvoiceStatus", self.drop_down_JobCardRefDetails.selected_value)
-                self.set_progress_state(invoice_status)
-            elif result["Status"] != "Ready for Pickup":
-                self.set_progress_state(result["Status"])
+            self.refresh_selected_job_card()
                 
         else:
             Notification("Please enter job card ref to procced.", title="Blank Field(s) Found", style="warning", timeout=3).show()
             self.drop_down_JobCardRefDetails.focus()
+
+    def refresh_selected_job_card(self):
+        job_id = self.drop_down_JobCardRefDetails.selected_value
+        if not job_id:
+            return
+
+        result = anvil.server.call('getJobCardRow', job_id)
+        if not result:
+            return
+
+        self.label_MakeAndModel.text = result["MakeAndModel"]
+        self.label_Mileage.text = result["Mileage"]
+        self.label_RegNo.text = result["RegNo"]
+        self.label_date_received.text = result["ReceivedDate"]
+
+        client_details = anvil.server.call("getClientReport", result["ClientDetails"])
+        self.label_Owner.text = client_details[0]["Fullname"]
+        self.label_Phone.text = client_details[0]["Phone"]
+
+        self.populatePaymentDetails(job_id)
+
+        if result["Status"] == "Ready for Pickup":
+            self.set_progress_state(anvil.server.call("getInvoiceStatus", job_id))
+        else:
+            self.set_progress_state(result["Status"])
 
     def set_progress_state(self, active_state):
         # Dictionary mapping states to label components

@@ -87,7 +87,7 @@ db_schema:
     title: Users
 dependencies: []
 metadata: {logo_img: 'asset:BMAAutoAccessories.ico', title: BMA Auto Accessories}
-name: BMALocal2
+name: BMALocal23
 native_deps:
   head_html: |+
     <script>

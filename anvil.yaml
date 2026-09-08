@@ -87,7 +87,7 @@ db_schema:
     title: Users
 dependencies: []
 metadata: {logo_img: 'asset:BMAAutoAccessories.ico', title: BMA Auto Accessories}
-name: BMALocal
+name: BMALocal2
 native_deps:
   head_html: |+
     <script>
@@ -102,7 +102,7 @@ native_deps:
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Mozilla+Headline:wght@200..700&display=swap" rel="stylesheet">
 
-package_name: BMALocal
+package_name: BMALocal2
 runtime_options:
   client_version: '3'
   server_spec: {base: python310-standard}

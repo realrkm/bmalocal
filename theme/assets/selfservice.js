@@ -319,7 +319,7 @@
             // Draw a small dot at the starting point
             this.ctx.beginPath();
             this.ctx.arc(pos.x, pos.y, 1, 0, Math.PI * 2);
-            this.ctx.fillStyle = '#06b6d4';
+            this.ctx.fillStyle = '#16588e';
             this.ctx.fill();
 
         }
@@ -333,7 +333,7 @@
             this.ctx.beginPath();
             this.ctx.moveTo(this.lastX, this.lastY);
             this.ctx.lineTo(pos.x, pos.y);
-            this.ctx.strokeStyle = '#06b6d4';
+            this.ctx.strokeStyle = '#16588e';
             this.ctx.lineWidth = 2;
             this.ctx.lineCap = 'round';
             this.ctx.lineJoin = 'round';
@@ -769,7 +769,7 @@
                             <td data-label="No">${s.no}</td>
                             <td data-label="Received">${sanitizeHTML(s.date)}</td>
                             <td data-label="Technician"><strong>${sanitizeHTML(s.tech)}</strong></td>
-                            <td data-label="JobCard Ref" style="color:#facc15; font-weight:bold;">${sanitizeHTML(s.jobcardref)}</td>
+                            <td data-label="JobCard Ref" style="color:#e7222e; font-weight:bold;">${sanitizeHTML(s.jobcardref)}</td>
                             <td data-label="Instruction">
                                 <ul style="margin:0; padding-left:1.2em;">
                                     ${s.instruction.split('\n').map(line => `<li>${sanitizeHTML(line)}</li>`).join('')}
@@ -841,7 +841,7 @@
                     <td data-label="No">${s.no}</td>
                     <td data-label="Received">${sanitizeHTML(s.date)}</td>
                     <td data-label="Technician"><strong>${sanitizeHTML(s.tech)}</strong></td>
-                    <td data-label="JobCard Ref" style="color:#facc15; font-weight:bold;">${sanitizeHTML(s.jobcardref)}</td>
+                    <td data-label="JobCard Ref" style="color:#e7222e; font-weight:bold;">${sanitizeHTML(s.jobcardref)}</td>
                     <td data-label="Instruction">
                         <ul style="margin:0; padding-left:1.2em;">
                             ${s.instruction.split('\n').map(line => `<li>${sanitizeHTML(line)}</li>`).join('')}
@@ -869,18 +869,18 @@
 
         mainContent.innerHTML = `
             <div style="max-width:800px; margin:2rem auto;">
-                <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); padding:3rem; border-radius:2rem; border:4px solid rgba(59, 130, 246, 0.5); box-shadow: 0 20px 60px rgba(59, 130, 246, 0.3);">
+                <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); padding:3rem; border-radius:2rem; border:4px solid rgba(129, 196, 255, 0.5); box-shadow: 0 20px 60px rgba(129, 196, 255, 0.3);">
                     <div style="margin-bottom:2rem;">
-                        <h2 style="font-size:2.5rem; margin-bottom:1rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Work Done Report</h2>
-                        <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); padding:1.5rem; border-radius:1rem; margin-bottom:2rem; border:2px solid rgba(59, 130, 246, 0.2);">
-                            <p style="font-size:1.8rem;"><strong>Registration:</strong> <span style="color:#facc15;">${sanitizeHTML(service.jobcardref)}</span></p>
+                        <h2 style="font-size:2.5rem; margin-bottom:1rem; background: linear-gradient(135deg, #16588e 0%, #81c4ff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Work Done Report</h2>
+                        <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); padding:1.5rem; border-radius:1rem; margin-bottom:2rem; border:2px solid rgba(129, 196, 255, 0.2);">
+                            <p style="font-size:1.8rem;"><strong>Registration:</strong> <span style="color:#e7222e;">${sanitizeHTML(service.jobcardref)}</span></p>
                             <p style="font-size:1.8rem;"><strong>Technician:</strong> ${sanitizeHTML(service.tech)}</p>
                             <p style="font-size:1.8rem;"><strong>Instruction:</strong> ${sanitizeHTML(service.instruction)}</p>
                         </div>
                     </div>
                     
                     <div style="margin-bottom:2rem;">
-                        <label style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; font-size:1.8rem; font-weight:bold; color:#06b6d4;">
+                        <label style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; font-size:1.8rem; font-weight:bold; color:#16588e;">
                             <span>Describe the work completed:</span>
                             <div style="display:flex; gap:0.5rem;">
                                 <span id="work-done-voice-indicator" class="voice-indicator" aria-hidden="true"></span>
@@ -892,7 +892,7 @@
                             id="work-done-textarea" 
                             rows="8" 
                             placeholder="Enter detailed description of work performed..."
-                            style="width:100%; padding:1.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; resize:vertical;"
+                            style="width:100%; padding:1.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(129, 196, 255, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; resize:vertical;"
                         >${sanitizeHTML(service.workDone || '')}</textarea>
                     </div>
 
@@ -918,20 +918,20 @@
         const totalQuantity = state.cart.reduce((sum, item) => sum + item.quantity, 0);
 
         mainContent.innerHTML = `
-        <h2 style="margin-bottom:2rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Requesting Parts for: <span style="color:#facc15">${sanitizeHTML(state.activeReg)}</span></h2>
+        <h2 style="margin-bottom:2rem; background: linear-gradient(135deg, #16588e 0%, #81c4ff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Requesting Parts for: <span style="color:#e7222e">${sanitizeHTML(state.activeReg)}</span></h2>
         
-        <div style="display:flex; gap:1rem; margin-bottom:2rem; background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); padding:1rem; border-radius:1.5rem; border:2px solid rgba(59, 130, 246, 0.2); overflow-x:auto;">
+        <div style="display:flex; gap:1rem; margin-bottom:2rem; background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); padding:1rem; border-radius:1.5rem; border:2px solid rgba(129, 196, 255, 0.2); overflow-x:auto;">
             <button 
                 onclick="switchPartsTab('request')" 
                 class="parts-tab-btn ${state.activePartsTab === 'request' ? 'active' : ''}"
-                style="flex:1; min-width:180px; padding:1.2rem 2rem; border-radius:1rem; font-size:1.8rem; font-weight:bold; cursor:pointer; transition:all 0.3s ease; border:2px solid ${state.activePartsTab === 'request' ? 'rgba(59, 130, 246, 0.5)' : 'transparent'}; background:${state.activePartsTab === 'request' ? 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' : 'transparent'}; color:white;">
+                style="flex:1; min-width:180px; padding:1.2rem 2rem; border-radius:1rem; font-size:1.8rem; font-weight:bold; cursor:pointer; transition:all 0.3s ease; border:2px solid ${state.activePartsTab === 'request' ? 'rgba(129, 196, 255, 0.5)' : 'transparent'}; background:${state.activePartsTab === 'request' ? 'linear-gradient(135deg, #81c4ff 0%, #16588e 100%)' : 'transparent'}; color:white;">
                 📦 Parts Request
             </button>
             ${!state.cameFromWorkDone ? '' : `
             <button 
                 onclick="switchPartsTab('feedback')" 
                 class="parts-tab-btn ${state.activePartsTab === 'feedback' ? 'active' : ''}"
-                style="flex:1; min-width:180px; padding:1.2rem 2rem; border-radius:1rem; font-size:1.8rem; font-weight:bold; cursor:pointer; transition:all 0.3s ease; border:2px solid ${state.activePartsTab === 'feedback' ? 'rgba(59, 130, 246, 0.5)' : 'transparent'}; background:${state.activePartsTab === 'feedback' ? 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' : 'transparent'}; color:white;">
+                style="flex:1; min-width:180px; padding:1.2rem 2rem; border-radius:1rem; font-size:1.8rem; font-weight:bold; cursor:pointer; transition:all 0.3s ease; border:2px solid ${state.activePartsTab === 'feedback' ? 'rgba(129, 196, 255, 0.5)' : 'transparent'}; background:${state.activePartsTab === 'feedback' ? 'linear-gradient(135deg, #81c4ff 0%, #16588e 100%)' : 'transparent'}; color:white;">
                 💬 Customer Feedback
             </button>
             `}
@@ -939,7 +939,7 @@
             <button 
                 onclick="switchPartsTab('workdone')" 
                 class="parts-tab-btn ${state.activePartsTab === 'workdone' ? 'active' : ''}"
-                style="flex:1; min-width:180px; padding:1.2rem 2rem; border-radius:1rem; font-size:1.8rem; font-weight:bold; cursor:pointer; transition:all 0.3s ease; border:2px solid ${state.activePartsTab === 'workdone' ? 'rgba(59, 130, 246, 0.5)' : 'transparent'}; background:${state.activePartsTab === 'workdone' ? 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' : 'transparent'}; color:white;">
+                style="flex:1; min-width:180px; padding:1.2rem 2rem; border-radius:1rem; font-size:1.8rem; font-weight:bold; cursor:pointer; transition:all 0.3s ease; border:2px solid ${state.activePartsTab === 'workdone' ? 'rgba(129, 196, 255, 0.5)' : 'transparent'}; background:${state.activePartsTab === 'workdone' ? 'linear-gradient(135deg, #81c4ff 0%, #16588e 100%)' : 'transparent'}; color:white;">
                  Work Done
             </button>
             `}
@@ -983,7 +983,7 @@
         const shouldShowClearDetails = !state.cameFromWorkDone && activeService?.status !== 'Create Quote' && activeService?.status !== 'Confirm Quote';
 
         return `
-        <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); border-radius:1rem; margin-bottom:2rem; border:2px solid rgba(59, 130, 246, 0.2); overflow:hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
+        <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); border-radius:1rem; margin-bottom:2rem; border:2px solid rgba(129, 196, 255, 0.2); overflow:hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
             <button 
                 id="collapse-toggle" 
                 onclick="toggleCollapse()"
@@ -994,7 +994,7 @@
             
             <div id="collapse-content" style="display:${shouldShowCollapse ? 'block' : 'none'}; padding:2rem;">
                 <div style="margin-bottom:2rem;">
-                    <label for="tech-notes-textarea" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.5rem; font-size:1.8rem; font-weight:bold; color:#06b6d4;">
+                    <label for="tech-notes-textarea" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.5rem; font-size:1.8rem; font-weight:bold; color:#16588e;">
                         <span>Tech Notes</span>
                         <div style="display:flex; gap:0.5rem;">
                             <span id="tech-notes-voice-indicator" class="voice-indicator" aria-hidden="true"></span>
@@ -1006,12 +1006,12 @@
                         id="tech-notes-textarea" 
                         rows="4" 
                         placeholder="Enter any technical notes or observations..."
-                        style="width:100%; padding:1rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; resize:vertical;"
+                        style="width:100%; padding:1rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(129, 196, 255, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; resize:vertical;"
                     >${sanitizeHTML(state.techNotes)}</textarea>
                 </div>
                 
                 <div>
-                    <label for="defects-textarea" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.5rem; font-size:1.8rem; font-weight:bold; color:#06b6d4;">
+                    <label for="defects-textarea" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.5rem; font-size:1.8rem; font-weight:bold; color:#16588e;">
                         <span>List of Defects</span>
                         <div style="display:flex; gap:0.5rem;">
                             <span id="defects-voice-indicator" class="voice-indicator" aria-hidden="true"></span>
@@ -1023,15 +1023,15 @@
                         id="defects-textarea" 
                         rows="4" 
                         placeholder="List any defects found during inspection..."
-                        style="width:100%; padding:1rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; resize:vertical;"
+                        style="width:100%; padding:1rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(129, 196, 255, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; resize:vertical;"
                     >${sanitizeHTML(state.defectList)}</textarea>
                 </div>
 
                 <div style="margin-top:2rem;">
-                    <label for="technician-dropdown" style="display:block; margin-bottom:0.5rem; font-size:1.8rem; font-weight:bold; color:#06b6d4;">Select Technician</label>
+                    <label for="technician-dropdown" style="display:block; margin-bottom:0.5rem; font-size:1.8rem; font-weight:bold; color:#16588e;">Select Technician</label>
                     <select 
                         id="technician-dropdown" 
-                        style="width:100%; padding:1rem; font-size:1.8rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; cursor:pointer; appearance:none; -webkit-appearance:none; -moz-appearance:none; background-image:url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2724%27 height=%2724%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%2306b6d4%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27/%3e%3c/svg%3e'); background-repeat:no-repeat; background-position:right 1rem center; background-size:20px; padding-right:3rem;">
+                        style="width:100%; padding:1rem; font-size:1.8rem; border-radius:0.8rem; border:2px solid rgba(129, 196, 255, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; cursor:pointer; appearance:none; -webkit-appearance:none; -moz-appearance:none; background-image:url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2724%27 height=%2724%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%2306b6d4%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27/%3e%3c/svg%3e'); background-repeat:no-repeat; background-position:right 1rem center; background-size:20px; padding-right:3rem;">
                         <option value="" style="background:#1e293b; color:#94a3b8;">-- Select Technician --</option>
                         ${state.technicians.map(tech => `<option value="${sanitizeHTML(tech)}" ${state.selectedTechnician === tech ? 'selected' : ''} style="background:#1e293b; color:white; padding:1rem;">${sanitizeHTML(tech)}</option>`).join('')}
                     </select>
@@ -1039,39 +1039,39 @@
 
                 <div style="margin-top:2rem;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
-                        <label style="font-size:1.8rem; font-weight:bold; color:#06b6d4;">Technician Signature</label>
+                        <label style="font-size:1.8rem; font-weight:bold; color:#16588e;">Technician Signature</label>
                         <button 
                             onclick="clearSignaturePad()" 
-                            style="background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color:white; padding:0.5rem 1rem; border-radius:0.5rem; border:2px solid rgba(220, 38, 38, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease;">
+                            style="background:linear-gradient(135deg, #e7222e 0%, #c81e29 100%); color:white; padding:0.5rem 1rem; border-radius:0.5rem; border:2px solid rgba(231, 34, 46, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease;">
                             Clear Signature
                         </button>
                     </div>
                     <canvas 
                         id="signature-canvas"
-                        style="display:block; width:100%; height:200px; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); touch-action:none; cursor:crosshair; background:#ffffff;">
+                        style="display:block; width:100%; height:200px; border-radius:0.8rem; border:2px solid rgba(129, 196, 255, 0.3); touch-action:none; cursor:crosshair; background:#ffffff;">
                     </canvas>
                     <p style="font-size:1.3rem; color:#94a3b8; margin-top:0.5rem;">Sign above using your mouse or touch screen</p>
                 </div>
             </div>
         </div>
         
-        <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); border-radius:1rem; margin-bottom:2rem; border:2px solid rgba(59, 130, 246, 0.2); overflow:hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); padding:2rem;">
+        <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); border-radius:1rem; margin-bottom:2rem; border:2px solid rgba(129, 196, 255, 0.2); overflow:hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); padding:2rem;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-                <h3 style="font-size:2rem; color:#06b6d4; display:flex; align-items:center; gap:0.5rem;">
+                <h3 style="font-size:2rem; color:#16588e; display:flex; align-items:center; gap:0.5rem;">
                     <span>📦</span> Requested Parts
                 </h3>
                 <button 
                     onclick="openPartsModal()"
-                    style="background:linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color:white; padding:1rem 2rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); display:flex; align-items:center; gap:0.5rem;">
+                    style="background:linear-gradient(135deg, #81c4ff 0%, #16588e 100%); color:white; padding:1rem 2rem; border-radius:0.8rem; border:2px solid rgba(129, 196, 255, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease; box-shadow: 0 4px 15px rgba(129, 196, 255, 0.3); display:flex; align-items:center; gap:0.5rem;">
                     Add Parts
                 </button>
             </div>
             ${state.cart.length > 0 ? `
                 <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); border-radius:0.8rem; padding:1.5rem;">
                     ${state.cart.map((item, i) => `
-                        <div style="padding:1rem; border-bottom:${i < state.cart.length - 1 ? '1px solid rgba(59, 130, 246, 0.2)' : 'none'}; display:flex; justify-content:space-between; align-items:center; font-size:1.6rem; gap:1rem; flex-wrap:wrap;">
+                        <div style="padding:1rem; border-bottom:${i < state.cart.length - 1 ? '1px solid rgba(129, 196, 255, 0.2)' : 'none'}; display:flex; justify-content:space-between; align-items:center; font-size:1.6rem; gap:1rem; flex-wrap:wrap;">
                             <div style="flex:1; min-width:150px;">
-                                <div style="font-weight:bold; color:#06b6d4; margin-bottom:0.3rem;">${i + 1}. ${sanitizeHTML(item.name)}</div>
+                                <div style="font-weight:bold; color:#16588e; margin-bottom:0.3rem;">${i + 1}. ${sanitizeHTML(item.name)}</div>
                                 ${item.category ? `<div style="color:#94a3b8; font-size:1.4rem;">${sanitizeHTML(item.category)}</div>` : ''}
                             </div>
                             ${state.editingCartIndex === i ? `
@@ -1086,7 +1086,7 @@
                                         step="0.01"
                                         aria-label="New quantity for ${sanitizeHTML(item.name)}"
                                         onkeydown="if(event.key==='Enter'){saveCartItemEdit(${i});} else if(event.key==='Escape'){cancelCartItemEdit();}"
-                                        style="width:90px; padding:0.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; text-align:center;"
+                                        style="width:90px; padding:0.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(129, 196, 255, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; text-align:center;"
                                     >
                                 </div>
                                 <button 
@@ -1110,13 +1110,13 @@
                             </div>
                             ` : `
                             <div style="display:flex; align-items:center; gap:1.5rem;">
-                                <div style="color:#facc15; font-weight:bold; font-size:1.8rem;">
+                                <div style="color:#e7222e; font-weight:bold; font-size:1.8rem;">
                                     Qty: ${item.quantity}
                                 </div>
                                 <button 
                                     onclick="editCartItem(${i})" 
                                     aria-label="Edit ${sanitizeHTML(item.name)}"
-                                    style="background:linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color:white; border:none; border-radius:0.5rem; padding:0.5rem 1rem; cursor:pointer; font-size:1.4rem; font-weight:bold; transition:all 0.3s ease; display:flex; align-items:center; gap:0.3rem;"
+                                    style="background:linear-gradient(135deg, #81c4ff 0%, #16588e 100%); color:white; border:none; border-radius:0.5rem; padding:0.5rem 1rem; cursor:pointer; font-size:1.4rem; font-weight:bold; transition:all 0.3s ease; display:flex; align-items:center; gap:0.3rem;"
                                     onmouseover="this.style.transform='scale(1.05)'"
                                     onmouseout="this.style.transform='scale(1)'">
                                     <i data-lucide="pencil" style="width:16px; height:16px;"></i>
@@ -1125,7 +1125,7 @@
                                 <button 
                                     onclick="removeFromCart(${i})" 
                                     aria-label="Remove ${sanitizeHTML(item.name)} from cart"
-                                    style="background:linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color:white; border:none; border-radius:0.5rem; padding:0.5rem 1rem; cursor:pointer; font-size:1.4rem; font-weight:bold; transition:all 0.3s ease; display:flex; align-items:center; gap:0.3rem;"
+                                    style="background:linear-gradient(135deg, #e7222e 0%, #e7222e 100%); color:white; border:none; border-radius:0.5rem; padding:0.5rem 1rem; cursor:pointer; font-size:1.4rem; font-weight:bold; transition:all 0.3s ease; display:flex; align-items:center; gap:0.3rem;"
                                     onmouseover="this.style.transform='scale(1.05)'"
                                     onmouseout="this.style.transform='scale(1)'">
                                     <i data-lucide="trash-2" style="width:16px; height:16px;"></i>
@@ -1135,13 +1135,13 @@
                             `}
                         </div>
                     `).join('')}
-                    <div style="margin-top:1rem; padding-top:1rem; border-top:2px solid rgba(59, 130, 246, 0.3); display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:1.8rem; font-weight:bold; color:#06b6d4;">Total Items:</span>
-                        <span style="font-size:2rem; font-weight:bold; color:#facc15;">${state.cart.length}</span>
+                    <div style="margin-top:1rem; padding-top:1rem; border-top:2px solid rgba(129, 196, 255, 0.3); display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:1.8rem; font-weight:bold; color:#16588e;">Total Items:</span>
+                        <span style="font-size:2rem; font-weight:bold; color:#e7222e;">${state.cart.length}</span>
                     </div>
                     <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:1.8rem; font-weight:bold; color:#06b6d4;">Total Quantity:</span>
-                        <span style="font-size:2rem; font-weight:bold; color:#facc15;">${totalQuantity.toFixed(2)}</span>
+                        <span style="font-size:1.8rem; font-weight:bold; color:#16588e;">Total Quantity:</span>
+                        <span style="font-size:2rem; font-weight:bold; color:#e7222e;">${totalQuantity.toFixed(2)}</span>
                     </div>
                 </div>
             ` : `
@@ -1300,9 +1300,9 @@
                     </div>
                 ` : `
                     <div style="margin-bottom:2rem;">
-                        <h3 style="font-size:2rem; color:#06b6d4; margin-bottom:1.5rem;">Cart Items</h3>
+                        <h3 style="font-size:2rem; color:#16588e; margin-bottom:1.5rem;">Cart Items</h3>
                         ${state.cart.map((item, i) => `
-                            <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); border-radius:0.8rem; padding:1.5rem; margin-bottom:1rem; display:flex; justify-content:space-between; align-items:center; border:2px solid rgba(59, 130, 246, 0.2);">
+                            <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); border-radius:0.8rem; padding:1.5rem; margin-bottom:1rem; display:flex; justify-content:space-between; align-items:center; border:2px solid rgba(129, 196, 255, 0.2);">
                                 <div>
                                     <p style="font-size:1.8rem; font-weight:bold; color:white; margin-bottom:0.5rem;">${sanitizeHTML(item.name)}</p>
                                     <p style="color:#94a3b8; font-size:1.4rem;">${sanitizeHTML(item.category || 'N/A')} ${item.partNo ? `• ${sanitizeHTML(item.partNo)}` : ''}</p>
@@ -1313,7 +1313,7 @@
                                         <span
                                             id="modal-cart-qty-${i}"
                                             aria-label="Quantity for ${sanitizeHTML(item.name)}"
-                                            style="width:80px; padding:0.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; text-align:center; display:inline-block;">
+                                            style="width:80px; padding:0.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(129, 196, 255, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; text-align:center; display:inline-block;">
                                             ${item.quantity}
                                         </span>
                                     </div>
@@ -1321,8 +1321,8 @@
                             </div>
                         `).join('')}
                     </div>
-                    <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); border-radius:1rem; padding:2rem; text-align:center; border:2px solid rgba(59, 130, 246, 0.3);">
-                        <h3 style="font-size:2.5rem; margin-bottom:1rem; color:#06b6d4;">Total: ${totalItems.toFixed(2)} Units</h3>
+                    <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); border-radius:1rem; padding:2rem; text-align:center; border:2px solid rgba(129, 196, 255, 0.3);">
+                        <h3 style="font-size:2.5rem; margin-bottom:1rem; color:#16588e;">Total: ${totalItems.toFixed(2)} Units</h3>
                         <p style="color:#94a3b8; font-size:1.6rem;">Return to Request Parts to confirm your order</p>
                     </div>
                 `}
@@ -1424,14 +1424,14 @@
         return `
             <div style="text-align:center; padding:3rem;">
                 <p style="font-size:2rem; color:#94a3b8;">No parts found matching "${sanitizeHTML(state.partsSearchQuery)}"</p>
-                <button onclick="clearModalPartsSearch()" style="margin-top:1rem; background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color:white; padding:1rem 2rem; border-radius:0.8rem; border:2px solid rgba(220, 38, 38, 0.3); font-weight:bold; cursor:pointer; font-size:1.6rem;">Clear Search</button>
+                <button onclick="clearModalPartsSearch()" style="margin-top:1rem; background:linear-gradient(135deg, #e7222e 0%, #c81e29 100%); color:white; padding:1rem 2rem; border-radius:0.8rem; border:2px solid rgba(231, 34, 46, 0.3); font-weight:bold; cursor:pointer; font-size:1.6rem;">Clear Search</button>
             </div>
         `;
     }
 
     return `
         <div style="margin-bottom:2rem; display:flex; justify-content:space-between; align-items:center;">
-            <h3 style="font-size:2rem; color:#06b6d4;">Found ${uniqueMatchedParts.length} part(s) matching "${sanitizeHTML(state.partsSearchQuery)}"</h3>
+            <h3 style="font-size:2rem; color:#16588e;">Found ${uniqueMatchedParts.length} part(s) matching "${sanitizeHTML(state.partsSearchQuery)}"</h3>
             <button onclick="clearModalPartsSearch()" style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:0.8rem 1.5rem; border-radius:0.8rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:1.6rem;">Clear Search</button>
         </div>
         <div class="category-grid">${renderModalParts(uniqueMatchedParts)}</div>
@@ -1460,7 +1460,7 @@
                     Back to Categories
                 </button>
             </div>
-            <h3 style="font-size:2.5rem; margin-bottom:2rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            <h3 style="font-size:2.5rem; margin-bottom:2rem; background: linear-gradient(135deg, #16588e 0%, #81c4ff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
                 ${category ? category.icon : '📦'} ${category ? sanitizeHTML(category.name) : 'Parts'}
             </h3>
             <div class="category-grid">${renderModalParts(uniqueParts)}</div>
@@ -1469,9 +1469,9 @@
     
     function renderModalParts(arr) {
         return arr.map((p, index) => `
-            <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); backdrop-filter:blur(10px); padding:2rem; border-radius:1.5rem; display:flex; flex-direction:column; justify-content:space-between; gap:1.5rem; text-align:center; border:2px solid rgba(59, 130, 246, 0.2); transition:all 0.3s ease; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='rgba(59, 130, 246, 0.5)'; this.style.boxShadow='0 15px 30px rgba(59, 130, 246, 0.3)';" onmouseout="this.style.transform=''; this.style.borderColor='rgba(59, 130, 246, 0.2)'; this.style.boxShadow='0 10px 20px rgba(0, 0, 0, 0.3)';">
+            <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); backdrop-filter:blur(10px); padding:2rem; border-radius:1.5rem; display:flex; flex-direction:column; justify-content:space-between; gap:1.5rem; text-align:center; border:2px solid rgba(129, 196, 255, 0.2); transition:all 0.3s ease; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='rgba(129, 196, 255, 0.5)'; this.style.boxShadow='0 15px 30px rgba(129, 196, 255, 0.3)';" onmouseout="this.style.transform=''; this.style.borderColor='rgba(129, 196, 255, 0.2)'; this.style.boxShadow='0 10px 20px rgba(0, 0, 0, 0.3)';">
                 <div>
-                    <h3 style="font-size:2rem; color:#06b6d4;">${sanitizeHTML(p.name)}</h3>
+                    <h3 style="font-size:2rem; color:#16588e;">${sanitizeHTML(p.name)}</h3>
                     <p style="color:#94a3b8; margin-top:0.5rem">Category: ${sanitizeHTML(p.category || 'N/A')}</p>
                 </div>
                 <div style="display:flex; flex-direction:column; gap:1rem; align-items:center;">
@@ -1485,7 +1485,7 @@
                             value="1" 
                             placeholder="0.00"
                             aria-label="Quantity for ${sanitizeHTML(p.name)}"
-                            style="width:100%; padding:0.8rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; text-align:center;"
+                            style="width:100%; padding:0.8rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(129, 196, 255, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; text-align:center;"
                         >
                     </div>
                     <button onclick="addToCartFromModal('${p.name.replace(/'/g, "\\'")}', 'modal-qty-${index}')" class="add-btn-circular" aria-label="Add ${sanitizeHTML(p.name)} to cart">+</button>
@@ -1498,37 +1498,37 @@
     function renderCustomerFeedbackTab() {
         return `
         <div style="max-width:900px; margin:0 auto;">
-            <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); padding:3rem; border-radius:2rem; border:2px solid rgba(59, 130, 246, 0.3); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);">
-                <h3 style="font-size:2.5rem; margin-bottom:2rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Customer Feedback</h3>
+            <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); padding:3rem; border-radius:2rem; border:2px solid rgba(129, 196, 255, 0.3); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);">
+                <h3 style="font-size:2.5rem; margin-bottom:2rem; background: linear-gradient(135deg, #16588e 0%, #81c4ff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Customer Feedback</h3>
                 
-                <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); padding:2rem; border-radius:1rem; margin-bottom:2rem; border:2px solid rgba(59, 130, 246, 0.2);">
+                <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); padding:2rem; border-radius:1rem; margin-bottom:2rem; border:2px solid rgba(129, 196, 255, 0.2);">
                     <p style="font-size:1.8rem; color:#000000; margin-bottom:1rem;">
-                        <strong style="color:#facc15;">JobCard Reference:</strong> ${sanitizeHTML(state.activeReg)}
+                        <strong style="color:#e7222e;">JobCard Reference:</strong> ${sanitizeHTML(state.activeReg)}
                     </p>
                 </div>
                 
                 <div style="margin-bottom:2rem;">
-                    <label for="customer-response-textarea" style="display:block; margin-bottom:1rem; font-size:2rem; font-weight:bold; color:#06b6d4;">
+                    <label for="customer-response-textarea" style="display:block; margin-bottom:1rem; font-size:2rem; font-weight:bold; color:#16588e;">
                         📝 Response
                     </label>
                     <textarea 
                         id="customer-response-textarea" 
                         rows="6" 
                         placeholder="Customer's response or feedback regarding the service will appear here..."
-                        style="width:100%; padding:1.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; resize:vertical; line-height:1.6;"
+                        style="width:100%; padding:1.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(129, 196, 255, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; resize:vertical; line-height:1.6;"
                     >${sanitizeHTML(state.customerResponse)}</textarea>
                     <p style="font-size:1.3rem; color:#94a3b8; margin-top:0.5rem;">Document any customer concerns, requests, or approvals here.</p>
                 </div>
                 
                 <div style="margin-bottom:2rem;">
-                    <label for="approved-parts-textarea" style="display:block; margin-bottom:1rem; font-size:2rem; font-weight:bold; color:#06b6d4;">
+                    <label for="approved-parts-textarea" style="display:block; margin-bottom:1rem; font-size:2rem; font-weight:bold; color:#16588e;">
                          Approved Parts
                     </label>
                     <textarea 
                         id="approved-parts-textarea" 
                         rows="6" 
                         placeholder="Parts approved by the customer for installation/replacement will appear here..."
-                        style="width:100%; padding:1.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; resize:vertical; line-height:1.6;"
+                        style="width:100%; padding:1.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(129, 196, 255, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; resize:vertical; line-height:1.6;"
                     >${sanitizeHTML(state.approvedParts)}</textarea>
                     <p style="font-size:1.3rem; color:#94a3b8; margin-top:0.5rem;">Enter each approved part on a new line or separate with commas.</p>
                 </div>
@@ -1550,21 +1550,21 @@
 
         return `
         <div style="max-width:900px; margin:0 auto;">
-            <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); padding:3rem; border-radius:2rem; border:2px solid rgba(59, 130, 246, 0.3); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);">
-                <h3 style="font-size:2.5rem; margin-bottom:2rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Work Done Report</h3>
-                <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); padding:2rem; border-radius:1rem; margin-bottom:2rem; border:2px solid rgba(59, 130, 246, 0.2);">
+            <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); padding:3rem; border-radius:2rem; border:2px solid rgba(129, 196, 255, 0.3); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);">
+                <h3 style="font-size:2.5rem; margin-bottom:2rem; background: linear-gradient(135deg, #16588e 0%, #81c4ff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Work Done Report</h3>
+                <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); padding:2rem; border-radius:1rem; margin-bottom:2rem; border:2px solid rgba(129, 196, 255, 0.2);">
                     <p style="font-size:1.8rem; color:#000000; margin-bottom:0.8rem;">
-                        <strong style="color:#facc15;">JobCard Reference:</strong> ${sanitizeHTML(service.jobcardref)}
+                        <strong style="color:#e7222e;">JobCard Reference:</strong> ${sanitizeHTML(service.jobcardref)}
                     </p>
                     <p style="font-size:1.8rem; color:#000000; margin-bottom:0.8rem;">
-                        <strong style="color:#06b6d4;">Technician:</strong> ${sanitizeHTML(service.tech)}
+                        <strong style="color:#16588e;">Technician:</strong> ${sanitizeHTML(service.tech)}
                     </p>
                     <p style="font-size:1.8rem; color:#000000;">
-                        <strong style="color:#06b6d4;">Instruction:</strong> ${sanitizeHTML(service.instruction)}
+                        <strong style="color:#16588e;">Instruction:</strong> ${sanitizeHTML(service.instruction)}
                     </p>
                 </div>
                 <div style="margin-bottom:2rem;">
-                <label for="workdone-textarea" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; font-size:2rem; font-weight:bold; color:#06b6d4;">
+                <label for="workdone-textarea" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; font-size:2rem; font-weight:bold; color:#16588e;">
                     <span>📋 Work Completed Description</span>
                     <div style="display:flex; gap:0.5rem;">
                         <span id="workdone-voice-indicator" class="voice-indicator" aria-hidden="true"></span>
@@ -1576,7 +1576,7 @@
                     id="workdone-textarea" 
                     rows="8" 
                     placeholder="Enter detailed description of all work performed on this vehicle..."
-                    style="width:100%; padding:1.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; resize:vertical; line-height:1.6;"
+                    style="width:100%; padding:1.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(129, 196, 255, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; resize:vertical; line-height:1.6;"
                 >${sanitizeHTML(service.workDone || '')}</textarea>
                 <p style="font-size:1.3rem; color:#94a3b8; margin-top:0.5rem;">Include all repairs, replacements, adjustments, and services performed.</p>
             </div>
@@ -1970,7 +1970,7 @@
                 startBtn.disabled = listening;
                 stopBtn.disabled = !listening;
                 stopBtn.style.opacity = listening ? '1' : '0.6';
-                stopBtn.style.color = listening ? '#ef4444' : 'white';
+                stopBtn.style.color = listening ? '#e7222e' : 'white';
             };
 
             const showIndicator = () => {
@@ -2178,7 +2178,7 @@
                 startBtn.disabled = listening;
                 stopBtn.disabled = !listening;
                 stopBtn.style.opacity = listening ? '1' : '0.6';
-                stopBtn.style.color = listening ? '#ef4444' : 'white';
+                stopBtn.style.color = listening ? '#e7222e' : 'white';
             };
 
             const showIndicator = () => {
@@ -2374,7 +2374,7 @@
                 startBtn.disabled = listening;
                 stopBtn.disabled = !listening;
                 stopBtn.style.opacity = listening ? '1' : '0.6';
-                stopBtn.style.color = listening ? '#ef4444' : 'white';
+                stopBtn.style.color = listening ? '#e7222e' : 'white';
             };
 
             const showIndicator = () => {
@@ -2531,7 +2531,7 @@
         const uniqueParts = Array.from(uniquePartsMap.values());
 
         mainContent.innerHTML = `
-    <h2 style="font-size:2.5rem; margin-bottom:2rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${state.selectedCategory.icon} ${sanitizeHTML(state.selectedCategory.name)}</h2>
+    <h2 style="font-size:2.5rem; margin-bottom:2rem; background: linear-gradient(135deg, #16588e 0%, #81c4ff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${state.selectedCategory.icon} ${sanitizeHTML(state.selectedCategory.name)}</h2>
     <div class="category-grid">${renderParts(uniqueParts)}</div>
 `;
     }
@@ -2580,14 +2580,14 @@
             return `
         <div style="text-align:center; padding:3rem;">
             <p style="font-size:2rem; color:#94a3b8;">No parts found matching "${sanitizeHTML(state.partsSearchQuery)}"</p>
-            <button onclick="clearPartsSearch()" style="margin-top:1rem; background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color:white; padding:1rem 2rem; border-radius:0.8rem; border:2px solid rgba(220, 38, 38, 0.3); font-weight:bold; cursor:pointer; font-size:1.6rem;">Clear Search</button>
+            <button onclick="clearPartsSearch()" style="margin-top:1rem; background:linear-gradient(135deg, #e7222e 0%, #c81e29 100%); color:white; padding:1rem 2rem; border-radius:0.8rem; border:2px solid rgba(231, 34, 46, 0.3); font-weight:bold; cursor:pointer; font-size:1.6rem;">Clear Search</button>
         </div>
     `;
         }
 
         return `
     <div style="margin-bottom:2rem; display:flex; justify-content:space-between; align-items:center;">
-        <h3 style="font-size:2rem; color:#06b6d4;">Found ${uniqueMatchedParts.length} part(s) matching "${sanitizeHTML(state.partsSearchQuery)}"</h3>
+        <h3 style="font-size:2rem; color:#16588e;">Found ${uniqueMatchedParts.length} part(s) matching "${sanitizeHTML(state.partsSearchQuery)}"</h3>
         <button onclick="clearPartsSearch()" style="background:linear-gradient(135deg, #64748b 0%, #475569 100%); color:white; padding:0.8rem 1.5rem; border-radius:0.8rem; border:2px solid rgba(100, 116, 139, 0.3); font-weight:bold; cursor:pointer; font-size:1.6rem;">Clear Search</button>
     </div>
     <div class="category-grid">${renderParts(uniqueMatchedParts)}</div>
@@ -2603,10 +2603,10 @@ function renderSearch() {
     mainContent.innerHTML = `
         <h2 style="font-size:2.5rem; margin-bottom:1.5rem;">Results (${filtered.length})</h2>
         <div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-bottom:2rem;">
-            <button onclick="setSearchFilter('all')" style="padding:0.75rem 1.5rem; border-radius:2rem; border:none; cursor:pointer; font-weight:bold; font-size:1.5rem; ${state.activeSearchFilter === 'all' ? 'background:#dc2626; color:white;' : 'background:#334155; color:#94a3b8;'}">All</button>
+            <button onclick="setSearchFilter('all')" style="padding:0.75rem 1.5rem; border-radius:2rem; border:none; cursor:pointer; font-weight:bold; font-size:1.5rem; ${state.activeSearchFilter === 'all' ? 'background:#e7222e; color:white;' : 'background:#334155; color:#94a3b8;'}">All</button>
             ${resultCats.map(cid => {
                 const cat = state.categories.find(c => c.id === cid);
-                return `<button onclick="setSearchFilter('${cid}')" style="padding:0.75rem 1.5rem; border-radius:2rem; border:none; cursor:pointer; font-weight:bold; font-size:1.5rem; ${state.activeSearchFilter === cid ? 'background:#dc2626; color:white;' : 'background:#334155; color:#94a3b8;'}">${sanitizeHTML(cat ? cat.name : cid)}</button>`;
+                return `<button onclick="setSearchFilter('${cid}')" style="padding:0.75rem 1.5rem; border-radius:2rem; border:none; cursor:pointer; font-weight:bold; font-size:1.5rem; ${state.activeSearchFilter === cid ? 'background:#e7222e; color:white;' : 'background:#334155; color:#94a3b8;'}">${sanitizeHTML(cat ? cat.name : cid)}</button>`;
             }).join('')}
         </div>
         <div class="category-grid">${renderParts(filtered)}</div>
@@ -2615,9 +2615,9 @@ function renderSearch() {
 
 function renderParts(arr) {
     return arr.map((p, index) => `
-    <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); backdrop-filter:blur(10px); padding:2rem; border-radius:1.5rem; display:flex; flex-direction:column; justify-content:space-between; gap:1.5rem; text-align:center; border:2px solid rgba(59, 130, 246, 0.2); transition:all 0.3s ease; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='rgba(59, 130, 246, 0.5)'; this.style.boxShadow='0 15px 30px rgba(59, 130, 246, 0.3)';" onmouseout="this.style.transform=''; this.style.borderColor='rgba(59, 130, 246, 0.2)'; this.style.boxShadow='0 10px 20px rgba(0, 0, 0, 0.3)';">
+    <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); backdrop-filter:blur(10px); padding:2rem; border-radius:1.5rem; display:flex; flex-direction:column; justify-content:space-between; gap:1.5rem; text-align:center; border:2px solid rgba(129, 196, 255, 0.2); transition:all 0.3s ease; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='rgba(129, 196, 255, 0.5)'; this.style.boxShadow='0 15px 30px rgba(129, 196, 255, 0.3)';" onmouseout="this.style.transform=''; this.style.borderColor='rgba(129, 196, 255, 0.2)'; this.style.boxShadow='0 10px 20px rgba(0, 0, 0, 0.3)';">
         <div>
-            <h3 style="font-size:2rem; color:#06b6d4;">${sanitizeHTML(p.name)}</h3>
+            <h3 style="font-size:2rem; color:#16588e;">${sanitizeHTML(p.name)}</h3>
             <p style="color:#94a3b8; margin-top:0.5rem">Category: ${sanitizeHTML(p.category || 'N/A')}</p>
         </div>
         <div style="display:flex; flex-direction:column; gap:1rem; align-items:center;">
@@ -2631,7 +2631,7 @@ function renderParts(arr) {
                     value="1" 
                     placeholder="0.00"
                     aria-label="Quantity for ${sanitizeHTML(p.name)}"
-                    style="width:100%; padding:0.8rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; text-align:center;"
+                    style="width:100%; padding:0.8rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(129, 196, 255, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; text-align:center;"
                 >
             </div>
             <button onclick="addToCart('${p.name.replace(/'/g, "\\'")}', '${index}')" class="add-btn-circular" aria-label="Add ${sanitizeHTML(p.name)} to cart">+</button>
@@ -2643,12 +2643,12 @@ function renderCheckout() {
     const totalItems = state.cart.reduce((sum, item) => sum + item.quantity, 0);
 
     mainContent.innerHTML = `
-    <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); padding:3rem; border-radius:2rem; border:4px solid rgba(59, 130, 246, 0.5); max-width:800px; margin:2rem auto; box-shadow: 0 20px 60px rgba(59, 130, 246, 0.3);">
-        <h2 style="text-align:center; margin-bottom:2rem; font-size:2.5rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Your Order</h2>
+    <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); padding:3rem; border-radius:2rem; border:4px solid rgba(129, 196, 255, 0.5); max-width:800px; margin:2rem auto; box-shadow: 0 20px 60px rgba(129, 196, 255, 0.3);">
+        <h2 style="text-align:center; margin-bottom:2rem; font-size:2.5rem; background: linear-gradient(135deg, #16588e 0%, #81c4ff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Your Order</h2>
         <div style="margin-bottom:2rem;">
             ${state.cart.length === 0 ? '<p style="text-align:center; font-size:1.8rem;">Your cart is empty.</p>' : state.cart.map((item, i) => `
-                <div style="padding:1rem; border-bottom:1px solid rgba(59, 130, 246, 0.2); display:flex; justify-content:space-between; align-items:center; font-size:1.8rem; gap:1rem;">
-                    <div style="min-width:40px; font-size:2rem; font-weight:bold; color:#06b6d4;">${i + 1}.</div>
+                <div style="padding:1rem; border-bottom:1px solid rgba(129, 196, 255, 0.2); display:flex; justify-content:space-between; align-items:center; font-size:1.8rem; gap:1rem;">
+                    <div style="min-width:40px; font-size:2rem; font-weight:bold; color:#16588e;">${i + 1}.</div>
                     <div style="flex:1;">
                         <strong>${sanitizeHTML(item.name)}</strong><br>
                         <small style="color:#94a3b8;">${sanitizeHTML(item.category)}</small>
@@ -2664,10 +2664,10 @@ function renderCheckout() {
                                 step="0.01"
                                 onchange="updateCartQuantity(${i}, this.value)"
                                 aria-label="Quantity for ${sanitizeHTML(item.name)}"
-                                style="width:80px; padding:0.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; text-align:center;"
+                                style="width:80px; padding:0.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(129, 196, 255, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; text-align:center;"
                             >
                         </div>
-                        <button onclick="removeFromCart(${i})" aria-label="Remove ${sanitizeHTML(item.name)} from cart" style="color:#ef4444; background:none; border:none; cursor:pointer; font-size:1.5rem;">
+                        <button onclick="removeFromCart(${i})" aria-label="Remove ${sanitizeHTML(item.name)} from cart" style="color:#e7222e; background:none; border:none; cursor:pointer; font-size:1.5rem;">
                             <i data-lucide="trash-2" aria-hidden="true"></i>
                         </button>
                     </div>
@@ -2676,7 +2676,7 @@ function renderCheckout() {
         </div>
         ${state.cart.length > 0 ? `
             <div style="text-align:center; padding:2rem 0;">
-                <h3 style="font-size:2rem; margin-bottom:1rem; color:#06b6d4;">Total: ${totalItems.toFixed(2)} Units</h3>
+                <h3 style="font-size:2rem; margin-bottom:1rem; color:#16588e;">Total: ${totalItems.toFixed(2)} Units</h3>
                 <p style="color:#94a3b8; font-size:1.6rem;">Return to Request Parts to confirm your order</p>
             </div>
         ` : ''}
@@ -2691,12 +2691,12 @@ function renderSuccess() {
     mainContent.innerHTML = `
         <div style="text-align:center; padding:4rem 2rem; background:linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%); backdrop-filter:blur(20px); border-radius:2rem; max-width:600px; margin:2rem auto; border:4px solid rgba(34, 197, 94, 0.5); box-shadow: 0 20px 60px rgba(34, 197, 94, 0.3);">
             <div style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); width:80px; height:80px; border-radius:50%; margin:0 auto 1.5rem; display:flex; align-items:center; justify-content:center; font-size:3rem; box-shadow: 0 10px 30px rgba(34, 197, 94, 0.5);">✓</div>
-            <h2 style="font-size:2.5rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Order Confirmed</h2>
-            <div style="font-size:4rem; color:#facc15; margin:1.5rem 0; border:2px dashed rgba(59, 130, 246, 0.3); padding:1rem; border-radius:1rem; display:inline-block;">#${id}</div>
+            <h2 style="font-size:2.5rem; background: linear-gradient(135deg, #16588e 0%, #81c4ff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Order Confirmed</h2>
+            <div style="font-size:4rem; color:#e7222e; margin:1.5rem 0; border:2px dashed rgba(129, 196, 255, 0.3); padding:1rem; border-radius:1rem; display:inline-block;">#${id}</div>
             <div style="margin:2rem 0;"><img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=ORDER-${id}" alt="QR Code for order ${id}"></div>
             <div style="display:flex; flex-direction:column; gap:1rem;">
                 <button id="print-ticket-btn" class="btn-print">🖨️ Print Ticket</button>
-                <button onclick="goToHome()" style="background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color:white; padding:1.2rem; border-radius:0.8rem; border:2px solid rgba(220, 38, 38, 0.3); font-weight:bold; cursor:pointer; font-size:2.4rem; transition:all 0.3s ease;">Finish</button>
+                <button onclick="goToHome()" style="background:linear-gradient(135deg, #e7222e 0%, #c81e29 100%); color:white; padding:1.2rem; border-radius:0.8rem; border:2px solid rgba(231, 34, 46, 0.3); font-weight:bold; cursor:pointer; font-size:2.4rem; transition:all 0.3s ease;">Finish</button>
             </div>
         </div>`;
 
@@ -2716,22 +2716,22 @@ function renderAdmin() {
     mainContent.innerHTML = `
         <div>
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
-                <h2 style="font-size:3rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Admin Dashboard</h2>
-                <button onclick="goToHome()" style="background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color:white; border:2px solid rgba(220, 38, 38, 0.3); padding:1rem 2rem; border-radius:1rem; cursor:pointer; font-weight:bold; font-size:2.4rem; transition:all 0.3s ease;">Exit Admin</button>
+                <h2 style="font-size:3rem; background: linear-gradient(135deg, #16588e 0%, #81c4ff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Admin Dashboard</h2>
+                <button onclick="goToHome()" style="background:linear-gradient(135deg, #e7222e 0%, #c81e29 100%); color:white; border:2px solid rgba(231, 34, 46, 0.3); padding:1rem 2rem; border-radius:1rem; cursor:pointer; font-weight:bold; font-size:2.4rem; transition:all 0.3s ease;">Exit Admin</button>
             </div>
             <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:1.5rem; margin-bottom:2rem;">
-                <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); backdrop-filter:blur(10px); padding:2rem; border-radius:1rem; text-align:center; border:2px solid rgba(59, 130, 246, 0.2);"><h4 style="color:#06b6d4; font-size:1.5rem;">Orders Today</h4><p style="font-size:2.5rem; font-weight:bold;">${state.orderHistory.length}</p></div>
-                <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); backdrop-filter:blur(10px); padding:2rem; border-radius:1rem; text-align:center; border:2px solid rgba(59, 130, 246, 0.2);"><h4 style="color:#06b6d4; font-size:1.5rem;">Total Items</h4><p style="font-size:2.5rem; font-weight:bold;">${totalItems}</p></div>
-                <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); backdrop-filter:blur(10px); padding:2rem; border-radius:1rem; text-align:center; border:2px solid rgba(59, 130, 246, 0.2);"><h4 style="color:#06b6d4; font-size:1.5rem;">Session Clock</h4><p style="font-size:2.5rem; font-weight:bold;">${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</p></div>
+                <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); backdrop-filter:blur(10px); padding:2rem; border-radius:1rem; text-align:center; border:2px solid rgba(129, 196, 255, 0.2);"><h4 style="color:#16588e; font-size:1.5rem;">Orders Today</h4><p style="font-size:2.5rem; font-weight:bold;">${state.orderHistory.length}</p></div>
+                <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); backdrop-filter:blur(10px); padding:2rem; border-radius:1rem; text-align:center; border:2px solid rgba(129, 196, 255, 0.2);"><h4 style="color:#16588e; font-size:1.5rem;">Total Items</h4><p style="font-size:2.5rem; font-weight:bold;">${totalItems}</p></div>
+                <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); backdrop-filter:blur(10px); padding:2rem; border-radius:1rem; text-align:center; border:2px solid rgba(129, 196, 255, 0.2);"><h4 style="color:#16588e; font-size:1.5rem;">Session Clock</h4><p style="font-size:2.5rem; font-weight:bold;">${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</p></div>
             </div>
-            <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); border-radius:1rem; overflow:hidden; border:2px solid rgba(59, 130, 246, 0.2);">
+            <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); border-radius:1rem; overflow:hidden; border:2px solid rgba(129, 196, 255, 0.2);">
                 <table style="width:100%; border-collapse:collapse; text-align:center;">
                     <thead style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%);">
-                        <tr style="font-size:2.4rem;"><th style="padding:1rem; font-size:2.4rem; text-align:center; color:#06b6d4;">Time</th><th style="padding:1rem; font-size:2.4rem; text-align:center; color:#06b6d4;">Order ID</th><th style="padding:1rem; font-size:2.4rem; text-align:center; color:#06b6d4;">Items</th></tr>
+                        <tr style="font-size:2.4rem;"><th style="padding:1rem; font-size:2.4rem; text-align:center; color:#16588e;">Time</th><th style="padding:1rem; font-size:2.4rem; text-align:center; color:#16588e;">Order ID</th><th style="padding:1rem; font-size:2.4rem; text-align:center; color:#16588e;">Items</th></tr>
                     </thead>
                     <tbody>
                         ${state.orderHistory.map(o => `
-                            <tr style="border-bottom:1px solid rgba(59, 130, 246, 0.2); font-size:2.4rem;">
+                            <tr style="border-bottom:1px solid rgba(129, 196, 255, 0.2); font-size:2.4rem;">
                                 <td data-label="Time" style="padding:1rem; text-align:center;">${o.time}</td>
                                 <td data-label="ID" style="padding:1rem; text-align:center;">#${o.id}</td>
                                 <td data-label="Counter" style="padding:1rem; text-align:center;">${o.itemCount} Units</td>
@@ -2739,7 +2739,7 @@ function renderAdmin() {
                     </tbody>
                 </table>
             </div>
-            <button onclick="clearStats()" style="margin-top:2rem; background:none; border:2px solid #ef4444; color:#ef4444; padding:0.8rem 1.5rem; border-radius:0.8rem; cursor:pointer; font-weight:bold; font-size:2.4rem; transition:all 0.3s ease;">Clear Session Data</button>
+            <button onclick="clearStats()" style="margin-top:2rem; background:none; border:2px solid #e7222e; color:#e7222e; padding:0.8rem 1.5rem; border-radius:0.8rem; cursor:pointer; font-weight:bold; font-size:2.4rem; transition:all 0.3s ease;">Clear Session Data</button>
         </div>`;
 }
 
@@ -2750,12 +2750,12 @@ function updateBreadcrumbs() {
     }
     breadcrumbContainer.classList.remove('hidden');
 
-    let breadcrumb = `<span onclick="goToHome()" style="cursor:pointer; color:#06b6d4; font-weight:bold;">Home</span>`;
+    let breadcrumb = `<span onclick="goToHome()" style="cursor:pointer; color:#16588e; font-weight:bold;">Home</span>`;
 
     if (state.currentView === 'Request Parts') {
         breadcrumb += ` > Request Parts`;
     } else if (state.currentView === 'category' || state.currentView === 'checkout') {
-        breadcrumb += ` > <span style="color:#06b6d4; font-weight:bold;">Request Parts</span>`;
+        breadcrumb += ` > <span style="color:#16588e; font-weight:bold;">Request Parts</span>`;
     }
 
     if (state.currentView === 'category') {
@@ -3486,8 +3486,68 @@ function setupListeners() {
 }
 
 // ===========================
+// BMW SPLASH SCREEN (logo + door chime)
+// ===========================
+
+function showBmwSplashScreen(onComplete) {
+    const splash = document.createElement('div');
+    splash.id = 'bmw-splash-screen';
+    splash.style.cssText = `
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: #000000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 99999;
+        transition: opacity 0.6s ease;
+    `;
+    splash.innerHTML = `
+        <style>
+            @keyframes bmwSplashPulse {
+                0%, 100% { transform: scale(1); opacity: 1; }
+                50% { transform: scale(1.06); opacity: 0.85; }
+            }
+            @keyframes bmwSplashRing {
+                0% { box-shadow: 0 0 0 0 rgba(129, 196, 255, 0.45), 0 0 0 0 rgba(231, 34, 46, 0.35); }
+                100% { box-shadow: 0 0 0 40px rgba(129, 196, 255, 0), 0 0 0 70px rgba(231, 34, 46, 0); }
+            }
+        </style>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:1.5rem; animation: bmwSplashRing 2.2s ease-out infinite;">
+            <img src="_/theme/bmw-logo.png" alt="BMW" style="width:200px; height:auto; animation: bmwSplashPulse 1.8s ease-in-out infinite;">
+            <div style="color:#81c4ff; font-family:Roboto, Arial, sans-serif; font-size:1.4rem; letter-spacing:0.3em; text-transform:uppercase;">BMA Auto Express</div>
+        </div>
+    `;
+    document.body.appendChild(splash);
+
+    let finished = false;
+    const finish = () => {
+        if (finished) return;
+        finished = true;
+        splash.style.opacity = '0';
+        setTimeout(() => {
+            splash.remove();
+            onComplete();
+        }, 600);
+    };
+
+    // Play the BMW door chime in the background while the splash is up.
+    const chime = new Audio('_/theme/bmw-door-chime.m4a');
+    chime.volume = 0.7;
+    chime.addEventListener('ended', finish);
+    chime.play().catch(() => {
+        // Autoplay can be blocked by the browser until the user interacts with the page.
+        // The splash will still close via the fallback timer below.
+    });
+
+    // Safety net: never hold the splash open longer than 3.5s, even if the
+    // audio fails to load/play or the 'ended' event never fires.
+    setTimeout(finish, 3500);
+}
+
+// ===========================
 // INITIALIZATION
 // ===========================
 
-init();
+showBmwSplashScreen(init);
 })();

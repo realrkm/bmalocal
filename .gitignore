@@ -6,6 +6,6 @@ __pycache__
 cert
 logs
 \server_code\__pycache__
-\server_code\BMALocal.py
 LaunchAnvilServer.ico
 InvoiceHeaderLogo.jpg
+server_code/BMALocal.py

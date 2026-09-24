@@ -62,6 +62,13 @@ def update_job_status(job_id, new_status, notes=None):
 - **Return Shape**: Return explicit JSON-serializable dictionaries or lists with a consistent structure (`{"success": True, ...}`).
 - **No Bare `except:`**: Catch specific exceptions (`ValueError`, `mysql.connector.Error`).
 - **Sanitized Logging**: Log errors with context to [logs/service_output.log](file:///d:/BMAAutoAccessories/venv/Lib/site-packages/BMALocal/logs/service_output.log); never log customer passwords or payment tokens.
+- **Testing Section Markers**: Any temporary, validation, or test code added to [server_code/BMALocal.py](file:///d:/BMAAutoAccessories/venv/Lib/site-packages/BMALocal/server_code/BMALocal.py) MUST be placed strictly between:
+  ```python
+  #********************************************* Testing Section ****************************************
+  # Test callables / experimental endpoints go here
+  #*******************************************************End of testing section *******************
+  ```
+
 
 ---
 

@@ -1,0 +1,24 @@
+# Core Anvil Local Runtime Server
+anvil-app-server>=1.17.0
+anvil-uplink>=0.7.0
+
+# Real-Time Walkie Talkie Chat WebSocket Server
+websockets>=17.0
+
+# Database Driver & Connection Pooling
+mysql-connector-python>=8.0.0
+
+# Environment Variable Management
+python-dotenv>=1.0.0
+
+# PDF Generation (requires external wkhtmltopdf binary)
+pdfkit>=1.0.0
+
+# Spreadsheet and Reporting
+openpyxl>=3.1.0
+
+# Password Hashing & Security
+bcrypt>=4.0.0
+
+# HTTP Requests & Web Utilities
+requests>=2.31.0

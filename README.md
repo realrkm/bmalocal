@@ -12,8 +12,8 @@
 - [Prerequisites & System Requirements](#prerequisites--system-requirements)
 - [Installation & Offline Setup Guide](#installation--offline-setup-guide)
   - [1. Clone the Repository](#1-clone-the-repository)
-  - [2. Configure Python Virtual Environment](#2-configure-python-virtual-environment)
-  - [3. Install Python Dependencies](#3-install-python-dependencies)
+  - [2. Configure Python Virtual Environment (`venv` or `uv`)](#2-configure-python-virtual-environment-venv-or-uv)
+  - [3. Install Python Dependencies (`pip` or `uv`)](#3-install-python-dependencies-pip-or-uv)
   - [4. Install External Tools (MySQL, Java, wkhtmltopdf)](#4-install-external-tools-mysql-java-wkhtmltopdf)
   - [5. Environment Configuration (.env)](#5-environment-configuration-env)
   - [6. SSL/TLS Certificate Setup (for HTTPS & WSS)](#6-ssltls-certificate-setup-for-https--wss)
@@ -135,35 +135,125 @@ git clone https://github.com/realrkm/bmalocal.git BMALocal
 cd BMALocal
 ```
 
-### 2. Configure Python Virtual Environment
+### 2. Configure Python Virtual Environment (`venv` or `uv`)
 
-Create and activate an isolated Python virtual environment:
+To prevent dependency conflicts and ensure reproducible offline operation, you should run BMALocal inside an isolated virtual environment. You can use standard Python **`venv`** or the ultra-fast modern **`uv`** package manager.
 
-**On Windows (PowerShell):**
-```powershell
-python -m venv venv
-.\venv\Scripts\Activate.ps1
-```
+#### Option A: Standard Python `venv` (Built into Python)
 
-**On Windows (Command Prompt):**
-```cmd
-python -m venv venv
-venv\Scripts\activate.bat
-```
+1. **Create the virtual environment**:
+   ```bash
+   python -m venv venv
+   ```
 
-**On Linux / macOS:**
+2. **Activate the virtual environment**:
+   - **Windows (PowerShell)**:
+     ```powershell
+     .\venv\Scripts\Activate.ps1
+     ```
+     *(If script execution is disabled on your system, run: `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` first)*
+   - **Windows (Command Prompt / CMD)**:
+     ```cmd
+     venv\Scripts\activate.bat
+     ```
+   - **Linux / macOS**:
+     ```bash
+     source venv/bin/activate
+     ```
+
+3. **Verify activation**:
+   Your terminal prompt should now display `(venv)`.
+
+---
+
+#### Option B: Modern High-Performance `uv` (Recommended for Speed)
+
+[`uv`](https://github.com/astral-sh/uv) is an extremely fast Python package and environment manager written in Rust (10-100x faster than standard `pip`).
+
+1. **Install `uv` (if not already installed)**:
+   - **Windows (PowerShell)**:
+     ```powershell
+     powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+     ```
+   - **Linux / macOS**:
+     ```bash
+     curl -LsSf https://astral.sh/uv/install.sh | sh
+     ```
+   - **Via standard pip (any OS)**:
+     ```bash
+     pip install uv
+     ```
+
+2. **Create the virtual environment with `uv`**:
+   ```bash
+   # Automatically detects Python on your system
+   uv venv
+
+   # Or pin a specific Python version (e.g. 3.12)
+   uv venv --python 3.12
+   ```
+
+3. **Activate the virtual environment**:
+   - **Windows (PowerShell)**:
+     ```powershell
+     .\.venv\Scripts\Activate.ps1
+     ```
+   - **Windows (Command Prompt / CMD)**:
+     ```cmd
+     .venv\Scripts\activate.bat
+     ```
+   - **Linux / macOS**:
+     ```bash
+     source .venv/bin/activate
+     ```
+
+---
+
+### 3. Install Python Dependencies (`pip` or `uv`)
+
+BMALocal relies on the following core Python libraries:
+
+| Library | Min Version | Purpose & Usage in BMALocal |
+| :--- | :---: | :--- |
+| **`anvil-app-server`** | `>=1.17.0` | Standalone local application server that runs client/server Anvil code |
+| **`anvil-uplink`** | `>=0.7.0` | Anvil uplink library for background services and server-to-server RPCs |
+| **`websockets`** | `>=17.0` | Asynchronous WebSocket server daemon (`chat_ws_server.py`) for live chat |
+| **`mysql-connector-python`**| `>=8.0.0` | Official MySQL driver with connection pooling (`pooling.MySQLConnectionPool`) |
+| **`python-dotenv`** | `>=1.0.0` | Parses `.env` configuration file for database, paths, and server settings |
+| **`pdfkit`** | `>=1.0.0` | Python wrapper for `wkhtmltopdf` to render invoices, quotes & job card PDFs |
+| **`openpyxl`** | `>=3.1.0` | Generates and exports Excel spreadsheets for inventory, parts, and revenue |
+| **`bcrypt`** | `>=4.0.0` | Cryptographic password hashing and verification for user authentication |
+| **`requests`** | `>=2.31.0` | HTTP client for external API calls, analytics, and network testing |
+
+#### Installation Method 1: Using `pip` (Standard)
+
+With your virtual environment activated:
 ```bash
-python3 -m venv venv
-source venv/bin/activate
+# Upgrade pip to latest version
+python -m pip install --upgrade pip
+
+# Option 1A: Install using requirements.txt (Recommended)
+pip install -r requirements.txt
+
+# Option 1B: Install packages manually
+pip install anvil-app-server anvil-uplink websockets mysql-connector-python python-dotenv pdfkit openpyxl bcrypt requests
 ```
 
-### 3. Install Python Dependencies
+#### Installation Method 2: Using `uv` (Lightning Fast)
 
-Install the core application and server dependencies:
+With your virtual environment activated:
 ```bash
-pip install --upgrade pip
-pip install anvil-app-server websockets mysql-connector-python python-dotenv pdfkit openpyxl bcrypt requests
+# Option 2A: Install using requirements.txt with uv
+uv pip install -r requirements.txt
+
+# Option 2B: Install packages manually with uv
+uv pip install anvil-app-server anvil-uplink websockets mysql-connector-python python-dotenv pdfkit openpyxl bcrypt requests
 ```
+
+> **Tip for `uv` users:** You can also run commands inside the environment without manual activation using `uv run`:
+> ```bash
+> uv run python server_code\chat_ws_server.py
+> ```
 
 ### 4. Install External Tools (MySQL, Java, wkhtmltopdf)
 
@@ -351,6 +441,7 @@ anvil-app-server --app . --origin https://192.168.100.12:443 --manual-cert-file 
 ```text
 BMALocal/
 ├── anvil.yaml                      # Anvil application manifest, schemas, tables & dependencies
+├── requirements.txt                # Python package dependencies for pip and uv
 ├── .env                            # Local environment & secret variables (gitignored)
 ├── README.md                       # Comprehensive project documentation
 ├── cert/                           # Local SSL certificates for HTTPS and WSS

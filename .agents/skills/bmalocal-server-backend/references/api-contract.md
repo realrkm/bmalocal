@@ -18,6 +18,7 @@ This register documents key `@anvil.server.callable` endpoints, their input/outp
 | `download_invoice_pdf` | `invoice_id: int` | `anvil.Media` (PDF binary) | `Admin`, `Manager`, `Cashier` | `Invoice` | [x] | [x] |
 | `search_contacts` | `keyword: str` | `list[dict]` (contacts) | Any Authenticated | `Contacts`, `Client` | [x] | [x] |
 | `save_client_contact` | `contact_dict: dict` | `dict` (success, contact_id) | `Admin`, `Manager`, `Staff` | `EditClient` | [x] | [x] |
+| `calculate_invoice_breakdown` | `subtotal: float, discount_percent: float = 0.0, tax_rate_percent: float = 16.0` | `dict` (subtotal, discount_amount, net_subtotal, tax_amount, total_amount) | Any Authenticated | `InvoiceForm`, `QuoteForm` | [x] | [ ] |
 | `get_stats` | `user_agent_string: str` | `dict` (client geolocation/OS) | Public / Anvil context | `Launcher`, `Main` | [x] | [ ] |
 
 ---

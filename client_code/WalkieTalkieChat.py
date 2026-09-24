@@ -32,11 +32,27 @@ class WalkieTalkieChat(WalkieTalkieChatTemplate):
 
     def load_profile(self):
         try:
+            user = anvil.users.get_user()
+            if user:
+                email = user["email"] if "email" in user else ""
+                role_id = user["role_id"] if "role_id" in user else None
+                if email:
+                    prof = {
+                        "email": email,
+                        "name": email.split("@")[0],
+                        "role_name": "Admin" if role_id == 1 else "Staff",
+                    }
+                    self.set_profile(prof)
+                    return
+        except Exception:
+            pass
+
+        try:
             prof = anvil.server.call_s("get_chat_user_profile")
             if prof:
                 self.set_profile(prof)
-        except Exception as e:
-            print("Could not load chat user profile:", e)
+        except Exception:
+            pass
 
     def set_profile(self, profile):
         self.user_profile = profile

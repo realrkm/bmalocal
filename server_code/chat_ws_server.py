@@ -52,6 +52,94 @@ def get_db_connection():
     return mysql.connector.connect(**kwargs)
 
 
+
+# User reads tracking persistence file
+READS_FILE = os.path.join(_app_root, "theme", "assets", "chat_user_reads.json")
+
+
+def load_user_reads():
+    try:
+        if os.path.exists(READS_FILE):
+            with open(READS_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+    except Exception as e:
+        print(f"[!] Warning reading {READS_FILE}: {e}")
+    return {}
+
+
+def save_user_reads(reads_dict):
+    try:
+        os.makedirs(os.path.dirname(READS_FILE), exist_ok=True)
+        with open(READS_FILE, "w", encoding="utf-8") as f:
+            json.dump(reads_dict, f, indent=2)
+    except Exception as e:
+        print(f"[!] Warning writing {READS_FILE}: {e}")
+
+
+# In-memory dictionary of user read markers: {email: {"last_read_id": int, "last_read_at": iso_str}}
+user_reads = load_user_reads()
+
+
+def get_user_last_read(email):
+    clean_email = (email or "").strip().lower()
+    if not clean_email or clean_email == "guest":
+        return 0
+    # Try MySQL table first if available
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT last_read_id FROM tbl_walkietalkie_reads WHERE user_email = %s", (clean_email,))
+        row = cur.fetchone()
+        cur.close()
+        conn.close()
+        if row and row[0] is not None:
+            return int(row[0])
+    except Exception:
+        pass
+    # Fallback to file/memory
+    entry = user_reads.get(clean_email)
+    if isinstance(entry, dict):
+        return int(entry.get("last_read_id", 0))
+    elif isinstance(entry, (int, float)):
+        return int(entry)
+    return 0
+
+
+def update_user_last_read(email, last_read_id):
+    clean_email = (email or "").strip().lower()
+    if not clean_email or clean_email == "guest" or not last_read_id:
+        return
+    try:
+        last_read_id = int(last_read_id)
+    except (ValueError, TypeError):
+        return
+
+    # Update in-memory & JSON file
+    current = user_reads.get(clean_email, {})
+    curr_id = current.get("last_read_id", 0) if isinstance(current, dict) else (current if isinstance(current, int) else 0)
+    if last_read_id >= curr_id:
+        user_reads[clean_email] = {
+            "last_read_id": last_read_id,
+            "last_read_at": datetime.now().isoformat()
+        }
+        save_user_reads(user_reads)
+
+    # Also update DB table if it exists
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("""
+            INSERT INTO tbl_walkietalkie_reads (user_email, last_read_id)
+            VALUES (%s, %s)
+            ON DUPLICATE KEY UPDATE last_read_id = GREATEST(last_read_id, VALUES(last_read_id))
+        """, (clean_email, last_read_id))
+        conn.commit()
+        cur.close()
+        conn.close()
+    except Exception:
+        pass
+
+
 def init_db():
     try:
         conn = get_db_connection()
@@ -66,6 +154,16 @@ def init_db():
                 is_edited TINYINT(1) NOT NULL DEFAULT 0
             );
         """)
+        try:
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS tbl_walkietalkie_reads (
+                    user_email VARCHAR(255) PRIMARY KEY,
+                    last_read_id INT NOT NULL DEFAULT 0,
+                    last_read_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+                );
+            """)
+        except Exception:
+            pass
         conn.commit()
         cur.close()
         conn.close()
@@ -324,21 +422,24 @@ async def chat_handler(websocket):
             if msg_type == "join":
                 user_info = data.get("user", {})
                 email = (user_info.get("email") or "").strip().lower()
+                user_last_read_id = 0
                 if email and "@" in email and email != "guest":
                     current_user.update(user_info)
                     current_user["email"] = email
                     if not current_user.get("initials"):
                         current_user["initials"] = compute_initials(email)
                     connected_clients[websocket] = current_user
+                    user_last_read_id = get_user_last_read(email)
                 else:
                     current_user["email"] = ""
                     connected_clients[websocket] = current_user
 
-                # Send history
+                # Send history including user's recorded last_read_id
                 history = get_history(limit=100)
                 await websocket.send(json.dumps({
                     "type": "history",
                     "messages": history,
+                    "last_read_id": user_last_read_id,
                 }))
 
                 # Broadcast presence
@@ -360,10 +461,26 @@ async def chat_handler(websocket):
                 if not text:
                     continue
                 formatted_msg = insert_message(current_user, text)
+                sender_email = (current_user.get("email") or "").strip().lower()
+                if sender_email and formatted_msg.get("id"):
+                    update_user_last_read(sender_email, formatted_msg["id"])
+
                 await broadcast({
                     "type": "message",
                     "message": formatted_msg,
                 })
+
+            elif msg_type == "mark_read":
+                read_id = data.get("last_read_id")
+                user_email = (current_user.get("email") or data.get("user_email") or "").strip().lower()
+                if user_email and read_id:
+                    update_user_last_read(user_email, read_id)
+                    # Broadcast reads_updated to sync any other tabs for this user
+                    await broadcast({
+                        "type": "reads_updated",
+                        "user_email": user_email,
+                        "last_read_id": int(read_id),
+                    })
 
             elif msg_type == "edit_message":
                 msg_id = data.get("message_id")
@@ -397,10 +514,13 @@ async def chat_handler(websocket):
                     }))
 
             elif msg_type == "get_history":
+                user_email = (current_user.get("email") or "").strip().lower()
+                user_last_read_id = get_user_last_read(user_email) if user_email else 0
                 history = get_history(limit=100)
                 await websocket.send(json.dumps({
                     "type": "history",
                     "messages": history,
+                    "last_read_id": user_last_read_id,
                 }))
 
             elif msg_type == "ping":

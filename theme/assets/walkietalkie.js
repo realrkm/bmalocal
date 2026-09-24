@@ -60,11 +60,109 @@
         }
     };
 
+    function getMyEmail() {
+        return ((window.wtCurrentUser && window.wtCurrentUser.email) || "").toLowerCase().trim();
+    }
+
+    function getLocalLastReadId(email) {
+        const userEmail = (email || getMyEmail()).toLowerCase().trim();
+        if (!userEmail) return 0;
+        try {
+            return parseInt(localStorage.getItem("wt_last_read_" + userEmail) || "0", 10) || 0;
+        } catch (e) {
+            return 0;
+        }
+    }
+
+    function setLocalLastReadId(msgId, email) {
+        const userEmail = (email || getMyEmail()).toLowerCase().trim();
+        if (!userEmail || !msgId) return;
+        const current = getLocalLastReadId(userEmail);
+        const newId = Math.max(current, parseInt(msgId, 10) || 0);
+        try {
+            localStorage.setItem("wt_last_read_" + userEmail, newId.toString());
+        } catch (e) {}
+        return newId;
+    }
+
+    function getHighestMessageId() {
+        const els = initElements();
+        if (!els.body) return 0;
+        const rows = els.body.querySelectorAll(".wt-message-row[data-msg-id]");
+        let maxId = 0;
+        rows.forEach(r => {
+            const id = parseInt(r.getAttribute("data-msg-id"), 10) || 0;
+            if (id > maxId) maxId = id;
+        });
+        return maxId;
+    }
+
+    function sendMarkRead(maxId) {
+        const myEmail = getMyEmail();
+        const idToMark = maxId || getHighestMessageId();
+        if (!myEmail || !idToMark) return;
+        setLocalLastReadId(idToMark, myEmail);
+        const activeWs = (ws && ws.readyState === WebSocket.OPEN) ? ws : (window.__wtWs && window.__wtWs.readyState === WebSocket.OPEN ? window.__wtWs : null);
+        if (activeWs) {
+            try {
+                activeWs.send(JSON.stringify({
+                    type: "mark_read",
+                    last_read_id: parseInt(idToMark, 10),
+                    user_email: myEmail
+                }));
+            } catch (e) {}
+        }
+    }
+
+    function recalculateUnreadCount(customLastReadId) {
+        const myEmail = getMyEmail();
+        if (!myEmail) {
+            clearUnreadCount();
+            return;
+        }
+        if (checkIsChatOpen()) {
+            clearUnreadCount();
+            return;
+        }
+
+        const effectiveLastRead = typeof customLastReadId === "number" ? customLastReadId : getLocalLastReadId(myEmail);
+        const els = initElements();
+        if (!els.body) return;
+
+        const rows = els.body.querySelectorAll(".wt-message-row[data-msg-id]");
+        let unread = 0;
+        rows.forEach(r => {
+            const isOutgoing = r.classList.contains("wt-message-outgoing");
+            if (isOutgoing) return;
+            const msgId = parseInt(r.getAttribute("data-msg-id"), 10) || 0;
+            if (effectiveLastRead > 0) {
+                if (msgId > effectiveLastRead) {
+                    unread++;
+                }
+            } else {
+                const createdAt = r.getAttribute("data-created-at");
+                if (createdAt) {
+                    const msgTime = new Date(createdAt).getTime();
+                    if (!isNaN(msgTime) && (Date.now() - msgTime) < 24 * 3600 * 1000) {
+                        unread++;
+                    }
+                }
+            }
+        });
+
+        unreadCount = unread;
+        updateBadgeDisplay();
+    }
+
     // Sync chat popup visibility state from Anvil: anvil.js.call('setWtChatOpenStatus', True/False)
     window.setWtChatOpenStatus = function (isOpen) {
         isChatPopupOpen = !!isOpen;
         if (isChatPopupOpen) {
             clearUnreadCount();
+            const maxId = getHighestMessageId();
+            if (maxId > 0) {
+                sendMarkRead(maxId);
+            }
             if (typeof window.scrollWtChatToBottom === "function") {
                 window.scrollWtChatToBottom();
             } else {
@@ -107,7 +205,16 @@
 
     function updateBadgeDisplay() {
         const badge = getOrCreateBadge();
-        if (!badge) return;
+        if (!badge) {
+            // If the FAB container is not yet attached in the DOM, retry shortly
+            if (unreadCount > 0 && !window._wtBadgeRetryTimer) {
+                window._wtBadgeRetryTimer = setTimeout(() => {
+                    window._wtBadgeRetryTimer = null;
+                    updateBadgeDisplay();
+                }, 250);
+            }
+            return;
+        }
 
         if (unreadCount > 0 && !checkIsChatOpen()) {
             badge.textContent = unreadCount > 99 ? "99+" : unreadCount;
@@ -133,6 +240,8 @@
     window.getWtUnreadCount = function () { return unreadCount; };
     window.updateWtBadgeDisplay = updateBadgeDisplay;
     window.updateBadgeDisplay = updateBadgeDisplay;
+    window.sendWtMarkRead = sendMarkRead;
+    window.recalculateWtUnreadCount = recalculateUnreadCount;
 
     function getWsUrl() {
         if (window.WT_WS_URL) return window.WT_WS_URL;
@@ -535,7 +644,7 @@
         }
     }
 
-    function renderHistory(messages) {
+    function renderHistory(messages, serverLastReadId) {
         const els = initElements();
         if (!els.body) return;
 
@@ -561,11 +670,56 @@
         messages.forEach(msg => renderMessage(msg));
         scrollToBottom();
         setTimeout(stopRefreshSpin, 400);
+
+        // Process unread messages received while logged out / offline
+        const myEmail = getMyEmail();
+        if (myEmail) {
+            const sLastRead = typeof serverLastReadId === "number" ? serverLastReadId : 0;
+            const lLastRead = getLocalLastReadId(myEmail);
+            const effectiveLastRead = Math.max(sLastRead, lLastRead);
+
+            // Synchronize local storage if server has newer read marker
+            if (sLastRead > lLastRead) {
+                setLocalLastReadId(sLastRead, myEmail);
+            }
+
+            if (checkIsChatOpen()) {
+                // If chat is open, user is viewing the messages now
+                clearUnreadCount();
+                const maxId = getHighestMessageId();
+                if (maxId > 0) {
+                    sendMarkRead(maxId);
+                }
+            } else {
+                // Chat is closed: compute unread messages newer than effectiveLastRead
+                let unread = 0;
+                messages.forEach(msg => {
+                    if (isSelf(msg)) return;
+                    const msgId = parseInt(msg.id, 10) || 0;
+                    if (effectiveLastRead > 0) {
+                        if (msgId > effectiveLastRead) {
+                            unread++;
+                        }
+                    } else {
+                        // First-time baseline: count unread messages from the last 24 hours
+                        if (msg.created_at) {
+                            const msgTime = new Date(msg.created_at).getTime();
+                            if (!isNaN(msgTime) && (Date.now() - msgTime) < 24 * 3600 * 1000) {
+                                unread++;
+                            }
+                        }
+                    }
+                });
+
+                unreadCount = unread;
+                updateBadgeDisplay();
+            }
+        }
     }
 
     // Public method callable from Anvil Python or fallback
-    window.renderWtHistoryFromAnvil = function (messages) {
-        renderHistory(messages);
+    window.renderWtHistoryFromAnvil = function (messages, serverLastReadId) {
+        renderHistory(messages, serverLastReadId);
     };
 
     function connectWebSocket() {
@@ -617,16 +771,36 @@
                 const els = initElements();
 
                 if (data.type === "history") {
-                    renderHistory(data.messages);
+                    renderHistory(data.messages, data.last_read_id);
                 } else if (data.type === "message") {
                     renderMessage(data.message);
 
-                    // Handle unread notification badge if chat is not open and message is from another user
-                    if (!isSelf(data.message)) {
+                    if (isSelf(data.message)) {
+                        // User sent this message, update read marker
+                        if (data.message.id) {
+                            sendMarkRead(data.message.id);
+                        }
+                        clearUnreadCount();
+                    } else {
+                        // Incoming message from another user
                         if (!checkIsChatOpen()) {
                             incrementUnreadCount();
                         } else {
+                            if (data.message.id) {
+                                sendMarkRead(data.message.id);
+                            }
                             clearUnreadCount();
+                        }
+                    }
+                } else if (data.type === "reads_updated") {
+                    const myEmail = getMyEmail();
+                    if (data.user_email && data.user_email.toLowerCase() === myEmail) {
+                        const newReadId = parseInt(data.last_read_id, 10) || 0;
+                        setLocalLastReadId(newReadId, myEmail);
+                        if (checkIsChatOpen()) {
+                            clearUnreadCount();
+                        } else {
+                            recalculateUnreadCount(newReadId);
                         }
                     }
                 } else if (data.type === "message_edited") {
@@ -701,6 +875,12 @@
             text: text
         }));
 
+        clearUnreadCount();
+        const maxId = getHighestMessageId();
+        if (maxId > 0) {
+            sendMarkRead(maxId);
+        }
+
         els.input.value = "";
         els.input.focus();
     }
@@ -768,6 +948,10 @@
             const fab = e.target.closest(".anvil-role-fab, .anvil-role-fab-active");
             if (fab) {
                 clearUnreadCount();
+                const maxId = getHighestMessageId();
+                if (maxId > 0) {
+                    sendMarkRead(maxId);
+                }
                 if (typeof window.scrollWtChatToBottom === "function") {
                     window.scrollWtChatToBottom();
                 }

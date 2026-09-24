@@ -54,7 +54,20 @@ class Main(MainTemplate):
     
         # Initialize Walkie Talkie Real-Time Chat
         self.live_popup.clear()
-        self.walkie_chat = WalkieTalkieChat(on_close=self.close_chat)
+        user_prof = None
+        if self.user:
+            try:
+                email = self.user["email"] if "email" in self.user else ""
+                role_id = self.user["role_id"] if "role_id" in self.user else None
+                if email:
+                    user_prof = {
+                        "email": email,
+                        "name": email.split("@")[0],
+                        "role_name": "Admin" if role_id == 1 else "Staff",
+                    }
+            except Exception:
+                pass
+        self.walkie_chat = WalkieTalkieChat(user_profile=user_prof, on_close=self.close_chat)
         self.live_popup.add_component(self.walkie_chat, full_width_row=True)
 
         self.live_popup.visible = False
@@ -62,6 +75,7 @@ class Main(MainTemplate):
         self.fab_btn.enabled = True
         self.is_open = False
         self._safe_js_call("setWtChatOpenStatus", False)
+        self._safe_js_call("updateWtBadgeDisplay")
 
     def _safe_js_call(self, fn_name, *args):
         """Invoke a JS function on window safely without throwing if not yet ready."""
@@ -335,6 +349,7 @@ class Main(MainTemplate):
         """Optional: Ensure polling restarts if the form is re-shown"""
         if not self.polling_active:
             self.start_notification_loop()
+        self._safe_js_call("updateWtBadgeDisplay")
 
     def form_hide(self, **events_args):
         self.polling_active = False

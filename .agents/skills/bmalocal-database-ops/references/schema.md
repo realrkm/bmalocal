@@ -55,7 +55,7 @@
 | -: | :--- | :--- | :---: | :---: | :--- | :--- | :--- |
 | 1 | `ID` | `int` | NO | PRI | NULL | auto_increment |  |
 | 2 | `ClientDetails` | `int` | NO | MUL | NULL |  | `tbl_clientcontacts.ID` |
-| 3 | `JobCardRef` | `varchar(255)` | NO |  | NULL |  |  |
+| 3 | `JobCardRef` | `varchar(255)` | NO | MUL | NULL |  |  |
 | 4 | `ReceivedDate` | `date` | NO |  | NULL |  |  |
 | 5 | `DueDate` | `date` | NO |  | NULL |  |  |
 | 6 | `ExpDate` | `date` | YES |  | NULL |  |  |
@@ -66,9 +66,9 @@
 | 11 | `Spare` | `bit(1)` | YES |  | NULL |  |  |
 | 12 | `Jack` | `bit(1)` | YES |  | NULL |  |  |
 | 13 | `Brace` | `bit(1)` | YES |  | NULL |  |  |
-| 14 | `RegNo` | `varchar(255)` | NO |  | NULL |  |  |
+| 14 | `RegNo` | `varchar(255)` | NO | MUL | NULL |  |  |
 | 15 | `MakeAndModel` | `varchar(255)` | NO |  | NULL |  |  |
-| 16 | `ChassisNo` | `varchar(255)` | YES |  | NULL |  |  |
+| 16 | `ChassisNo` | `varchar(255)` | YES | MUL | NULL |  |  |
 | 17 | `EngineCC` | `varchar(255)` | YES |  | NULL |  |  |
 | 18 | `Mileage` | `int` | YES |  | NULL |  |  |
 | 19 | `EngineNo` | `varchar(255)` | YES | MUL | NULL |  |  |
@@ -83,8 +83,8 @@
 | 28 | `PaintCode` | `varchar(255)` | YES |  | NULL |  |  |
 | 29 | `ClientInstruction` | `text` | NO |  | NULL |  |  |
 | 30 | `Notes` | `text` | NO |  | NULL |  |  |
-| 31 | `IsComplete` | `bit(1)` | YES |  | NULL |  |  |
-| 32 | `Status` | `varchar(255)` | YES |  | NULL |  |  |
+| 31 | `IsComplete` | `bit(1)` | YES | MUL | NULL |  |  |
+| 32 | `Status` | `varchar(255)` | YES | MUL | NULL |  |  |
 
 ### `tbl_completedjobcards`
 **Rows**: 131 | **Engine**: InnoDB | **Collation**: latin1_swedish_ci
@@ -177,7 +177,7 @@
 | 2 | `Date` | `date` | NO |  | NULL |  |  |
 | 3 | `AssignedJobID` | `int` | NO | MUL | NULL |  | `tbl_jobcarddetails.ID` |
 | 4 | `Item` | `text` | NO |  | NULL |  |  |
-| 5 | `Part_No` | `varchar(255)` | YES |  | NULL |  |  |
+| 5 | `Part_No` | `varchar(255)` | YES | MUL | NULL |  |  |
 | 6 | `QuantityIssued` | `float` | YES |  | NULL |  |  |
 | 7 | `Amount` | `decimal(10,2)` | NO |  | NULL |  |  |
 | 8 | `Status` | `text` | NO |  | NULL |  |  |
@@ -297,8 +297,8 @@
 | # | Column Name | Type | Nullable | Key | Default | Extra | Foreign Key Ref |
 | -: | :--- | :--- | :---: | :---: | :--- | :--- | :--- |
 | 1 | `ID` | `int` | NO | PRI | NULL | auto_increment |  |
-| 2 | `Fullname` | `varchar(255)` | NO |  | NULL |  |  |
-| 3 | `Phone` | `varchar(20)` | NO |  | NULL |  |  |
+| 2 | `Fullname` | `varchar(255)` | NO | MUL | NULL |  |  |
+| 3 | `Phone` | `varchar(20)` | NO | MUL | NULL |  |  |
 | 4 | `Address` | `varchar(255)` | NO |  | NULL |  |  |
 | 5 | `Email` | `varchar(255)` | NO |  | NULL |  |  |
 | 6 | `Narration` | `varchar(255)` | NO |  | NULL |  |  |

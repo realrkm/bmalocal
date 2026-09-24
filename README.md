@@ -103,7 +103,7 @@ BMALocal is hosted locally via the open-source **Anvil App Server** coupled with
 | **Frontend Framework** | Anvil Client (Python Skulpt) | Pure Python client logic compiling to browser JavaScript |
 | **Frontend Styling** | Vanilla CSS3 (`theme.css`) | Responsive design, glassmorphism UI, fixed FAB controls |
 | **Frontend Scripts** | Native JavaScript | `walkietalkie.js`, `signature.js`, `selfservice.js`, `barcode.js` |
-| **Chat Server** | `websockets` (v17+) | Asynchronous real-time WebSocket server (`chat_ws_server.py`) |
+| **Chat Server** | `websockets` (v17+) | Asynchronous real-time WebSocket server integrated into `BMALocal.py` |
 | **Primary Database** | MySQL 8.0+ / MariaDB | Relational storage for business entities and chat history |
 | **Internal Data Store** | PostgreSQL (embedded) | Embedded DB managed by Anvil App Server for app state/users |
 | **Document Engine** | `wkhtmltopdf` + `pdfkit` | Headless HTML-to-PDF rendering for invoices and reports |
@@ -217,7 +217,7 @@ BMALocal relies on the following core Python libraries:
 | :--- | :---: | :--- |
 | **`anvil-app-server`** | `>=1.17.0` | Standalone local application server that runs client/server Anvil code |
 | **`anvil-uplink`** | `>=0.7.0` | Anvil uplink library for background services and server-to-server RPCs |
-| **`websockets`** | `>=17.0` | Asynchronous WebSocket server daemon (`chat_ws_server.py`) for live chat |
+| **`websockets`** | `>=17.0` | Asynchronous WebSocket server daemon (integrated in `BMALocal.py`) for live chat |
 | **`mysql-connector-python`**| `>=8.0.0` | Official MySQL driver with connection pooling (`pooling.MySQLConnectionPool`) |
 | **`python-dotenv`** | `>=1.0.0` | Parses `.env` configuration file for database, paths, and server settings |
 | **`pdfkit`** | `>=1.0.0` | Python wrapper for `wkhtmltopdf` to render invoices, quotes & job card PDFs |
@@ -252,7 +252,7 @@ uv pip install anvil-app-server anvil-uplink websockets mysql-connector-python p
 
 > **Tip for `uv` users:** You can also run commands inside the environment without manual activation using `uv run`:
 > ```bash
-> uv run python server_code\chat_ws_server.py
+> uv run python server_code\BMALocal.py
 > ```
 
 ### 4. Install External Tools (MySQL, Java, wkhtmltopdf)
@@ -351,14 +351,15 @@ anvil-app-server --app . --origin https://192.168.100.12:443 --manual-cert-file 
 
 ### Starting the Walkie Talkie WebSocket Server
 
-In a separate terminal (with virtual environment activated):
+The WebSocket server starts automatically in a background daemon thread whenever Anvil App Server runs!
+However, if you wish to run the WebSocket server standalone in a separate terminal:
 ```powershell
-python server_code\chat_ws_server.py
+python server_code\BMALocal.py
 ```
 
-On startup, `chat_ws_server.py` will:
+On startup, `BMALocal.py` will:
 - Read credentials strictly from `.env`.
-- Automatically create/verify the `tbl_walkietalkie_messages` table in MySQL.
+- Automatically create/verify the `tbl_walkietalkie_messages` and `tbl_walkietalkie_reads` tables in MySQL.
 - Bind to the specified `CHAT_WS_HOST` and `CHAT_WS_PORT` (e.g. `0.0.0.0:8765`).
 - Enable TLS/WSS if certificates are configured.
 
@@ -403,7 +404,7 @@ echo.
 echo ==================================================
 echo [2/3] Launching Walkie Talkie Chat WebSocket Server...
 echo ==================================================
-start "BMALocal WebSocket Server" /min "%PYTHON_EXE%" "%APP_DIR%\server_code\chat_ws_server.py"
+start "BMALocal WebSocket Server" /min "%PYTHON_EXE%" "%APP_DIR%\server_code\BMALocal.py"
 
 echo.
 echo ==================================================
@@ -464,8 +465,7 @@ BMALocal/
 │   ├── WalkieTalkieChat.py         # Anvil wrapper for live WebSocket chat
 │   └── ModNavigation/              # Global form routing controller
 ├── server_code/                    # Backend server-side services (Python)
-│   ├── BMALocal.py                 # Core server functions & database queries
-│   └── chat_ws_server.py           # Standalone async WebSocket server daemon
+│   └── BMALocal.py                 # Core server functions, DB queries & integrated WebSocket server
 └── theme/                          # Visual theme, assets, HTML templates & styles
     ├── parameters.yaml             # Theme roles and color tokens
     └── assets/
@@ -490,7 +490,7 @@ BMALocal/
 - **Solution**:
   1. Check if the WebSocket server is running: `Get-NetTCPConnection -LocalPort 8765`.
   2. Verify firewall rules allow incoming TCP traffic on port `8765`.
-  3. Start the server manually: `python server_code\chat_ws_server.py`.
+  3. Start the server manually: `python server_code\BMALocal.py`.
 
 ### 3. PDF Generation Fails
 - **Problem**: Error when attempting to generate invoices or job card PDFs.

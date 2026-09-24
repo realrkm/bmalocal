@@ -866,7 +866,7 @@
         if (!text) return;
 
         if (!ws || ws.readyState !== WebSocket.OPEN) {
-            alert("Chat server is currently offline. Please ensure chat_ws_server.py is running.");
+            alert("Chat server is currently offline. Please ensure the WebSocket server is running.");
             return;
         }
 

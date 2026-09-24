@@ -123,6 +123,9 @@ native_deps:
             for (var i = 0; i < els.length; i++) {
                 els[i].className = els[i].className.replace(/ *\banvil-show-banner\b/g, " ");
             }
+            if (window.initBmaPasswordToggles) {
+                window.initBmaPasswordToggles();
+            }
         }
         window.setWtChatOpenStatus = window.setWtChatOpenStatus || function(){};
         window.clearWtUnreadCount = window.clearWtUnreadCount || function(){};
@@ -130,6 +133,7 @@ native_deps:
         window.scrollWtChatToBottom = window.scrollWtChatToBottom || function(){};
     </script>
     <script src="_/theme/walkietalkie.js"></script>
+    <script src="_/theme/password_toggle.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Mozilla+Headline:wght@200..700&display=swap" rel="stylesheet">

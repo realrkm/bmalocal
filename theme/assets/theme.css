@@ -1580,5 +1580,73 @@ a.anvil-role-link, .anvil-label > .label-text, a > .link-text {
     border-radius: 5px;
     padding-left: 3px;
     padding-right: 3px;
+}
 
+/* ── Password Visibility Toggle (Show / Hide Password) ─────── */
+.bma-password-wrapper {
+    position: relative !important;
+    display: block !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.bma-password-wrapper > input {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding-right: 42px !important;
+}
+
+/* Hide Microsoft Edge / IE default password reveal & clear buttons to avoid duplicates */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear,
+input[data-bma-password-field="true"]::-ms-reveal,
+input[data-bma-password-field="true"]::-ms-clear {
+    display: none !important;
+}
+
+/* Toggle eye button */
+.bma-password-toggle-btn {
+    position: absolute !important;
+    right: 8px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 32px !important;
+    height: 32px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    border-radius: 50% !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: rgba(0, 0, 0, 0.65) !important;
+    z-index: 10 !important;
+    transition: color 0.15s ease, background-color 0.15s ease, transform 0.15s ease !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+}
+
+.bma-password-toggle-btn:hover {
+    color: #0056D6 !important;
+    background-color: rgba(0, 86, 214, 0.1) !important;
+}
+
+.bma-password-toggle-btn:active {
+    transform: translateY(-50%) scale(0.9) !important;
+}
+
+.bma-password-toggle-btn:focus-visible {
+    box-shadow: 0 0 0 2px rgba(0, 86, 214, 0.4) !important;
+}
+
+.bma-password-toggle-btn svg {
+    width: 19px !important;
+    height: 19px !important;
+    stroke: currentColor !important;
+    stroke-width: 2 !important;
+    fill: none !important;
+    pointer-events: none !important;
 }

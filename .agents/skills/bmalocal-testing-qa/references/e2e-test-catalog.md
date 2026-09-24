@@ -1,0 +1,30 @@
+# BMALocal End-to-End Test Journey Catalog
+
+This catalog documents the critical user journeys tested via Playwright across Desktop, Tablet, and Mobile viewports.
+
+---
+
+## 1. Critical User Journeys
+
+| Journey ID | Name / Flow | Key Steps | Breakpoints Covered | Guards Against |
+| :--- | :--- | :--- | :--- | :--- |
+| **E2E-01** | **User Authentication** | 1. Navigate to `/`<br>2. Enter credentials<br>3. Verify dashboard loads<br>4. Test password toggle | Desktop, Tablet, Mobile | Login lockouts, broken toggle, session drops |
+| **E2E-02** | **Job Card Lifecycle** | 1. Create Job Card with VIN/Reg<br>2. Assign Technician<br>3. Advance to In-Service<br>4. Sign off & complete | Desktop, Mobile (Floor) | Broken status transitions, missing mandatory fields |
+| **E2E-03** | **Invoice Generation** | 1. Convert completed Job Card to Invoice<br>2. Add parts & labor<br>3. Verify totals and tax<br>4. Save & preview PDF | Desktop, Tablet | Calculation rounding errors, broken PDF generation |
+| **E2E-04** | **Contact Management** | 1. Search client by phone/reg<br>2. Create new client record<br>3. Link to vehicle profile | Desktop, Tablet, Mobile | Search failure, duplicate entries |
+| **E2E-05** | **Realtime Chat & Walkie Talkie** | 1. Open chat popup<br>2. Send message<br>3. Verify incoming broadcast<br>4. Reconnect test | Desktop, Mobile | WebSocket connection drops, chat desync |
+
+---
+
+## 2. Playwright Test Execution Commands
+
+```powershell
+# Run all E2E tests against local test server
+npx playwright test
+
+# Run specifically on mobile viewport
+npx playwright test --project=Mobile
+
+# Run with interactive UI mode for debugging
+npx playwright test --ui
+```

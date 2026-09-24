@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        .wt-chat-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 520px;
+            background: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            border: 1px solid #e2e8f0;
+        }
+
+        /* ── Header ─────────────────────────────────────── */
+        .wt-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: #ffffff;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .wt-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .wt-header-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: #ecfdf5;
+            border: 1.5px solid #a7f3d0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #059669;
+        }
+
+        .wt-header-titles {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .wt-header-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #0f172a;
+            line-height: 1.2;
+        }
+
+        .wt-header-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: #64748b;
+            font-weight: 500;
+            margin-top: 2px;
+        }
+
+        .wt-status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+            box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+            display: inline-block;
+        }
+
+        .wt-status-dot.offline {
+            background: #94a3b8;
+            box-shadow: none;
+        }
+
+        .wt-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .wt-action-btn {
+            background: transparent;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .wt-action-btn:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+
+        .wt-action-btn.spinning svg {
+            animation: wt-spin 0.6s linear infinite;
+        }
+
+        @keyframes wt-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* ── Messages Container ─────────────────────────── */
+        .wt-messages-body {
+            flex: 1;
+            padding: 16px 14px;
+            overflow-y: auto;
+            background: #fafbfc;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 transparent;
+        }
+
+        .wt-messages-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .wt-messages-body::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        /* ── Date Group Separator ───────────────────────── */
+        .wt-date-separator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 6px 0;
+            position: relative;
+        }
+
+        .wt-date-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 11px;
+            font-weight: 500;
+            color: #64748b;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+            z-index: 1;
+        }
+
+        /* ── Message Item Styles ─────────────────────────── */
+        .wt-message-row {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            max-width: 88%;
+        }
+
+        /* Incoming message (Other user) */
+        .wt-message-incoming {
+            align-self: flex-start;
+        }
+
+        .wt-incoming-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 2px;
+        }
+
+        .wt-avatar {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: #0f766e;
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        .wt-sender-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .wt-member-tag {
+            font-size: 10px;
+            color: #94a3b8;
+            font-weight: 500;
+            letter-spacing: 0.2px;
+        }
+
+        .wt-bubble-incoming {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px 18px 18px 18px;
+            padding: 10px 14px;
+            color: #1e293b;
+            font-size: 13.5px;
+            line-height: 1.45;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            position: relative;
+            word-break: break-word;
+        }
+
+        .wt-time-incoming {
+            font-size: 10px;
+            color: #94a3b8;
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        /* Outgoing message (You) */
+        .wt-message-outgoing {
+            align-self: flex-end;
+        }
+
+        .wt-outgoing-header {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 6px;
+            margin-bottom: 2px;
+        }
+
+        .wt-self-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: #059669;
+        }
+
+        .wt-role-badge {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            padding: 1px 5px;
+            font-size: 9px;
+            font-weight: 700;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .wt-bubble-outgoing {
+            background: #00875a;
+            border-radius: 18px 4px 18px 18px;
+            padding: 10px 14px;
+            color: #ffffff;
+            font-size: 13.5px;
+            line-height: 1.45;
+            box-shadow: 0 2px 6px rgba(0, 135, 90, 0.2);
+            word-break: break-word;
+        }
+
+        .wt-time-outgoing {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.85);
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        .wt-bubble-meta {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 4px;
+        }
+
+        .wt-meta-outgoing {
+            justify-content: flex-end;
+        }
+
+        .wt-meta-incoming {
+            justify-content: flex-end;
+        }
+
+        .wt-edited-label {
+            font-size: 9.5px;
+            font-style: italic;
+            opacity: 0.85;
+            user-select: none;
+        }
+
+        .wt-meta-outgoing .wt-edited-label {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .wt-meta-incoming .wt-edited-label {
+            color: #94a3b8;
+        }
+
+        .wt-edit-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 4px;
+            color: rgba(255, 255, 255, 0.8);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s, color 0.15s, transform 0.12s;
+            margin-right: 2px;
+        }
+
+        .wt-edit-btn:hover {
+            background: rgba(255, 255, 255, 0.22);
+            color: #ffffff;
+            transform: scale(1.12);
+        }
+
+        .wt-edit-mode-container {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            width: 100%;
+            min-width: 220px;
+            margin-top: 2px;
+        }
+
+        .wt-edit-input {
+            width: 100%;
+            background: #ffffff;
+            color: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 13.5px;
+            line-height: 1.4;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 52px;
+            outline: none;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .wt-edit-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.35);
+        }
+
+        .wt-edit-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .wt-edit-cancel-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 26px;
+            height: 26px;
+            color: rgba(255, 255, 255, 0.95);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .wt-edit-cancel-btn:hover {
+            background: rgba(255, 255, 255, 0.35);
+            color: #ffffff;
+        }
+
+        .wt-edit-save-btn {
+            background: #ffffff;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            color: #00875a;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.18);
+        }
+
+        .wt-edit-save-btn:hover {
+            background: #f0fdf4;
+            transform: scale(1.1);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+        }
+
+        .wt-edit-save-btn:active {
+            transform: scale(0.95);
+        }
+
+        .wt-edit-cancel-btn svg,
+        .wt-edit-cancel-btn line,
+        .wt-edit-save-btn svg,
+        .wt-edit-save-btn circle,
+        .wt-edit-save-btn polyline {
+            pointer-events: none;
+        }
+
+        /* ── Empty State ────────────────────────────────── */
+        .wt-empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: auto;
+            color: #94a3b8;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .wt-empty-state svg {
+            margin-bottom: 8px;
+            color: #cbd5e1;
+        }
+
+        /* ── Input Composer ─────────────────────────────── */
+        .wt-composer {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            background: #ffffff;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .wt-input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .wt-input-field {
+            width: 100%;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 24px;
+            padding: 10px 16px;
+            font-size: 13px;
+            color: #1e293b;
+            background: #ffffff;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .wt-input-field:focus {
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+        }
+
+        .wt-send-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #00875a;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+
+        .wt-send-btn:hover {
+            background: #00704a;
+            transform: scale(1.05);
+        }
+
+        .wt-send-btn:active {
+            transform: scale(0.95);
+        }
+
+        .wt-send-btn:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+            transform: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="wt-chat-container">
+        <!-- Header -->
+        <div class="wt-header">
+            <div class="wt-header-left">
+                <div class="wt-header-icon">
+                    <!-- Speech bubble icon -->
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                </div>
+                <div class="wt-header-titles">
+                    <span class="wt-header-title">Walkie Talkie</span>
+                    <span class="wt-header-status">
+                        <span id="wtStatusDot" class="wt-status-dot"></span>
+                        <span id="wtOnlineText">Connecting...</span>
+                    </span>
+                </div>
+            </div>
+            <div class="wt-header-actions">
+                <!-- Refresh Button -->
+                <button id="wtBtnRefresh" class="wt-action-btn" title="Refresh messages">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+                    </svg>
+                </button>
+                <!-- Close Button -->
+                <button id="wtBtnClose" class="wt-action-btn" title="Close chat">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Messages Area -->
+        <div id="wtMessagesBody" class="wt-messages-body">
+            <div id="wtEmptyState" class="wt-empty-state">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <span>No messages yet. Send a message to start!</span>
+            </div>
+        </div>
+
+        <!-- Input Composer -->
+        <div class="wt-composer">
+            <div class="wt-input-wrapper">
+                <input type="text" id="wtInputMessage" class="wt-input-field" placeholder="Type a message to the group..." autocomplete="off">
+            </div>
+            <button id="wtBtnSend" class="wt-send-btn" title="Send message">
+                <!-- Send Paper Plane Icon -->
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+            </button>
+        </div>
+    </div>
+</body>
+</html>

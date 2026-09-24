@@ -11,11 +11,13 @@ import anvil.js
 from anvil.js import window
 from anvil.js.window import navigator, setTimeout
 from ..NotificationsAndAlerts import NotificationsAndAlerts
+from ..WalkieTalkieChat import WalkieTalkieChat
 
 class Main(MainTemplate):
 
     def __init__(self, permissions=None, user=None, **properties):
         self.init_components(**properties)
+        self.home_component = self.column_panel_content
         anvil.js.call('replaceBanner')
     
         self.user = user
@@ -50,10 +52,33 @@ class Main(MainTemplate):
             self.timeout_id = None
             anvil.js.window.setTimeout(self.start_notification_loop, 0)
     
+        # Initialize Walkie Talkie Real-Time Chat
+        self.live_popup.clear()
+        self.walkie_chat = WalkieTalkieChat(on_close=self.close_chat)
+        self.live_popup.add_component(self.walkie_chat, full_width_row=True)
+
         self.live_popup.visible = False
-        self.fab_btn.tooltip = "Click to talk"
+        self.fab_btn.tooltip = "Walkie Talkie Chat"
         self.fab_btn.enabled = True
         self.is_open = False
+        self._safe_js_call("setWtChatOpenStatus", False)
+
+    def _safe_js_call(self, fn_name, *args):
+        """Invoke a JS function on window safely without throwing if not yet ready."""
+        try:
+            fn = getattr(anvil.js.window, fn_name, None)
+            if callable(fn):
+                fn(*args)
+            else:
+                anvil.js.call(fn_name, *args)
+        except Exception:
+            pass
+
+    def close_chat(self):
+        """Close the Walkie Talkie chat popup window."""
+        self.live_popup.visible = False
+        self.is_open = False
+        self._safe_js_call("setWtChatOpenStatus", False)
 
     def start_notification_loop(self):
         self.polling_active=True
@@ -117,11 +142,24 @@ class Main(MainTemplate):
 
     def fab_btn_click(self, **event_args):
         if self.is_open:
-            self.live_popup.visible = False
-            self.is_open=False
+            self.close_chat()
         else:
             self.live_popup.visible = True
-            self.is_open=True
+            self.is_open = True
+            self._safe_js_call("setWtChatOpenStatus", True)
+            self._safe_js_call("clearWtUnreadCount")
+            self._safe_js_call("scrollWtChatToBottom")
+            try:
+                anvil.js.window.setTimeout(
+                    lambda: (
+                        self._safe_js_call("scrollWtChatToBottom"),
+                        anvil.js.window.document.getElementById("wtInputMessage")
+                        and anvil.js.window.document.getElementById("wtInputMessage").focus()
+                    ),
+                    120,
+                )
+            except Exception:
+                pass
         
             
     def refresh(self, **event_args):
@@ -168,9 +206,18 @@ class Main(MainTemplate):
                     
     def load_component(self, cmpt):
         self.column_panel_main.clear()
-        self.column_panel_main.add_component(cmpt,full_width_row=True)
+        self.column_panel_main.add_component(cmpt, full_width_row=True)
+        # Ensure floating chat button and chat popup remain visible across all pages
+        if self.fab_btn not in self.column_panel_main.get_components():
+            self.column_panel_main.add_component(self.fab_btn)
+        if self.live_popup not in self.column_panel_main.get_components():
+            self.column_panel_main.add_component(self.live_popup)
+        self.live_popup.visible = self.is_open
         # Now refresh the page
         self.refresh_data_bindings()
+        self._safe_js_call("updateWtBadgeDisplay")
+        if self.is_open:
+            self._safe_js_call("scrollWtChatToBottom")
         
     def btn_Contact_click(self, **event_args):
         """This method is called when the button is clicked"""
@@ -275,6 +322,9 @@ class Main(MainTemplate):
             anvil.js.window.clearTimeout(self.timeout_id)
             self.timeout_id = None
         self.user = None  # Clear the user reference immediately
+
+        # Explicitly disconnect Walkie Talkie chat on logout
+        self._safe_js_call("disconnectWtChat")
 
         self.highlight_active_button("LOGOUT")
         open_form('LogoutBackground')

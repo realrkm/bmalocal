@@ -58,5 +58,10 @@ class SelfService(SelfServiceTemplate):
         return anvil.server.call("get_parts_and_feedback_by_jobcardref", jobcardref)
 
     def logoutUser(self):
+        try:
+            import anvil.js
+            anvil.js.call("disconnectWtChat")
+        except Exception:
+            pass
         open_form('LogoutBackground')
         anvil.users.logout()

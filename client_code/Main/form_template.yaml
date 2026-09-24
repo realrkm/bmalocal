@@ -46,32 +46,12 @@ components:
         padding: ['4', null, null, 0]
       wrap_on: never
     type: ColumnPanel
-  - components:
-    - layout_properties: {grid_position: 'NYWMEF,UJVUTH'}
-      name: label_1
-      properties:
-        role: [live-dot, assistant-header]
-        text: WALKIE TALKIE
-      type: Label
-    - layout_properties: {grid_position: 'HLAMCA,LPDXWG'}
-      name: lbl_transcript
-      properties:
-        role: [transcript-box, glass-panel]
-        text: |+
-          Waiting ...
-
-
-      type: Label
-    - layout_properties: {grid_position: 'UKUZLM,FASTIO'}
-      name: lbl_status
-      properties:
-        role: [status-bar, glass-panel]
-      type: Label
+  - components: []
     layout_properties: {grid_position: 'CLSJCB,ZSCHZU'}
     name: live_popup
     properties:
-      col_widths: '{"UJVUTH":65}'
-      role: [live-assistant-popup, glass-panel]
+      col_widths: '{}'
+      role: [live-assistant-popup]
     type: ColumnPanel
   layout_properties: {slot: default}
   name: column_panel_main

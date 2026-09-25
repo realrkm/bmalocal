@@ -31,6 +31,18 @@ def ensure_ws_server():
     assert bma.is_port_in_use("127.0.0.1", 8765), "WebSocket server must be listening on port 8765"
 
 
+def _run_async(coro):
+    """Run async coroutine safely even if another framework loop is present in the thread."""
+    try:
+        asyncio.get_running_loop()
+    except RuntimeError:
+        return asyncio.run(coro)
+    else:
+        import concurrent.futures
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+            return executor.submit(asyncio.run, coro).result()
+
+
 def test_ws_connection_and_heartbeat():
     """Verify client can connect over TLS (WSS) and receive pong response from ping."""
     async def run():
@@ -41,7 +53,7 @@ def test_ws_connection_and_heartbeat():
             data = json.loads(raw)
             assert data["type"] == "pong"
 
-    asyncio.run(run())
+    _run_async(run())
 
 
 def test_user_join_and_history_sync():
@@ -70,7 +82,7 @@ def test_user_join_and_history_sync():
             emails = [u["email"] for u in pres["users"]]
             assert "test.mechanic@bmaauto.com" in emails
 
-    asyncio.run(run())
+    _run_async(run())
 
 
 async def recv_type(ws, target_type, timeout=4.0):
@@ -145,7 +157,7 @@ def test_bidirectional_chat_and_mysql_persistence():
             assert read_data_a["last_read_id"] == created_msg_id
             assert read_data_a["user_email"] == "mgr.e2e@bmaauto.com"
 
-    asyncio.run(run())
+    _run_async(run())
 
     # Verify MySQL persistence directly
     assert created_msg_id is not None
@@ -202,7 +214,7 @@ def test_message_edit_workflow():
             assert edit_frame["message"]["message"] == updated_text
             assert edit_frame["message"]["is_edited"] is True
 
-    asyncio.run(run())
+    _run_async(run())
 
     # Verify MySQL reflects the edit
     try:
@@ -259,4 +271,4 @@ def test_client_disconnect_presence_notification():
         finally:
             await ws_listener.close()
 
-    asyncio.run(run())
+    _run_async(run())

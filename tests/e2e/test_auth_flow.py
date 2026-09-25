@@ -1,7 +1,8 @@
+import os
 import pytest
 from playwright.sync_api import Page, expect
 
-BASE_URL = "https://localhost"
+BASE_URL = os.getenv("APP_URL", "http://localhost:5000")
 
 def test_landing_page_branding(page: Page):
     """Verify landing page loads with correct title and branding elements."""

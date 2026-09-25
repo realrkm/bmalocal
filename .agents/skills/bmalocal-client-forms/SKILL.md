@@ -69,7 +69,7 @@ Client validation provides immediate user feedback, but is **never a security bo
 ## 5. Responsiveness & Testability Hooks
 
 - **Responsive Design**: Follow breakpoint guidelines in [bmalocal-ui-ux-responsive](file:///d:/BMAAutoAccessories/venv/Lib/site-packages/BMALocal/.agents/skills/bmalocal-ui-ux-responsive/SKILL.md). Never hardcode pixel widths.
-- **Test Selectors**: Every interactive element (inputs, buttons, tabs) must have a stable text label, accessible name, or `automation_name` for Playwright tests (see [bmalocal-testing-qa](file:///d:/BMAAutoAccessories/venv/Lib/site-packages/BMALocal/.agents/skills/bmalocal-testing-qa/SKILL.md)). Check `e2e/` before renaming critical components.
+- **Test Selectors**: Every interactive element (inputs, buttons, tabs) must have a stable text label, accessible name, or `automation_name` for Playwright tests (see [bmalocal-testing-qa](file:///d:/BMAAutoAccessories/venv/Lib/site-packages/BMALocal/.agents/skills/bmalocal-testing-qa/SKILL.md)). Check `tests/e2e/` before renaming critical components.
 
 ---
 

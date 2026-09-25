@@ -32,23 +32,37 @@ Quality and testing in BMALocal are non-negotiable parts of every change. No fea
  /------------\
 ```
 
+### 2.0 Centralized Test Directory (`tests/`)
+> **STRICT ISOLATION RULE**: All tests, test helpers, fixtures, and browser suites MUST strictly live and be conducted within the root `tests/` folder. Never place test functions, mock endpoints, or experimental validation logic in production code (`server_code/BMALocal.py` or `client_code/`).
+
+```text
+tests/
+├── conftest.py          # Shared pytest fixtures (Anvil environment mocks, browser context)
+├── helpers.py           # Test helper functions, calculation utilities, and mock data generators
+├── unit/                # Unit tests for callables, status machines, and auth gates
+├── integration/         # Integration queries executed against isolated test DB
+└── e2e/                 # Playwright browser journeys (Desktop, Tablet, Mobile)
+```
+
 ### 2.1 Unit Tests (Fast, Run on Every Change)
+- **Location**: `tests/unit/`
 - **Scope**: Server-side business logic in [server_code/BMALocal.py](file:///d:/BMAAutoAccessories/venv/Lib/site-packages/BMALocal/server_code/BMALocal.py) and [server_code/modAnalytics.py](file:///d:/BMAAutoAccessories/venv/Lib/site-packages/BMALocal/server_code/modAnalytics.py).
 - **Target**:
   1. Input validation & sanitization logic.
-  2. Financial calculations (e.g. invoice line item totals, tax calculations, discounts).
+  2. Financial calculations (e.g. invoice line item totals, tax calculations, discounts in `tests/helpers.py`).
   3. Status transition state machines (JobCard: Draft &rarr; In-Service &rarr; Ready for QC &rarr; Completed &rarr; Invoiced).
   4. Authentication & authorization rejections (unauthenticated or unprivileged users).
 - **Conventions**: Documented in [references/unit-test-conventions.md](file:///d:/BMAAutoAccessories/venv/Lib/site-packages/BMALocal/.agents/skills/bmalocal-testing-qa/references/unit-test-conventions.md).
 
 ### 2.2 Integration Tests
+- **Location**: `tests/integration/`
 - Verify SQL queries and transactions against an isolated test database (or SQLite in-memory / mock connection pool).
 - Never run tests against the live production MySQL database (`bmaautoaccessories2017`).
 
 ### 2.3 End-to-End Tests (Playwright)
-- **Location**: `.agents/skills/bmalocal-testing-qa/e2e/` (or project root `e2e/`).
-- **Configuration**: [e2e/playwright.config.ts](file:///d:/BMAAutoAccessories/venv/Lib/site-packages/BMALocal/.agents/skills/bmalocal-testing-qa/e2e/playwright.config.ts) defines projects for Desktop Chromium, Tablet Viewport, and Mobile Viewport.
-- **Coverage Catalog**: Maintained in [references/e2e-test-catalog.md](file:///d:/BMAAutoAccessories/venv/Lib/site-packages/BMALocal/.agents/skills/bmalocal-testing-qa/references/e2e-test-catalog.md).
+- **Location**: `tests/e2e/` (e.g., `tests/e2e/test_auth_flow.py`)
+- **Execution**: Run via `pytest tests/e2e/` using the project virtual environment.
+- **Coverage Catalog**: Maintained in [references/e2e-test-catalog.md](file:///d:/BMAAutoAccessories/venv/Lib/site-packages/BMALocal/.agents/skills/bmalocal-testing-qa/references/e2e-test-catalog.md). Covers Desktop Chromium, Tablet Viewport, and Mobile Viewport.
 
 ---
 

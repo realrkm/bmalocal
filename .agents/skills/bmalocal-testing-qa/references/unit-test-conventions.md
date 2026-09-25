@@ -5,18 +5,22 @@ This document outlines how unit tests are organized, mocked, and executed for BM
 ---
 
 ## 1. Test Directory Structure
+> **STRICT ISOLATION**: All unit tests, test fixtures, calculation helpers, and E2E browser tests must be placed inside the `tests/` folder. Production code (`server_code/BMALocal.py`) must never contain test functions or temporary test endpoints.
 
 ```text
 tests/
-├── conftest.py               # Shared pytest fixtures (mock DB, mock Anvil user)
-├── unit/
+├── conftest.py               # Shared pytest fixtures (mock DB, mock Anvil user, browser args)
+├── helpers.py                # Test helper functions, calculation utilities, and stubs
+├── unit/                     # Unit test suites (pytest)
 │   ├── test_auth.py          # Session and role authorization checks
 │   ├── test_jobcards.py      # JobCard status machines & validations
 │   ├── test_invoices.py      # Invoice tax, line item, and total math
 │   ├── test_walkietalkie.py  # Message formatting and chat helpers
 │   └── test_contacts.py      # Client & technician record validations
-└── integration/
-    └── test_db_queries.py    # Query tests against isolated test schema
+├── integration/              # Integration tests against test schema
+│   └── test_db_queries.py    # Query tests against isolated test schema
+└── e2e/                      # End-to-End browser tests (Playwright)
+    └── test_auth_flow.py     # Authentication, viewport rendering & regression flows
 ```
 
 ---

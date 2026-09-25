@@ -10,6 +10,7 @@ from ..AddSupplier import AddSupplier
 from ..EditAddNewParts import EditAddNewParts
 import anvil.js
 from ..ViewAndUpdateCarPartCategoriesForTechnicianPortal import  ViewAndUpdateCarPartCategoriesForTechnicianPortal
+from .. import ModGetData 
 
 class AddNewParts(AddNewPartsTemplate):
     def __init__(self, isPopup= False, **properties):
@@ -21,8 +22,9 @@ class AddNewParts(AddNewPartsTemplate):
         anvil.js.call('replaceBanner')
         
         # Any code you write here will run before the form opens.
-        self.drop_down_location.items = anvil.server.call("getLocation")
-        self.drop_down_supplier.items = anvil.server.call("getSupplier")
+        self.data = ModGetData.getLocationAndSupplier()
+        self.drop_down_location.items = self.data["locations"]
+        self.drop_down_supplier.items = self.data["suppliers"]
 
         # Disable Close button when form appears under Inventory
         if self.isPopup is False:
@@ -152,8 +154,8 @@ class AddNewParts(AddNewPartsTemplate):
         self.txtSellingPrice.text = ""
         self.txtSellingDiscountedPrice.text = ""
         self.txtReorderLevel.text = ""
-        self.drop_down_location.items = anvil.server.call("getLocation")
-        self.drop_down_supplier.items = anvil.server.call("getSupplier")
+        self.drop_down_location.items = self.data["locations"]
+        self.drop_down_supplier.items = self.data["suppliers"]
         self.refresh()
         self.btn_SaveAndNew.enabled = True
 

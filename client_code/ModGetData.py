@@ -9,6 +9,15 @@ import anvil.js
 # ************************************************* Error Handling Section *******************************
 
 _notification_shown_at = {}  # title -> JS timestamp
+_inventory_dropdown_cache = None
+
+
+
+def getLocationAndSupplier(force_refresh=False):
+    global _inventory_dropdown_cache
+    if _inventory_dropdown_cache is None or force_refresh:
+        _inventory_dropdown_cache = anvil.server.call("getLocationAndSupplier")
+    return _inventory_dropdown_cache
 
 def _show_error(label, message, title="", timeout=5):
     """

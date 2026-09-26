@@ -136,7 +136,7 @@ native_deps:
     <script src="_/theme/password_toggle.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Mozilla+Headline:wght@200..700&display=swap" rel="stylesheet">
+
 
 package_name: BMALocal
 runtime_options:

@@ -1305,10 +1305,12 @@ Font: Mozilla Headline | Proportions: Fixed MD3
 /* ── Custom Font Declaration ───────────────────────────────── */
 @font-face {
     font-family: 'Mozilla Headline';
-    src: url("_/theme/fonts/MozillaHeadline.ttf") format("truetype");
+    src: url("fonts/MozillaHeadline.ttf") format("truetype"),
+         url("/_/theme/fonts/MozillaHeadline.ttf") format("truetype");
     font-weight: normal;
     font-style: normal;
 }
+
 
 /* Fallback for secondary UI elements */
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&display=swap');

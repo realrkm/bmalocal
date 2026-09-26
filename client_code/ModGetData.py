@@ -67,8 +67,8 @@ def handle_server_errors(exc, label):
     else:
         _show_error(
             label=label,
-            message=f"Unexpected error: {exc}",
-            title="Error"
+            message=f"{exc}",
+            title="Issue Detected"
         )
 
 #************************************************* Client Details Section *******************************

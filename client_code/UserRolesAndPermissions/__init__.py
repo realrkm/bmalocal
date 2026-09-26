@@ -137,6 +137,32 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
             Notification("Please select a role before saving permissions.", title="Missing Role", style="danger", timeout=3).show()
             return
 
+        # 1. Resolve role name from dropdown items
+        role_name = None
+        for item in (self.drop_down_selectrole.items or []):
+            if isinstance(item, tuple) and len(item) == 2:
+                if item[1] == role_id:
+                    role_name = item[0]
+                    break
+            elif item == role_id:
+                role_name = item
+                break
+
+        is_admin = (role_name == "Administrator" or role_id == "Administrator")
+
+        # 2. Check if SETTINGS (main checkbox or any sub-permission) is checked
+        settings_selected = self.chk_settings.checked or any(sub.checked for sub in self.sections.get("SETTINGS", []))
+
+        # 3. Restrict SETTINGS to Administrator only
+        if not is_admin and settings_selected:
+            Notification(
+                "The SETTINGS role is restricted to those with Administrator privileges.",
+                title="Permission Restricted",
+                style="danger",
+                timeout=4
+            ).show()
+            return
+
         selected_permissions = {}
 
         # Collect checked states
@@ -163,6 +189,7 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
 
         # Reload Form
         self.reset_form()
+
 
     def btn_ViewRoles_click(self, **event_args):
         """This method is called when the button is clicked"""

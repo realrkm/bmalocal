@@ -5,9 +5,6 @@ import anvil.tables.query as q
 from anvil.tables import app_tables
 import anvil.server
 import anvil.users
-from ..AddNewParts import AddNewParts
-from ..AddMoreStock import AddMoreStock
-from ..StockTake import StockTake
 import anvil.js
 
 
@@ -20,38 +17,44 @@ class Inventory(InventoryTemplate):
         anvil.js.call('replaceBanner')
         
         self.permissions = permissions
+        self._initial_subform_loaded = False
+        self._first_visible = None
 
-        # Apply permissions to buttons and load the first available subform
+        # Apply permissions to buttons
         self.apply_permissions()
 
-    def apply_permissions(self):
-        """Apply only INVENTORY-related permissions and load the first available subform."""
-        inventory_perms = self.permissions.get("INVENTORY", {"main": False, "subs": {}})
+        # Defer loading the subform until after the form is attached
+        self.set_event_handler("show", self.form_show)
 
-        first_visible = None  # track which subform to load first
+    def form_show(self, **event_args):
+        """Loads the first authorized subform once the main Inventory container is mounted."""
+        if not self._initial_subform_loaded:
+            self._initial_subform_loaded = True
+            if self._first_visible:
+                self.show_clicked_button(self._first_visible)
+
+    def apply_permissions(self):
+        """Apply only INVENTORY-related permissions and record the first available subform."""
+        inventory_perms = self.permissions.get("INVENTORY", {"main": False, "subs": {}})
 
         for subsection, value in inventory_perms["subs"].items():
             if subsection == "Add New Parts":
                 self.btn_AddNewParts.visible = value
                 self.btn_AddNewParts.enabled = value
-                if value and first_visible is None:
-                    first_visible = "AddNewParts"
+                if value and self._first_visible is None:
+                    self._first_visible = "AddNewParts"
 
             elif subsection == "Add More Stock":
                 self.btn_AddMoreStock.visible = value
                 self.btn_AddMoreStock.enabled = value
-                if value and first_visible is None:
-                    first_visible = "AddMoreStock"
+                if value and self._first_visible is None:
+                    self._first_visible = "AddMoreStock"
 
             elif subsection == "Stock Taking":
                 self.btn_StockTaking.visible = value
                 self.btn_StockTaking.enabled = value
-                if value and first_visible is None:
-                    first_visible = "StockTaking"
-
-        # Load the first visible subform automatically
-        if first_visible:
-            self.show_clicked_button(first_visible)
+                if value and self._first_visible is None:
+                    self._first_visible = "StockTaking"
 
     # This function is called when Contact form loads or when Save And New button is clicked in the forms loaded in card_2 component
     def show_clicked_button(self, buttonName, **event_args):
@@ -75,6 +78,7 @@ class Inventory(InventoryTemplate):
 
     def btn_AddNewParts_click(self, **event_args):
         """This method is called when the button is clicked"""
+        from ..AddNewParts import AddNewParts
         self.highlight_active_button("ADD NEW PARTS")
         self.card_2.clear()
         self.card_2.add_component(AddNewParts())
@@ -82,6 +86,7 @@ class Inventory(InventoryTemplate):
 
     def btn_AddMoreStock_click(self, **event_args):
         """This method is called when the button is clicked"""
+        from ..AddMoreStock import AddMoreStock
         self.highlight_active_button("ADD MORE STOCK")
         self.card_2.clear()
         self.card_2.add_component(AddMoreStock(), full_width_row=True)
@@ -89,9 +94,8 @@ class Inventory(InventoryTemplate):
 
     def btn_StockTaking_click(self, **event_args):
         """This method is called when the button is clicked"""
+        from ..StockTake import StockTake
         self.highlight_active_button("STOCK TAKE")
         self.card_2.clear()
         self.card_2.add_component(StockTake(), full_width_row=True)
         self.btn_StockTaking.background = "#000000"
-
-    

@@ -1318,7 +1318,7 @@ Font: Mozilla Headline | Proportions: Fixed MD3
 /* ── Global Typography: Apply Mozilla Headline to ALL Components ── */
 html, body,
 .anvil-label, .anvil-label .label-text,
-button, .btn, .anvil-button,
+button, .btn, .anvil-button, .button-text, .btn span,
 input, select, textarea, .form-control, .anvil-dropdown,
 a, a .link-text,
 .checkbox label, .radio label,

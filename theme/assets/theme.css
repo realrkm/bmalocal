@@ -1306,9 +1306,20 @@ Font: Mozilla Headline | Proportions: Fixed MD3
 @font-face {
     font-family: 'Mozilla Headline';
     src: url("/_/theme/fonts/MozillaHeadline.ttf") format("truetype");
-    font-weight: normal;
+    font-weight: 100 900;
     font-style: normal;
+    font-display: swap;
 }
+
+/* Ensure Anvil components styled with Mozilla Headline apply to all inner text */
+.anvil-label[style*="Mozilla Headline"],
+.anvil-label[style*="Mozilla Headline"] .label-text,
+.anvil-label[style*="Mozilla Headline"] span,
+button[style*="Mozilla Headline"],
+.btn[style*="Mozilla Headline"] {
+    font-family: 'Mozilla Headline', sans-serif !important;
+}
+
 
 
 /* Fallback for secondary UI elements */

@@ -1303,6 +1303,10 @@ Font: Mozilla Headline | Proportions: Fixed MD3
 ============================================================ */
 
 /* ── Custom Font Declaration ───────────────────────────────── */
+/* Apply Mozilla Headline globally across all components 
+(labels, buttons, textboxes, dropdowns, links, tables, and headings)
+ without having to manually set font: Mozilla Headline 
+ on every single component in the designer */
 @font-face {
     font-family: 'Mozilla Headline';
     src: url("/_/theme/fonts/MozillaHeadline.ttf") format("truetype");
@@ -1311,14 +1315,25 @@ Font: Mozilla Headline | Proportions: Fixed MD3
     font-display: swap;
 }
 
-/* Ensure Anvil components styled with Mozilla Headline apply to all inner text */
-.anvil-label[style*="Mozilla Headline"],
-.anvil-label[style*="Mozilla Headline"] .label-text,
-.anvil-label[style*="Mozilla Headline"] span,
-button[style*="Mozilla Headline"],
-.btn[style*="Mozilla Headline"] {
+/* ── Global Typography: Apply Mozilla Headline to ALL Components ── */
+html, body,
+.anvil-label, .anvil-label .label-text,
+button, .btn, .anvil-button,
+input, select, textarea, .form-control, .anvil-dropdown,
+a, a .link-text,
+.checkbox label, .radio label,
+.anvil-data-row-panel, .anvil-repeating-panel,
+table, th, td,
+h1, h2, h3, h4, h5, h6,
+.anvil-role-headline, .anvil-role-subheading, .anvil-role-title {
     font-family: 'Mozilla Headline', sans-serif !important;
 }
+
+/* Protect icon fonts from being overridden by the font rule */
+.fa, .glyphicon, .material-icons, [class^="fa-"], [class*=" fa-"] {
+    font-family: FontAwesome !important;
+}
+
 
 
 

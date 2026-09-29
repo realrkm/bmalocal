@@ -52,7 +52,8 @@ class Main(MainTemplate):
             self.polling_active = True
             self.poll_running = False   # ← guard against stacking
             self.timeout_id = None
-            anvil.js.window.setTimeout(self.start_notification_loop, 0)
+            # Defer initial notification poll by 1500ms so dashboard UI paints immediately
+            anvil.js.window.setTimeout(self.start_notification_loop, 1500)
 
             # Trigger an immediate check when user returns to this browser tab
             def _on_visibility_change(*args):
@@ -64,24 +65,9 @@ class Main(MainTemplate):
             except Exception:
                 pass
 
-        # Initialize Walkie Talkie Real-Time Chat
+        # Setup Walkie Talkie Real-Time Chat (lazy-loaded on first click)
+        self.walkie_chat = None
         self.live_popup.clear()
-        user_prof = None
-        if self.user:
-            try:
-                email = self.user["email"] if "email" in self.user else ""
-                role_id = self.user["role_id"] if "role_id" in self.user else None
-                if email:
-                    user_prof = {
-                        "email": email,
-                        "name": email.split("@")[0],
-                        "role_name": "Admin" if role_id == 1 else "Staff",
-                    }
-            except Exception:
-                pass
-        self.walkie_chat = WalkieTalkieChat(user_profile=user_prof, on_close=self.close_chat)
-        self.live_popup.add_component(self.walkie_chat, full_width_row=True)
-
         self.live_popup.visible = False
         self.fab_btn.tooltip = "Walkie Talkie Chat"
         self.fab_btn.enabled = True
@@ -177,6 +163,25 @@ class Main(MainTemplate):
     # ─────────────────────────────────────────────
 
     def fab_btn_click(self, **event_args):
+        if not hasattr(self, "walkie_chat") or self.walkie_chat is None:
+            # Lazy initialize WalkieTalkieChat on first user interaction
+            user_prof = None
+            if self.user:
+                try:
+                    email = self.user.get("email", "") if isinstance(self.user, dict) else (self.user["email"] if "email" in self.user else "")
+                    role_id = self.user.get("role_id") if isinstance(self.user, dict) else (self.user["role_id"] if "role_id" in self.user else None)
+                    if email:
+                        user_prof = {
+                            "email": email,
+                            "name": email.split("@")[0],
+                            "role_name": "Admin" if role_id == 1 else "Staff",
+                        }
+                except Exception:
+                    pass
+            self.walkie_chat = WalkieTalkieChat(user_profile=user_prof, on_close=self.close_chat)
+            self.live_popup.clear()
+            self.live_popup.add_component(self.walkie_chat, full_width_row=True)
+
         if self.is_open:
             self.close_chat()
         else:

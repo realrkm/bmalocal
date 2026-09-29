@@ -8,7 +8,6 @@ from anvil.tables import app_tables
 import anvil.media
 import anvil.js
 from .. import ModGetData
-from ..EditQuote import EditQuote
 from datetime import date
 import time
 

@@ -5,8 +5,6 @@ import anvil.users
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
-from ..UpdateOrderTracking import UpdateOrderTracking
-from ..ViewImportOrderReport import ViewImportOrderReport
 
 
 class OrderTracking(OrderTrackingTemplate):
@@ -188,10 +186,12 @@ class OrderTracking(OrderTrackingTemplate):
 
     def btn_UpdateOrderTracking_click(self, **event_args):
         """This method is called when the button is clicked"""
+        from ..UpdateOrderTracking import UpdateOrderTracking
         alert(content=UpdateOrderTracking(), dismissible=False, large=True, buttons=[])
 
     def btn_OrderReport_click(self, **event_args):
         """This method is called when the button is clicked"""
+        from ..ViewImportOrderReport import ViewImportOrderReport
         alert(content=ViewImportOrderReport(), dismissible=False, large=True, buttons=[])
 
     def drop_down_brand_change(self, **event_args):

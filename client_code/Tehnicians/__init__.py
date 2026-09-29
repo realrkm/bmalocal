@@ -6,8 +6,6 @@ import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
 import anvil.js
-from ..EditTechnician import EditTechnician
-from ..Toolkits import Toolkits
 import re
 
 
@@ -97,8 +95,10 @@ class Tehnicians(TehniciansTemplate):
             
     def btn_EditTechnician_click(self, **event_args):
         """This method is called when the button is clicked"""
+        from ..EditTechnician import EditTechnician
         alert(content=EditTechnician(), buttons=[], dismissible=False,large=True)
 
     def btn_Toolkit_click(self, **event_args):
         """This method is called when the button is clicked"""
+        from ..Toolkits import Toolkits
         alert(content=Toolkits(),buttons=[], dismissible=False,large=True)

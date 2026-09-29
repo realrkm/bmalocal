@@ -1,18 +1,29 @@
+import ipaddress
+import re
+import datetime
+import requests
 import anvil.users
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
 import anvil.server
-#from datetime import datetime, timedelta
 import anvil.tz
-import requests # Import the requests library
-import re # For User-Agent parsing
 from anvil import Media
-import datetime
 
-    
+
+def _is_private_ip(ip_str):
+    """Check if an IP is private, loopback, link-local, or invalid to avoid unnecessary external HTTP calls."""
+    if not ip_str:
+        return True
+    try:
+        ip = ipaddress.ip_address(ip_str)
+        return ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_reserved
+    except ValueError:
+        return True
+
+
 @anvil.server.callable
-def get_stats(user_agent_string=None): # Accept user_agent_string from client
+def get_stats(user_agent_string=None):  # Accept user_agent_string from client
     # --- 1. Get Client IP Address (provided by Anvil) ---
     client_ip = None
     if anvil.server.context.client and anvil.server.context.client.ip:
@@ -27,35 +38,41 @@ def get_stats(user_agent_string=None): # Accept user_agent_string from client
     ip_geo_country = "Unknown"
     ip_geo_city = "Unknown"
     ip_geo_region = "Unknown"
-    ip_geo_coords = "N/A" # Latitude,Longitude from IP
+    ip_geo_coords = "N/A"  # Latitude,Longitude from IP
 
     if client_ip:
-        try:
-            # Using ip-api.com (free for non-commercial use, no key)
-            # You can switch to ipapi.co or another service if you prefer.
-            response = requests.get(f"http://ip-api.com/json/{client_ip}")
-            response.raise_for_status() # Raise an exception for HTTP errors (4xx or 5xx)
-            geo_data = response.json()
+        if _is_private_ip(client_ip):
+            ip_geo_country = "Local Network"
+            ip_geo_city = "LAN"
+            ip_geo_region = "Private Subnet"
+        else:
+            try:
+                # Using ip-api.com (free for non-commercial use, no key) with a strict 2s timeout
+                response = requests.get(f"http://ip-api.com/json/{client_ip}", timeout=2.0)
+                response.raise_for_status()
+                geo_data = response.json()
 
-            if geo_data.get("status") == "success":
-                ip_geo_country = geo_data.get("country", "Unknown")
-                ip_geo_city = geo_data.get("city", "Unknown")
-                ip_geo_region = geo_data.get("regionName", "Unknown")
-                lat = geo_data.get("lat")
-                lon = geo_data.get("lon")
-                if lat is not None and lon is not None:
-                    ip_geo_coords = f"{lat},{lon}"
-            else:
-                print(f"IP Geolocation API error for {client_ip}: {geo_data.get('message', 'Unknown error')}")
+                if geo_data.get("status") == "success":
+                    ip_geo_country = geo_data.get("country", "Unknown")
+                    ip_geo_city = geo_data.get("city", "Unknown")
+                    ip_geo_region = geo_data.get("regionName", "Unknown")
+                    lat = geo_data.get("lat")
+                    lon = geo_data.get("lon")
+                    if lat is not None and lon is not None:
+                        ip_geo_coords = f"{lat},{lon}"
+                else:
+                    print(f"IP Geolocation API error for {client_ip}: {geo_data.get('message', 'Unknown error')}")
 
-        except requests.exceptions.RequestException as e:
-            print(f"Error fetching IP geolocation for {client_ip}: {e}")
-        except ValueError as e: # For JSON decoding errors
-            print(f"Error decoding IP geolocation response for {client_ip}: {e}")
+            except requests.exceptions.Timeout:
+                print(f"IP Geolocation timed out for {client_ip}")
+            except requests.exceptions.RequestException as e:
+                print(f"Error fetching IP geolocation for {client_ip}: {e}")
+            except ValueError as e:  # For JSON decoding errors
+                print(f"Error decoding IP geolocation response for {client_ip}: {e}")
 
-    # --- 4. User-Agent Parsing for OS and Browser (from previous discussion) ---
+    # --- 4. User-Agent Parsing for OS and Browser ---
     operating_system = "Unknown OS"
-    windows_version = "N/A" # To store the specific Windows version
+    windows_version = "N/A"  # To store the specific Windows version
     browser_name = "Unknown Browser"
 
     if user_agent_string:
@@ -93,44 +110,30 @@ def get_stats(user_agent_string=None): # Accept user_agent_string from client
         elif "Trident" in user_agent_string or "MSIE" in user_agent_string:
             browser_name = "Internet Explorer"
 
-    # --- 5. Log to Data Table ---
+    # --- 5. Safely Resolve User Email ---
+    current_user = anvil.users.get_user()
+    user_email = current_user["email"] if current_user and "email" in current_user else "Unknown"
+
+    # --- 6. Log to Data Table ---
     app_tables.tbl_stats.add_row(
         AccessedVia=anvil.server.context.client.type,
-        BrowserProvidedLocation=browser_location, # Rename for clarity
+        BrowserProvidedLocation=browser_location,
         IPAddress=client_ip,
-        IPGeoCountry=ip_geo_country,       # New: IP-based country
-        IPGeoCity=ip_geo_city,             # New: IP-based city
-        IPGeoRegion=ip_geo_region,         # New: IP-based region/state
-        IPGeoCoordinates=ip_geo_coords,    # New: IP-based lat/lon
+        IPGeoCountry=ip_geo_country,
+        IPGeoCity=ip_geo_city,
+        IPGeoRegion=ip_geo_region,
+        IPGeoCoordinates=ip_geo_coords,
         OperatingSystem=operating_system,
         WindowsVersion=windows_version,
         Browser=browser_name,
         UserAgentString=user_agent_string,
-        LoggedDate=(datetime.datetime.now(anvil.tz.tzlocal()) + datetime.timedelta(hours = 3)).strftime("%d-%m-%Y %H:%M:%S") + ' EAT',
-        User=anvil.users.get_user()['email']
+        LoggedDate=(datetime.datetime.now(anvil.tz.tzlocal()) + datetime.timedelta(hours=3)).strftime("%d-%m-%Y %H:%M:%S") + " EAT",
+        User=user_email,
     )
+
 
 @anvil.server.callable()
 def fe_keepalive():
-    if 1 > 0:
-        return "ok"
-    else:
-        return "stop"
-        
-@anvil.server.callable
-def display_result(code):
-    # Handle the scanned barcode (e.g., store it, display it, etc.)
-    print(f"Scanned barcode: {code}")
-    return code
+    """Zero-query lightweight ping for keeping client session alive."""
+    return "ok"
 
-@anvil.server.callable
-def show_error(message):
-    # Display error messages to the user
-    print(f"Error: {message}")
-    anvil.js.window.alert(f"Error: {message}")
-
-@anvil.server.callable
-def log_copy(text):
-    # Log when the user copies the barcode
-    print(f"Copied text: {text}")
-    return True

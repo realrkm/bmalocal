@@ -6,11 +6,6 @@ from anvil.tables import app_tables
 import anvil.server
 import anvil.users
 
-from ..Alerts import Alerts
-from ..IncompleteDefectsInfo import IncompleteDefectsInfo
-from ..ViewTechnicianPortalDetails import ViewTechnicianPortalDetails
-from ..ViewPricingAlertDetails import ViewPricingAlertDetails
-
 
 class NotificationsAndAlerts(NotificationsAndAlertsTemplate):
 
@@ -54,24 +49,28 @@ class NotificationsAndAlerts(NotificationsAndAlertsTemplate):
 
     def btn_alerts_click(self, **event_args):
         """This method is called when the button is clicked"""
+        from ..Alerts import Alerts
         result = alert(content=Alerts(),dismissible=False,large=True)
         if result:
             self.refresh()
             
     def btn_IncompleteDefectsInfo_click(self, **event_args):
         """This method is called when the button is clicked"""
+        from ..IncompleteDefectsInfo import IncompleteDefectsInfo
         result = alert(content=IncompleteDefectsInfo(), dismissible=False,large=True)
         if result:
             self.refresh()
        
     def btn_ViewBuyingPriceExceedsSelling_click(self, **event_args):
         """This method is called when the button is clicked"""
+        from ..ViewPricingAlertDetails import ViewPricingAlertDetails
         result = alert(content=ViewPricingAlertDetails(), dismissible=False, large=True)
         if result:
             self.refresh()
             
     def btn_ViewTechnicianPortalDetails_click(self, **event_args):
         """This method is called when the button is clicked"""
+        from ..ViewTechnicianPortalDetails import ViewTechnicianPortalDetails
         result = alert(content=ViewTechnicianPortalDetails(), dismissible=False,large=True)
         if result:
             self.refresh()

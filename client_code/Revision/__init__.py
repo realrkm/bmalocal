@@ -5,10 +5,6 @@ import anvil.users
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
-from ..InterimQuotation import InterimQuotation
-from ..AmendedInvoice import AmendedInvoice
-from ..RepairPriorities import RepairPriorities
-from ..BrandComparison import BrandComparison
 import anvil.js
 
 class Revision(RevisionTemplate):
@@ -85,6 +81,7 @@ class Revision(RevisionTemplate):
         """This method is called when the button is clicked"""
         self.highlight_active_button("INTERIM QUOTATION")
         self.card_2.clear()
+        from ..InterimQuotation import InterimQuotation
         self.card_2.add_component(InterimQuotation())
         self.btn_InterimQuotation.background = "#000000"
 
@@ -92,6 +89,7 @@ class Revision(RevisionTemplate):
         """This method is called when the button is clicked"""
         self.highlight_active_button("AMENDED INVOICE")
         self.card_2.clear()
+        from ..AmendedInvoice import AmendedInvoice
         self.card_2.add_component(AmendedInvoice())
         self.btn_AmendedInvoice.background = "#000000"
 
@@ -99,6 +97,7 @@ class Revision(RevisionTemplate):
         """This method is called when the button is clicked"""
         self.highlight_active_button("REPAIR PRIORITIES")
         self.card_2.clear()
+        from ..RepairPriorities import RepairPriorities
         self.card_2.add_component(RepairPriorities())
         self.btn_RepairPriorities.background = "#000000"
 
@@ -106,5 +105,6 @@ class Revision(RevisionTemplate):
         """This method is called when the button is clicked"""
         self.highlight_active_button("BRAND COMPARISON")
         self.card_2.clear()
+        from ..BrandComparison import BrandComparison
         self.card_2.add_component(BrandComparison())
         self.btn_BrandComparison.background = "#000000"

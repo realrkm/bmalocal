@@ -47,6 +47,10 @@
         signatureData: '',
         collapseOpen: false,
 
+        // Inspection checklist state (Checked-In jobs only)
+        checklist: null,
+        checklistOpen: false,
+
         // Admin state
         adminClicks: 0,
         adminTimeout: null,
@@ -976,6 +980,212 @@
         }
     }
 
+    // ===========================
+    // INSPECTION CHECKLIST (Checked-In jobs)
+    // ===========================
+    // Each item is an array of parts: a string = label text, an object = inline input.
+    // { f: 'key', w: 'sm' | 'md' | 'lg' }  (sm = numeric reading)
+    const CHECKLIST_SECTIONS = [
+        {
+            id: 'A',
+            title: 'A. SAFETY BEFORE LIFT - MANDATORY (DOSH + KBM 176L)',
+            items: [
+                ['Jack + 2 Jack Stands placed - Photo taken to WhatsApp Group'],
+                ['Wheel chock placed, handbrake ON, battery disconnected if electrical'],
+                ['PPE: Overall, boots, gloves, goggles worn'],
+                ['Customer valuables removed & recorded - Form signed']
+            ]
+        },
+        {
+            id: 'B',
+            title: 'B. CUSTOMER COMPLAINT & DIAGNOSIS (5 mins)',
+            items: [
+                ['Test drive done - Noise/vibration confirmed? Yes/No'],
+                ['ISTA / Diagnostic scan - Fault codes:', { f: 'codes', w: 'md' }, 'Faults cleared after:', { f: 'cleared', w: 'lg' }],
+                ['Yetu/MPesa check - Customer has limit? Offer Yetu payment Yes/No:', { f: 'yetu', w: 'lg' }]
+            ]
+        },
+        {
+            id: 'C',
+            title: 'C. ENGINE & OIL SERVICE',
+            items: [
+                ['Oil level checked - Old oil drained (6.5L F30 / 5.2L E90) - New oil: 5W30/5W40 LL04'],
+                ['Oil filter + O-ring replaced - Torque 25Nm'],
+                ['Air filter / Cabin filter checked - Replaced if dirty'],
+                ['Coolant level / Brake fluid / Power steering / Windscreen wash checked'],
+                ['Drive belt, tensioner, coolant hoses - Cracks? Leaks?:', { f: 'belts', w: 'lg' }],
+                ['Battery test: Voltage', { f: 'volts', w: 'sm' }, 'CCA', { f: 'cca', w: 'sm' }, '- ISTA registration done if new']
+            ]
+        },
+        {
+            id: 'D',
+            title: 'D. UNDER CARRIAGE - COMMON ISSUES',
+            items: [
+                ['Front control arms / Bushes / Ball joints - Play?:', { f: 'arms', w: 'lg' }],
+                ['Rear diff bush, subframe bushes - Common E90/F30 failure'],
+                ['Shock absorbers / Springs - Leaks / Broken:', { f: 'shocks', w: 'lg' }],
+                ['Exhaust mounts, heat shields - Rattles:', { f: 'exhaust', w: 'lg' }],
+                ['Propshaft guibo / Centre bearing - Vibration?:', { f: 'propshaft', w: 'lg' }],
+                ['Oil leaks: Oil filter housing, sump, rocker cover, turbo feed - Capture Photo if leak:', { f: 'leaks', w: 'lg' }]
+            ]
+        },
+        {
+            id: 'E',
+            title: 'E. BRAKES & SUSPENSION (CRITICAL)',
+            items: [
+                ['Front pads thickness', { f: 'fpad', w: 'sm' }, 'mm (min 3mm) - Discs', { f: 'fdisc', w: 'sm' }, 'mm - Sensors replaced'],
+                ['Rear pads', { f: 'rpad', w: 'sm' }, 'mm - Discs', { f: 'rdisc', w: 'sm' }, 'mm - Handbrake shoes check'],
+                ['Brake fluid if > 2 years - DOT4 only - Bleeding sequence done'],
+                ['Tyres: Pressure F', { f: 'pf', w: 'sm' }, 'R', { f: 'pr', w: 'sm' }, 'Tread', { f: 'tread', w: 'sm' }, 'mm - Rotation done - Spare check']
+            ]
+        }
+    ];
+
+    function checklistStorageKey(reg) {
+        return 'bma_inspection_checklist_' + reg;
+    }
+
+    function loadChecklist() {
+        const data = { reg: state.activeReg, checks: {}, fields: {} };
+        try {
+            const raw = localStorage.getItem(checklistStorageKey(state.activeReg));
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                if (parsed && typeof parsed === 'object') {
+                    data.checks = parsed.checks || {};
+                    data.fields = parsed.fields || {};
+                }
+            }
+        } catch (e) {
+            console.warn('Could not load inspection checklist:', e);
+        }
+        state.checklist = data;
+        state.checklistOpen = false;
+    }
+
+    // Lazily (re)loads whenever the active job card changes
+    function getChecklist() {
+        if (!state.checklist || state.checklist.reg !== state.activeReg) {
+            loadChecklist();
+        }
+        return state.checklist;
+    }
+
+    function persistChecklist() {
+        const cl = state.checklist;
+        if (!cl || !cl.reg) return;
+        try {
+            localStorage.setItem(checklistStorageKey(cl.reg), JSON.stringify({ checks: cl.checks, fields: cl.fields }));
+        } catch (e) {
+            console.warn('Could not store inspection checklist:', e);
+        }
+    }
+
+    function resetChecklist() {
+        const reg = state.activeReg;
+        state.checklist = { reg: reg, checks: {}, fields: {} };
+        state.checklistOpen = false;
+        try {
+            if (reg) localStorage.removeItem(checklistStorageKey(reg));
+        } catch (e) { /* storage unavailable */ }
+    }
+
+    function checklistItemId(section, index) {
+        return section.id + (index + 1);
+    }
+
+    function checklistAttr(value) {
+        return sanitizeHTML(String(value == null ? '' : value)).replace(/"/g, '&quot;');
+    }
+
+    function renderChecklistCard() {
+        const service = state.activeServices.find(s => s.jobcardref === state.activeReg);
+        if (!service || service.status !== 'Checked-In') return '';
+
+        const cl = getChecklist();
+        let total = 0;
+        let done = 0;
+
+        const sectionsHTML = CHECKLIST_SECTIONS.map(section => {
+            const ids = section.items.map((_, i) => checklistItemId(section, i));
+            const sectionDone = ids.filter(id => cl.checks[id]).length;
+            total += ids.length;
+            done += sectionDone;
+
+            const masterClass = sectionDone > 0 && sectionDone < ids.length ? 'cl-check partial' : 'cl-check';
+
+            const itemsHTML = section.items.map((parts, i) => {
+                const id = ids[i];
+                const plainLabel = parts.filter(p => typeof p === 'string').join(' ');
+                const body = parts.map(p => {
+                    if (typeof p === 'string') {
+                        return `<label class="cl-text" for="cl-item-${id}">${sanitizeHTML(p)}</label>`;
+                    }
+                    const key = id + '.' + p.f;
+                    return `<input type="text" class="cl-field cl-field-${p.w}" data-cl-field="${key}" ${p.w === 'sm' ? 'inputmode="decimal"' : ''} autocomplete="off" aria-label="${checklistAttr(plainLabel)} (${p.f})" value="${checklistAttr(cl.fields[key])}">`;
+                }).join('');
+                return `
+                    <div class="cl-item">
+                        <input type="checkbox" class="cl-check" id="cl-item-${id}" data-cl-item="${id}" ${cl.checks[id] ? 'checked' : ''}>
+                        <div class="cl-item-body">${body}</div>
+                    </div>`;
+            }).join('');
+
+            return `
+                <section class="cl-section" data-cl-section-wrap="${section.id}">
+                    <div class="cl-section-title">
+                        <input type="checkbox" class="${masterClass}" id="cl-section-${section.id}" data-cl-section="${section.id}" ${sectionDone === ids.length ? 'checked' : ''} aria-label="Select all in ${checklistAttr(section.title)}">
+                        <label for="cl-section-${section.id}">${sanitizeHTML(section.title)}</label>
+                    </div>
+                    <div class="cl-items">${itemsHTML}</div>
+                </section>`;
+        }).join('');
+
+        return `
+        <div id="checklist-card" class="checklist-card ${state.checklistOpen ? 'open' : ''}">
+            <button id="checklist-toggle" type="button" class="checklist-toggle" onclick="toggleChecklist()" aria-expanded="${state.checklistOpen ? 'true' : 'false'}" aria-controls="checklist-body">
+                <span>🧰 Vehicle Inspection Checklist</span>
+                <span class="checklist-toggle-right">
+                    <span id="checklist-progress" class="checklist-progress">${done} / ${total}</span>
+                    <i data-lucide="chevron-down" class="checklist-chevron" aria-hidden="true"></i>
+                </span>
+            </button>
+            <div id="checklist-body" class="checklist-body">
+                <div class="checklist-toolbar">
+                    <button type="button" class="checklist-btn" onclick="setChecklistAll(false)">Uncheck All</button>
+                    <button type="button" class="checklist-btn checklist-btn-primary" onclick="setChecklistAll(true)">Check All</button>
+                </div>
+                ${sectionsHTML}
+            </div>
+        </div>`;
+    }
+
+    // Updates section masters + progress badge in place (keeps focus, no re-render)
+    function refreshChecklistUI() {
+        const cl = state.checklist;
+        const card = document.getElementById('checklist-card');
+        if (!cl || !card) return;
+
+        let total = 0;
+        let done = 0;
+
+        CHECKLIST_SECTIONS.forEach(section => {
+            const ids = section.items.map((_, i) => checklistItemId(section, i));
+            const sectionDone = ids.filter(id => cl.checks[id]).length;
+            total += ids.length;
+            done += sectionDone;
+
+            const master = card.querySelector(`[data-cl-section="${section.id}"]`);
+            if (master) {
+                master.checked = sectionDone === ids.length;
+                master.classList.toggle('partial', sectionDone > 0 && sectionDone < ids.length);
+            }
+        });
+
+        const progress = document.getElementById('checklist-progress');
+        if (progress) progress.textContent = `${done} / ${total}`;
+    }
+
     function renderPartsRequestTab() {
         const totalQuantity = state.cart.reduce((sum, item) => sum + item.quantity, 0);
         const shouldShowCollapse = state.collapseOpen || !!state.signatureData;
@@ -1054,6 +1264,8 @@
                 </div>
             </div>
         </div>
+        
+        ${renderChecklistCard()}
         
         <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); border-radius:1rem; margin-bottom:2rem; border:2px solid rgba(59, 130, 246, 0.2); overflow:hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); padding:2rem;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
@@ -2860,7 +3072,7 @@ function setupListeners() {
 
     window.clearPartsDetails = async () => {
         const confirmed = await customConfirm(
-            'Are you sure you want to clear Tech Notes, List of Defects, Requested Parts, Technician, and Signature?',
+            'Are you sure you want to clear Tech Notes, List of Defects, Requested Parts, Technician, Signature, and Inspection Checklist?',
             'Clear All Details'
         );
 
@@ -2873,6 +3085,7 @@ function setupListeners() {
             state.signatureData = '';
             state.collapseOpen = false;
             state.dataLoadedForReg = null; // ⭐ Reset to allow re-loading data if needed
+            resetChecklist();
             
             const totalQuantity = state.cart.reduce((sum, item) => sum + item.quantity, 0);
             cartCount.innerText = Math.round(totalQuantity);
@@ -3319,6 +3532,62 @@ function setupListeners() {
 
         lucide.createIcons();
     };
+
+    // ---- Inspection checklist handlers ----
+    window.toggleChecklist = () => {
+        const card = document.getElementById('checklist-card');
+        if (!card) return;
+        state.checklistOpen = !state.checklistOpen;
+        card.classList.toggle('open', state.checklistOpen);
+        const btn = document.getElementById('checklist-toggle');
+        if (btn) btn.setAttribute('aria-expanded', state.checklistOpen ? 'true' : 'false');
+    };
+
+    window.setChecklistAll = (checked) => {
+        const cl = getChecklist();
+        CHECKLIST_SECTIONS.forEach(section => {
+            section.items.forEach((_, i) => {
+                const id = checklistItemId(section, i);
+                cl.checks[id] = checked;
+                const box = document.getElementById('cl-item-' + id);
+                if (box) box.checked = checked;
+            });
+        });
+        persistChecklist();
+        refreshChecklistUI();
+    };
+
+    // Delegated so they survive every re-render of the parts tab
+    mainContent.addEventListener('change', (e) => {
+        const target = e.target;
+        if (!(target instanceof HTMLInputElement)) return;
+
+        if (target.dataset.clItem) {
+            getChecklist().checks[target.dataset.clItem] = target.checked;
+            persistChecklist();
+            refreshChecklistUI();
+        } else if (target.dataset.clSection) {
+            const section = CHECKLIST_SECTIONS.find(s => s.id === target.dataset.clSection);
+            if (!section) return;
+            const cl = getChecklist();
+            section.items.forEach((_, i) => {
+                const id = checklistItemId(section, i);
+                cl.checks[id] = target.checked;
+                const box = document.getElementById('cl-item-' + id);
+                if (box) box.checked = target.checked;
+            });
+            persistChecklist();
+            refreshChecklistUI();
+        }
+    });
+
+    mainContent.addEventListener('input', (e) => {
+        const target = e.target;
+        if (target instanceof HTMLInputElement && target.dataset.clField) {
+            getChecklist().fields[target.dataset.clField] = target.value;
+            persistChecklist();
+        }
+    });
 
     // Button listeners
     backBtn.onclick = () => {

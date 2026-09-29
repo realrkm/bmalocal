@@ -16,63 +16,31 @@ class Workflow(WorkflowTemplate):
         # Any code you write here will run before the form opens.
         anvil.js.call('replaceBanner')
         
-        self.load_dashboard_data()
         self.permissions = permissions
 
         # Apply permissions to buttons and load the first available subform
         self.apply_permissions()
-        user = anvil.users.get_user()
+
+        # Defer dashboard metrics fetch so the Workflow UI renders instantly
+        anvil.js.window.setTimeout(self.load_dashboard_data, 10)
                     
     def apply_permissions(self):
-        """Apply only WORKFLOW-related permissions and load the first available subform."""
+        """Apply only WORKFLOW-related permissions and load the available subforms."""
         workflow_perms = self.permissions.get("WORKFLOW", {"main": False, "subs": {}})
+        subs = workflow_perms.get("subs", {})
 
-        first_visible = None  # track which dropdown item to load first
+        statuses = [
+            "Checked In",
+            "Create Quote",
+            "Confirm Quote",
+            "In Service",
+            "Verify Task",
+            "Issue Invoice",
+            "Ready for Pickup"
+        ]
 
-        for subsection, value in workflow_perms["subs"].items():
-            if subsection == "Checked In":
-                if value and first_visible is None:
-                    first_visible = "Checked In"
-                    self.add_item(first_visible)
-                    first_visible = None #Reset to None to enable addition of other items in the dropdown
-
-            elif subsection == "Create Quote":
-                if value and first_visible is None:
-                    first_visible = "Create Quote"
-                    self.add_item(first_visible)
-                    first_visible = None
-                    
-
-            elif subsection == "Confirm Quote":
-                if value and first_visible is None:
-                    first_visible = "Confirm Quote"
-                    self.add_item(first_visible)
-                    first_visible = None
-
-            elif subsection == "In Service":
-                if value and first_visible is None:
-                    first_visible = "In Service"
-                    self.add_item(first_visible)
-                    first_visible = None
-                    
-            elif subsection == "Verify Task":
-                if value and first_visible is None:
-                    first_visible = "Verify Task"
-                    self.add_item(first_visible)
-                    first_visible = None
-
-            elif subsection == "Issue Invoice":
-                if value and first_visible is None:
-                    first_visible = "Issue Invoice"
-                    self.add_item(first_visible)
-                    first_visible = None
-
-            elif subsection == "Ready for Pickup":
-                if value and first_visible is None:
-                    first_visible = "Ready for Pickup"
-                    self.add_item(first_visible)
-                    first_visible = None
-
+        allowed_items = [s for s in statuses if subs.get(s)]
+        self.cmbStatus.items = allowed_items
 
     def add_item(self, new_item):
         items = list(self.cmbStatus.items or [])
@@ -93,16 +61,25 @@ class Workflow(WorkflowTemplate):
         self.load_dashboard_data()
         
     def load_dashboard_data(self):
-        all_data = anvil.server.call_s('get_all_jobcards_by_status')
-        self.label_CheckedIn.text = f"1. Checked In: {len(all_data.get('Checked In', []))}"
-        self.label_CreateQuote.text = f"2. Create Quote: {len(all_data.get('Create Quote', []))}"
-        self.label_ConfirmQuote.text = f"3. Confirm Quote: {len(all_data.get('Confirm Quote', []))}"
-        self.label_InService.text = f"4. In Service: {len(all_data.get('In Service', []))}"
-        self.label_VerifyTask.text = f"5. Verify Task: {len(all_data.get('Verify Task', []))}"
-        self.label_IssueInvoice.text = f"6. Issue Invoice: {len(all_data.get('Issue Invoice', []))}"
-        self.label_ReadyForPickup.text = f"7. Ready for Pickup: {len(all_data.get('Ready for Pickup', []))}"
+        try:
+            with anvil.server.no_loading_indicator:
+                all_data = anvil.server.call_s('get_all_jobcards_by_status') or {}
+                
+                def _get_count(key):
+                    val = all_data.get(key, 0)
+                    return len(val) if isinstance(val, (list, dict, tuple)) else (val or 0)
 
-        self.refresh()
+                self.label_CheckedIn.text = f"1. Checked In: {_get_count('Checked In')}"
+                self.label_CreateQuote.text = f"2. Create Quote: {_get_count('Create Quote')}"
+                self.label_ConfirmQuote.text = f"3. Confirm Quote: {_get_count('Confirm Quote')}"
+                self.label_InService.text = f"4. In Service: {_get_count('In Service')}"
+                self.label_VerifyTask.text = f"5. Verify Task: {_get_count('Verify Task')}"
+                self.label_IssueInvoice.text = f"6. Issue Invoice: {_get_count('Issue Invoice')}"
+                self.label_ReadyForPickup.text = f"7. Ready for Pickup: {_get_count('Ready for Pickup')}"
+
+                self.refresh()
+        except Exception as e:
+            print(f"Workflow load_dashboard_data failed: {e}")
         
     def populateCards(self, status, regNo):
         self.vehicle_repeater.items = []

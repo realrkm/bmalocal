@@ -42,8 +42,9 @@ if (-not (Test-Path $logDir)) {
     New-Item -ItemType Directory -Path $logDir | Out-Null
 }
 
-# 3. Start Anvil App Server
-Write-Host "[2/3] Starting Anvil App Server on port 8080..." -ForegroundColor Cyan
+# 3. Start Anvil App Server with persistent workers and extended timeout
+$env:DOWNLINK_CAN_PERSIST = "true"
+Write-Host "[2/3] Starting Anvil App Server (Persistent Workers Enabled)..." -ForegroundColor Cyan
 Write-Host "      Logs redirected to logs\service_output.log" -ForegroundColor Gray
 
 # If LAN certificates exist, start with HTTPS; otherwise HTTP mode
@@ -52,8 +53,8 @@ $keyFile  = Join-Path $appRoot "cert\192.168.100.12-key.pem"
 
 if ((Test-Path $certFile) -and (Test-Path $keyFile)) {
     Write-Host "[3/3] SSL Certificates detected. Launching in HTTPS mode..." -ForegroundColor Green
-    & anvil-app-server --app . --origin https://192.168.100.12:443 --manual-cert-file $certFile --manual-cert-key-file $keyFile --auto-migrate
+    & anvil-app-server --app . --origin https://192.168.100.12:443 --manual-cert-file $certFile --manual-cert-key-file $keyFile --downlink-worker-timeout 60 --auto-migrate
 } else {
     Write-Host "[3/3] Launching in local HTTP mode (http://localhost:8080)..." -ForegroundColor Green
-    & anvil-app-server --app . --port 8080 --auto-migrate
+    & anvil-app-server --app . --port 8080 --downlink-worker-timeout 60 --auto-migrate
 }

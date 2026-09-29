@@ -143,12 +143,13 @@ def get_stats(user_agent_string=None):  # Accept user_agent_string from client
     current_user = anvil.users.get_user()
     user_email = current_user["email"] if current_user and "email" in current_user else "Unknown"
 
-    # --- 5. Spawn background worker thread so RPC returns immediately (<1ms) ---
-    threading.Thread(
-        target=_record_stats_worker,
-        args=(client_ip, user_agent_string, user_email, accessed_via, browser_location),
-        daemon=True,
-    ).start()
+    # --- 5. Record stats synchronously within the valid Anvil request context ---
+    # Since clients call get_stats with a 4s delay and private/LAN IPs skip external lookups,
+    # this completes in <2ms without invalid context exceptions.
+    try:
+        _record_stats_worker(client_ip, user_agent_string, user_email, accessed_via, browser_location)
+    except Exception as e:
+        print(f"Error in stats logging: {e}")
 
     return "ok"
 

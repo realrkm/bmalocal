@@ -228,12 +228,18 @@ class ConfirmQuote(ConfirmQuoteTemplate):
         self.refresh()
 
     def downloadQuotationPdf(self, jobCardID):
-        media_object = anvil.server.call('createQuotationInvoicePdf', jobCardID, "Confirm Quotation")
-        anvil.media.download(media_object)
-        self.deleteFile(jobCardID, "Confirm Quotation")
+        try:
+            media_object = anvil.server.call('createQuotationInvoicePdf', jobCardID, "Confirm Quotation")
+            anvil.media.download(media_object)
+            self.deleteFile(jobCardID, "Confirm Quotation")
+        except Exception as e:
+            Notification(f"Quotation confirmed, but PDF download could not be completed: {e}", title="Notice", style="warning", timeout=5).show()
 
     def deleteFile(self, jobCardID, docType):
-        anvil.server.call("deleteFile", jobCardID, docType)
+        try:
+            anvil.server.call("deleteFile", jobCardID, docType)
+        except Exception:
+            pass
         
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""

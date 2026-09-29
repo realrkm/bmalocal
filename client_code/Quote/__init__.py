@@ -214,12 +214,24 @@ class Quote(QuoteTemplate):
         jobCardID = self.cmbJobCardRef.selected_value['ID']
         status = self.cmbWorkflow.selected_value
         
+        items_to_save = []
         for row in rows:
             name = row['Name']
             number = row.get('Number', "")
             quantity = None if row.get('Quantity') is None else float(row['Quantity'])
             amount = float(row["Amount"].replace(",", "")) if "," in row["Amount"] else float(row["Amount"])
-            anvil.server.call('saveQuotationPartsAndServices', assignedDate, jobCardID, name, number, quantity, amount)
+            items_to_save.append({
+                'name': name,
+                'number': number,
+                'quantity': quantity,
+                'amount': amount
+            })
+        
+        try:
+            anvil.server.call_s('save_quotation_parts_and_services_batch', assignedDate, jobCardID, items_to_save)
+        except Exception:
+            for it in items_to_save:
+                anvil.server.call('saveQuotationPartsAndServices', assignedDate, jobCardID, it['name'], it['number'], it['quantity'], it['amount'])
         
         anvil.server.call_s('updateJobCardStatus', jobCardID, status)
         if status == "Checked In":
@@ -235,12 +247,18 @@ class Quote(QuoteTemplate):
         self.refresh()
 
     def downloadQuotationPdf(self, jobCardID):
-        media_object = anvil.server.call('createQuotationInvoicePdf', jobCardID, "Quotation")
-        anvil.media.download(media_object)
-        self.deleteFile(jobCardID, "Quotation")
+        try:
+            media_object = anvil.server.call('createQuotationInvoicePdf', jobCardID, "Quotation")
+            anvil.media.download(media_object)
+            self.deleteFile(jobCardID, "Quotation")
+        except Exception as e:
+            Notification(f"PDF download could not be completed: {e}", title="Notice", style="warning", timeout=5).show()
 
     def deleteFile(self, jobCardID, docType):
-        anvil.server.call("deleteFile", jobCardID, docType)
+        try:
+            anvil.server.call("deleteFile", jobCardID, docType)
+        except Exception:
+            pass
 
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""

@@ -39,7 +39,8 @@ class Main(MainTemplate):
                 self.notificationsandalerts = None
 
             user_agent = navigator.userAgent
-            anvil.js.window.setTimeout(lambda: anvil.server.call_s('get_stats', user_agent), 0)
+            # Defer analytics until after the initial UI rendering and notifications settle
+            anvil.js.window.setTimeout(lambda: anvil.server.call_s('get_stats', user_agent), 4000)
 
             ModNavigation.home_form = self
             self.error_label.visible = False

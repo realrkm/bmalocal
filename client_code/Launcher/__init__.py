@@ -25,8 +25,8 @@ class Launcher(LauncherTemplate):
             if self.permissions['TECHNICIAN PORTAL']['main']:
                 open_form('SelfService')
                 user_agent = navigator.userAgent
-                # Now call your server function and pass the user_agent
-                anvil.server.call_s('get_stats', user_agent)
+                # Defer analytics call so it does not block the form transition
+                anvil.js.window.setTimeout(lambda: anvil.server.call_s('get_stats', user_agent), 4000)
                 return
             else:
                 open_form("Main", permissions=self.permissions, user=user)

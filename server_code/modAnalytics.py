@@ -1,6 +1,7 @@
 import ipaddress
 import re
 import datetime
+import threading
 import requests
 import anvil.users
 import anvil.tables as tables
@@ -22,19 +23,8 @@ def _is_private_ip(ip_str):
         return True
 
 
-@anvil.server.callable
-def get_stats(user_agent_string=None):  # Accept user_agent_string from client
-    # --- 1. Get Client IP Address (provided by Anvil) ---
-    client_ip = None
-    if anvil.server.context.client and anvil.server.context.client.ip:
-        client_ip = anvil.server.context.client.ip
-
-    # --- 2. Get Browser-Provided Location (requires user permission) ---
-    browser_location = None
-    if anvil.server.context.client and anvil.server.context.client.location:
-        browser_location = str(anvil.server.context.client.location)
-
-    # --- 3. IP-based Geolocation (using a third-party API) ---
+def _record_stats_worker(client_ip, user_agent_string, user_email, accessed_via, browser_location):
+    """Executes external geolocation request and data table insertion in the background."""
     ip_geo_country = "Unknown"
     ip_geo_city = "Unknown"
     ip_geo_region = "Unknown"
@@ -70,7 +60,7 @@ def get_stats(user_agent_string=None):  # Accept user_agent_string from client
             except ValueError as e:  # For JSON decoding errors
                 print(f"Error decoding IP geolocation response for {client_ip}: {e}")
 
-    # --- 4. User-Agent Parsing for OS and Browser ---
+    # Parse OS and Browser
     operating_system = "Unknown OS"
     windows_version = "N/A"  # To store the specific Windows version
     browser_name = "Unknown Browser"
@@ -110,26 +100,57 @@ def get_stats(user_agent_string=None):  # Accept user_agent_string from client
         elif "Trident" in user_agent_string or "MSIE" in user_agent_string:
             browser_name = "Internet Explorer"
 
-    # --- 5. Safely Resolve User Email ---
+    # Log to Data Table
+    try:
+        app_tables.tbl_stats.add_row(
+            AccessedVia=accessed_via,
+            BrowserProvidedLocation=browser_location,
+            IPAddress=client_ip,
+            IPGeoCountry=ip_geo_country,
+            IPGeoCity=ip_geo_city,
+            IPGeoRegion=ip_geo_region,
+            IPGeoCoordinates=ip_geo_coords,
+            OperatingSystem=operating_system,
+            WindowsVersion=windows_version,
+            Browser=browser_name,
+            UserAgentString=user_agent_string,
+            LoggedDate=(datetime.datetime.now(anvil.tz.tzlocal()) + datetime.timedelta(hours=3)).strftime("%d-%m-%Y %H:%M:%S") + " EAT",
+            User=user_email,
+        )
+    except Exception as e:
+        print(f"Error logging stats to tbl_stats: {e}")
+
+
+@anvil.server.callable
+def get_stats(user_agent_string=None):  # Accept user_agent_string from client
+    """Captures request context synchronously (<1ms) and spawns a background thread to complete logging."""
+    # --- 1. Get Client IP Address (provided by Anvil) ---
+    client_ip = None
+    if anvil.server.context.client and anvil.server.context.client.ip:
+        client_ip = anvil.server.context.client.ip
+
+    # --- 2. Get Browser-Provided Location (requires user permission) ---
+    browser_location = None
+    if anvil.server.context.client and anvil.server.context.client.location:
+        browser_location = str(anvil.server.context.client.location)
+
+    # --- 3. Client Access Type ---
+    accessed_via = "browser"
+    if anvil.server.context.client and hasattr(anvil.server.context.client, "type"):
+        accessed_via = anvil.server.context.client.type
+
+    # --- 4. Safely Resolve User Email ---
     current_user = anvil.users.get_user()
     user_email = current_user["email"] if current_user and "email" in current_user else "Unknown"
 
-    # --- 6. Log to Data Table ---
-    app_tables.tbl_stats.add_row(
-        AccessedVia=anvil.server.context.client.type,
-        BrowserProvidedLocation=browser_location,
-        IPAddress=client_ip,
-        IPGeoCountry=ip_geo_country,
-        IPGeoCity=ip_geo_city,
-        IPGeoRegion=ip_geo_region,
-        IPGeoCoordinates=ip_geo_coords,
-        OperatingSystem=operating_system,
-        WindowsVersion=windows_version,
-        Browser=browser_name,
-        UserAgentString=user_agent_string,
-        LoggedDate=(datetime.datetime.now(anvil.tz.tzlocal()) + datetime.timedelta(hours=3)).strftime("%d-%m-%Y %H:%M:%S") + " EAT",
-        User=user_email,
-    )
+    # --- 5. Spawn background worker thread so RPC returns immediately (<1ms) ---
+    threading.Thread(
+        target=_record_stats_worker,
+        args=(client_ip, user_agent_string, user_email, accessed_via, browser_location),
+        daemon=True,
+    ).start()
+
+    return "ok"
 
 
 @anvil.server.callable()

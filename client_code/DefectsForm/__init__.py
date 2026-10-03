@@ -23,13 +23,10 @@ class DefectsForm(DefectsFormTemplate):
         # Any code you write here will run before the form opens.
         anvil.js.call('replaceBanner')
                
-        self.populateForm(defects_data)
         # Store defects_data for later use
         self.defects_data = defects_data
-    
-        items = anvil.server.call("getStaffAndTechnicianNames")
-        # Convert to a list of (display_text, value) tuples
-        self.drop_down_staff.items = items
+
+        self.populateForm(defects_data)
                 
     def refresh(self, **event_args):
         self.set_event_handler("x-refresh", self.refresh)
@@ -37,25 +34,34 @@ class DefectsForm(DefectsFormTemplate):
 
     def populateForm(self, defects_data, **event_args):
         """This method is called when an item is selected""" 
-        defectListData=anvil.server.call("getDefectsList", defects_data[0]["ID"])
-        #self.txtClientInstructions.text = ModGetData.getJobCardInstructions(defects_data[0]["ID"])
-        #self.txtTechNotes.text = ModGetData.getJobCardTechNotes(defects_data[0]["ID"])
-        #self.txtDefectsList.text = anvil.server.call('getJobCardDefects',defects_data[0]["ID"])
-        #self.txtRequestedParts.text = anvil.server.call('getRequestedParts',defects_data[0]["ID"])
-        if defectListData:
-            self.txtClientInstructions.text = defectListData[0]['Instruction']
-            self.txtTechNotes.text = defectListData[0]['Notes']
-            self.txtDefectsList.text = defectListData[0]['Defects']
-            self.txtPricedDefectsList.text=defectListData[0]['PricedDefects']
-            self.txtTechnicianPortalRequestedParts.text=defectListData[0]["TechnicianPortalRequestedParts"]
-            self.txtRequestedParts.text = defectListData[0]['RequestedParts']
-            self.drop_down_staff.selected_value = defectListData[0]["PreparedByStaff"]
-            self.image_1.source = defectListData[0]["Signature"]
+        if not defects_data or not defects_data[0].get("ID"):
+            return
 
-        if not self.txtClientInstructions.text:
-            getJobCardDetails = anvil.server.call("getJobCardRow", defects_data[0]["ID"])
-            self.txtClientInstructions.text = getJobCardDetails["ClientInstruction"]
-            self.txtTechNotes.text = getJobCardDetails["Notes"]
+        job_id = defects_data[0]["ID"]
+        init_data = anvil.server.call("get_defects_form_init_data", job_id)
+
+        # 1. Populate staff drop-down
+        self.drop_down_staff.items = init_data.get("staff_names", [])
+
+        # 2. Populate defects fields
+        defectListData = init_data.get("defects_list", [])
+        if defectListData:
+            first = defectListData[0]
+            self.txtClientInstructions.text = first.get('Instruction') or ""
+            self.txtTechNotes.text = first.get('Notes') or ""
+            self.txtDefectsList.text = first.get('Defects') or ""
+            self.txtPricedDefectsList.text = first.get('PricedDefects') or ""
+            self.txtTechnicianPortalRequestedParts.text = first.get("TechnicianPortalRequestedParts") or "None"
+            self.txtRequestedParts.text = first.get('RequestedParts') or ""
+            self.drop_down_staff.selected_value = first.get("PreparedByStaff")
+            self.image_1.source = first.get("Signature")
+
+        # 3. Fallback to job card details if instruction was blank
+        if not getattr(self.txtClientInstructions, "text", None):
+            fallback = init_data.get("fallback")
+            if fallback:
+                self.txtClientInstructions.text = fallback.get("ClientInstruction") or ""
+                self.txtTechNotes.text = fallback.get("Notes") or ""
             
         #result = anvil.server.call("getDefectsStaffAndSignature",defects_data[0]["ID"])
         #if result: #Return existing details

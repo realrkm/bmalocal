@@ -250,19 +250,22 @@ class Main(MainTemplate):
                     comp.foreground = "white"
 
     def load_component(self, cmpt):
-        self.column_panel_main.clear()
-        self.column_panel_main.add_component(cmpt, full_width_row=True)
-        # Ensure floating chat button and chat popup remain visible across all pages
-        if self.fab_btn not in self.column_panel_main.get_components():
-            self.column_panel_main.add_component(self.fab_btn)
-        if self.live_popup not in self.column_panel_main.get_components():
-            self.column_panel_main.add_component(self.live_popup)
-        self.live_popup.visible = self.is_open
-        # Now refresh the page
+        # Clear only the inner content panel so fab_btn and live_popup are never unmounted
+        if hasattr(self, "column_panel_content") and self.column_panel_content in self.column_panel_main.get_components():
+            self.column_panel_content.clear()
+            self.column_panel_content.add_component(cmpt, full_width_row=True)
+        else:
+            self.column_panel_main.clear()
+            self.column_panel_main.add_component(cmpt, full_width_row=True)
+            if self.fab_btn not in self.column_panel_main.get_components():
+                self.column_panel_main.add_component(self.fab_btn)
+            if self.live_popup not in self.column_panel_main.get_components():
+                self.column_panel_main.add_component(self.live_popup)
+            self.live_popup.visible = self.is_open
+
+        # Refresh page bindings and keep chat badge in sync
         self.refresh_data_bindings()
         self._safe_js_call("updateWtBadgeDisplay")
-        if self.is_open:
-            self._safe_js_call("scrollWtChatToBottom")
 
     def btn_Contact_click(self, **event_args):
         """This method is called when the button is clicked"""

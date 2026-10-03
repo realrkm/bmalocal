@@ -28,7 +28,15 @@ class Main(MainTemplate):
             self.user = anvil.users.get_user()
 
         if self.user:
-            self.permissions = permissions
+            if permissions is not None:
+                self.permissions = permissions
+            else:
+                # Standalone fallback: fetch only when permissions was not passed at all
+                try:
+                    role_id = self.user.get("role_id") if isinstance(self.user, dict) else None
+                    self.permissions = anvil.server.call("get_user_permissions", role_id) if role_id else {}
+                except Exception:
+                    self.permissions = {}
             self.apply_permissions()
 
             self.notification_label.visible = True

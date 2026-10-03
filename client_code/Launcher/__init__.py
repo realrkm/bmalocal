@@ -27,15 +27,19 @@ class Launcher(LauncherTemplate):
         # Fetch user profile and permissions in a single combined round-trip
         try:
             context = anvil.server.call("get_user_session_context")
-        except Exception as e:
+        except Exception:
             context = None
 
         if context:
             self.permissions = context.get("permissions", {})
             user = context.get("user") or user
         else:
-            # Safe fallback
-            self.permissions = anvil.server.call("get_user_permissions", user["role_id"])
+            # Fallback: attempt single fetch with defensive role_id extraction
+            try:
+                role_id = user.get("role_id") if isinstance(user, dict) else (user["role_id"] if user else None)
+                self.permissions = anvil.server.call("get_user_permissions", role_id) if role_id else {}
+            except Exception:
+                self.permissions = {}
 
         is_technician = (
             (context and context.get("is_technician"))

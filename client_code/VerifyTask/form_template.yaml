@@ -13,7 +13,83 @@ components:
     name: spacer_4
     properties: {height: '11.7'}
     type: Spacer
-  - layout_properties: {grid_position: 'THYELN,ZKCELG'}
+  - components:
+    - layout_properties: {grid_position: 'UHZOQF,OOHFWA'}
+      name: label_final_quality
+      properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Final Quality And Handover *}
+      type: Label
+    - layout_properties: {full_width_row: false, grid_position: 'KEYJOJ,YHEXLV'}
+      name: check_box_1
+      properties: {background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: 'Torque: Wheels 140Nm, Oil drain 25Nm, Filter housing 25Nm'}
+      type: CheckBox
+    - layout_properties: {grid_position: 'RUYDPZ,BBWWEW'}
+      name: check_box_2
+      properties: {background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: 'Road test 5km - No warning lights, no noise, ISTA no faults'}
+      type: CheckBox
+    - layout_properties: {grid_position: 'QXPDLZ,YJIUGT'}
+      name: check_box_3
+      properties: {background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: 'Engine bay cleaned, car washed, vacuumed'}
+      type: CheckBox
+    - layout_properties: {grid_position: 'UFSQFA,LJZFWD'}
+      name: check_box_4
+      properties: {background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Old parts in boot - Shown to customer}
+      type: CheckBox
+    - layout_properties: {grid_position: 'HONBRY,HYFHUG'}
+      name: check_box_5
+      properties: {background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: 'Invoice explained - Yetu/MPesa-Cash / Referral asked: "Who else has BMW?"'}
+      type: CheckBox
+    - layout_properties: {grid_position: 'LRFSWA,PNBUHX'}
+      name: check_box_6
+      properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Next service sticker}
+      type: CheckBox
+    - layout_properties: {grid_position: 'CQUXGV,VTIEON'}
+      name: date_picker_1
+      properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', format: '%d/%m/%Y', placeholder: Select Date}
+      type: DatePicker
+    - layout_properties: {grid_position: 'CQUXGV,CCHXXC'}
+      name: text_box_1
+      properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Next Service Mileage, type: number}
+      type: TextBox
+    - layout_properties: {grid_position: 'CQUXGV,URZJMH'}
+      name: label_1
+      properties: {align: center, background: 'theme:Gray 300', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: WhatsApp follow up in 3 days}
+      type: Label
+    - layout_properties: {grid_position: 'FYNIHK,KPMQJW'}
+      name: label_2
+      properties:
+        align: center
+        background: theme:Gray 300
+        font: Mozilla Headline
+        font_size: 16
+        foreground: '#ff0000'
+        text: |-
+          MANDATORY PHOTOS FOR FILE (3 photos per car):
+
+          1) Car on jack stands  2) Fault/old part  3) Dashboard - no warning lights displayed
+
+          If any box is not ticked - Car does not leave workshop. Advisor must document.
+      type: Label
+    - layout_properties: {grid_position: 'ATZOWK,UBTKXK'}
+      name: date_picker_2
+      properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', format: '%d/%m/%Y', pick_time: true, placeholder: 'Time started:'}
+      type: DatePicker
+    - layout_properties: {grid_position: 'ATZOWK,BKSASI'}
+      name: date_picker_3
+      properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', format: '%d/%m/%Y', pick_time: true, placeholder: 'Time finished:'}
+      type: DatePicker
+    - layout_properties: {grid_position: 'ATZOWK,VJIFWX'}
+      name: label_3
+      properties: {background: 'theme:Gray 300', border: solid, foreground: 'theme:Black', text: 'Total hrs:'}
+      type: Label
+    - layout_properties: {grid_position: 'ATZOWK,XPFSJP'}
+      name: text_box_2
+      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: 'Efficiency: '}
+      type: TextBox
+    layout_properties: {grid_position: 'MHMCVQ,DLSDXU'}
+    name: card_3
+    properties: {border: solid, role: glass-panel}
+    type: ColumnPanel
+  - layout_properties: {grid_position: 'GIQABD,DOXZSJ'}
     name: txtRemarks
     properties: {auto_expand: true, border: solid, font: Mozilla Headline, font_size: 16, placeholder: Enter Confirmation Remarks *}
     type: TextArea
@@ -30,51 +106,6 @@ components:
       name: spacer_5
       properties: {height: 32}
       type: Spacer
-    - components:
-      - layout_properties: {grid_position: 'UHZOQF,OOHFWA'}
-        name: label_final_quality
-        properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Final Quality And Handover *}
-        type: Label
-      - layout_properties: {full_width_row: false, grid_position: 'KEYJOJ,YHEXLV'}
-        name: check_box_1
-        properties: {background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: 'Torque: Wheels 140Nm, Oil drain 25Nm, Filter housing 25Nm'}
-        type: CheckBox
-      - layout_properties: {grid_position: 'RUYDPZ,BBWWEW'}
-        name: check_box_2
-        properties: {background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: 'Road test 5km - No warning lights, no noise, ISTA no faults'}
-        type: CheckBox
-      - layout_properties: {grid_position: 'QXPDLZ,YJIUGT'}
-        name: check_box_3
-        properties: {background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: 'Engine bay cleaned, car washed, vacuumed'}
-        type: CheckBox
-      - layout_properties: {grid_position: 'UFSQFA,LJZFWD'}
-        name: check_box_4
-        properties: {background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Old parts in boot - Shown to customer}
-        type: CheckBox
-      - layout_properties: {grid_position: 'HONBRY,HYFHUG'}
-        name: check_box_5
-        properties: {background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: 'Invoice explained - Yetu/MPesa-Cash / Referral asked: "Who else has BMW?"'}
-        type: CheckBox
-      - layout_properties: {grid_position: 'LRFSWA,PNBUHX'}
-        name: check_box_6
-        properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Next service sticker}
-        type: CheckBox
-      - layout_properties: {grid_position: 'CQUXGV,VTIEON'}
-        name: date_picker_1
-        properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', format: '%d-%m-%Y', placeholder: Select Date}
-        type: DatePicker
-      - layout_properties: {grid_position: 'CQUXGV,CCHXXC'}
-        name: text_box_1
-        properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Next Service Mileage, type: number}
-        type: TextBox
-      - layout_properties: {grid_position: 'CQUXGV,URZJMH'}
-        name: label_1
-        properties: {align: center, background: 'theme:Gray 300', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: WhatsApp follow up in 3 days}
-        type: Label
-      layout_properties: {grid_position: 'SYOGKU,KBMQQL'}
-      name: card_3
-      properties: {border: solid, role: glass-panel}
-      type: ColumnPanel
     - components:
       - layout_properties: {grid_position: 'FTYCAO,CSPJGG'}
         name: label_Workflow
@@ -118,11 +149,11 @@ components:
       name: btn_Close
       properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: Close}
       type: Button
-    layout_properties: {grid_position: 'XZUUES,QUHGQS'}
+    layout_properties: {grid_position: 'VRPCEJ,TAUPOA'}
     name: column_panel_1
     properties: {col_widths: '{"YSQNDF":15,"KQLESU":32,"PLCEPT":13}', role: null}
     type: ColumnPanel
-  layout_properties: {grid_position: 'OJZQEO,AZBHWJ', row_background: ''}
+  layout_properties: {grid_position: 'OJZQEO,QGRERJ'}
   name: card_1
   properties: {border: solid, role: glass-panel}
   type: ColumnPanel

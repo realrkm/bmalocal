@@ -76,29 +76,33 @@ class ProgressTracker(ProgressTrackerTemplate):
             self.label_Owner.text = client["Fullname"]
             self.label_Phone.text = client["Phone"]
 
-            self.populatePaymentDetails(job_id)
+            self.populatePaymentDetails(result)
 
-            if job_card["Status"] == "Ready for Pickup":
-                self.set_progress_state(result["invoice_status"])
-            else:
-                self.set_progress_state(job_card["Status"])
+            effective_status = (
+                result["invoice_status"]
+                if job_card["Status"] == "Ready for Pickup"
+                else job_card["Status"]
+            )
+            self.set_progress_state(
+                effective_status,
+                cancelled_reason=result.get("cancelled_reason", ""),
+            )
 
-    def set_progress_state(self, active_state):
-        # Dictionary mapping states to label components
+    def set_progress_state(self, active_state, cancelled_reason=""):
+        """Highlight the active workflow step and show cancellation reason if needed."""
         status_labels = {
-        "Checked In": self.label_checked_in,
-        "Create Quote": self.label_create_quote,
-        "Confirm Quote": self.label_confirm_quote,
-        "In Service": self.label_in_service,
-        "Verify Task": self.label_verify_task,
-        "Issue Invoice": self.label_issue_invoice,    
-        "Cancel Jobcard": self.label_cancelled,
-        "Pending": self.label_payment_due,
-        "Paid": self.label_payment_done,
-        "Complete": self.label_completed
-    }
+            "Checked In": self.label_checked_in,
+            "Create Quote": self.label_create_quote,
+            "Confirm Quote": self.label_confirm_quote,
+            "In Service": self.label_in_service,
+            "Verify Task": self.label_verify_task,
+            "Issue Invoice": self.label_issue_invoice,
+            "Cancel Jobcard": self.label_cancelled,
+            "Pending": self.label_payment_due,
+            "Paid": self.label_payment_done,
+            "Complete": self.label_completed,
+        }
 
-        # Loop over all labels and set styles
         for status, label in status_labels.items():
             if status == active_state:
                 label.background = "black"
@@ -106,33 +110,34 @@ class ProgressTracker(ProgressTrackerTemplate):
             else:
                 label.background = "white"
                 label.foreground = "black"
-        
+
         if active_state == "Cancel Jobcard":
-            self.text_area_1.text = anvil.server.call("getCancelledJobcardReason", self.drop_down_JobCardRefDetails.selected_value)
+            # Use pre-fetched reason — no extra server call needed
+            self.text_area_1.text = cancelled_reason
             self.text_area_1.visible = True
         else:
-            self.text_area_1.visible=False
+            self.text_area_1.visible = False
             
-    def populatePaymentDetails(self, jobcardID, **event_args):
-        invoice_status = anvil.server.call("getInvoiceStatus", jobcardID)  
-        self.label_Due.text = anvil.server.call('get_invoice_total_by_job_id', jobcardID) 
-        self.label_Paid.text = anvil.server.call('get_previous_payment', jobcardID)
+    def populatePaymentDetails(self, result):
+        """Populate payment labels from pre-fetched tracker data (no server call)."""
+        invoice_status   = result.get("invoice_status")
+        self.label_Due.text  = result.get("invoice_total", 0)
+        self.label_Paid.text = result.get("previous_payment", 0)
 
-        if invoice_status == "Pending": 
+        if invoice_status == "Pending":
             if self.label_Paid.text == 0:
                 self.label_Balance.text = self.label_Due.text
             else:
-                bal = float(self.label_Due.text.replace(",", "")) - float(self.label_Paid.text.replace(",", ""))
+                bal = float(str(self.label_Due.text).replace(",", "")) - float(str(self.label_Paid.text).replace(",", ""))
                 self.label_Balance.text = f"{bal:,.2f}"
-                
-            self.label_Discount.text = 0 #Discount may be issued upon final balance payment  
-            
+            self.label_Discount.text = 0  # Discount may be issued upon final balance payment
+
         elif invoice_status == "Paid":
-            bal = float(self.label_Due.text.replace(",", "")) - float(self.label_Paid.text.replace(",", ""))
-            if bal > 0: #Discount has been issued
+            bal = float(str(self.label_Due.text).replace(",", "")) - float(str(self.label_Paid.text).replace(",", ""))
+            if bal > 0:  # Discount has been issued
                 self.label_Discount.text = f"{bal:,.2f}"
                 self.label_Balance.text = 0
-        elif self.label_Due.text == 0 and self.label_Paid.text == 0: # No invoice has been issued
+        elif self.label_Due.text == 0 and self.label_Paid.text == 0:  # No invoice issued
             self.label_Discount.text = 0
             self.label_Balance.text = 0
         

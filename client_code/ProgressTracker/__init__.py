@@ -56,25 +56,32 @@ class ProgressTracker(ProgressTrackerTemplate):
         if not job_id:
             return
 
-        result = anvil.server.call('getJobCardRow', job_id)
-        if not result:
-            return
+        with anvil.server.no_loading_indicator:
+            result = anvil.server.call(
+                "get_progress_tracker_data",
+                job_id
+            )
 
-        self.label_MakeAndModel.text = result["MakeAndModel"]
-        self.label_Mileage.text = result["Mileage"]
-        self.label_RegNo.text = result["RegNo"]
-        self.label_date_received.text = result["ReceivedDate"]
+            if not result:
+                return
 
-        client_details = anvil.server.call("getClientReport", result["ClientDetails"])
-        self.label_Owner.text = client_details[0]["Fullname"]
-        self.label_Phone.text = client_details[0]["Phone"]
+            job_card = result["job_card"]
+            client = result["client"]
 
-        self.populatePaymentDetails(job_id)
+            self.label_MakeAndModel.text = job_card["MakeAndModel"]
+            self.label_Mileage.text = job_card["Mileage"]
+            self.label_RegNo.text = job_card["RegNo"]
+            self.label_date_received.text = job_card["ReceivedDate"]
 
-        if result["Status"] == "Ready for Pickup":
-            self.set_progress_state(anvil.server.call("getInvoiceStatus", job_id))
-        else:
-            self.set_progress_state(result["Status"])
+            self.label_Owner.text = client["Fullname"]
+            self.label_Phone.text = client["Phone"]
+
+            self.populatePaymentDetails(job_id)
+
+            if job_card["Status"] == "Ready for Pickup":
+                self.set_progress_state(result["invoice_status"])
+            else:
+                self.set_progress_state(job_card["Status"])
 
     def set_progress_state(self, active_state):
         # Dictionary mapping states to label components

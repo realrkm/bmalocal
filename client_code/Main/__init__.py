@@ -28,7 +28,7 @@ class Main(MainTemplate):
             self.user = anvil.users.get_user()
 
         if self.user:
-            self.permissions = permissions or anvil.server.call("get_user_permissions", self.user["role_id"])
+            self.permissions = permissions
             self.apply_permissions()
 
             self.notification_label.visible = True

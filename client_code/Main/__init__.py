@@ -31,12 +31,9 @@ class Main(MainTemplate):
             self.permissions = permissions or anvil.server.call("get_user_permissions", self.user["role_id"])
             self.apply_permissions()
 
-            if self.user['role_id'] == 1:
-                self.refresh()
-            else:
-                self.notification_label.visible = False
-                self.error_label.visible = False
-                self.notificationsandalerts = None
+            self.notification_label.visible = True
+            self.error_label.visible = True   
+            self.notificationsandalerts = None
 
             user_agent = navigator.userAgent
             # Defer analytics until after the initial UI rendering and notifications settle

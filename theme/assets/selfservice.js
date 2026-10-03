@@ -988,7 +988,7 @@
     const CHECKLIST_SECTIONS = [
         {
             id: 'A',
-            title: 'A. SAFETY BEFORE LIFT - MANDATORY (DOSH + KBM 176L)',
+            title: 'A. SAFETY BEFORE LIFT - MANDATORY',
             items: [
                 ['Jack + 2 Jack Stands placed - Photo taken to WhatsApp Group'],
                 ['Wheel chock placed, handbrake ON, battery disconnected if electrical'],
@@ -1000,7 +1000,7 @@
             id: 'B',
             title: 'B. CUSTOMER COMPLAINT & DIAGNOSIS (5 mins)',
             items: [
-                ['Test drive done - Noise/vibration confirmed? Yes/No'],
+                ['Test drive done - Noise/vibration confirmed? Yes/No:', { f: 'noise', w: 'md' }],
                 ['ISTA / Diagnostic scan - Fault codes:', { f: 'codes', w: 'md' }, 'Faults cleared after:', { f: 'cleared', w: 'lg' }],
                 ['Yetu/MPesa check - Customer has limit? Offer Yetu payment Yes/No:', { f: 'yetu', w: 'lg' }]
             ]

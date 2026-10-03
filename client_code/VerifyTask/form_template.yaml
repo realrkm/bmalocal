@@ -79,7 +79,7 @@ components:
       type: DatePicker
     - layout_properties: {grid_position: 'ATZOWK,VJIFWX'}
       name: label_3
-      properties: {background: 'theme:Gray 300', border: solid, foreground: 'theme:Black', text: 'Total hrs:'}
+      properties: {background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: 'Total hrs:'}
       type: Label
     - layout_properties: {grid_position: 'ATZOWK,XPFSJP'}
       name: text_box_2

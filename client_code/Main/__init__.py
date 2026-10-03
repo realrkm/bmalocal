@@ -71,7 +71,6 @@ class Main(MainTemplate):
                 pass
 
         # Setup Walkie Talkie Real-Time Chat
-        self.walkie_chat = None
         self.live_popup.clear()
         self.live_popup.visible = False
         self.fab_btn.tooltip = "Walkie Talkie Chat"
@@ -79,7 +78,8 @@ class Main(MainTemplate):
         self.is_open = False
         self._safe_js_call("setWtChatOpenStatus", False)
 
-        # Immediately connect logged-in user to Walkie Talkie WebSocket so incoming messages & badges work
+        # Build user profile for chat
+        user_prof = None
         if self.user:
             try:
                 email = self.user.get("email", "") if isinstance(self.user, dict) else (self.user["email"] if "email" in self.user else "")
@@ -93,6 +93,16 @@ class Main(MainTemplate):
                     self._safe_js_call("setWtCurrentUser", user_prof)
             except Exception as e:
                 print("Error registering WT current user on login:", e)
+
+        # Eagerly mount WalkieTalkieChat into self.live_popup (hidden) so DOM elements (#wtMessagesBody, etc.)
+        # are immediately ready on login. This ensures offline/unread message badges display on the FAB
+        # without requiring the user to click the FAB first, and makes opening chat instant.
+        try:
+            self.walkie_chat = WalkieTalkieChat(user_profile=user_prof, on_close=self.close_chat)
+            self.live_popup.add_component(self.walkie_chat, full_width_row=True)
+        except Exception as e:
+            print("Error initializing WalkieTalkieChat on login:", e)
+            self.walkie_chat = None
 
         self._safe_js_call("updateWtBadgeDisplay")
 

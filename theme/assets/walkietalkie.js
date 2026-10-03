@@ -11,6 +11,7 @@
     let isConnected = false;
     let unreadCount = 0;
     let isChatPopupOpen = false;
+    let latestMessagesHistory = [];
 
     // Default user state: null until explicitly set on authenticated login
     window.wtCurrentUser = window.wtCurrentUser || null;
@@ -87,13 +88,20 @@
 
     function getHighestMessageId() {
         const els = initElements();
-        if (!els.body) return 0;
-        const rows = els.body.querySelectorAll(".wt-message-row[data-msg-id]");
         let maxId = 0;
-        rows.forEach(r => {
-            const id = parseInt(r.getAttribute("data-msg-id"), 10) || 0;
-            if (id > maxId) maxId = id;
-        });
+        if (els.body) {
+            const rows = els.body.querySelectorAll(".wt-message-row[data-msg-id]");
+            rows.forEach(r => {
+                const id = parseInt(r.getAttribute("data-msg-id"), 10) || 0;
+                if (id > maxId) maxId = id;
+            });
+        }
+        if (maxId === 0 && latestMessagesHistory && latestMessagesHistory.length > 0) {
+            latestMessagesHistory.forEach(msg => {
+                const id = parseInt(msg.id, 10) || 0;
+                if (id > maxId) maxId = id;
+            });
+        }
         return maxId;
     }
 
@@ -127,7 +135,26 @@
 
         const effectiveLastRead = typeof customLastReadId === "number" ? customLastReadId : getLocalLastReadId(myEmail);
         const els = initElements();
-        if (!els.body) return;
+        if (!els.body) {
+            if (latestMessagesHistory && latestMessagesHistory.length > 0) {
+                let unread = 0;
+                latestMessagesHistory.forEach(msg => {
+                    if (isSelf(msg)) return;
+                    const msgId = parseInt(msg.id, 10) || 0;
+                    if (effectiveLastRead > 0) {
+                        if (msgId > effectiveLastRead) unread++;
+                    } else if (msg.created_at) {
+                        const msgTime = new Date(msg.created_at).getTime();
+                        if (!isNaN(msgTime) && (Date.now() - msgTime) < 24 * 3600 * 1000) {
+                            unread++;
+                        }
+                    }
+                });
+                unreadCount = unread;
+                updateBadgeDisplay();
+            }
+            return;
+        }
 
         const rows = els.body.querySelectorAll(".wt-message-row[data-msg-id]");
         let unread = 0;
@@ -162,6 +189,10 @@
             const maxId = getHighestMessageId();
             if (maxId > 0) {
                 sendMarkRead(maxId);
+            }
+            const els = initElements();
+            if (els.body && els.body.querySelectorAll(".wt-message-row").length === 0 && latestMessagesHistory.length > 0) {
+                renderHistory(latestMessagesHistory);
             }
             if (typeof window.scrollWtChatToBottom === "function") {
                 window.scrollWtChatToBottom();
@@ -645,35 +676,15 @@
     }
 
     function renderHistory(messages, serverLastReadId) {
-        const els = initElements();
-        if (!els.body) return;
-
-        // Clear existing message rows
-        els.body.innerHTML = "";
-        lastRenderedDate = null;
-
-        if (!messages || messages.length === 0) {
-            const empty = document.createElement("div");
-            empty.id = "wtEmptyState";
-            empty.className = "wt-empty-state";
-            empty.innerHTML = `
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                </svg>
-                <span>No messages yet. Send a message to start!</span>
-            `;
-            els.body.appendChild(empty);
-            setTimeout(stopRefreshSpin, 400);
-            return;
+        if (Array.isArray(messages)) {
+            latestMessagesHistory = messages;
         }
 
-        messages.forEach(msg => renderMessage(msg));
-        scrollToBottom();
-        setTimeout(stopRefreshSpin, 400);
-
-        // Process unread messages received while logged out / offline
+        // 1. Process unread messages received while logged out / offline FIRST
+        // This ensures the FAB notification badge is immediately displayed upon login,
+        // even before the chat popup elements are rendered or opened!
         const myEmail = getMyEmail();
-        if (myEmail) {
+        if (myEmail && messages && messages.length > 0) {
             const sLastRead = typeof serverLastReadId === "number" ? serverLastReadId : 0;
             const lLastRead = getLocalLastReadId(myEmail);
             const effectiveLastRead = Math.max(sLastRead, lLastRead);
@@ -715,6 +726,33 @@
                 updateBadgeDisplay();
             }
         }
+
+        // 2. Render messages into DOM if chat body exists
+        const els = initElements();
+        if (!els.body) return;
+
+        // Clear existing message rows
+        els.body.innerHTML = "";
+        lastRenderedDate = null;
+
+        if (!messages || messages.length === 0) {
+            const empty = document.createElement("div");
+            empty.id = "wtEmptyState";
+            empty.className = "wt-empty-state";
+            empty.innerHTML = `
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <span>No messages yet. Send a message to start!</span>
+            `;
+            els.body.appendChild(empty);
+            setTimeout(stopRefreshSpin, 400);
+            return;
+        }
+
+        messages.forEach(msg => renderMessage(msg));
+        scrollToBottom();
+        setTimeout(stopRefreshSpin, 400);
     }
 
     // Public method callable from Anvil Python or fallback
@@ -773,6 +811,9 @@
                 if (data.type === "history") {
                     renderHistory(data.messages, data.last_read_id);
                 } else if (data.type === "message") {
+                    if (data.message) {
+                        latestMessagesHistory.push(data.message);
+                    }
                     renderMessage(data.message);
 
                     if (isSelf(data.message)) {

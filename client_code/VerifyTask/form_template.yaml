@@ -20,27 +20,27 @@ components:
       type: Label
     - layout_properties: {full_width_row: false, grid_position: 'KEYJOJ,YHEXLV'}
       name: check_box_1
-      properties: {background: '', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: 'Torque: Wheels 140Nm, Oil drain 25Nm, Filter housing 25Nm'}
+      properties: {background: 'theme:Gray 800', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: 'Torque: Wheels 140Nm, Oil drain 25Nm, Filter housing 25Nm'}
       type: CheckBox
     - layout_properties: {grid_position: 'RUYDPZ,BBWWEW'}
       name: check_box_2
-      properties: {background: '', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: 'Road test 5km - No warning lights, no noise, ISTA no faults'}
+      properties: {background: 'theme:Gray 800', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: 'Road test 5km - No warning lights, no noise, ISTA no faults'}
       type: CheckBox
     - layout_properties: {grid_position: 'QXPDLZ,YJIUGT'}
       name: check_box_3
-      properties: {background: '', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: 'Engine bay cleaned, car washed, vacuumed'}
+      properties: {background: 'theme:Gray 800', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: 'Engine bay cleaned, car washed, vacuumed'}
       type: CheckBox
     - layout_properties: {grid_position: 'UFSQFA,LJZFWD'}
       name: check_box_4
-      properties: {background: '', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Old parts in boot - Shown to customer}
+      properties: {background: 'theme:Gray 800', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Old parts in boot - Shown to customer}
       type: CheckBox
     - layout_properties: {grid_position: 'HONBRY,HYFHUG'}
       name: check_box_5
-      properties: {background: '', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: 'Invoice explained - Yetu/MPesa-Cash / Referral asked: "Who else has BMW?"'}
+      properties: {background: 'theme:Gray 800', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: 'Invoice explained - Yetu/MPesa-Cash / Referral asked: "Who else has BMW?"'}
       type: CheckBox
     - layout_properties: {grid_position: 'LRFSWA,PNBUHX'}
       name: check_box_6
-      properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Next service sticker}
+      properties: {align: center, background: 'theme:Gray 800', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: Next service sticker}
       type: CheckBox
     - layout_properties: {grid_position: 'CQUXGV,VTIEON'}
       name: date_picker_1

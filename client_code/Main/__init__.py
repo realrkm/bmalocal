@@ -70,7 +70,7 @@ class Main(MainTemplate):
             except Exception:
                 pass
 
-        # Setup Walkie Talkie Real-Time Chat (lazy-loaded on first click)
+        # Setup Walkie Talkie Real-Time Chat
         self.walkie_chat = None
         self.live_popup.clear()
         self.live_popup.visible = False
@@ -78,6 +78,22 @@ class Main(MainTemplate):
         self.fab_btn.enabled = True
         self.is_open = False
         self._safe_js_call("setWtChatOpenStatus", False)
+
+        # Immediately connect logged-in user to Walkie Talkie WebSocket so incoming messages & badges work
+        if self.user:
+            try:
+                email = self.user.get("email", "") if isinstance(self.user, dict) else (self.user["email"] if "email" in self.user else "")
+                role_id = self.user.get("role_id") if isinstance(self.user, dict) else (self.user["role_id"] if "role_id" in self.user else None)
+                if email:
+                    user_prof = {
+                        "email": email,
+                        "name": email.split("@")[0],
+                        "role_name": "Admin" if role_id == 1 else "Staff",
+                    }
+                    self._safe_js_call("setWtCurrentUser", user_prof)
+            except Exception as e:
+                print("Error registering WT current user on login:", e)
+
         self._safe_js_call("updateWtBadgeDisplay")
 
     def _safe_js_call(self, fn_name, *args):

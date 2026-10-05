@@ -47,7 +47,7 @@
         signatureData: '',
         collapseOpen: false,
 
-        // Inspection checklist state (Checked-In jobs only)
+        // Inspection checklist state (Checked-In / Create Quote / Confirm Quote)
         checklist: null,
         checklistOpen: false,
 
@@ -981,7 +981,7 @@
     }
 
     // ===========================
-    // INSPECTION CHECKLIST (Checked-In jobs)
+    // INSPECTION CHECKLIST (Checked-In, Create Quote, Confirm Quote jobs)
     // ===========================
     // Each item is an array of parts: a string = label text, an object = inline input.
     // { f: 'key', w: 'sm' | 'md' | 'lg' }  (sm = numeric reading)
@@ -1040,6 +1040,9 @@
             ]
         }
     ];
+
+    // Job statuses whose Review form shows the checklist
+    const CHECKLIST_STATUSES = ['Checked-In', 'Create Quote', 'Confirm Quote'];
 
     function checklistStorageKey(reg) {
         return 'bma_inspection_checklist_' + reg;
@@ -1100,7 +1103,7 @@
 
     function renderChecklistCard() {
         const service = state.activeServices.find(s => s.jobcardref === state.activeReg);
-        if (!service || service.status !== 'Checked-In') return '';
+        if (!service || !CHECKLIST_STATUSES.includes(service.status)) return '';
 
         const cl = getChecklist();
         let total = 0;

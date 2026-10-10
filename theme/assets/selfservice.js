@@ -1000,9 +1000,9 @@
             id: 'B',
             title: 'B. CUSTOMER COMPLAINT & DIAGNOSIS (5 mins)',
             items: [
-                ['Test drive done - Noise/vibration confirmed? Yes/No:', { f: 'noise', w: 'md' }],
-                ['ISTA / Diagnostic scan - Fault codes:', { f: 'codes', w: 'md' }, 'Faults cleared after:', { f: 'cleared', w: 'lg' }],
-                ['Yetu/MPesa check - Customer has limit? Offer Yetu payment Yes/No:', { f: 'yetu', w: 'lg' }]
+                ['Test drive done - Noise/vibration confirmed? Yes/No:', { f: 'noise', w: 'md', l: 'Noise/vibration confirmed (Yes/No)' }],
+                ['ISTA / Diagnostic scan - Fault codes:', { f: 'codes', w: 'md', l: 'Fault codes' }, 'Faults cleared after:', { f: 'cleared', w: 'lg', l: 'Faults cleared after' }],
+                ['Yetu/MPesa check - Customer has limit? Offer Yetu payment Yes/No:', { f: 'yetu', w: 'lg', l: 'Yetu/MPesa limit / payment offered' }]
             ]
         },
         {
@@ -1013,30 +1013,30 @@
                 ['Oil filter + O-ring replaced - Torque 25Nm'],
                 ['Air filter / Cabin filter checked - Replaced if dirty'],
                 ['Coolant level / Brake fluid / Power steering / Windscreen wash checked'],
-                ['Drive belt, tensioner, coolant hoses - Cracks? Leaks?:', { f: 'belts', w: 'lg' }],
-                ['Battery test: Voltage', { f: 'volts', w: 'sm' }, 'CCA', { f: 'cca', w: 'sm' }, '- ISTA registration done if new']
+                ['Drive belt, tensioner, coolant hoses - Cracks? Leaks?:', { f: 'belts', w: 'lg', l: 'Drive belt, tensioner, hoses' }],
+                ['Battery test: Voltage', { f: 'volts', w: 'sm', l: 'Battery voltage' }, 'CCA', { f: 'cca', w: 'sm', l: 'Battery CCA' }, '- ISTA registration done if new']
             ]
         },
         {
             id: 'D',
             title: 'D. UNDER CARRIAGE - COMMON ISSUES',
             items: [
-                ['Front control arms / Bushes / Ball joints - Play?:', { f: 'arms', w: 'lg' }],
+                ['Front control arms / Bushes / Ball joints - Play?:', { f: 'arms', w: 'lg', l: 'Control arms / bushes / ball joints' }],
                 ['Rear diff bush, subframe bushes - Common E90/F30 failure'],
-                ['Shock absorbers / Springs - Leaks / Broken:', { f: 'shocks', w: 'lg' }],
-                ['Exhaust mounts, heat shields - Rattles:', { f: 'exhaust', w: 'lg' }],
-                ['Propshaft guibo / Centre bearing - Vibration?:', { f: 'propshaft', w: 'lg' }],
-                ['Oil leaks: Oil filter housing, sump, rocker cover, turbo feed - Capture Photo if leak:', { f: 'leaks', w: 'lg' }]
+                ['Shock absorbers / Springs - Leaks / Broken:', { f: 'shocks', w: 'lg', l: 'Shock absorbers / springs' }],
+                ['Exhaust mounts, heat shields - Rattles:', { f: 'exhaust', w: 'lg', l: 'Exhaust mounts / heat shields' }],
+                ['Propshaft guibo / Centre bearing - Vibration?:', { f: 'propshaft', w: 'lg', l: 'Propshaft guibo / centre bearing' }],
+                ['Oil leaks: Oil filter housing, sump, rocker cover, turbo feed - Capture Photo if leak:', { f: 'leaks', w: 'lg', l: 'Oil leaks' }]
             ]
         },
         {
             id: 'E',
             title: 'E. BRAKES & SUSPENSION (CRITICAL)',
             items: [
-                ['Front pads thickness', { f: 'fpad', w: 'sm' }, 'mm (min 3mm) - Discs', { f: 'fdisc', w: 'sm' }, 'mm - Sensors replaced'],
-                ['Rear pads', { f: 'rpad', w: 'sm' }, 'mm - Discs', { f: 'rdisc', w: 'sm' }, 'mm - Handbrake shoes check'],
+                ['Front pads thickness', { f: 'fpad', w: 'sm', l: 'Front pads thickness (mm)' }, 'mm (min 3mm) - Discs', { f: 'fdisc', w: 'sm', l: 'Front discs (mm)' }, 'mm - Sensors replaced'],
+                ['Rear pads', { f: 'rpad', w: 'sm', l: 'Rear pads (mm)' }, 'mm - Discs', { f: 'rdisc', w: 'sm', l: 'Rear discs (mm)' }, 'mm - Handbrake shoes check'],
                 ['Brake fluid if > 2 years - DOT4 only - Bleeding sequence done'],
-                ['Tyres: Pressure F', { f: 'pf', w: 'sm' }, 'R', { f: 'pr', w: 'sm' }, 'Tread', { f: 'tread', w: 'sm' }, 'mm - Rotation done - Spare check']
+                ['Tyres: Pressure F', { f: 'pf', w: 'sm', l: 'Tyre pressure - front' }, 'R', { f: 'pr', w: 'sm', l: 'Tyre pressure - rear' }, 'Tread', { f: 'tread', w: 'sm', l: 'Tyre tread (mm)' }, 'mm - Rotation done - Spare check']
             ]
         }
     ];
@@ -1101,9 +1101,128 @@
     // Statuses whose Parts Request tab shows the checklist (Review and Work Done entry points)
     const CHECKLIST_STATUSES = ['Checked-In', 'Create Quote', 'Confirm Quote', 'In-Service'];
 
-    function renderChecklistCard() {
+    function checklistApplies() {
         const service = state.activeServices.find(s => s.jobcardref === state.activeReg);
-        if (!service || !CHECKLIST_STATUSES.includes(service.status)) return '';
+        return !!service && CHECKLIST_STATUSES.includes(service.status);
+    }
+
+    // Pulls whatever is currently on screen into state (covers browser autofill etc.)
+    function syncChecklistFromDOM() {
+        const card = document.getElementById('checklist-card');
+        if (!card) return;
+        const cl = getChecklist();
+        card.querySelectorAll('[data-cl-item]').forEach(box => { cl.checks[box.dataset.clItem] = box.checked; });
+        card.querySelectorAll('[data-cl-field]').forEach(input => { cl.fields[input.dataset.clField] = input.value; });
+        persistChecklist();
+    }
+
+    function shortChecklistText(text) {
+        return text.length > 60 ? text.slice(0, 57).trim() + '...' : text;
+    }
+
+    /**
+     * Builds the list sent to the server and the list of missing checkboxes / fields.
+     * list item: { id, section, section_title, item, checked, fields: [{ name, label, value }] }
+     */
+    function buildChecklistPayload() {
+        const result = { list: [], missing: [] };
+        if (!checklistApplies()) return result;
+
+        syncChecklistFromDOM();
+        const cl = getChecklist();
+
+        CHECKLIST_SECTIONS.forEach(section => {
+            section.items.forEach((parts, i) => {
+                const id = checklistItemId(section, i);
+                const description = parts.filter(p => typeof p === 'string').join(' ').replace(/\s+/g, ' ').trim();
+                const checked = !!cl.checks[id];
+                const fields = [];
+
+                if (!checked) {
+                    result.missing.push({
+                        type: 'checkbox',
+                        id: id,
+                        message: `${id}: Select the checkbox - "${shortChecklistText(description)}"`
+                    });
+                }
+
+                parts.forEach(p => {
+                    if (typeof p === 'string') return;
+                    const key = id + '.' + p.f;
+                    const value = String(cl.fields[key] == null ? '' : cl.fields[key]).trim();
+                    fields.push({ name: p.f, label: p.l, value: value });
+                    if (!value) {
+                        result.missing.push({
+                            type: 'field',
+                            id: id,
+                            key: key,
+                            message: `${id}: Fill in "${p.l}"`
+                        });
+                    }
+                });
+
+                result.list.push({
+                    id: id,
+                    section: section.id,
+                    section_title: section.title,
+                    item: description,
+                    checked: checked,
+                    fields: fields
+                });
+            });
+        });
+
+        return result;
+    }
+
+    function formatChecklistErrors(missing) {
+        const boxes = missing.filter(m => m.type === 'checkbox').length;
+        const fields = missing.length - boxes;
+        const summary = [];
+        if (boxes) summary.push(`${boxes} checkbox${boxes > 1 ? 'es' : ''} not selected`);
+        if (fields) summary.push(`${fields} field${fields > 1 ? 's' : ''} empty`);
+
+        const MAX_SHOWN = 8;
+        const lines = [`• Vehicle Inspection Checklist is incomplete (${summary.join(', ')}):`];
+        missing.slice(0, MAX_SHOWN).forEach(m => lines.push('   – ' + m.message));
+        if (missing.length > MAX_SHOWN) {
+            lines.push(`   …and ${missing.length - MAX_SHOWN} more (highlighted in red in the checklist)`);
+        }
+        return lines;
+    }
+
+    // Opens the checklist, marks what is missing and jumps to the first one
+    function highlightChecklistMissing(missing) {
+        const card = document.getElementById('checklist-card');
+        if (!card || !missing.length) return;
+
+        card.querySelectorAll('.cl-missing').forEach(el => el.classList.remove('cl-missing'));
+
+        state.checklistOpen = true;
+        card.classList.add('open');
+        const toggle = document.getElementById('checklist-toggle');
+        if (toggle) toggle.setAttribute('aria-expanded', 'true');
+
+        let first = null;
+        missing.forEach(m => {
+            const el = m.type === 'checkbox'
+                ? (card.querySelector('#cl-item-' + m.id) || {}).parentElement
+                : card.querySelector(`[data-cl-field="${m.key}"]`);
+            if (el) {
+                el.classList.add('cl-missing');
+                if (!first) first = el;
+            }
+        });
+
+        if (first) {
+            first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            const focusTarget = first.matches('input') ? first : first.querySelector('input');
+            if (focusTarget) focusTarget.focus({ preventScroll: true });
+        }
+    }
+
+    function renderChecklistCard() {
+        if (!checklistApplies()) return '';
 
         const cl = getChecklist();
         let total = 0;
@@ -3131,12 +3250,21 @@ function setupListeners() {
             errors.push('• Signature is required');
         }
 
+        // ⭐ Vehicle Inspection Checklist: every checkbox ticked and every field filled
+        const checklistResult = buildChecklistPayload();
+        if (checklistResult.missing.length > 0) {
+            errors.push(...formatChecklistErrors(checklistResult.missing));
+        }
+
         // ⭐ Show alert if ANY validation fails
         if (errors.length > 0) {
             await customAlert(
                 'Please complete the following:\n\n' + errors.join('\n'),
                 '⚠️ Missing Required Fields'
             );
+
+            // Open the checklist and highlight what is still missing
+            highlightChecklistMissing(checklistResult.missing);
             return; // Stop execution
         }
 
@@ -3160,7 +3288,8 @@ function setupListeners() {
                 defectListValue, 
                 partsAndQuantities,
                 state.selectedTechnician,
-                signature
+                signature,
+                checklistResult.list
             );
 
             await customAlert(
@@ -3553,7 +3682,10 @@ function setupListeners() {
                 const id = checklistItemId(section, i);
                 cl.checks[id] = checked;
                 const box = document.getElementById('cl-item-' + id);
-                if (box) box.checked = checked;
+                if (box) {
+                    box.checked = checked;
+                    if (checked && box.parentElement) box.parentElement.classList.remove('cl-missing');
+                }
             });
         });
         persistChecklist();
@@ -3567,6 +3699,7 @@ function setupListeners() {
 
         if (target.dataset.clItem) {
             getChecklist().checks[target.dataset.clItem] = target.checked;
+            if (target.parentElement) target.parentElement.classList.remove('cl-missing');
             persistChecklist();
             refreshChecklistUI();
         } else if (target.dataset.clSection) {
@@ -3577,7 +3710,10 @@ function setupListeners() {
                 const id = checklistItemId(section, i);
                 cl.checks[id] = target.checked;
                 const box = document.getElementById('cl-item-' + id);
-                if (box) box.checked = target.checked;
+                if (box) {
+                    box.checked = target.checked;
+                    if (target.checked && box.parentElement) box.parentElement.classList.remove('cl-missing');
+                }
             });
             persistChecklist();
             refreshChecklistUI();
@@ -3588,6 +3724,7 @@ function setupListeners() {
         const target = e.target;
         if (target instanceof HTMLInputElement && target.dataset.clField) {
             getChecklist().fields[target.dataset.clField] = target.value;
+            if (target.value.trim()) target.classList.remove('cl-missing');
             persistChecklist();
         }
     });

@@ -1362,7 +1362,7 @@ RESPONSIVE BREAKPOINTS
 }
 
 /* ===========================
-   Inspection Checklist (Review form)
+   Inspection Checklist (Checked-In review form)
    =========================== */
 .checklist-card {
     background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%);
@@ -1571,4 +1571,22 @@ RESPONSIVE BREAKPOINTS
     .cl-items { padding: 0.3rem 1.2rem; }
     .cl-item-body { font-size: 1.5rem; }
     .cl-field-lg { width: 100%; }
+}
+
+/* Checklist: items still missing when Save Details is pressed */
+.cl-item.cl-missing {
+    background: rgba(239, 68, 68, 0.14);
+    border-left: 4px solid #ef4444;
+    padding-left: 0.8rem;
+    border-radius: 0.4rem;
+}
+
+.cl-item.cl-missing .cl-check {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.35);
+}
+
+.cl-field.cl-missing {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.35);
 }

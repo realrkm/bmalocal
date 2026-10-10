@@ -981,7 +981,7 @@
     }
 
     // ===========================
-    // INSPECTION CHECKLIST (Checked-In, Create Quote and Confirm Quote jobs)
+    // INSPECTION CHECKLIST (Checked-In, Create Quote, Confirm Quote and In-Service jobs)
     // ===========================
     // Each item is an array of parts: a string = label text, an object = inline input.
     // { f: 'key', w: 'sm' | 'md' | 'lg' }  (sm = numeric reading)
@@ -1098,8 +1098,8 @@
         return sanitizeHTML(String(value == null ? '' : value)).replace(/"/g, '&quot;');
     }
 
-    // Statuses whose Review form shows the checklist
-    const CHECKLIST_STATUSES = ['Checked-In', 'Create Quote', 'Confirm Quote'];
+    // Statuses whose Parts Request tab shows the checklist (Review and Work Done entry points)
+    const CHECKLIST_STATUSES = ['Checked-In', 'Create Quote', 'Confirm Quote', 'In-Service'];
 
     function renderChecklistCard() {
         const service = state.activeServices.find(s => s.jobcardref === state.activeReg);

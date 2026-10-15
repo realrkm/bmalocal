@@ -984,7 +984,7 @@
     // INSPECTION CHECKLIST (Checked-In, Create Quote, Confirm Quote and In-Service jobs)
     // ===========================
     // Each item is an array of parts: a string = label text, an object = inline input.
-    // { f: 'key', w: 'sm' | 'md' | 'lg' }  (sm = numeric reading)
+    // { f: 'key', w: 'sm' | 'md' | 'lg', l: 'label', type?: 'decimal' }
     const CHECKLIST_SECTIONS = [
         {
             id: 'A',
@@ -1033,10 +1033,10 @@
             id: 'E',
             title: 'E. BRAKES & SUSPENSION (CRITICAL)',
             items: [
-                ['Front pads thickness', { f: 'fpad', w: 'sm', l: 'Front pads thickness (mm)' }, 'mm (min 3mm) - Discs', { f: 'fdisc', w: 'sm', l: 'Front discs (mm)' }, 'mm - Sensors replaced'],
-                ['Rear pads', { f: 'rpad', w: 'sm', l: 'Rear pads (mm)' }, 'mm - Discs', { f: 'rdisc', w: 'sm', l: 'Rear discs (mm)' }, 'mm - Handbrake shoes check'],
+                ['Front pads thickness', { f: 'fpad', w: 'sm', l: 'Front pads thickness (mm)', type: 'decimal' }, 'mm (min 3mm) - Discs', { f: 'fdisc', w: 'sm', l: 'Front discs (mm)', type: 'decimal' }, 'mm - Sensors replaced'],
+                ['Rear pads', { f: 'rpad', w: 'sm', l: 'Rear pads (mm)', type: 'decimal' }, 'mm - Discs', { f: 'rdisc', w: 'sm', l: 'Rear discs (mm)', type: 'decimal' }, 'mm - Handbrake shoes check'],
                 ['Brake fluid if > 2 years - DOT4 only - Bleeding sequence done'],
-                ['Tyres: Pressure F', { f: 'pf', w: 'sm', l: 'Tyre pressure - front' }, 'R', { f: 'pr', w: 'sm', l: 'Tyre pressure - rear' }, 'Tread', { f: 'tread', w: 'sm', l: 'Tyre tread (mm)' }, 'mm - Rotation done - Spare check']
+                ['Tyres: Pressure F', { f: 'pf', w: 'sm', l: 'Tyre pressure - front', type: 'decimal' }, 'R', { f: 'pr', w: 'sm', l: 'Tyre pressure - rear', type: 'decimal' }, 'Tread', { f: 'tread', w: 'sm', l: 'Tyre tread (mm)', type: 'decimal' }, 'mm - Rotation done - Spare check']
             ]
         }
     ];
@@ -1158,6 +1158,13 @@
                             key: key,
                             message: `${id}: Fill in "${p.l}"`
                         });
+                    } else if (p.type === 'decimal' && (!/^\d+(\.\d+)?$/.test(value) || isNaN(parseFloat(value)))) {
+                        result.missing.push({
+                            type: 'field',
+                            id: id,
+                            key: key,
+                            message: `${id}: Enter a valid decimal number for "${p.l}"`
+                        });
                     }
                 });
 
@@ -1180,7 +1187,7 @@
         const fields = missing.length - boxes;
         const summary = [];
         if (boxes) summary.push(`${boxes} checkbox${boxes > 1 ? 'es' : ''} not selected`);
-        if (fields) summary.push(`${fields} field${fields > 1 ? 's' : ''} empty`);
+        if (fields) summary.push(`${fields} field${fields > 1 ? 's' : ''} empty or invalid`);
 
         const MAX_SHOWN = 8;
         const lines = [`• Vehicle Inspection Checklist is incomplete (${summary.join(', ')}):`];
@@ -1244,7 +1251,8 @@
                         return `<label class="cl-text" for="cl-item-${id}">${sanitizeHTML(p)}</label>`;
                     }
                     const key = id + '.' + p.f;
-                    return `<input type="text" class="cl-field cl-field-${p.w}" data-cl-field="${key}" ${p.w === 'sm' ? 'inputmode="decimal"' : ''} autocomplete="off" aria-label="${checklistAttr(plainLabel)} (${p.f})" value="${checklistAttr(cl.fields[key])}">`;
+                    const isDecimal = p.type === 'decimal';
+                    return `<input type="${isDecimal ? 'number' : 'text'}" ${isDecimal ? 'step="0.01" min="0" placeholder="0.0" data-cl-decimal="true"' : ''} class="cl-field cl-field-${p.w}" data-cl-field="${key}" ${(p.w === 'sm' || isDecimal) ? 'inputmode="decimal"' : ''} autocomplete="off" aria-label="${checklistAttr(plainLabel)} (${p.f})" value="${checklistAttr(cl.fields[key])}">`;
                 }).join('');
                 return `
                     <div class="cl-item">
@@ -2926,977 +2934,988 @@
     </div>
     <div class="category-grid">${renderParts(uniqueMatchedParts)}</div>
 `;
-}
+    }
 
-function renderSearch() {
-    const resultCats = [...new Set(state.searchResults.map(p => categorize(p)))].filter(c => c !== 'other');
-    const filtered = state.activeSearchFilter === 'all' ? 
-        state.searchResults : 
-        state.searchResults.filter(p => categorize(p) === state.activeSearchFilter);
-        
-    mainContent.innerHTML = `
-        <h2 style="font-size:2.5rem; margin-bottom:1.5rem;">Results (${filtered.length})</h2>
-        <div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-bottom:2rem;">
-            <button onclick="setSearchFilter('all')" style="padding:0.75rem 1.5rem; border-radius:2rem; border:none; cursor:pointer; font-weight:bold; font-size:1.5rem; ${state.activeSearchFilter === 'all' ? 'background:#dc2626; color:white;' : 'background:#334155; color:#94a3b8;'}">All</button>
-            ${resultCats.map(cid => {
-                const cat = state.categories.find(c => c.id === cid);
-                return `<button onclick="setSearchFilter('${cid}')" style="padding:0.75rem 1.5rem; border-radius:2rem; border:none; cursor:pointer; font-weight:bold; font-size:1.5rem; ${state.activeSearchFilter === cid ? 'background:#dc2626; color:white;' : 'background:#334155; color:#94a3b8;'}">${sanitizeHTML(cat ? cat.name : cid)}</button>`;
-            }).join('')}
-        </div>
-        <div class="category-grid">${renderParts(filtered)}</div>
-    `;
-}
-
-function renderParts(arr) {
-    return arr.map((p, index) => `
-    <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); backdrop-filter:blur(10px); padding:2rem; border-radius:1.5rem; display:flex; flex-direction:column; justify-content:space-between; gap:1.5rem; text-align:center; border:2px solid rgba(59, 130, 246, 0.2); transition:all 0.3s ease; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='rgba(59, 130, 246, 0.5)'; this.style.boxShadow='0 15px 30px rgba(59, 130, 246, 0.3)';" onmouseout="this.style.transform=''; this.style.borderColor='rgba(59, 130, 246, 0.2)'; this.style.boxShadow='0 10px 20px rgba(0, 0, 0, 0.3)';">
-        <div>
-            <h3 style="font-size:2rem; color:#06b6d4;">${sanitizeHTML(p.name)}</h3>
-            <p style="color:#94a3b8; margin-top:0.5rem">Category: ${sanitizeHTML(p.category || 'N/A')}</p>
-        </div>
-        <div style="display:flex; flex-direction:column; gap:1rem; align-items:center;">
-            <div style="width:100%;">
-                <label for="qty-${index}" style="display:block; color:#94a3b8; font-size:1.4rem; margin-bottom:0.5rem;">Quantity</label>
-                <input 
-                    type="number" 
-                    id="qty-${index}" 
-                    min="0" 
-                    step="0.01" 
-                    value="1" 
-                    placeholder="0.00"
-                    aria-label="Quantity for ${sanitizeHTML(p.name)}"
-                    style="width:100%; padding:0.8rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; text-align:center;"
-                >
+    function renderSearch() {
+        const resultCats = [...new Set(state.searchResults.map(p => categorize(p)))].filter(c => c !== 'other');
+        const filtered = state.activeSearchFilter === 'all' ? 
+            state.searchResults : 
+            state.searchResults.filter(p => categorize(p) === state.activeSearchFilter);
+            
+        mainContent.innerHTML = `
+            <h2 style="font-size:2.5rem; margin-bottom:1.5rem;">Results (${filtered.length})</h2>
+            <div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-bottom:2rem;">
+                <button onclick="setSearchFilter('all')" style="padding:0.75rem 1.5rem; border-radius:2rem; border:none; cursor:pointer; font-weight:bold; font-size:1.5rem; ${state.activeSearchFilter === 'all' ? 'background:#dc2626; color:white;' : 'background:#334155; color:#94a3b8;'}">All</button>
+                ${resultCats.map(cid => {
+                    const cat = state.categories.find(c => c.id === cid);
+                    return `<button onclick="setSearchFilter('${cid}')" style="padding:0.75rem 1.5rem; border-radius:2rem; border:none; cursor:pointer; font-weight:bold; font-size:1.5rem; ${state.activeSearchFilter === cid ? 'background:#dc2626; color:white;' : 'background:#334155; color:#94a3b8;'}">${sanitizeHTML(cat ? cat.name : cid)}</button>`;
+                }).join('')}
             </div>
-            <button onclick="addToCart('${p.name.replace(/'/g, "\\'")}', '${index}')" class="add-btn-circular" aria-label="Add ${sanitizeHTML(p.name)} to cart">+</button>
-        </div>
-    </div>`).join('');
-}
+            <div class="category-grid">${renderParts(filtered)}</div>
+        `;
+    }
 
-function renderCheckout() {
-    const totalItems = state.cart.reduce((sum, item) => sum + item.quantity, 0);
-
-    mainContent.innerHTML = `
-    <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); padding:3rem; border-radius:2rem; border:4px solid rgba(59, 130, 246, 0.5); max-width:800px; margin:2rem auto; box-shadow: 0 20px 60px rgba(59, 130, 246, 0.3);">
-        <h2 style="text-align:center; margin-bottom:2rem; font-size:2.5rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Your Order</h2>
-        <div style="margin-bottom:2rem;">
-            ${state.cart.length === 0 ? '<p style="text-align:center; font-size:1.8rem;">Your cart is empty.</p>' : state.cart.map((item, i) => `
-                <div style="padding:1rem; border-bottom:1px solid rgba(59, 130, 246, 0.2); display:flex; justify-content:space-between; align-items:center; font-size:1.8rem; gap:1rem;">
-                    <div style="min-width:40px; font-size:2rem; font-weight:bold; color:#06b6d4;">${i + 1}.</div>
-                    <div style="flex:1;">
-                        <strong>${sanitizeHTML(item.name)}</strong><br>
-                        <small style="color:#94a3b8;">${sanitizeHTML(item.category)}</small>
-                    </div>
-                    <div style="display:flex; align-items:center; gap:1rem;">
-                        <div style="display:flex; flex-direction:column; align-items:center;">
-                            <span style="color:#94a3b8; font-size:1.2rem;">QTY</span>
-                            <input 
-                                type="number" 
-                                id="cart-qty-${i}"
-                                value="${item.quantity}" 
-                                min="0.01"
-                                step="0.01"
-                                onchange="updateCartQuantity(${i}, this.value)"
-                                aria-label="Quantity for ${sanitizeHTML(item.name)}"
-                                style="width:80px; padding:0.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; text-align:center;"
-                            >
-                        </div>
-                        <button onclick="removeFromCart(${i})" aria-label="Remove ${sanitizeHTML(item.name)} from cart" style="color:#ef4444; background:none; border:none; cursor:pointer; font-size:1.5rem;">
-                            <i data-lucide="trash-2" aria-hidden="true"></i>
-                        </button>
-                    </div>
+    function renderParts(arr) {
+        return arr.map((p, index) => `
+        <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); backdrop-filter:blur(10px); padding:2rem; border-radius:1.5rem; display:flex; flex-direction:column; justify-content:space-between; gap:1.5rem; text-align:center; border:2px solid rgba(59, 130, 246, 0.2); transition:all 0.3s ease; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='rgba(59, 130, 246, 0.5)'; this.style.boxShadow='0 15px 30px rgba(59, 130, 246, 0.3)';" onmouseout="this.style.transform=''; this.style.borderColor='rgba(59, 130, 246, 0.2)'; this.style.boxShadow='0 10px 20px rgba(0, 0, 0, 0.3)';">
+            <div>
+                <h3 style="font-size:2rem; color:#06b6d4;">${sanitizeHTML(p.name)}</h3>
+                <p style="color:#94a3b8; margin-top:0.5rem">Category: ${sanitizeHTML(p.category || 'N/A')}</p>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:1rem; align-items:center;">
+                <div style="width:100%;">
+                    <label for="qty-${index}" style="display:block; color:#94a3b8; font-size:1.4rem; margin-bottom:0.5rem;">Quantity</label>
+                    <input 
+                        type="number" 
+                        id="qty-${index}" 
+                        min="0" 
+                        step="0.01" 
+                        value="1" 
+                        placeholder="0.00"
+                        aria-label="Quantity for ${sanitizeHTML(p.name)}"
+                        style="width:100%; padding:0.8rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; text-align:center;"
+                    >
                 </div>
-            `).join('')}
-        </div>
-        ${state.cart.length > 0 ? `
-            <div style="text-align:center; padding:2rem 0;">
-                <h3 style="font-size:2rem; margin-bottom:1rem; color:#06b6d4;">Total: ${totalItems.toFixed(2)} Units</h3>
-                <p style="color:#94a3b8; font-size:1.6rem;">Return to Request Parts to confirm your order</p>
+                <button onclick="addToCart('${p.name.replace(/'/g, "\\'")}', '${index}')" class="add-btn-circular" aria-label="Add ${sanitizeHTML(p.name)} to cart">+</button>
             </div>
-        ` : ''}
-    </div>`;
-}
+        </div>`).join('');
+    }
 
-function renderSuccess() {
-    const id = window.lastOrderID;
-    const originalTitle = document.title;
-    document.title = `Order_Ticket_${id}`;
+    function renderCheckout() {
+        const totalItems = state.cart.reduce((sum, item) => sum + item.quantity, 0);
 
-    mainContent.innerHTML = `
-        <div style="text-align:center; padding:4rem 2rem; background:linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%); backdrop-filter:blur(20px); border-radius:2rem; max-width:600px; margin:2rem auto; border:4px solid rgba(34, 197, 94, 0.5); box-shadow: 0 20px 60px rgba(34, 197, 94, 0.3);">
-            <div style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); width:80px; height:80px; border-radius:50%; margin:0 auto 1.5rem; display:flex; align-items:center; justify-content:center; font-size:3rem; box-shadow: 0 10px 30px rgba(34, 197, 94, 0.5);">✓</div>
-            <h2 style="font-size:2.5rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Order Confirmed</h2>
-            <div style="font-size:4rem; color:#facc15; margin:1.5rem 0; border:2px dashed rgba(59, 130, 246, 0.3); padding:1rem; border-radius:1rem; display:inline-block;">#${id}</div>
-            <div style="margin:2rem 0;"><img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=ORDER-${id}" alt="QR Code for order ${id}"></div>
-            <div style="display:flex; flex-direction:column; gap:1rem;">
-                <button id="print-ticket-btn" class="btn-print">🖨️ Print Ticket</button>
-                <button onclick="goToHome()" style="background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color:white; padding:1.2rem; border-radius:0.8rem; border:2px solid rgba(220, 38, 38, 0.3); font-weight:bold; cursor:pointer; font-size:2.4rem; transition:all 0.3s ease;">Finish</button>
+        mainContent.innerHTML = `
+        <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); padding:3rem; border-radius:2rem; border:4px solid rgba(59, 130, 246, 0.5); max-width:800px; margin:2rem auto; box-shadow: 0 20px 60px rgba(59, 130, 246, 0.3);">
+            <h2 style="text-align:center; margin-bottom:2rem; font-size:2.5rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Your Order</h2>
+            <div style="margin-bottom:2rem;">
+                ${state.cart.length === 0 ? '<p style="text-align:center; font-size:1.8rem;">Your cart is empty.</p>' : state.cart.map((item, i) => `
+                    <div style="padding:1rem; border-bottom:1px solid rgba(59, 130, 246, 0.2); display:flex; justify-content:space-between; align-items:center; font-size:1.8rem; gap:1rem;">
+                        <div style="min-width:40px; font-size:2rem; font-weight:bold; color:#06b6d4;">${i + 1}.</div>
+                        <div style="flex:1;">
+                            <strong>${sanitizeHTML(item.name)}</strong><br>
+                            <small style="color:#94a3b8;">${sanitizeHTML(item.category)}</small>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:1rem;">
+                            <div style="display:flex; flex-direction:column; align-items:center;">
+                                <span style="color:#94a3b8; font-size:1.2rem;">QTY</span>
+                                <input 
+                                    type="number" 
+                                    id="cart-qty-${i}"
+                                    value="${item.quantity}" 
+                                    min="0.01"
+                                    step="0.01"
+                                    onchange="updateCartQuantity(${i}, this.value)"
+                                    aria-label="Quantity for ${sanitizeHTML(item.name)}"
+                                    style="width:80px; padding:0.5rem; font-size:1.6rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); color:white; text-align:center;"
+                                >
+                            </div>
+                            <button onclick="removeFromCart(${i})" aria-label="Remove ${sanitizeHTML(item.name)} from cart" style="color:#ef4444; background:none; border:none; cursor:pointer; font-size:1.5rem;">
+                                <i data-lucide="trash-2" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('')}
             </div>
+            ${state.cart.length > 0 ? `
+                <div style="text-align:center; padding:2rem 0;">
+                    <h3 style="font-size:2rem; margin-bottom:1rem; color:#06b6d4;">Total: ${totalItems.toFixed(2)} Units</h3>
+                    <p style="color:#94a3b8; font-size:1.6rem;">Return to Request Parts to confirm your order</p>
+                </div>
+            ` : ''}
         </div>`;
-
-    document.getElementById('print-ticket-btn').onclick = () => window.print();
-
-    setTimeout(() => { 
-        if (state.currentView === 'success') { 
-            document.title = originalTitle; 
-            goToHome(); 
-        } 
-    }, 20000);
-}
-
-function renderAdmin() {
-    const totalItems = state.orderHistory.reduce((sum, order) => sum + order.itemCount, 0);
-    
-    mainContent.innerHTML = `
-        <div>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
-                <h2 style="font-size:3rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Admin Dashboard</h2>
-                <button onclick="goToHome()" style="background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color:white; border:2px solid rgba(220, 38, 38, 0.3); padding:1rem 2rem; border-radius:1rem; cursor:pointer; font-weight:bold; font-size:2.4rem; transition:all 0.3s ease;">Exit Admin</button>
-            </div>
-            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:1.5rem; margin-bottom:2rem;">
-                <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); backdrop-filter:blur(10px); padding:2rem; border-radius:1rem; text-align:center; border:2px solid rgba(59, 130, 246, 0.2);"><h4 style="color:#06b6d4; font-size:1.5rem;">Orders Today</h4><p style="font-size:2.5rem; font-weight:bold;">${state.orderHistory.length}</p></div>
-                <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); backdrop-filter:blur(10px); padding:2rem; border-radius:1rem; text-align:center; border:2px solid rgba(59, 130, 246, 0.2);"><h4 style="color:#06b6d4; font-size:1.5rem;">Total Items</h4><p style="font-size:2.5rem; font-weight:bold;">${totalItems}</p></div>
-                <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); backdrop-filter:blur(10px); padding:2rem; border-radius:1rem; text-align:center; border:2px solid rgba(59, 130, 246, 0.2);"><h4 style="color:#06b6d4; font-size:1.5rem;">Session Clock</h4><p style="font-size:2.5rem; font-weight:bold;">${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</p></div>
-            </div>
-            <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); border-radius:1rem; overflow:hidden; border:2px solid rgba(59, 130, 246, 0.2);">
-                <table style="width:100%; border-collapse:collapse; text-align:center;">
-                    <thead style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%);">
-                        <tr style="font-size:2.4rem;"><th style="padding:1rem; font-size:2.4rem; text-align:center; color:#06b6d4;">Time</th><th style="padding:1rem; font-size:2.4rem; text-align:center; color:#06b6d4;">Order ID</th><th style="padding:1rem; font-size:2.4rem; text-align:center; color:#06b6d4;">Items</th></tr>
-                    </thead>
-                    <tbody>
-                        ${state.orderHistory.map(o => `
-                            <tr style="border-bottom:1px solid rgba(59, 130, 246, 0.2); font-size:2.4rem;">
-                                <td data-label="Time" style="padding:1rem; text-align:center;">${o.time}</td>
-                                <td data-label="ID" style="padding:1rem; text-align:center;">#${o.id}</td>
-                                <td data-label="Counter" style="padding:1rem; text-align:center;">${o.itemCount} Units</td>
-                            </tr>`).reverse().join('')}
-                    </tbody>
-                </table>
-            </div>
-            <button onclick="clearStats()" style="margin-top:2rem; background:none; border:2px solid #ef4444; color:#ef4444; padding:0.8rem 1.5rem; border-radius:0.8rem; cursor:pointer; font-weight:bold; font-size:2.4rem; transition:all 0.3s ease;">Clear Session Data</button>
-        </div>`;
-}
-
-function updateBreadcrumbs() {
-    if (state.currentView === 'home' || state.currentView === 'success' || state.currentView === 'workDone') { 
-        breadcrumbContainer.classList.add('hidden'); 
-        return; 
-    }
-    breadcrumbContainer.classList.remove('hidden');
-
-    let breadcrumb = `<span onclick="goToHome()" style="cursor:pointer; color:#06b6d4; font-weight:bold;">Home</span>`;
-
-    if (state.currentView === 'Request Parts') {
-        breadcrumb += ` > Request Parts`;
-    } else if (state.currentView === 'category' || state.currentView === 'checkout') {
-        breadcrumb += ` > <span style="color:#06b6d4; font-weight:bold;">Request Parts</span>`;
     }
 
-    if (state.currentView === 'category') {
-        breadcrumb += ` > Category`;
-    } else if (state.currentView === 'checkout') {
-        breadcrumb += ` > Checkout`;
-    } else if (state.currentView !== 'Request Parts' && state.currentView !== 'home') {
-        breadcrumb += ` > ${state.currentView.charAt(0).toUpperCase() + state.currentView.slice(1)}`;
+    function renderSuccess() {
+        const id = window.lastOrderID;
+        const originalTitle = document.title;
+        document.title = `Order_Ticket_${id}`;
+
+        mainContent.innerHTML = `
+            <div style="text-align:center; padding:4rem 2rem; background:linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%); backdrop-filter:blur(20px); border-radius:2rem; max-width:600px; margin:2rem auto; border:4px solid rgba(34, 197, 94, 0.5); box-shadow: 0 20px 60px rgba(34, 197, 94, 0.3);">
+                <div style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); width:80px; height:80px; border-radius:50%; margin:0 auto 1.5rem; display:flex; align-items:center; justify-content:center; font-size:3rem; box-shadow: 0 10px 30px rgba(34, 197, 94, 0.5);">✓</div>
+                <h2 style="font-size:2.5rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Order Confirmed</h2>
+                <div style="font-size:4rem; color:#facc15; margin:1.5rem 0; border:2px dashed rgba(59, 130, 246, 0.3); padding:1rem; border-radius:1rem; display:inline-block;">#${id}</div>
+                <div style="margin:2rem 0;"><img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=ORDER-${id}" alt="QR Code for order ${id}"></div>
+                <div style="display:flex; flex-direction:column; gap:1rem;">
+                    <button id="print-ticket-btn" class="btn-print">🖨️ Print Ticket</button>
+                    <button onclick="goToHome()" style="background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color:white; padding:1.2rem; border-radius:0.8rem; border:2px solid rgba(220, 38, 38, 0.3); font-weight:bold; cursor:pointer; font-size:2.4rem; transition:all 0.3s ease;">Finish</button>
+                </div>
+            </div>`;
+
+        document.getElementById('print-ticket-btn').onclick = () => window.print();
+
+        setTimeout(() => { 
+            if (state.currentView === 'success') { 
+                document.title = originalTitle; 
+                goToHome(); 
+            } 
+        }, 20000);
     }
 
-    breadcrumbContainer.innerHTML = breadcrumb;
-}
-
-// ===========================
-// EVENT HANDLERS
-// ===========================
-
-function goToHome() {
-    state.currentView = 'home';
-    state.serviceSearchQuery = '';
-    state.currentStatusFilter = 'all';
-    state.currentWorkDoneReg = null;
-    state.activeReg = null;
-    state.partsSearchQuery = '';
-    state.techNotes = '';
-    state.defectList = '';
-    state.activePartsTab = 'request';
-    state.customerResponse = '';
-    state.approvedParts = '';
-    state.cart = [];
-    state.selectedTechnician = '';
-    state.signatureData = '';
-    state.dataLoadedForReg = null; // ⭐ Reset data loaded flag
-    state.cameFromWorkDone = false; // ⭐ Reset work done flag
-    
-    clearNavigationHistory();
-    
-    cartCount.innerText = 0;
-    cartCount.classList.add('hidden');
-    
-    render();
-}
-
-function setupListeners() {
-    // Global window functions for onclick handlers
-    window.selectCategory = (id) => { 
-        pushNavigation('category', { 
-            selectedCategory: state.categories.find(c => c.id === id) 
-        });
-    };
-
-    window.switchPartsTab = async (tabName) => {
-        state.activePartsTab = tabName;
+    function renderAdmin() {
+        const totalItems = state.orderHistory.reduce((sum, order) => sum + order.itemCount, 0);
         
-        // ⭐ When switching to feedback tab, fetch parts and feedback data
-        if (tabName === 'feedback' && state.activeReg) {
-            await loadPartsAndFeedback();
+        mainContent.innerHTML = `
+            <div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+                    <h2 style="font-size:3rem; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Admin Dashboard</h2>
+                    <button onclick="goToHome()" style="background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color:white; border:2px solid rgba(220, 38, 38, 0.3); padding:1rem 2rem; border-radius:1rem; cursor:pointer; font-weight:bold; font-size:2.4rem; transition:all 0.3s ease;">Exit Admin</button>
+                </div>
+                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:1.5rem; margin-bottom:2rem;">
+                    <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); backdrop-filter:blur(10px); padding:2rem; border-radius:1rem; text-align:center; border:2px solid rgba(59, 130, 246, 0.2);"><h4 style="color:#06b6d4; font-size:1.5rem;">Orders Today</h4><p style="font-size:2.5rem; font-weight:bold;">${state.orderHistory.length}</p></div>
+                    <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); backdrop-filter:blur(10px); padding:2rem; border-radius:1rem; text-align:center; border:2px solid rgba(59, 130, 246, 0.2);"><h4 style="color:#06b6d4; font-size:1.5rem;">Total Items</h4><p style="font-size:2.5rem; font-weight:bold;">${totalItems}</p></div>
+                    <div style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%); backdrop-filter:blur(10px); padding:2rem; border-radius:1rem; text-align:center; border:2px solid rgba(59, 130, 246, 0.2);"><h4 style="color:#06b6d4; font-size:1.5rem;">Session Clock</h4><p style="font-size:2.5rem; font-weight:bold;">${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</p></div>
+                </div>
+                <div style="background:linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%); backdrop-filter:blur(10px); border-radius:1rem; overflow:hidden; border:2px solid rgba(59, 130, 246, 0.2);">
+                    <table style="width:100%; border-collapse:collapse; text-align:center;">
+                        <thead style="background:linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%);">
+                            <tr style="font-size:2.4rem;"><th style="padding:1rem; font-size:2.4rem; text-align:center; color:#06b6d4;">Time</th><th style="padding:1rem; font-size:2.4rem; text-align:center; color:#06b6d4;">Order ID</th><th style="padding:1rem; font-size:2.4rem; text-align:center; color:#06b6d4;">Items</th></tr>
+                        </thead>
+                        <tbody>
+                            ${state.orderHistory.map(o => `
+                                <tr style="border-bottom:1px solid rgba(59, 130, 246, 0.2); font-size:2.4rem;">
+                                    <td data-label="Time" style="padding:1rem; text-align:center;">${o.time}</td>
+                                    <td data-label="ID" style="padding:1rem; text-align:center;">#${o.id}</td>
+                                    <td data-label="Counter" style="padding:1rem; text-align:center;">${o.itemCount} Units</td>
+                                </tr>`).reverse().join('')}
+                        </tbody>
+                    </table>
+                </div>
+                <button onclick="clearStats()" style="margin-top:2rem; background:none; border:2px solid #ef4444; color:#ef4444; padding:0.8rem 1.5rem; border-radius:0.8rem; cursor:pointer; font-weight:bold; font-size:2.4rem; transition:all 0.3s ease;">Clear Session Data</button>
+            </div>`;
+    }
+
+    function updateBreadcrumbs() {
+        if (state.currentView === 'home' || state.currentView === 'success' || state.currentView === 'workDone') { 
+            breadcrumbContainer.classList.add('hidden'); 
+            return; 
         }
+        breadcrumbContainer.classList.remove('hidden');
+
+        let breadcrumb = `<span onclick="goToHome()" style="cursor:pointer; color:#06b6d4; font-weight:bold;">Home</span>`;
+
+        if (state.currentView === 'Request Parts') {
+            breadcrumb += ` > Request Parts`;
+        } else if (state.currentView === 'category' || state.currentView === 'checkout') {
+            breadcrumb += ` > <span style="color:#06b6d4; font-weight:bold;">Request Parts</span>`;
+        }
+
+        if (state.currentView === 'category') {
+            breadcrumb += ` > Category`;
+        } else if (state.currentView === 'checkout') {
+            breadcrumb += ` > Checkout`;
+        } else if (state.currentView !== 'Request Parts' && state.currentView !== 'home') {
+            breadcrumb += ` > ${state.currentView.charAt(0).toUpperCase() + state.currentView.slice(1)}`;
+        }
+
+        breadcrumbContainer.innerHTML = breadcrumb;
+    }
+
+    // ===========================
+    // EVENT HANDLERS
+    // ===========================
+
+    function goToHome() {
+        state.currentView = 'home';
+        state.serviceSearchQuery = '';
+        state.currentStatusFilter = 'all';
+        state.currentWorkDoneReg = null;
+        state.activeReg = null;
+        state.partsSearchQuery = '';
+        state.techNotes = '';
+        state.defectList = '';
+        state.activePartsTab = 'request';
+        state.customerResponse = '';
+        state.approvedParts = '';
+        state.cart = [];
+        state.selectedTechnician = '';
+        state.signatureData = '';
+        state.dataLoadedForReg = null; // ⭐ Reset data loaded flag
+        state.cameFromWorkDone = false; // ⭐ Reset work done flag
         
-        renderRequestParts();
-    };
-    
-    // ⭐ NEW FUNCTION: Fetch parts and feedback data from server
-    async function loadPartsAndFeedback() {
-        try {
-                        
-            // Call the Anvil server function
-            const data = await anvil.call(
-                mainContent, 
-                'getCustomerFeedback', 
-                state.activeReg
-            );
-                        
-            if (data && data.length > 0) {
-                // Build approved parts list (formatted string with parts and quantities)
-                const approvedPartsList = data
-                    .map((row, index) => `${index + 1}. ${row.Item} - Qty: ${row.QuantityIssued}`)
-                    .join('\n');
-                
-                // Get customer remarks (assuming all rows have the same Remarks)
-                const customerRemarks = data[0].Remarks || '';
-                
-                // Update state
-                state.approvedParts = approvedPartsList;
-                state.customerResponse = customerRemarks;
-                
-                
-            } else {
-                // Clear the textareas if no data found
-                state.approvedParts = '';
-                state.customerResponse = '';
+        clearNavigationHistory();
+        
+        cartCount.innerText = 0;
+        cartCount.classList.add('hidden');
+        
+        render();
+    }
+
+    function setupListeners() {
+        // Global window functions for onclick handlers
+        window.selectCategory = (id) => { 
+            pushNavigation('category', { 
+                selectedCategory: state.categories.find(c => c.id === id) 
+            });
+        };
+
+        window.switchPartsTab = async (tabName) => {
+            state.activePartsTab = tabName;
+            
+            // ⭐ When switching to feedback tab, fetch parts and feedback data
+            if (tabName === 'feedback' && state.activeReg) {
+                await loadPartsAndFeedback();
             }
-            
-        } catch (err) {
-            console.error('Error fetching parts and feedback:', err);
-            await customAlert(
-                'Failed to load parts and feedback data. Please try again.',
-                '❌ Error'
-            );
-        }
-    }
-
-    window.clearPartsDetails = async () => {
-        const confirmed = await customConfirm(
-            'Are you sure you want to clear Tech Notes, List of Defects, Requested Parts, Technician, Signature, and Inspection Checklist?',
-            'Clear All Details'
-        );
-
-        if (confirmed) {
-            state.techNotes = '';
-            state.defectList = '';
-            state.cart = [];
-            state.partsSearchQuery = '';
-            state.selectedTechnician = '';
-            state.signatureData = '';
-            state.collapseOpen = false;
-            state.dataLoadedForReg = null; // ⭐ Reset to allow re-loading data if needed
-            resetChecklist();
-            
-            const totalQuantity = state.cart.reduce((sum, item) => sum + item.quantity, 0);
-            cartCount.innerText = Math.round(totalQuantity);
-            cartCount.classList.toggle('hidden', state.cart.length === 0);
             
             renderRequestParts();
-            await customAlert('All details have been cleared.', 'Cleared');
-        }
-    };
-
-    window.savePartsDetails = async () => {
-        // Get current values from DOM elements
-        const techNotesTextarea = document.getElementById('tech-notes-textarea');
-        const defectsTextarea = document.getElementById('defects-textarea');
-        const technicianDropdown = document.getElementById('technician-dropdown');
-
-        if (techNotesTextarea) {
-            state.techNotes = techNotesTextarea.value;
-        }
-        if (defectsTextarea) {
-            state.defectList = defectsTextarea.value;
-        }
-        if (technicianDropdown) {
-            state.selectedTechnician = technicianDropdown.value;
-        }
-
-        // ⭐ IMPROVED VALIDATION - Collect all errors
-        const errors = [];
-
-        if (!state.techNotes.trim() && !state.defectList.trim()) {
-            errors.push('• Tech notes and defects are required');
-        }
-
-        if (!state.selectedTechnician) {
-            errors.push('• Please select a technician');
-        }
-
-        const signature = getSignatureData();
-        if (!signature || signature.length === 0) {
-            errors.push('• Signature is required');
-        }
-
-        // ⭐ Vehicle Inspection Checklist: every checkbox ticked and every field filled
-        const checklistResult = buildChecklistPayload();
-        if (checklistResult.missing.length > 0) {
-            errors.push(...formatChecklistErrors(checklistResult.missing));
-        }
-
-        // ⭐ Show alert if ANY validation fails
-        if (errors.length > 0) {
-            await customAlert(
-                'Please complete the following:\n\n' + errors.join('\n'),
-                '⚠️ Missing Required Fields'
-            );
-
-            // Open the checklist and highlight what is still missing
-            highlightChecklistMissing(checklistResult.missing);
-            return; // Stop execution
-        }
-
-        // Rest of your save logic...
-        let partsAndQuantities = null;
-        if (state.cart.length > 0) {
-            partsAndQuantities = state.cart.map((item) => 
-                `${item.name} - Qty: ${item.quantity}`
-                                               ).join('\n');
-        }
-
-        const techNotesValue = state.techNotes.trim() || null;
-        const defectListValue = state.defectList.trim() || null;
-
-        try {
-            await anvil.call(
-                mainContent, 
-                'storeTechDetails', 
-                state.activeReg,
-                techNotesValue, 
-                defectListValue, 
-                partsAndQuantities,
-                state.selectedTechnician,
-                signature,
-                checklistResult.list
-            );
-
-            await customAlert(
-                `Details have been saved successfully for JobCard ${state.activeReg}`,
-                ' Success'
-            );
-
-            // Clear state
-            state.activeReg = null;
-            state.cart = [];
-            state.techNotes = '';
-            state.defectList = '';
-            state.partsSearchQuery = '';
-            state.customerResponse = '';
-            state.approvedParts = '';
-            state.selectedTechnician = '';
-            state.signatureData = '';
-            state.collapseOpen = false;
-            state.dataLoadedForReg = null;
-            state.cameFromWorkDone = false;
-
-            cartCount.innerText = 0;
-            cartCount.classList.add('hidden');
-
-            await loadActiveServices();
-            clearNavigationHistory();
-            clearSignature();
-            state.currentView = 'home';
-            render();
-
-        } catch (error) {
-            console.error('Error saving parts details:', error);
-
-            let errorMessage = 'Failed to save details. Please try again.';
-            if (error && error.message) {
-                errorMessage = error.message;
-            } else if (error && error.args && error.args.length > 0) {
-                errorMessage = error.args.join(' ');
-            } else if (typeof error === 'string') {
-                errorMessage = error;
-            }
-
-            await customAlert(errorMessage, '❌ Error');
-        }
-    };
-
-    window.saveWorkDoneFromTab = async () => {
-        const textarea = document.getElementById('workdone-textarea');
-        const workDoneText = textarea ? textarea.value.trim() : '';
-
-        if (!workDoneText) {
-            await customAlert('Please enter the work done details before saving.', 'Work Done Required');
-            return;
-        }
-
-        try {
-            await anvil.call(mainContent, 'save_work_done', state.activeReg, workDoneText);
-
-            const service = state.activeServices.find(s => s.jobcardref === state.activeReg);
-            if (service) {
-                service.workDone = workDoneText;
-                service.status = 'Completed';
-            }
-
-            await customAlert(
-                `Work done has been saved successfully for JobCard ${state.activeReg}`,
-                ' Success'
-            );
-
-            state.currentWorkDoneReg = null;
-
-            // Reload active services to get updated data
-            await loadActiveServices();
-
-            clearNavigationHistory();
-            // Clear Cart
-            state.cart=[];
-            state.currentView = 'home';
-            render();    
-
-        } catch (err) {
-            console.error(err);
-            await customAlert(
-                'Failed to save work done. Please ensure the server is up and running.',
-                '❌ Error'
-            );
-        }
-    };
-
-    window.addToCart = (name, index) => {
-        const qtyInput = document.getElementById(`qty-${index}`);
-        const quantity = parseFloat(qtyInput?.value) || 1;
-
-        if (quantity <= 0) {
-            customAlert('Please enter a valid quantity greater than 0.', 'Invalid Quantity');
-            return;
-        }
-
-        const item = state.parts.find(p => p.name === name);
-        if (!item) return;
-
-        const existingItemIndex = state.cart.findIndex(c => c.name === item.name);
-
-        if (existingItemIndex > -1) {
-            state.cart[existingItemIndex].quantity += quantity;
-        } else {
-            state.cart.push({
-                name: item.name,
-                category: item.category,
-                partNo: item.partNo,
-                quantity: quantity
-            });
-        }
-
-        if (qtyInput) qtyInput.value = '1';
-
-        // Update badge and display without full re-render
-        updateCartBadgeOnly();
+        };
         
-        // Correct view check: 'Request Parts' instead of 'request-parts'
-        if (state.currentView === 'Request Parts' && state.activePartsTab === 'request') {
-            updatePartsListDisplay();
-        } else {
-            render();
-        }
-    };
-
-    window.updateCartQuantity = (index, newQuantity) => {
-        const qty = parseFloat(newQuantity);
-
-        if (isNaN(qty) || qty <= 0) {
-            customAlert('Please enter a valid quantity greater than 0.', 'Invalid Quantity');
-            document.getElementById(`cart-qty-${index}`).value = state.cart[index].quantity;
-            return;
-        }
-
-        state.cart[index].quantity = qty;
-        render();
-    };
-
-    window.removeFromCart = (i) => { 
-        state.cart.splice(i, 1);
-        state.editingCartIndex = null; // reset any in-progress edit to avoid stale index references
-
-        // Update the badge count immediately
-        updateCartBadgeOnly();
-
-        // Update UI without a refresh if we are on the Request Parts tab
-        // FIXED: Corrected view name from 'request-parts' to 'Request Parts'
-        if (state.currentView === 'Request Parts' && state.activePartsTab === 'request') {
-            updatePartsListDisplay();
-        } else {
-            render();
-        }
-    };
-
-    // ⭐ NEW: Puts a Requested Parts row into inline-edit mode
-    window.editCartItem = (i) => {
-        if (!state.cart[i]) return;
-        state.editingCartIndex = i;
-
-        if (state.currentView === 'Request Parts' && state.activePartsTab === 'request') {
-            updatePartsListDisplay();
-        } else {
-            render();
-        }
-
-        // Focus the quantity input for a smoother editing experience
-        const input = document.getElementById(`requested-part-qty-${i}`);
-        if (input) {
-            input.focus();
-            input.select();
-        }
-    };
-
-    // ⭐ NEW: Cancels inline-edit mode without saving changes
-    window.cancelCartItemEdit = () => {
-        state.editingCartIndex = null;
-
-        if (state.currentView === 'Request Parts' && state.activePartsTab === 'request') {
-            updatePartsListDisplay();
-        } else {
-            render();
-        }
-    };
-
-    // ⭐ NEW: Saves the edited quantity for a Requested Parts row
-    window.saveCartItemEdit = (i) => {
-        const input = document.getElementById(`requested-part-qty-${i}`);
-        const qty = input ? parseFloat(input.value) : NaN;
-
-        if (!input || isNaN(qty) || qty <= 0) {
-            customAlert('Please enter a valid quantity greater than 0.', 'Invalid Quantity');
-            return;
-        }
-
-        state.cart[i].quantity = qty;
-        state.editingCartIndex = null;
-
-        // Update the badge count immediately
-        updateCartBadgeOnly();
-
-        if (state.currentView === 'Request Parts' && state.activePartsTab === 'request') {
-            updatePartsListDisplay();
-        } else {
-            render();
-        }
-    };
-
-    window.goToHome = goToHome;
-
-    window.setSearchFilter = (f) => { 
-        state.activeSearchFilter = f; 
-        render(); 
-    };
-
-    window.clearStats = async () => {
-        const confirmed = await customConfirm(
-            'Are you sure you want to clear all session data? This cannot be undone.',
-            'Clear Session Data'
-        );
-        if (confirmed) {
-            state.orderHistory = [];
-            renderAdmin();
-        }
-    };
-
-    window.filterByStatus = (s) => { 
-        state.currentStatusFilter = (state.currentStatusFilter === s) ? 'all' : s; 
-        
-        // Update button states
-        const buttons = document.querySelectorAll('.btn-status');
-        buttons.forEach(btn => {
-            const btnText = btn.textContent.trim();
-            if (btnText === s) {
-                btn.classList.toggle('active-filter');
-            } else {
-                btn.classList.remove('active-filter');
-            }
-        });
-        
-        // Update the table
-        updateServiceTable();
-    };
-
-    window.openParts = (reg) => { 
-        if (state.activeReg !== reg) {
-            state.cart = [];
-            state.techNotes = '';
-            state.defectList = '';
-            state.partsSearchQuery = '';
-            state.customerResponse = '';
-            state.approvedParts = '';
-            state.selectedTechnician = '';
-            state.signatureData = '';
-            clearSignaturePad()
-            cartCount.innerText = 0;
-            cartCount.classList.add('hidden');
-            
-            // ⭐ Reset data loaded flag to allow fresh data load
-            state.dataLoadedForReg = null;
-        }
-        
-        // ⭐ Mark that we're NOT coming from Work Done
-        state.cameFromWorkDone = false;
-        
-        pushNavigation('Request Parts', { activeReg: reg, activePartsTab: 'request' });
-    };
-
-    window.openWorkDone = (reg) => {
-        if (state.activeReg !== reg) {
-            state.cart = [];
-            state.techNotes = '';
-            state.defectList = '';
-            state.partsSearchQuery = '';
-            state.customerResponse = '';
-            state.approvedParts = '';
-            state.selectedTechnician = '';
-            state.signatureData = '';
-            
-            cartCount.innerText = 0;
-            cartCount.classList.add('hidden');
-            
-            // ⭐ Reset data loaded flag to allow fresh data load
-            state.dataLoadedForReg = null;
-        }
-        
-        // ⭐ Mark that we're coming from Work Done
-        state.cameFromWorkDone = true;
-        
-        pushNavigation('Request Parts', { activeReg: reg, activePartsTab: 'workdone' });
-    };
-
-    window.cancelWorkDone = () => {
-        state.currentWorkDoneReg = null;
-        state.currentView = 'home';
-        render();
-    };
-
-    window.saveWorkDone = async () => {
-        const textarea = document.getElementById('work-done-textarea');
-        const workDoneText = textarea.value.trim();
-
-        if (!workDoneText) {
-            await customAlert('Please enter the work done details before saving.', 'Work Done Required');
-            return;
-        }
-
-        try {
-            await anvil.call(mainContent, 'save_work_done', state.currentWorkDoneReg, workDoneText);
-
-            const service = state.activeServices.find(s => s.jobcardref === state.currentWorkDoneReg);
-            if (service) {
-                service.workDone = workDoneText;
-                service.status = 'Completed';
-            }
-
-            await customAlert(
-                `Work done has been saved successfully for jobcard reference ${state.currentWorkDoneReg}`,
-                ' Success'
-            );
-
-            state.currentWorkDoneReg = null;
-            
-            // Reload active services to get updated data
-            await loadActiveServices();
-            
-            clearNavigationHistory();
-            state.currentView = 'home';
-            render();
-
-        } catch (err) {
-            console.error(err);
-            await customAlert(
-                'Failed to save work done. Please ensure the server is up and running.',
-                '❌ Error'
-            );
-        }
-    };
-
-    window.clearPartsSearch = () => {
-        state.partsSearchQuery = '';
-        renderRequestParts();
-    };
-
-    window.clearSignaturePad = () => {
-        clearSignature();
-    };
-
-    window.toggleCollapse = () => {
-        const content = document.getElementById('collapse-content');
-        const icon = document.getElementById('collapse-icon');
-        const button = document.getElementById('collapse-toggle');
-
-        if (content.style.display === 'none') {
-            content.style.display = 'block';
-            state.collapseOpen = true;
-            button.style.background = 'linear-gradient(135deg, rgba(71, 85, 105, 0.8) 0%, rgba(51, 65, 85, 0.8) 100%)';
-            if (icon) {
-                icon.style.transform = 'rotate(180deg)';
-            }
-            initSignaturePad();
-        } else {
-            getSignatureData();
-            content.style.display = 'none';
-            state.collapseOpen = false;
-            button.style.background = 'linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%)';
-            if (icon) {
-                icon.style.transform = 'rotate(0deg)';
-            }
-        }
-
-        lucide.createIcons();
-    };
-
-    // ---- Inspection checklist handlers ----
-    window.toggleChecklist = () => {
-        const card = document.getElementById('checklist-card');
-        if (!card) return;
-        state.checklistOpen = !state.checklistOpen;
-        card.classList.toggle('open', state.checklistOpen);
-        const btn = document.getElementById('checklist-toggle');
-        if (btn) btn.setAttribute('aria-expanded', state.checklistOpen ? 'true' : 'false');
-    };
-
-    window.setChecklistAll = (checked) => {
-        const cl = getChecklist();
-        CHECKLIST_SECTIONS.forEach(section => {
-            section.items.forEach((_, i) => {
-                const id = checklistItemId(section, i);
-                cl.checks[id] = checked;
-                const box = document.getElementById('cl-item-' + id);
-                if (box) {
-                    box.checked = checked;
-                    if (checked && box.parentElement) box.parentElement.classList.remove('cl-missing');
-                }
-            });
-        });
-        persistChecklist();
-        refreshChecklistUI();
-    };
-
-    // Delegated so they survive every re-render of the parts tab
-    mainContent.addEventListener('change', (e) => {
-        const target = e.target;
-        if (!(target instanceof HTMLInputElement)) return;
-
-        if (target.dataset.clItem) {
-            getChecklist().checks[target.dataset.clItem] = target.checked;
-            if (target.parentElement) target.parentElement.classList.remove('cl-missing');
-            persistChecklist();
-            refreshChecklistUI();
-        } else if (target.dataset.clSection) {
-            const section = CHECKLIST_SECTIONS.find(s => s.id === target.dataset.clSection);
-            if (!section) return;
-            const cl = getChecklist();
-            section.items.forEach((_, i) => {
-                const id = checklistItemId(section, i);
-                cl.checks[id] = target.checked;
-                const box = document.getElementById('cl-item-' + id);
-                if (box) {
-                    box.checked = target.checked;
-                    if (target.checked && box.parentElement) box.parentElement.classList.remove('cl-missing');
-                }
-            });
-            persistChecklist();
-            refreshChecklistUI();
-        }
-    });
-
-    mainContent.addEventListener('input', (e) => {
-        const target = e.target;
-        if (target instanceof HTMLInputElement && target.dataset.clField) {
-            getChecklist().fields[target.dataset.clField] = target.value;
-            if (target.value.trim()) target.classList.remove('cl-missing');
-            persistChecklist();
-        }
-    });
-
-    // Button listeners
-    backBtn.onclick = () => {
-        popNavigation();
-    };
-    
-    cartBtn.onclick = () => { 
-        openCheckoutModal();
-    };
-    
-    logoutBtn.onclick = async () => {
-        const confirmed = await customConfirm(
-            'Are you sure you want to logout? Any unsaved changes will be lost.',
-            'Logout Confirmation'
-        );
-        
-        if (confirmed) {
+        // ⭐ NEW FUNCTION: Fetch parts and feedback data from server
+        async function loadPartsAndFeedback() {
             try {
-                await anvil.call(mainContent, 'logoutUser');
-                // Optionally reload the page or redirect after logout
-                window.location.reload();
+                            
+                // Call the Anvil server function
+                const data = await anvil.call(
+                    mainContent, 
+                    'getCustomerFeedback', 
+                    state.activeReg
+                );
+                            
+                if (data && data.length > 0) {
+                    // Build approved parts list (formatted string with parts and quantities)
+                    const approvedPartsList = data
+                        .map((row, index) => `${index + 1}. ${row.Item} - Qty: ${row.QuantityIssued}`)
+                        .join('\n');
+                    
+                    // Get customer remarks (assuming all rows have the same Remarks)
+                    const customerRemarks = data[0].Remarks || '';
+                    
+                    // Update state
+                    state.approvedParts = approvedPartsList;
+                    state.customerResponse = customerRemarks;
+                    
+                    
+                } else {
+                    // Clear the textareas if no data found
+                    state.approvedParts = '';
+                    state.customerResponse = '';
+                }
+                
             } catch (err) {
-                console.error('Logout error:', err);
+                console.error('Error fetching parts and feedback:', err);
                 await customAlert(
-                    'Failed to logout. Please try again.',
+                    'Failed to load parts and feedback data. Please try again.',
                     '❌ Error'
                 );
             }
         }
-    };
-    
-    homeFooterBtn.onclick = goToHome;
 
-    adminTrigger.onclick = () => {
-        state.adminClicks++;
-        clearTimeout(state.adminTimeout);
-        if (state.adminClicks === 5) {
-            state.adminClicks = 0;
-            state.currentView = 'admin';
-            render();
-        } else {
-            state.adminTimeout = setTimeout(() => { 
-                state.adminClicks = 0; 
-            }, 2000);
-        }
-    };
+        window.clearPartsDetails = async () => {
+            const confirmed = await customConfirm(
+                'Are you sure you want to clear Tech Notes, List of Defects, Requested Parts, Technician, Signature, and Inspection Checklist?',
+                'Clear All Details'
+            );
 
-    window.onscroll = () => {
-        backToTopBtn.className = window.scrollY > 300 ? 'visible-fade' : 'hidden-fade';
-    };
+            if (confirmed) {
+                state.techNotes = '';
+                state.defectList = '';
+                state.cart = [];
+                state.partsSearchQuery = '';
+                state.selectedTechnician = '';
+                state.signatureData = '';
+                state.collapseOpen = false;
+                state.dataLoadedForReg = null; // ⭐ Reset to allow re-loading data if needed
+                resetChecklist();
+                
+                const totalQuantity = state.cart.reduce((sum, item) => sum + item.quantity, 0);
+                cartCount.innerText = Math.round(totalQuantity);
+                cartCount.classList.toggle('hidden', state.cart.length === 0);
+                
+                renderRequestParts();
+                await customAlert('All details have been cleared.', 'Cleared');
+            }
+        };
 
-    backToTopBtn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.savePartsDetails = async () => {
+            // Get current values from DOM elements
+            const techNotesTextarea = document.getElementById('tech-notes-textarea');
+            const defectsTextarea = document.getElementById('defects-textarea');
+            const technicianDropdown = document.getElementById('technician-dropdown');
 
-    window.addEventListener('resize', () => {
-        if (signaturePadInstance) {
-            signaturePadInstance.resize();
-        }
-    });
+            if (techNotesTextarea) {
+                state.techNotes = techNotesTextarea.value;
+            }
+            if (defectsTextarea) {
+                state.defectList = defectsTextarea.value;
+            }
+            if (technicianDropdown) {
+                state.selectedTechnician = technicianDropdown.value;
+            }
 
-    window.openPartsModal = openPartsModal;
-    window.closePartsModal = closePartsModal;
-    window.openCheckoutModal = openCheckoutModal;
-    window.closeCheckoutModal = closeCheckoutModal;
+            // ⭐ IMPROVED VALIDATION - Collect all errors
+            const errors = [];
 
-    window.updateCartQuantityFromModal = (index, value) => {
-        const qty = parseFloat(value);
-        if (qty > 0) {
+            if (!state.techNotes.trim() && !state.defectList.trim()) {
+                errors.push('• Tech notes and defects are required');
+            }
+
+            if (!state.selectedTechnician) {
+                errors.push('• Please select a technician');
+            }
+
+            const signature = getSignatureData();
+            if (!signature || signature.length === 0) {
+                errors.push('• Signature is required');
+            }
+
+            // ⭐ Vehicle Inspection Checklist: every checkbox ticked and every field filled
+            const checklistResult = buildChecklistPayload();
+            if (checklistResult.missing.length > 0) {
+                errors.push(...formatChecklistErrors(checklistResult.missing));
+            }
+
+            // ⭐ Show alert if ANY validation fails
+            if (errors.length > 0) {
+                await customAlert(
+                    'Please complete the following:\n\n' + errors.join('\n'),
+                    '⚠️ Missing Required Fields'
+                );
+
+                // Open the checklist and highlight what is still missing
+                highlightChecklistMissing(checklistResult.missing);
+                return; // Stop execution
+            }
+
+            // Rest of your save logic...
+            let partsAndQuantities = null;
+            if (state.cart.length > 0) {
+                partsAndQuantities = state.cart.map((item) => 
+                    `${item.name} - Qty: ${item.quantity}`
+                                                   ).join('\n');
+            }
+
+            const techNotesValue = state.techNotes.trim() || null;
+            const defectListValue = state.defectList.trim() || null;
+
+            try {
+                await anvil.call(
+                    mainContent, 
+                    'storeTechDetails', 
+                    state.activeReg,
+                    techNotesValue, 
+                    defectListValue, 
+                    partsAndQuantities,
+                    state.selectedTechnician,
+                    signature,
+                    checklistResult.list
+                );
+
+                await customAlert(
+                    `Details have been saved successfully for JobCard ${state.activeReg}`,
+                    ' Success'
+                );
+
+                // Clear state
+                state.activeReg = null;
+                state.cart = [];
+                state.techNotes = '';
+                state.defectList = '';
+                state.partsSearchQuery = '';
+                state.customerResponse = '';
+                state.approvedParts = '';
+                state.selectedTechnician = '';
+                state.signatureData = '';
+                state.collapseOpen = false;
+                state.dataLoadedForReg = null;
+                state.cameFromWorkDone = false;
+
+                cartCount.innerText = 0;
+                cartCount.classList.add('hidden');
+
+                await loadActiveServices();
+                clearNavigationHistory();
+                clearSignature();
+                state.currentView = 'home';
+                render();
+
+            } catch (error) {
+                console.error('Error saving parts details:', error);
+
+                let errorMessage = 'Failed to save details. Please try again.';
+                if (error && error.message) {
+                    errorMessage = error.message;
+                } else if (error && error.args && error.args.length > 0) {
+                    errorMessage = error.args.join(' ');
+                } else if (typeof error === 'string') {
+                    errorMessage = error;
+                }
+
+                await customAlert(errorMessage, '❌ Error');
+            }
+        };
+
+        window.saveWorkDoneFromTab = async () => {
+            const textarea = document.getElementById('workdone-textarea');
+            const workDoneText = textarea ? textarea.value.trim() : '';
+
+            if (!workDoneText) {
+                await customAlert('Please enter the work done details before saving.', 'Work Done Required');
+                return;
+            }
+
+            try {
+                await anvil.call(mainContent, 'save_work_done', state.activeReg, workDoneText);
+
+                const service = state.activeServices.find(s => s.jobcardref === state.activeReg);
+                if (service) {
+                    service.workDone = workDoneText;
+                    service.status = 'Completed';
+                }
+
+                await customAlert(
+                    `Work done has been saved successfully for JobCard ${state.activeReg}`,
+                    ' Success'
+                );
+
+                state.currentWorkDoneReg = null;
+
+                // Reload active services to get updated data
+                await loadActiveServices();
+
+                clearNavigationHistory();
+                // Clear Cart
+                state.cart=[];
+                state.currentView = 'home';
+                render();    
+
+            } catch (err) {
+                console.error(err);
+                await customAlert(
+                    'Failed to save work done. Please ensure the server is up and running.',
+                    '❌ Error'
+                );
+            }
+        };
+
+        window.addToCart = (name, index) => {
+            const qtyInput = document.getElementById(`qty-${index}`);
+            const quantity = parseFloat(qtyInput?.value) || 1;
+
+            if (quantity <= 0) {
+                customAlert('Please enter a valid quantity greater than 0.', 'Invalid Quantity');
+                return;
+            }
+
+            const item = state.parts.find(p => p.name === name);
+            if (!item) return;
+
+            const existingItemIndex = state.cart.findIndex(c => c.name === item.name);
+
+            if (existingItemIndex > -1) {
+                state.cart[existingItemIndex].quantity += quantity;
+            } else {
+                state.cart.push({
+                    name: item.name,
+                    category: item.category,
+                    partNo: item.partNo,
+                    quantity: quantity
+                });
+            }
+
+            if (qtyInput) qtyInput.value = '1';
+
+            // Update badge and display without full re-render
+            updateCartBadgeOnly();
+            
+            // Correct view check: 'Request Parts' instead of 'request-parts'
+            if (state.currentView === 'Request Parts' && state.activePartsTab === 'request') {
+                updatePartsListDisplay();
+            } else {
+                render();
+            }
+        };
+
+        window.updateCartQuantity = (index, newQuantity) => {
+            const qty = parseFloat(newQuantity);
+
+            if (isNaN(qty) || qty <= 0) {
+                customAlert('Please enter a valid quantity greater than 0.', 'Invalid Quantity');
+                document.getElementById(`cart-qty-${index}`).value = state.cart[index].quantity;
+                return;
+            }
+
             state.cart[index].quantity = qty;
+            render();
+        };
+
+        window.removeFromCart = (i) => { 
+            state.cart.splice(i, 1);
+            state.editingCartIndex = null; // reset any in-progress edit to avoid stale index references
+
+            // Update the badge count immediately
+            updateCartBadgeOnly();
+
+            // Update UI without a refresh if we are on the Request Parts tab
+            // FIXED: Corrected view name from 'request-parts' to 'Request Parts'
+            if (state.currentView === 'Request Parts' && state.activePartsTab === 'request') {
+                updatePartsListDisplay();
+            } else {
+                render();
+            }
+        };
+
+        // ⭐ NEW: Puts a Requested Parts row into inline-edit mode
+        window.editCartItem = (i) => {
+            if (!state.cart[i]) return;
+            state.editingCartIndex = i;
+
+            if (state.currentView === 'Request Parts' && state.activePartsTab === 'request') {
+                updatePartsListDisplay();
+            } else {
+                render();
+            }
+
+            // Focus the quantity input for a smoother editing experience
+            const input = document.getElementById(`requested-part-qty-${i}`);
+            if (input) {
+                input.focus();
+                input.select();
+            }
+        };
+
+        // ⭐ NEW: Cancels inline-edit mode without saving changes
+        window.cancelCartItemEdit = () => {
+            state.editingCartIndex = null;
+
+            if (state.currentView === 'Request Parts' && state.activePartsTab === 'request') {
+                updatePartsListDisplay();
+            } else {
+                render();
+            }
+        };
+
+        // ⭐ NEW: Saves the edited quantity for a Requested Parts row
+        window.saveCartItemEdit = (i) => {
+            const input = document.getElementById(`requested-part-qty-${i}`);
+            const qty = input ? parseFloat(input.value) : NaN;
+
+            if (!input || isNaN(qty) || qty <= 0) {
+                customAlert('Please enter a valid quantity greater than 0.', 'Invalid Quantity');
+                return;
+            }
+
+            state.cart[i].quantity = qty;
+            state.editingCartIndex = null;
+
+            // Update the badge count immediately
+            updateCartBadgeOnly();
+
+            if (state.currentView === 'Request Parts' && state.activePartsTab === 'request') {
+                updatePartsListDisplay();
+            } else {
+                render();
+            }
+        };
+
+        window.goToHome = goToHome;
+
+        window.setSearchFilter = (f) => { 
+            state.activeSearchFilter = f; 
+            render(); 
+        };
+
+        window.clearStats = async () => {
+            const confirmed = await customConfirm(
+                'Are you sure you want to clear all session data? This cannot be undone.',
+                'Clear Session Data'
+            );
+            if (confirmed) {
+                state.orderHistory = [];
+                renderAdmin();
+            }
+        };
+
+        window.filterByStatus = (s) => { 
+            state.currentStatusFilter = (state.currentStatusFilter === s) ? 'all' : s; 
+            
+            // Update button states
+            const buttons = document.querySelectorAll('.btn-status');
+            buttons.forEach(btn => {
+                const btnText = btn.textContent.trim();
+                if (btnText === s) {
+                    btn.classList.toggle('active-filter');
+                } else {
+                    btn.classList.remove('active-filter');
+                }
+            });
+            
+            // Update the table
+            updateServiceTable();
+        };
+
+        window.openParts = (reg) => { 
+            if (state.activeReg !== reg) {
+                state.cart = [];
+                state.techNotes = '';
+                state.defectList = '';
+                state.partsSearchQuery = '';
+                state.customerResponse = '';
+                state.approvedParts = '';
+                state.selectedTechnician = '';
+                state.signatureData = '';
+                clearSignaturePad()
+                cartCount.innerText = 0;
+                cartCount.classList.add('hidden');
+                
+                // ⭐ Reset data loaded flag to allow fresh data load
+                state.dataLoadedForReg = null;
+            }
+            
+            // ⭐ Mark that we're NOT coming from Work Done
+            state.cameFromWorkDone = false;
+            
+            pushNavigation('Request Parts', { activeReg: reg, activePartsTab: 'request' });
+        };
+
+        window.openWorkDone = (reg) => {
+            if (state.activeReg !== reg) {
+                state.cart = [];
+                state.techNotes = '';
+                state.defectList = '';
+                state.partsSearchQuery = '';
+                state.customerResponse = '';
+                state.approvedParts = '';
+                state.selectedTechnician = '';
+                state.signatureData = '';
+                
+                cartCount.innerText = 0;
+                cartCount.classList.add('hidden');
+                
+                // ⭐ Reset data loaded flag to allow fresh data load
+                state.dataLoadedForReg = null;
+            }
+            
+            // ⭐ Mark that we're coming from Work Done
+            state.cameFromWorkDone = true;
+            
+            pushNavigation('Request Parts', { activeReg: reg, activePartsTab: 'workdone' });
+        };
+
+        window.cancelWorkDone = () => {
+            state.currentWorkDoneReg = null;
+            state.currentView = 'home';
+            render();
+        };
+
+        window.saveWorkDone = async () => {
+            const textarea = document.getElementById('work-done-textarea');
+            const workDoneText = textarea.value.trim();
+
+            if (!workDoneText) {
+                await customAlert('Please enter the work done details before saving.', 'Work Done Required');
+                return;
+            }
+
+            try {
+                await anvil.call(mainContent, 'save_work_done', state.currentWorkDoneReg, workDoneText);
+
+                const service = state.activeServices.find(s => s.jobcardref === state.currentWorkDoneReg);
+                if (service) {
+                    service.workDone = workDoneText;
+                    service.status = 'Completed';
+                }
+
+                await customAlert(
+                    `Work done has been saved successfully for jobcard reference ${state.currentWorkDoneReg}`,
+                    ' Success'
+                );
+
+                state.currentWorkDoneReg = null;
+                
+                // Reload active services to get updated data
+                await loadActiveServices();
+                
+                clearNavigationHistory();
+                state.currentView = 'home';
+                render();
+
+            } catch (err) {
+                console.error(err);
+                await customAlert(
+                    'Failed to save work done. Please ensure the server is up and running.',
+                    '❌ Error'
+                );
+            }
+        };
+
+        window.clearPartsSearch = () => {
+            state.partsSearchQuery = '';
+            renderRequestParts();
+        };
+
+        window.clearSignaturePad = () => {
+            clearSignature();
+        };
+
+        window.toggleCollapse = () => {
+            const content = document.getElementById('collapse-content');
+            const icon = document.getElementById('collapse-icon');
+            const button = document.getElementById('collapse-toggle');
+
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                state.collapseOpen = true;
+                button.style.background = 'linear-gradient(135deg, rgba(71, 85, 105, 0.8) 0%, rgba(51, 65, 85, 0.8) 100%)';
+                if (icon) {
+                    icon.style.transform = 'rotate(180deg)';
+                }
+                initSignaturePad();
+            } else {
+                getSignatureData();
+                content.style.display = 'none';
+                state.collapseOpen = false;
+                button.style.background = 'linear-gradient(135deg, rgba(51, 65, 85, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%)';
+                if (icon) {
+                    icon.style.transform = 'rotate(0deg)';
+                }
+            }
+
+            lucide.createIcons();
+        };
+
+        // ---- Inspection checklist handlers ----
+        window.toggleChecklist = () => {
+            const card = document.getElementById('checklist-card');
+            if (!card) return;
+            state.checklistOpen = !state.checklistOpen;
+            card.classList.toggle('open', state.checklistOpen);
+            const btn = document.getElementById('checklist-toggle');
+            if (btn) btn.setAttribute('aria-expanded', state.checklistOpen ? 'true' : 'false');
+        };
+
+        window.setChecklistAll = (checked) => {
+            const cl = getChecklist();
+            CHECKLIST_SECTIONS.forEach(section => {
+                section.items.forEach((_, i) => {
+                    const id = checklistItemId(section, i);
+                    cl.checks[id] = checked;
+                    const box = document.getElementById('cl-item-' + id);
+                    if (box) {
+                        box.checked = checked;
+                        if (checked && box.parentElement) box.parentElement.classList.remove('cl-missing');
+                    }
+                });
+            });
+            persistChecklist();
+            refreshChecklistUI();
+        };
+
+        // Delegated so they survive every re-render of the parts tab
+        mainContent.addEventListener('change', (e) => {
+            const target = e.target;
+            if (!(target instanceof HTMLInputElement)) return;
+
+            if (target.dataset.clItem) {
+                getChecklist().checks[target.dataset.clItem] = target.checked;
+                if (target.parentElement) target.parentElement.classList.remove('cl-missing');
+                persistChecklist();
+                refreshChecklistUI();
+            } else if (target.dataset.clSection) {
+                const section = CHECKLIST_SECTIONS.find(s => s.id === target.dataset.clSection);
+                if (!section) return;
+                const cl = getChecklist();
+                section.items.forEach((_, i) => {
+                    const id = checklistItemId(section, i);
+                    cl.checks[id] = target.checked;
+                    const box = document.getElementById('cl-item-' + id);
+                    if (box) {
+                        box.checked = target.checked;
+                        if (target.checked && box.parentElement) box.parentElement.classList.remove('cl-missing');
+                    }
+                });
+                persistChecklist();
+                refreshChecklistUI();
+            }
+        });
+
+        mainContent.addEventListener('input', (e) => {
+            const target = e.target;
+            if (target instanceof HTMLInputElement && target.dataset.clField) {
+                if (target.dataset.clDecimal === 'true') {
+                    // Allow only digits and a single decimal point
+                    let cleaned = target.value.replace(/[^0-9.]/g, '');
+                    const parts = cleaned.split('.');
+                    if (parts.length > 2) {
+                        cleaned = parts[0] + '.' + parts.slice(1).join('');
+                    }
+                    if (target.value !== cleaned) {
+                        target.value = cleaned;
+                    }
+                }
+                getChecklist().fields[target.dataset.clField] = target.value;
+                if (target.value.trim()) target.classList.remove('cl-missing');
+                persistChecklist();
+            }
+        });
+
+        // Button listeners
+        backBtn.onclick = () => {
+            popNavigation();
+        };
+        
+        cartBtn.onclick = () => { 
+            openCheckoutModal();
+        };
+        
+        logoutBtn.onclick = async () => {
+            const confirmed = await customConfirm(
+                'Are you sure you want to logout? Any unsaved changes will be lost.',
+                'Logout Confirmation'
+            );
+            
+            if (confirmed) {
+                try {
+                    await anvil.call(mainContent, 'logoutUser');
+                    // Optionally reload the page or redirect after logout
+                    window.location.reload();
+                } catch (err) {
+                    console.error('Logout error:', err);
+                    await customAlert(
+                        'Failed to logout. Please try again.',
+                        '❌ Error'
+                    );
+                }
+            }
+        };
+        
+        homeFooterBtn.onclick = goToHome;
+
+        adminTrigger.onclick = () => {
+            state.adminClicks++;
+            clearTimeout(state.adminTimeout);
+            if (state.adminClicks === 5) {
+                state.adminClicks = 0;
+                state.currentView = 'admin';
+                render();
+            } else {
+                state.adminTimeout = setTimeout(() => { 
+                    state.adminClicks = 0; 
+                }, 2000);
+            }
+        };
+
+        window.onscroll = () => {
+            backToTopBtn.className = window.scrollY > 300 ? 'visible-fade' : 'hidden-fade';
+        };
+
+        backToTopBtn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        window.addEventListener('resize', () => {
+            if (signaturePadInstance) {
+                signaturePadInstance.resize();
+            }
+        });
+
+        window.openPartsModal = openPartsModal;
+        window.closePartsModal = closePartsModal;
+        window.openCheckoutModal = openCheckoutModal;
+        window.closeCheckoutModal = closeCheckoutModal;
+
+        window.updateCartQuantityFromModal = (index, value) => {
+            const qty = parseFloat(value);
+            if (qty > 0) {
+                state.cart[index].quantity = qty;
+                
+                // Update cart count display
+                const totalQuantity = state.cart.reduce((sum, item) => sum + item.quantity, 0);
+                cartCount.innerText = Math.round(totalQuantity);
+                
+                // Refresh modal to show updated total
+                const currentModal = document.getElementById('checkout-modal-overlay');
+                if (currentModal) {
+                    closeCheckoutModal();
+                    setTimeout(() => openCheckoutModal(), 50);
+                }
+            }
+        };
+
+        window.removeFromCartFromModal = (index) => {
+            state.cart.splice(index, 1);
             
             // Update cart count display
-            const totalQuantity = state.cart.reduce((sum, item) => sum + item.quantity, 0);
-            cartCount.innerText = Math.round(totalQuantity);
+            if (state.cart.length === 0) {
+                cartCount.classList.add('hidden');
+            } else {
+                const totalQuantity = state.cart.reduce((sum, item) => sum + item.quantity, 0);
+                cartCount.innerText = Math.round(totalQuantity);
+            }
             
-            // Refresh modal to show updated total
+            // Refresh modal
             const currentModal = document.getElementById('checkout-modal-overlay');
             if (currentModal) {
                 closeCheckoutModal();
                 setTimeout(() => openCheckoutModal(), 50);
             }
-        }
-    };
+        };
 
-    window.removeFromCartFromModal = (index) => {
-        state.cart.splice(index, 1);
-        
-        // Update cart count display
-        if (state.cart.length === 0) {
-            cartCount.classList.add('hidden');
-        } else {
+        window.selectModalCategory = (id) => {
+            const resultsContainer = document.getElementById('modal-parts-results');
+            if (resultsContainer) {
+                resultsContainer.innerHTML = renderModalCategoryParts(id);
+                lucide.createIcons();
+            }
+        };
+
+        window.backToModalCategories = () => {
+            state.partsSearchQuery = '';
+            const searchInput = document.getElementById('modal-parts-search');
+            if (searchInput) searchInput.value = '';
+            updateModalPartsResults();
+        };
+
+        window.clearModalPartsSearch = () => {
+            state.partsSearchQuery = '';
+            const searchInput = document.getElementById('modal-parts-search');
+            if (searchInput) searchInput.value = '';
+            updateModalPartsResults();
+        };
+
+        window.addToCartFromModal = (name, inputId) => {
+            const qtyInput = document.getElementById(inputId);
+            const quantity = parseFloat(qtyInput?.value) || 1;
+
+            if (quantity <= 0) {
+                customAlert('Please enter a valid quantity greater than 0.', 'Invalid Quantity');
+                return;
+            }
+
+            const item = state.parts.find(p => p.name === name);
+            if (!item) return;
+
+            const existingItemIndex = state.cart.findIndex(c => c.name === item.name);
+
+            if (existingItemIndex > -1) {
+                state.cart[existingItemIndex].quantity += quantity;
+            } else {
+                state.cart.push({
+                    name: item.name,
+                    category: item.category,
+                    partNo: item.partNo,
+                    quantity: quantity
+                });
+            }
+
+            if (qtyInput) qtyInput.value = '1';
+
+            // Update cart count display
             const totalQuantity = state.cart.reduce((sum, item) => sum + item.quantity, 0);
             cartCount.innerText = Math.round(totalQuantity);
-        }
-        
-        // Refresh modal
-        const currentModal = document.getElementById('checkout-modal-overlay');
-        if (currentModal) {
-            closeCheckoutModal();
-            setTimeout(() => openCheckoutModal(), 50);
-        }
-    };
+            cartCount.classList.remove('hidden');
 
-    window.selectModalCategory = (id) => {
-        const resultsContainer = document.getElementById('modal-parts-results');
-        if (resultsContainer) {
-            resultsContainer.innerHTML = renderModalCategoryParts(id);
-            lucide.createIcons();
-        }
-    };
+            // Update modal cart summary
+            updateModalCartSummary();
+            
+            // If we're on the parts request tab, update the main display in real-time
+            // FIXED: Corrected view name from 'request-parts' to 'Request Parts'
+            if (state.currentView === 'Request Parts' && state.activePartsTab === 'request') {
+                updatePartsListDisplay();
+            }
+        };
+    }
 
-    window.backToModalCategories = () => {
-        state.partsSearchQuery = '';
-        const searchInput = document.getElementById('modal-parts-search');
-        if (searchInput) searchInput.value = '';
-        updateModalPartsResults();
-    };
+    // ===========================
+    // INITIALIZATION
+    // ===========================
 
-    window.clearModalPartsSearch = () => {
-        state.partsSearchQuery = '';
-        const searchInput = document.getElementById('modal-parts-search');
-        if (searchInput) searchInput.value = '';
-        updateModalPartsResults();
-    };
-
-    window.addToCartFromModal = (name, inputId) => {
-        const qtyInput = document.getElementById(inputId);
-        const quantity = parseFloat(qtyInput?.value) || 1;
-
-        if (quantity <= 0) {
-            customAlert('Please enter a valid quantity greater than 0.', 'Invalid Quantity');
-            return;
-        }
-
-        const item = state.parts.find(p => p.name === name);
-        if (!item) return;
-
-        const existingItemIndex = state.cart.findIndex(c => c.name === item.name);
-
-        if (existingItemIndex > -1) {
-            state.cart[existingItemIndex].quantity += quantity;
-        } else {
-            state.cart.push({
-                name: item.name,
-                category: item.category,
-                partNo: item.partNo,
-                quantity: quantity
-            });
-        }
-
-        if (qtyInput) qtyInput.value = '1';
-
-        // Update cart count display
-        const totalQuantity = state.cart.reduce((sum, item) => sum + item.quantity, 0);
-        cartCount.innerText = Math.round(totalQuantity);
-        cartCount.classList.remove('hidden');
-
-        // Update modal cart summary
-        updateModalCartSummary();
-        
-        // If we're on the parts request tab, update the main display in real-time
-        // FIXED: Corrected view name from 'request-parts' to 'Request Parts'
-        if (state.currentView === 'Request Parts' && state.activePartsTab === 'request') {
-            updatePartsListDisplay();
-        }
-    };
-}
-
-// ===========================
-// INITIALIZATION
-// ===========================
-
-init();
+    init();
 })();

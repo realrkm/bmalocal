@@ -22,7 +22,7 @@ class Payment(PaymentTemplate):
 
         # Attach the event that fetches Invoices
         self.search_keyword_1.set_event_handler('x-get-search-keys', self.getInvoices)
-        self.search_keyword_1.text_box_search.placeholder = "Enter Invoice Job Card Ref"
+        self.search_keyword_1.text_box_search.placeholder = "Enter Job Card Ref"
 
         # Handle what happens when a user selects a result
         self.search_keyword_1.set_event_handler('x-search-hints-result', self.populatePaymentDetails)

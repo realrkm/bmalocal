@@ -200,9 +200,64 @@ class Payment(PaymentTemplate):
     def deleteFile(self, jobCardID, docType):
         anvil.server.call("deleteFile", jobCardID, docType)
 
+
     def btn_SearchJobcard_click(self, **event_args):
-        """This method is called when the button is clicked"""
-        pass  # Write Code Here
+        """Search job cards and populate the DropDown."""
+    
+        jobcard_ref = self.txt_JobCardRef.text
+    
+        if not jobcard_ref or not jobcard_ref.strip():
+            Notification(
+                "Please enter a valid Job Card Reference.",
+                style="warning",
+                timeout=3
+            ).show()
+            return
+    
+        result = anvil.server.call_s(
+            'getDepositPaidOnQuotesAndPendingInvoices',
+            jobcard_ref.strip()
+        )
+    
+        # Check whether the server returned any records
+        if not result:
+            Notification(
+                "No matching job card found. Please enter a valid Job Card Reference.",
+                style="warning",
+                timeout=3
+            ).show()
+            self.drop_down_JobCardRefDetails.items = []
+            self.drop_down_JobCardRefDetails.selected_value = None
+            self.lbl_Source.text = ""
+            return
+    
+        # Populate the DropDown
+        self.drop_down_JobCardRefDetails.items = [
+            (
+                item["JobCardRef"],
+                {
+                    "ID": item["ID"],
+                    "JobCardRef": item["JobCardRef"],
+                    "Source": item["Source"]
+                }
+            )
+            for item in result
+        ]
+    
+        # Reset previous selection and label
+        self.drop_down_JobCardRefDetails.selected_value = None
+        self.lbl_Source.text = ""
+        
+    def drop_down_JobCardRefDetails_change(self, **event_args):
+        """Handle the selected job card."""
+        selected = self.drop_down_JobCardRefDetails.selected_value
+    
+        if selected is not None:
+            self.label_ID.text =selected["ID"]
+            self.lbl_Source.text = selected["Source"]
+        else:
+            self.lbl_Source.text = ""
+    
 
 
 

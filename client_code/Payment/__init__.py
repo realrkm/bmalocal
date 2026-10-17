@@ -200,6 +200,12 @@ class Payment(PaymentTemplate):
     def deleteFile(self, jobCardID, docType):
         anvil.server.call("deleteFile", jobCardID, docType)
 
+    def btn_SearchJobcard_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        pass  # Write Code Here
+
+
+
     
 
    

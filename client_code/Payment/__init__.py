@@ -97,12 +97,23 @@ class Payment(PaymentTemplate):
         """Do something when a result is selected from search hints."""
         jobcardID = result['ID']
         self.label_ID.text=jobcardID
-        self.txt_InvoicedAmount.text = anvil.server.call_s('get_invoice_total_by_job_id', jobcardID) 
-        self.text_box_PreviousPayment.text = anvil.server.call_s('get_previous_payment', jobcardID)
-        discount = anvil.server.call("get_discount_payment", jobcardID)
-        if discount != 0:
-            discount = float(discount.replace(",", ""))
-        bal = float(self.txt_InvoicedAmount.text.replace(",", "")) - float(self.text_box_PreviousPayment.text.replace(",", "")) - discount
+        self.label_source.text = result["Source"]
+        
+        if self.label_source.text == "Invoice":
+            self.txt_InvoicedAmount.text = anvil.server.call_s('get_invoice_total_by_job_id', jobcardID) 
+            self.text_box_PreviousPayment.text = anvil.server.call_s('get_previous_payment', jobcardID)
+            discount = anvil.server.call("get_discount_payment", jobcardID)
+            if discount != 0:
+                discount = float(discount.replace(",", ""))
+            bal = float(self.txt_InvoicedAmount.text.replace(",", "")) - float(self.text_box_PreviousPayment.text.replace(",", "")) - discount
+            
+        elif self.label_source.text == "Quotation":
+            self.txt_InvoicedAmount.placeholder = "Quotation Amount"
+            self.txt_InvoicedAmount.text = anvil.server.call_s('get_quotation_total_by_job_id', jobcardID) 
+            self.text_box_Discount.visible=False
+            self.text_box_PreviousPayment.visible = False
+            bal = float(self.txt_InvoicedAmount.text.replace(",", "")) - float(self.text_box_Amount.text or 0)
+            
         self.text_box_Bal.text = bal
         
     def recalculate_balance(self):

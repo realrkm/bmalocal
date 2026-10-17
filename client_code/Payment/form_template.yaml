@@ -67,6 +67,10 @@ components:
     name: label_ID
     properties: {visible: false}
     type: Label
+  - layout_properties: {grid_position: 'UFQDDW,HJNRAU'}
+    name: label_source
+    properties: {}
+    type: Label
   - components:
     - data_bindings: []
       layout_properties: {grid_position: 'NTPGDQ,TGYSAQ'}

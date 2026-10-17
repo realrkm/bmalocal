@@ -103,34 +103,19 @@ def getJobCardTechNotes(id):
     
 #************************************************* Technician Section *******************************
 def getTechnicianJobCards(status, regNo):
-    jobcardtechnician_list = []
-    for row in anvil.server.call_s('getTechnicianJobCards', status, regNo):
-        jobcardtechnician_list.append((row["Technician"], row))
-    return jobcardtechnician_list
+    return anvil.server.call_s('getTechnicianJobCards', status, regNo)
      
 def getJobCardDefects(id):
-    jobcarddefects_list = []
-    for row in anvil.server.call_s('getJobCardDefects', id):
-        jobcarddefects_list.append((row["Defects"], row))
-    return jobcarddefects_list
+    return anvil.server.call_s('getJobCardDefects', id)
 
 def getJobCardPricedDefects(id):
-    jobcarddefects_list = []
-    for row in anvil.server.call_s('getJobCardPricedDefects', id):
-        jobcarddefects_list.append((row["Defects"], row))
-    return jobcarddefects_list
-    
+    return anvil.server.call_s('getJobCardPricedDefects', id)
+   
 def getRequestedParts(id):
-    requestedparts_list = []
-    for row in anvil.server.call_s('getRequestedParts', id):
-        requestedparts_list.append((row["Part"], row))
-    return requestedparts_list
+    return anvil.server.call_s('getRequestedParts', id)
 
 def getAssignedTechnician(id):
-    assignedtechnician_list = []
-    for row in anvil.server.call_s('getAssignedTechnician', id):
-        assignedtechnician_list.append((row["Technician"], row))
-    return assignedtechnician_list
+    return anvil.server.call_s('getAssignedTechnician', id)
     
 #************************************************* Car Parts Section *******************************
 def getCarPartNames():

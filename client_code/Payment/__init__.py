@@ -109,7 +109,7 @@ class Payment(PaymentTemplate):
             
         elif self.label_source.text == "Quotation":
             self.txt_InvoicedAmount.placeholder = "Quotation Amount"
-            self.txt_InvoicedAmount.text = anvil.server.call_s('get_quotation_total_by_job_id', jobcardID) 
+            self.txt_InvoicedAmount.text = anvil.server.call_s('get_interimandquotation_total_by_job_id', jobcardID) 
             self.text_box_Discount.visible=False
             self.text_box_PreviousPayment.visible = False
             bal = float(self.txt_InvoicedAmount.text.replace(",", "")) - float(self.text_box_Amount.text or 0)

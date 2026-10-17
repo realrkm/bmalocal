@@ -102,6 +102,8 @@ class Payment(PaymentTemplate):
         if self.label_source.text == "Invoice":
             self.txt_InvoicedAmount.text = anvil.server.call_s('get_invoice_total_by_job_id', jobcardID) 
             self.text_box_PreviousPayment.text = anvil.server.call_s('get_previous_payment', jobcardID)
+            self.text_box_Discount.visible=True
+            self.text_box_PreviousPayment.visible = True
             discount = anvil.server.call("get_discount_payment", jobcardID)
             if discount != 0:
                 discount = float(discount.replace(",", ""))
@@ -148,7 +150,7 @@ class Payment(PaymentTemplate):
         self.btn_SaveAndNew.enabled = False
         
         if self.search_keyword_1.selected_result is None:
-            Notification("Enter Invoice Job Card Ref to proceed", title="Blank Field Found", style="warning", timeout=3).show()
+            Notification("Enter Invoice Jobcard Ref to proceed", title="Blank Field Found", style="warning", timeout=3).show()
             self.btn_SaveAndNew.enabled = True
             self.search_keyword_1.text_box_search.focus()
             return
@@ -185,7 +187,7 @@ class Payment(PaymentTemplate):
         if bal <= 0:
             anvil.server.call_s("update_invoice_status", self.search_keyword_1.selected_result['ID'])
             
-        alert('Payment saved successfully', title="Success", large=False)
+        Notification("Payment saved successfully", title="Success", style="success", timeout=3).show()
 
         #Download payment pdf
         media_object = anvil.server.call('createReportPdf', jobCardRefID, "Payment")

@@ -80,7 +80,10 @@ def getClientNameWithID(valueID):
             
 #************************************************* Job Card Details Section *******************************
 def getJobCardRef(valueID):
-    return anvil.server.call_s("getJobCardRef", valueID)
+    jobcardref_list = []
+    for row in anvil.server.call_s("getJobCardRef", valueID):
+        jobcardref_list.append((row["JobCardRef"], row))
+    return jobcardref_list
                
 def getJobCardInstructions(id):
     return anvil.server.call_s('getJobCardInstructions', id)

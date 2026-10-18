@@ -88,36 +88,82 @@ class Payment(PaymentTemplate):
         else:
             Notification("Ensure start date is greater or equal to end date", title="Check Dates", style="warning", timeout=3).show()
             
-    def getInvoices(self,  **event_args):
-        """Return invoice records to SearchKeyword."""
-        results = anvil.server.call("getPendingInvoices")
-        return [{'entry': r['JobCardRef'], 'ID': r['ID']} for r in results]
+   
+    def btn_SearchJobcard_click(self, **event_args):
+        """Search job cards and populate the DropDown."""
 
-    def populatePaymentDetails(self, result, **event_args):
-        """Do something when a result is selected from search hints."""
-        jobcardID = result['ID']
-        self.label_ID.text=jobcardID
-        self.label_source.text = result["Source"]
-        
-        if self.label_source.text == "Invoice":
-            self.txt_InvoicedAmount.text = anvil.server.call_s('get_invoice_total_by_job_id', jobcardID) 
-            self.text_box_PreviousPayment.text = anvil.server.call_s('get_previous_payment', jobcardID)
-            self.text_box_Discount.visible=True
-            self.text_box_PreviousPayment.visible = True
-            discount = anvil.server.call("get_discount_payment", jobcardID)
-            if discount != 0:
-                discount = float(discount.replace(",", ""))
-            bal = float(self.txt_InvoicedAmount.text.replace(",", "")) - float(self.text_box_PreviousPayment.text.replace(",", "")) - discount
-            
-        elif self.label_source.text == "Quotation":
-            self.txt_InvoicedAmount.placeholder = "Quotation Amount"
-            self.txt_InvoicedAmount.text = anvil.server.call_s('get_interimandquotation_total_by_job_id', jobcardID) 
-            self.text_box_Discount.visible=False
-            self.text_box_PreviousPayment.visible = False
-            bal = float(self.txt_InvoicedAmount.text.replace(",", "")) - float(self.text_box_Amount.text or 0)
-            
-        self.text_box_Bal.text = bal
-        
+        jobcard_ref = self.txt_JobCardRef.text
+
+        if not jobcard_ref or not jobcard_ref.strip():
+            Notification(
+                "Please enter a valid Job Card Reference.",
+                style="warning",
+                timeout=3
+            ).show()
+            return
+
+        result = anvil.server.call_s(
+            'getDepositPaidOnQuotesAndPendingInvoices',
+            jobcard_ref.strip()
+        )
+
+        # Check whether the server returned any records
+        if not result:
+            Notification(
+                "No matching job card found. Please enter a valid Job Card Reference.",
+                style="warning",
+                timeout=3
+            ).show()
+            self.drop_down_JobCardRefDetails.items = []
+            self.drop_down_JobCardRefDetails.selected_value = None
+            self.lbl_Source.text = ""
+            return
+
+        # Populate the DropDown
+        self.drop_down_JobCardRefDetails.items = [
+            (
+                item["JobCardRef"],
+                {
+                    "ID": item["ID"],
+                    "JobCardRef": item["JobCardRef"],
+                    "Source": item["Source"]
+                }
+            )
+            for item in result
+        ]
+
+        # Reset previous selection and label
+        self.drop_down_JobCardRefDetails.selected_value = None
+        self.lbl_Source.text = ""
+
+    def drop_down_JobCardRefDetails_change(self, **event_args):
+        """Handle the selected job card."""
+        selected = self.drop_down_JobCardRefDetails.selected_value
+
+        if selected is not None:
+            self.label_ID.text =selected["ID"]
+            self.lbl_Source.text = selected["Source"]
+            if self.lbl_Source.text == "Invoice":
+                self.txt_InvoicedAmount.text = anvil.server.call_s('get_invoice_total_by_job_id', self.label_ID.text) 
+                self.text_box_PreviousPayment.text = anvil.server.call_s('get_previous_payment', self.label_ID.text)
+                self.text_box_Discount.visible=True
+                self.text_box_PreviousPayment.visible = True
+                discount = anvil.server.call("get_discount_payment", self.label_ID.text)
+                if discount != 0:
+                    discount = float(discount.replace(",", ""))
+                bal = float(self.txt_InvoicedAmount.text.replace(",", "")) - float(self.text_box_PreviousPayment.text.replace(",", "")) - discount
+    
+            elif self.lbl_Source.text == "Quotation":
+                self.txt_InvoicedAmount.placeholder = "Quotation Amount"
+                self.txt_InvoicedAmount.text = anvil.server.call_s('get_interimandquotation_total_by_job_id', self.label_ID.text) 
+                self.text_box_Discount.visible=False
+                self.text_box_PreviousPayment.visible = False
+                bal = float(self.txt_InvoicedAmount.text.replace(",", "")) - float(self.text_box_Amount.text or 0)
+    
+            self.text_box_Bal.text = bal
+        else:
+            self.lbl_Source.text = ""
+ 
     def recalculate_balance(self):
     # Parse values safely
         invoiced = float(self.txt_InvoicedAmount.text.replace(",", "") or 0)
@@ -149,8 +195,8 @@ class Payment(PaymentTemplate):
         """This method is called when the button is clicked"""
         self.btn_SaveAndNew.enabled = False
         
-        if self.search_keyword_1.selected_result is None:
-            Notification("Enter Invoice Jobcard Ref to proceed", title="Blank Field Found", style="warning", timeout=3).show()
+        if self.drop_down_JobCardRefDetails.selected_value is None:
+            Notification("Enter Jobcard Ref to proceed", title="Blank Field Found", style="warning", timeout=3).show()
             self.btn_SaveAndNew.enabled = True
             self.search_keyword_1.text_box_search.focus()
             return
@@ -201,62 +247,6 @@ class Payment(PaymentTemplate):
         anvil.server.call("deleteFile", jobCardID, docType)
 
 
-    def btn_SearchJobcard_click(self, **event_args):
-        """Search job cards and populate the DropDown."""
-    
-        jobcard_ref = self.txt_JobCardRef.text
-    
-        if not jobcard_ref or not jobcard_ref.strip():
-            Notification(
-                "Please enter a valid Job Card Reference.",
-                style="warning",
-                timeout=3
-            ).show()
-            return
-    
-        result = anvil.server.call_s(
-            'getDepositPaidOnQuotesAndPendingInvoices',
-            jobcard_ref.strip()
-        )
-    
-        # Check whether the server returned any records
-        if not result:
-            Notification(
-                "No matching job card found. Please enter a valid Job Card Reference.",
-                style="warning",
-                timeout=3
-            ).show()
-            self.drop_down_JobCardRefDetails.items = []
-            self.drop_down_JobCardRefDetails.selected_value = None
-            self.lbl_Source.text = ""
-            return
-    
-        # Populate the DropDown
-        self.drop_down_JobCardRefDetails.items = [
-            (
-                item["JobCardRef"],
-                {
-                    "ID": item["ID"],
-                    "JobCardRef": item["JobCardRef"],
-                    "Source": item["Source"]
-                }
-            )
-            for item in result
-        ]
-    
-        # Reset previous selection and label
-        self.drop_down_JobCardRefDetails.selected_value = None
-        self.lbl_Source.text = ""
-        
-    def drop_down_JobCardRefDetails_change(self, **event_args):
-        """Handle the selected job card."""
-        selected = self.drop_down_JobCardRefDetails.selected_value
-    
-        if selected is not None:
-            self.label_ID.text =selected["ID"]
-            self.lbl_Source.text = selected["Source"]
-        else:
-            self.lbl_Source.text = ""
     
 
 

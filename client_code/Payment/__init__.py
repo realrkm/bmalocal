@@ -94,7 +94,7 @@ class Payment(PaymentTemplate):
             ).show()
             return
 
-        result = anvil.server.call_s(
+        result = anvil.server.call(
             'getDepositPaidOnQuotesAndPendingInvoices',
             jobcard_ref.strip()
         )
@@ -212,7 +212,7 @@ class Payment(PaymentTemplate):
             return
             
         paymentDate = self.date_picker_1.date
-        jobCardRefID = self.search_keyword_1.selected_result['ID']
+        jobCardRefID = self.label_ID.text
         paymentMode = self.text_box_PaymentMode.text
         amountPaid = self.text_box_Amount.text
         discount = self.text_box_Discount.text
@@ -237,6 +237,7 @@ class Payment(PaymentTemplate):
         
     def deleteFile(self, jobCardID, docType):
         anvil.server.call("deleteFile", jobCardID, docType)
+
 
 
     

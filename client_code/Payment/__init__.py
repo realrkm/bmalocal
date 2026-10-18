@@ -190,7 +190,7 @@ class Payment(PaymentTemplate):
         if self.drop_down_JobCardRefDetails.selected_value is None:
             Notification("Enter Jobcard Ref to proceed", title="Blank Field Found", style="warning", timeout=3).show()
             self.btn_SaveAndNew.enabled = True
-            self.search_keyword_1.text_box_search.focus()
+            self.txt_JobCardRef.focus()
             return
             
         if self.date_picker_1.date is None:

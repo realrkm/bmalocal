@@ -17,16 +17,9 @@ class Payment(PaymentTemplate):
         # Any code you write here will run before the form opens.
         anvil.js.call('replaceBanner')
         
-        #Set focus into technician
-        self.search_keyword_1.text_box_search.focus()
-
-        # Attach the event that fetches Invoices
-        self.search_keyword_1.set_event_handler('x-get-search-keys', self.getInvoices)
-        self.search_keyword_1.text_box_search.placeholder = "Enter Jobcard Reference"
-
-        # Handle what happens when a user selects a result
-        self.search_keyword_1.set_event_handler('x-search-hints-result', self.populatePaymentDetails)
-            
+        #Set focus into Jobcard Ref
+        self.txt_JobCardRef.focus()
+                   
     def btn_Search_click(self, **event_args):
         """This method is called when the button is clicked"""
         if self.start_date.date is None:
@@ -91,7 +84,6 @@ class Payment(PaymentTemplate):
    
     def btn_SearchJobcard_click(self, **event_args):
         """Search job cards and populate the DropDown."""
-
         jobcard_ref = self.txt_JobCardRef.text
 
         if not jobcard_ref or not jobcard_ref.strip():
@@ -164,8 +156,6 @@ class Payment(PaymentTemplate):
         else:
             self.lbl_Source.text = ""
 
-    
-        
     def recalculate_balance(self):
     # Parse values safely
         invoiced = float(self.txt_InvoicedAmount.text.replace(",", "") or 0)
@@ -197,8 +187,8 @@ class Payment(PaymentTemplate):
         """This method is called when the button is clicked"""
         self.btn_SaveAndNew.enabled = False
         
-        if self.search_keyword_1.selected_result is None:
-            Notification("Enter Invoice Jobcard Ref to proceed", title="Blank Field Found", style="warning", timeout=3).show()
+        if self.drop_down_JobCardRefDetails.selected_value is None:
+            Notification("Enter Jobcard Ref to proceed", title="Blank Field Found", style="warning", timeout=3).show()
             self.btn_SaveAndNew.enabled = True
             self.search_keyword_1.text_box_search.focus()
             return

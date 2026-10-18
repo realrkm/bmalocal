@@ -55,10 +55,6 @@ components:
     name: label_title
     properties: {align: center, background: '#0056D6', bold: false, font: Mozilla Headline, font_size: 22, foreground: 'theme:White', text: Payment Details}
     type: Label
-  - layout_properties: {grid_position: 'TVHLML,PZTKBE'}
-    name: search_keyword_1
-    properties: {}
-    type: form:SearchKeyword
   - layout_properties: {grid_position: 'EHFXUF,VPGIXC'}
     name: spacer_1
     properties: {height: 21}

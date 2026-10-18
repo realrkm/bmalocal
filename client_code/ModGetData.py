@@ -73,33 +73,20 @@ def handle_server_errors(exc, label):
 
 #************************************************* Client Details Section *******************************
 def getClientName(self):
-    name_list = []
-    for row in anvil.server.call_s("getClientFullname"):
-        name_list.append((row["Fullname"], row))
-    return name_list # Continue using data
+    return anvil.server.call_s("getClientFullname")
       
 def getClientNameWithID(valueID):
-    result = anvil.server.call_s("getClientNameWithID", valueID)
-    return result
+    return anvil.server.call_s("getClientNameWithID", valueID)
             
 #************************************************* Job Card Details Section *******************************
 def getJobCardRef(valueID):
-    jobcardref_list = []
-    for row in anvil.server.call_s("getJobCardRef", valueID):
-        jobcardref_list.append((row["JobCardRef"], row))
-    return jobcardref_list
+    return anvil.server.call_s("getJobCardRef", valueID)
                
 def getJobCardInstructions(id):
-    jobcardinstructions_list = []
-    for row in anvil.server.call_s('getJobCardInstructions', id):
-        jobcardinstructions_list.append((row["Instructions"], row))
-    return jobcardinstructions_list
+    return anvil.server.call_s('getJobCardInstructions', id)
 
 def getJobCardTechNotes(id):
-    jobcardtechnotes_list = []
-    for row in anvil.server.call_s('getJobCardTechNotes', id):
-        jobcardtechnotes_list.append((row["TechNotes"], row))
-    return jobcardtechnotes_list    
+    return anvil.server.call_s('getJobCardTechNotes', id)
     
 #************************************************* Technician Section *******************************
 def getTechnicianJobCards(status, regNo):

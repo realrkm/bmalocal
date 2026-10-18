@@ -59,7 +59,8 @@ components:
     name: spacer_1
     properties: {height: 21}
     type: Spacer
-  - layout_properties: {grid_position: 'DGTZXQ,EPVIMC'}
+  - event_bindings: {pressed_enter: btn_SearchJobcard_click}
+    layout_properties: {grid_position: 'DGTZXQ,EPVIMC'}
     name: txt_JobCardRef
     properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Jobcard Ref}
     type: TextBox

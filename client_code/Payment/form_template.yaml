@@ -86,7 +86,7 @@ components:
     - data_bindings: []
       layout_properties: {grid_position: 'NTPGDQ,TGYSAQ'}
       name: date_picker_1
-      properties: {align: center, background: 'theme:White', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Payment Date *}
+      properties: {align: center, background: 'theme:White', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', format: '%d/%m/%Y', placeholder: Enter Payment Date *}
       type: DatePicker
     - layout_properties: {grid_position: 'NTPGDQ,DEYVIU'}
       name: txt_InvoicedAmount

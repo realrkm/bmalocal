@@ -7,7 +7,6 @@ import anvil.tables.query as q
 from anvil.tables import app_tables
 from ..PaidPendingInvoices import PaidPendingInvoices
 import anvil.js
-import time
 
 
 class Payment(PaymentTemplate):
@@ -96,14 +95,14 @@ class Payment(PaymentTemplate):
             return
 
         result = anvil.server.call(
-            'getDepositPaidOnQuotesAndPendingInvoices',
+            'getJobcardEitherInQuotesOrPendingInvoices',
             jobcard_ref.strip()
         )
 
         # Check whether the server returned any records
         if not result:
             Notification(
-                "No matching job card found. Please enter a valid Job Card Reference.",
+                "No matching job card found. Please enter a valid Jobcard Reference.",
                 style="warning",
                 timeout=3
             ).show()
@@ -180,15 +179,23 @@ class Payment(PaymentTemplate):
             self.text_box_Bal.foreground = "black"
 
     def text_box_Discount_change(self, **event_args):
+        #Hide Save button to so that balance is calculated first.
+        self.btn_SaveAndNew.visible = False
         self.recalculate_balance()
+        #Show Save button after balance is calculated.
+        self.btn_SaveAndNew.visible = True
 
     def text_box_Amount_change(self, **event_args):
+        #Hide Save button to so that balance is calculated first.
+        self.btn_SaveAndNew.visible = False
         self.recalculate_balance()
+        #Show Save button after balance is calculated.
+        self.btn_SaveAndNew.visible = True
         
     def btn_SaveAndNew_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.btn_SaveAndNew.enabled = False
-        time.sleep(2)
+        
         if self.drop_down_JobCardRefDetails.selected_value is None:
             Notification("Enter Jobcard Ref to proceed", title="Blank Field Found", style="warning", timeout=3).show()
             self.btn_SaveAndNew.enabled = True

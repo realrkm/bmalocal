@@ -148,9 +148,10 @@ class Payment(PaymentTemplate):
             elif self.lbl_Source.text == "Quotation":
                 self.txt_InvoicedAmount.placeholder = "Quotation Amount"
                 self.txt_InvoicedAmount.text = anvil.server.call_s('get_interimandquotation_total_by_job_id', self.label_ID.text) 
+                self.text_box_PreviousPayment.text = anvil.server.call_s('get_previous_payment', self.label_ID.text)
                 self.text_box_Discount.visible=False
                 self.text_box_PreviousPayment.visible = False
-                bal = float(self.txt_InvoicedAmount.text.replace(",", "")) - float(self.text_box_Amount.text or 0)
+                bal = float(self.txt_InvoicedAmount.text.replace(",", "")) - float(self.text_box_Amount.text or 0) - float(self.text_box_PreviousPayment.text.replace(",", ""))
     
             self.text_box_Bal.text = bal
         else:

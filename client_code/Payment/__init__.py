@@ -7,6 +7,7 @@ import anvil.tables.query as q
 from anvil.tables import app_tables
 from ..PaidPendingInvoices import PaidPendingInvoices
 import anvil.js
+import time
 
 
 class Payment(PaymentTemplate):
@@ -187,7 +188,7 @@ class Payment(PaymentTemplate):
     def btn_SaveAndNew_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.btn_SaveAndNew.enabled = False
-        
+        time.sleep(2)
         if self.drop_down_JobCardRefDetails.selected_value is None:
             Notification("Enter Jobcard Ref to proceed", title="Blank Field Found", style="warning", timeout=3).show()
             self.btn_SaveAndNew.enabled = True

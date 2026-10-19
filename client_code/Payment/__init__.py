@@ -158,7 +158,10 @@ class Payment(PaymentTemplate):
             self.lbl_Source.text = ""
 
     def recalculate_balance(self):
-    # Parse values safely
+        #Hide Save button to so that balance is calculated first.
+        self.btn_SaveAndNew.visible = False
+
+        # Parse values safely
         invoiced = float(self.txt_InvoicedAmount.text.replace(",", "") or 0)
         previous = float(self.text_box_PreviousPayment.text.replace(",", "") or 0)
         discount = float(self.text_box_Discount.text or 0)
@@ -178,19 +181,15 @@ class Payment(PaymentTemplate):
         else:
             self.text_box_Bal.foreground = "black"
 
-    def text_box_Discount_change(self, **event_args):
-        #Hide Save button to so that balance is calculated first.
-        self.btn_SaveAndNew.visible = False
-        self.recalculate_balance()
         #Show Save button after balance is calculated.
         self.btn_SaveAndNew.visible = True
 
-    def text_box_Amount_change(self, **event_args):
-        #Hide Save button to so that balance is calculated first.
-        self.btn_SaveAndNew.visible = False
+    def text_box_Discount_change(self, **event_args):
         self.recalculate_balance()
-        #Show Save button after balance is calculated.
-        self.btn_SaveAndNew.visible = True
+
+    def text_box_Amount_change(self, **event_args):
+        self.recalculate_balance()
+        
         
     def btn_SaveAndNew_click(self, **event_args):
         """This method is called when the button is clicked"""

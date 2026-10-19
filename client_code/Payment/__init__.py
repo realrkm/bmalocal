@@ -217,9 +217,8 @@ class Payment(PaymentTemplate):
         paymentMode = self.text_box_PaymentMode.text
         amountPaid = self.text_box_Amount.text
         discount = self.text_box_Discount.text
-        bal = self.text_box_Bal.text
+        bal = self.text_box_Bal.text   
 
-        alert(f"The bal is {bal}")          
         #Save Data
         anvil.server.call('save_payment_details', paymentDate, jobCardRefID, paymentMode, amountPaid, discount, bal)
         

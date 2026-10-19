@@ -151,7 +151,7 @@ components:
           type: Label
         - layout_properties: {grid_position: 'MLJMJE,VBDOJD'}
           name: label_interim_quote
-          properties: {align: center, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: 'fa:times', text: Interim Quote}
+          properties: {align: center, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: 'fa:wpforms', text: Interim Quote}
           type: Label
         - layout_properties: {grid_position: 'MLJMJE,DHFUEJ'}
           name: label_cancelled

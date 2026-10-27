@@ -140,6 +140,22 @@
 | 7 | `PreparedByStaff` | `varchar(255)` | NO |  | NULL |  |  |
 | 8 | `Signature` | `longblob` | YES |  | NULL |  |  |
 
+### `tbl_technicianinspectionchecklist`
+**Engine**: InnoDB | **Collation**: utf8mb4_general_ci
+
+| # | Column Name | Type | Nullable | Key | Default | Extra | Foreign Key Ref |
+| -: | :--- | :--- | :---: | :---: | :--- | :--- | :--- |
+| 1 | `ID` | `int` | NO | PRI | NULL | auto_increment |  |
+| 2 | `JobCardRefID` | `int` | NO | MUL | NULL |  | `tbl_jobcarddetails.ID` |
+| 3 | `ItemCode` | `varchar(10)` | NO |  | NULL |  |  |
+| 4 | `SectionCode` | `char(1)` | NO |  | NULL |  |  |
+| 5 | `SectionTitle` | `varchar(255)` | NO |  | NULL |  |  |
+| 6 | `ItemDescription` | `text` | NO |  | NULL |  |  |
+| 7 | `IsChecked` | `tinyint(1)` | NO |  | 0 |  |  |
+| 8 | `FieldsJSON` | `json` | YES |  | NULL |  |  |
+| 9 | `PreparedByStaff` | `varchar(255)` | YES |  | NULL |  |  |
+| 10 | `UpdatedAt` | `datetime` | NO |  | CURRENT_TIMESTAMP | on update CURRENT_TIMESTAMP |  |
+
 ### `tbl_incomplete_defects`
 **Rows**: 44 | **Engine**: InnoDB | **Collation**: utf8mb4_0900_ai_ci
 

@@ -64,11 +64,11 @@
         // Pending display update timeout
         pendingDisplayUpdate: null,
 
-        // ⭐ NEW: Track if data has been loaded for current reg and navigation source
+        //  NEW: Track if data has been loaded for current reg and navigation source
         dataLoadedForReg: null,
         cameFromWorkDone: false,
 
-        // ⭐ NEW: Track which Requested Parts row (if any) is currently in inline-edit mode
+        //  NEW: Track which Requested Parts row (if any) is currently in inline-edit mode
         editingCartIndex: null
     };
     // Category display configuration
@@ -1952,7 +1952,7 @@
                 return;
             }
 
-            // ⭐ SKIP if data was already loaded for this jobcard reference
+            //  SKIP if data was already loaded for this jobcard reference
             if (state.dataLoadedForReg === state.activeReg) {
                 return;
             }
@@ -2087,9 +2087,28 @@
                 }
             }
 
+            // ============================================
+            // POPULATE INSPECTION CHECKLIST
+            // ============================================
+            if (Array.isArray(latestRecord.Checklist) && latestRecord.Checklist.length > 0) {
+                const cl = getChecklist();
+                latestRecord.Checklist.forEach(entry => {
+                    if (!entry || !entry.id) return;
+                    cl.checks[entry.id] = !!entry.checked;
+                    if (Array.isArray(entry.fields)) {
+                        entry.fields.forEach(f => {
+                            if (f && f.name != null) {
+                                cl.fields[entry.id + '.' + f.name] = f.value != null ? String(f.value) : '';
+                            }
+                        });
+                    }
+                });
+                persistChecklist();
+            }
+
             state.isPopulatingData = false;
             
-            // ⭐ Mark data as loaded for this jobcard
+            //  Mark data as loaded for this jobcard
             state.dataLoadedForReg = state.activeReg;
 
             // Clear any pending display updates
@@ -2474,7 +2493,7 @@
         const defectsVoiceStop = document.getElementById('defects-voice-stop');
         const defectsVoiceIndicator = document.getElementById('defects-voice-indicator');
 
-        // ⭐ POPULATE EXISTING DATA (only on first call, prevented by flag)
+        //  POPULATE EXISTING DATA (only on first call, prevented by flag)
         populateExistingJobCardData();
 
         if (techNotesTextarea) {
@@ -3130,8 +3149,8 @@
         state.cart = [];
         state.selectedTechnician = '';
         state.signatureData = '';
-        state.dataLoadedForReg = null; // ⭐ Reset data loaded flag
-        state.cameFromWorkDone = false; // ⭐ Reset work done flag
+        state.dataLoadedForReg = null; //  Reset data loaded flag
+        state.cameFromWorkDone = false; //  Reset work done flag
         
         clearNavigationHistory();
         
@@ -3152,7 +3171,7 @@
         window.switchPartsTab = async (tabName) => {
             state.activePartsTab = tabName;
             
-            // ⭐ When switching to feedback tab, fetch parts and feedback data
+            //  When switching to feedback tab, fetch parts and feedback data
             if (tabName === 'feedback' && state.activeReg) {
                 await loadPartsAndFeedback();
             }
@@ -3160,7 +3179,7 @@
             renderRequestParts();
         };
         
-        // ⭐ NEW FUNCTION: Fetch parts and feedback data from server
+        //  NEW FUNCTION: Fetch parts and feedback data from server
         async function loadPartsAndFeedback() {
             try {
                             
@@ -3214,7 +3233,7 @@
                 state.selectedTechnician = '';
                 state.signatureData = '';
                 state.collapseOpen = false;
-                state.dataLoadedForReg = null; // ⭐ Reset to allow re-loading data if needed
+                state.dataLoadedForReg = null; //  Reset to allow re-loading data if needed
                 resetChecklist();
                 
                 const totalQuantity = state.cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -3242,7 +3261,7 @@
                 state.selectedTechnician = technicianDropdown.value;
             }
 
-            // ⭐ IMPROVED VALIDATION - Collect all errors
+            //  IMPROVED VALIDATION - Collect all errors
             const errors = [];
 
             if (!state.techNotes.trim() && !state.defectList.trim()) {
@@ -3258,17 +3277,17 @@
                 errors.push('• Signature is required');
             }
 
-            // ⭐ Vehicle Inspection Checklist: every checkbox ticked and every field filled
+            //  Vehicle Inspection Checklist: every checkbox ticked and every field filled
             const checklistResult = buildChecklistPayload();
             if (checklistResult.missing.length > 0) {
                 errors.push(...formatChecklistErrors(checklistResult.missing));
             }
 
-            // ⭐ Show alert if ANY validation fails
+            //  Show alert if ANY validation fails
             if (errors.length > 0) {
                 await customAlert(
                     'Please complete the following:\n\n' + errors.join('\n'),
-                    '⚠️ Missing Required Fields'
+                    ' Missing Required Fields'
                 );
 
                 // Open the checklist and highlight what is still missing
@@ -3454,7 +3473,7 @@
             }
         };
 
-        // ⭐ NEW: Puts a Requested Parts row into inline-edit mode
+        //  NEW: Puts a Requested Parts row into inline-edit mode
         window.editCartItem = (i) => {
             if (!state.cart[i]) return;
             state.editingCartIndex = i;
@@ -3473,7 +3492,7 @@
             }
         };
 
-        // ⭐ NEW: Cancels inline-edit mode without saving changes
+        //  NEW: Cancels inline-edit mode without saving changes
         window.cancelCartItemEdit = () => {
             state.editingCartIndex = null;
 
@@ -3484,7 +3503,7 @@
             }
         };
 
-        // ⭐ NEW: Saves the edited quantity for a Requested Parts row
+        //  NEW: Saves the edited quantity for a Requested Parts row
         window.saveCartItemEdit = (i) => {
             const input = document.getElementById(`requested-part-qty-${i}`);
             const qty = input ? parseFloat(input.value) : NaN;
@@ -3557,11 +3576,11 @@
                 cartCount.innerText = 0;
                 cartCount.classList.add('hidden');
                 
-                // ⭐ Reset data loaded flag to allow fresh data load
+                //  Reset data loaded flag to allow fresh data load
                 state.dataLoadedForReg = null;
             }
             
-            // ⭐ Mark that we're NOT coming from Work Done
+            //  Mark that we're NOT coming from Work Done
             state.cameFromWorkDone = false;
             
             pushNavigation('Request Parts', { activeReg: reg, activePartsTab: 'request' });
@@ -3581,11 +3600,11 @@
                 cartCount.innerText = 0;
                 cartCount.classList.add('hidden');
                 
-                // ⭐ Reset data loaded flag to allow fresh data load
+                //  Reset data loaded flag to allow fresh data load
                 state.dataLoadedForReg = null;
             }
             
-            // ⭐ Mark that we're coming from Work Done
+            //  Mark that we're coming from Work Done
             state.cameFromWorkDone = true;
             
             pushNavigation('Request Parts', { activeReg: reg, activePartsTab: 'workdone' });

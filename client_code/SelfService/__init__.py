@@ -29,12 +29,21 @@ class SelfService(SelfServiceTemplate):
         anvil.server.call("save_work_done_by_technician", jobcardref, workdone)
         return None
 
-    def storeTechDetails(self, jobcard_ref, tech_notes, defects, parts, technician, signature_data):
+    def storeTechDetails(self, jobcard_ref, tech_notes, defects, parts, technician, signature_data, checklist=None):
         signature = self.get_signature_image(signature_data)
         JobCardID = anvil.server.call_s("getJobCardID", jobcard_ref)
         if parts is None:
             parts = "None"
-        anvil.server.call('saveOrUpdateTechnicianPortalDefectsAndRequestedParts', JobCardID, tech_notes, defects, parts, technician, signature)
+        anvil.server.call(
+            'saveOrUpdateTechnicianPortalDefectsAndRequestedParts',
+            JobCardID,
+            tech_notes,
+            defects,
+            parts,
+            technician,
+            signature,
+            checklist
+        )
         return None
 
     def get_signature_image(self, signature_data):

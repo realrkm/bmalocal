@@ -36,7 +36,7 @@ components:
       type: CheckBox
     - layout_properties: {grid_position: 'HONBRY,HYFHUG'}
       name: chk_explain
-      properties: {background: 'theme:Gray 800', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: 'Invoice explained - Yetu/MPesa-Cash / Referral asked: "Who else has BMW?"'}
+      properties: {background: 'theme:Gray 800', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: 'Invoice explained - MPesa-Cash / Referral asked: "Who else has BMW?"'}
       type: CheckBox
     - layout_properties: {grid_position: 'XAZOEL,UYNHTV'}
       name: label_4

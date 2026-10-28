@@ -189,7 +189,63 @@ class TestTechnicianChecklist(unittest.TestCase):
         self.assertTrue(data[0]["Checklist"][0]["checked"])
         self.assertEqual(data[0]["Checklist"][0]["fields"][0]["value"], "6.5")
 
+    def test_save_confirmation_details_upserts_verify_checklist_json(self):
+        bma = _load_callables()
+        mock_cursor = MagicMock()
+        mock_cursor.fetchone.return_value = None  # No existing row in tbl_completedjobcards
+
+        mock_sig = MagicMock()
+        mock_sig.get_bytes.return_value = b"sig-bytes"
+
+        verify_payload = {
+            "chk_torque": True,
+            "chk_test": True,
+            "chk_clean": True,
+            "chk_old": True,
+            "chk_explain": True,
+            "next_service_date": "2027-04-28",
+            "next_service_mileage": "125000",
+            "time_start": "2026-10-28T09:00:00",
+            "time_end": "2026-10-28T13:30:00",
+            "efficiency": "95%",
+        }
+
+        with patch("anvil.users.get_user", return_value={"email": "advisor@bmaauto.com", "role_id": 1}), \
+             patch.object(bma, "db_cursor") as mock_db_cursor:
+            mock_db_cursor.return_value.__enter__.return_value = mock_cursor
+
+            bma.saveConfirmationDetails(
+                jobCardId=99,
+                remarks="All checks verified",
+                signature=mock_sig,
+                dateCompleted="2026-10-28 14:00:00",
+                verify_checklist=verify_payload,
+            )
+
+        last_call_sql, last_call_params = mock_cursor.execute.call_args[0]
+        self.assertIn("INSERT INTO tbl_technicianinspectionchecklist", last_call_sql)
+        self.assertEqual(last_call_params[0], 99)
+        self.assertEqual(last_call_params[1], "F1")
+        self.assertEqual(last_call_params[2], "F")
+        self.assertEqual(last_call_params[5], 1)
+        self.assertEqual(json.loads(last_call_params[6])["next_service_mileage"], "125000")
+
+    def test_get_verify_task_checklist_returns_parsed_dict(self):
+        bma = _load_callables()
+        mock_cursor = MagicMock()
+        mock_cursor.fetchone.return_value = (
+            json.dumps({"chk_torque": True, "efficiency": "98%"}),
+        )
+
+        with patch("anvil.users.get_user", return_value={"email": "advisor@bmaauto.com", "role_id": 1}), \
+             patch.object(bma, "db_cursor") as mock_db_cursor:
+            mock_db_cursor.return_value.__enter__.return_value = mock_cursor
+            res = bma.getVerifyTaskChecklist(99)
+
+        self.assertIsNotNone(res)
+        self.assertTrue(res["chk_torque"])
+        self.assertEqual(res["efficiency"], "98%")
+
 
 if __name__ == "__main__":
     unittest.main()
-

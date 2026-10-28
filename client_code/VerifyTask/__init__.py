@@ -76,6 +76,7 @@ class VerifyTask(VerifyTaskTemplate):
             self.Save.enabled = True
             return
 
+        # Mandatory Final Quality & Handover checkboxes check
         if not all([
             self.chk_torque.checked,
             self.chk_test.checked,
@@ -89,6 +90,61 @@ class VerifyTask(VerifyTaskTemplate):
                 style="warning",
                 timeout=3
             ).show()
+            self.Save.enabled = True
+            return
+
+        if not self.date_picker_next_service.date:
+            Notification(
+                "Sorry, please select the Next Service Date to proceed.",
+                title="Blank Field(s) Found",
+                style="warning",
+                timeout=3
+            ).show()
+            self.date_picker_next_service.focus()
+            self.Save.enabled = True
+            return
+
+        if self.txt_next_service_mileage.text in (None, ""):
+            Notification(
+                "Sorry, please enter the Next Service Mileage to proceed.",
+                title="Blank Field(s) Found",
+                style="warning",
+                timeout=3
+            ).show()
+            self.txt_next_service_mileage.focus()
+            self.Save.enabled = True
+            return
+
+        if not self.date_picker_time_start.date:
+            Notification(
+                "Sorry, please select Time started to proceed.",
+                title="Blank Field(s) Found",
+                style="warning",
+                timeout=3
+            ).show()
+            self.date_picker_time_start.focus()
+            self.Save.enabled = True
+            return
+
+        if not self.date_picker_time_end.date:
+            Notification(
+                "Sorry, please select Time finished to proceed.",
+                title="Blank Field(s) Found",
+                style="warning",
+                timeout=3
+            ).show()
+            self.date_picker_time_end.focus()
+            self.Save.enabled = True
+            return
+
+        if not (self.txt_efficiency.text or "").strip():
+            Notification(
+                "Sorry, please enter Efficiency to proceed.",
+                title="Blank Field(s) Found",
+                style="warning",
+                timeout=3
+            ).show()
+            self.txt_efficiency.focus()
             self.Save.enabled = True
             return
 

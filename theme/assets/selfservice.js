@@ -1002,7 +1002,7 @@
             items: [
                 ['Test drive done - Noise/vibration confirmed? Yes/No:', { f: 'noise', w: 'md', l: 'Noise/vibration confirmed (Yes/No)' }],
                 ['ISTA / Diagnostic scan - Fault codes:', { f: 'codes', w: 'md', l: 'Fault codes' }, 'Faults cleared after:', { f: 'cleared', w: 'lg', l: 'Faults cleared after' }],
-                ['Yetu/MPesa check - Customer has limit? Offer Yetu payment Yes/No:', { f: 'yetu', w: 'lg', l: 'Yetu/MPesa limit / payment offered' }]
+                ['M-Pesa check - Customer has limit? Offer M-Pesa payment Yes/No:', { f: 'yetu', w: 'lg', l: 'Yetu/MPesa limit / payment offered' }]
             ]
         },
         {

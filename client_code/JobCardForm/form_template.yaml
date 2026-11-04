@@ -115,6 +115,10 @@ components:
     name: chkBrace
     properties: {align: center, background: 'theme:Black', border: solid, enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: Brace}
     type: CheckBox
+  - layout_properties: {grid_position: 'IRJECG,ROHIFI'}
+    name: text_area_other_items
+    properties: {auto_expand: true, background: 'theme:White', enabled: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: Enter Other Items Found In Vehicle}
+    type: TextArea
   layout_properties: {grid_position: 'XYTJZM,UCZCPK', row_background: ''}
   name: card_5
   properties: {border: '', role: glass-panel}

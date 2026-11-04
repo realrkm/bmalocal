@@ -397,6 +397,7 @@ class EditJobCard(EditJobCardTemplate):
         Spare = self.chkSpare.checked
         Jack = self.chkJack.checked
         Brace = self.chkBrace.checked
+        OtherItems = self.text_area_other_items.text
         RegNo = self.txtRegNo.text
         Chassis=self.txtChassisNo.text
         MakeAndModel = self.txtMakeAndModel.text
@@ -419,7 +420,7 @@ class EditJobCard(EditJobCardTemplate):
         # Call a server-side function to update the data
         # This function updates an existing row in 'tbl_jobcarddetails' and 'tbl_pendingassignedjobs' tables
         anvil.server.call("update_job_card_details",jobcardID, technicianDetails, ClientDetails, JobCardRef, ReceivedDate, DueDate, ExpDate,
-                          CheckedInBy,Ins, Comp, TPO, Spare, Jack, Brace,RegNo, Chassis, MakeAndModel, EngineCC, Mileage, EngineNo, 
+                          CheckedInBy,Ins, Comp, TPO, Spare, Jack, Brace, OtherItems, RegNo, Chassis, MakeAndModel, EngineCC, Mileage, EngineNo, 
                           EngineCode,Manual,Auto, Empty, Quarter, Half,ThreeQuarter, Full,PaintCode,ClientInstruction, Notes, workDone)
         
         Notification("Job card details updated successfully", title="Success", style="success", timeout=3).show()

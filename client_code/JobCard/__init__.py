@@ -359,6 +359,7 @@ class JobCard(JobCardTemplate):
             Spare= self.chkSpare.checked
             Jack= self.chkJack.checked
             Brace= self.chkBrace.checked
+            OtherItems=self.text_area_other_items.text
             RegNo= self.txtRegNo.text.upper()
             MakeAndModel= self.txtMakeAndModel.text
             ChassisNo= self.txtChassisNo.text
@@ -383,7 +384,7 @@ class JobCard(JobCardTemplate):
             # This function should insert a new row into 'tbl_jobcarddetails' and 'tbl_pendingassignedjobs' tables
 
             anvil.server.call('save_job_card_details', technicianDetails, ClientDetails, JobCardRef, ReceivedDate, DueDate, ExpDate, CheckedInBy, Ins, Comp, TPO,
-                              Spare, Jack, Brace, RegNo, MakeAndModel, ChassisNo, EngineCC, Mileage, EngineNo, EngineCode, Manual, Auto,
+                              Spare, Jack, Brace, OtherItems, RegNo, MakeAndModel, ChassisNo, EngineCC, Mileage, EngineNo, EngineCode, Manual, Auto,
                               Empty, Quarter, Half, ThreeQuarter, Full, PaintCode, ClientInstruction, Notes, IsComplete, Status)
 
 

@@ -70,6 +70,7 @@ class EditJobCard(EditJobCardTemplate):
         self.chkSpare.checked=result["Spare"]
         self.chkJack.checked=result["Jack"]
         self.chkBrace.checked=result["Brace"]
+        self.text_area_other_items.text=result["OtherItems"]
         self.txtRegNo.text=result["RegNo"]
         self.txtMakeAndModel.text=result["MakeAndModel"]
         self.txtChassisNo.text=result["ChassisNo"]

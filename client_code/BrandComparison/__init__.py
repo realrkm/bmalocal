@@ -60,9 +60,6 @@ class BrandComparison(BrandComparisonTemplate):
 
         if result:
             self.drop_down_selectPart.items = result
-            self.lbl_ID.text = result[0][1]
-            result2 =  anvil.server.call_s("getCarPartNumberWithID", self.lbl_ID.text)
-            self.lbl_PartNumber.text = result2[0]["PartNo"]
         else:
             Notification("No records found for the entered part detail.", title="Not Found", style="danger", timeout=3).show()
 
@@ -72,6 +69,9 @@ class BrandComparison(BrandComparisonTemplate):
             "getCarPartNamesWithId", self.drop_down_selectPart.selected_value
         )
         self.lbl_PartName.text = partname[0]["Name"]
+        self.lbl_ID.text = self.drop_down_selectPart.selected_value
+        result2 =  anvil.server.call_s("getCarPartNumberWithID", self.lbl_ID.text)
+        self.lbl_PartNumber.text = result2[0]["PartNo"]
         self.txtSellingPrice.text = ModGetData.getSellingPrice(self.lbl_ID.text)
 
     def btn_AddParts_click(self, **event_args):
@@ -136,6 +136,9 @@ class BrandComparison(BrandComparisonTemplate):
         self.txtQuantity.text = ""
         self.txtSellingPrice.text = ""
         self.txtGroupParts.text=""
+        self.lbl_ID.text=""
+        self.lbl_PartName.text=""
+        self.lbl_PartNumber.text=""
        
 
     def btn_AddServices_click(self, **event_args):

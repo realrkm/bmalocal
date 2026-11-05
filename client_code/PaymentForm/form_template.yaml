@@ -50,7 +50,7 @@ components:
       - {data_key: AmountPaid, expand: true, id: JHCREX, title: Paid, width: ''}
       - {data_key: Discount, expand: true, id: SHVONS, title: Discount}
       - {data_key: Balance, expand: true, id: TWTWEL, title: Balance}
-      - {data_key: '', id: TRUMGG, title: ''}
+      - {data_key: '', id: TRUMGG, title: colunm1}
       foreground: theme:White
       role: wide
       rows_per_page: 25

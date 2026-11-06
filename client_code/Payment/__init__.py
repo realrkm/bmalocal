@@ -19,6 +19,8 @@ class Payment(PaymentTemplate):
         
         #Set focus into Jobcard Ref
         self.txt_JobCardRef.focus()
+
+        self.existing_discount = 0.0
                    
     def btn_Search_click(self, **event_args):
         """This method is called when the button is clicked"""
@@ -144,7 +146,10 @@ class Payment(PaymentTemplate):
                 if discount != 0:
                     discount = float(discount.replace(",", ""))
                 bal = float(self.txt_InvoicedAmount.text.replace(",", "")) - float(self.text_box_PreviousPayment.text.replace(",", "")) - discount
-    
+                
+                self.existing_discount = float(str(discount or 0).replace(",", "")
+)
+
             elif self.lbl_Source.text == "Quotation":
                 self.txt_InvoicedAmount.placeholder = "Quotation Amount"
                 self.txt_InvoicedAmount.text = anvil.server.call_s('get_interimandquotation_total_by_job_id', self.label_ID.text) 
@@ -166,9 +171,9 @@ class Payment(PaymentTemplate):
         previous = float(self.text_box_PreviousPayment.text.replace(",", "") or 0)
         discount = float(self.text_box_Discount.text or 0)
         paid = float(self.text_box_Amount.text or 0)
-        existing_discount = anvil.server.call("get_discount_payment", self.label_ID.text)
-        if existing_discount !=0:
-            existing_discount = float(existing_discount.replace(",",""))
+        
+        existing_discount = self.existing_discount
+        
         # Calculate balance
         balance = invoiced - previous - paid - discount - existing_discount
     

@@ -8,8 +8,8 @@ import server_code.BMALocal as bma
 
 def test_delete_payment_removes_record_and_recalculates_balances():
     cursor = MagicMock()
-    cursor.fetchone.side_effect = [(42,), (100,)]
-    cursor.fetchall.return_value = [(20, 40, 0), (21, 20, 0)]
+    cursor.fetchone.side_effect = [(42,), (100.55,)]
+    cursor.fetchall.return_value = [(20, 20.10, 0.03), (21, 21.12, 0.02)]
     cursor.rowcount = 1
 
     with patch.object(bma, "_require_role") as require_role, patch.object(
@@ -27,10 +27,10 @@ def test_delete_payment_removes_record_and_recalculates_balances():
         for call in cursor.execute.call_args_list
     )
     cursor.executemany.assert_called_once()
-    assert cursor.executemany.call_args.args[1] == [(60, 20), (40, 21)]
+    assert cursor.executemany.call_args.args[1] == [(80.42, 20), (59.28, 21)]
     assert any(
         "SET Status = CASE" in call.args[0]
-        and call.args[1] == (60, 100, 42)
+        and call.args[1] == (41.27, 100.55, 42)
         for call in cursor.execute.call_args_list
     )
 

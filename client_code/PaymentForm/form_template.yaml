@@ -32,9 +32,8 @@ components:
     properties: {align: center, background: 'theme:Black', bold: false, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: full-screen-form, text: Payment Details}
     type: Label
   - components:
-    - layout_properties: {pinned: false}
-      name: client_repeater
-      properties: {item_template: ClientContactReport.RowTemplate3, role: wide}
+    - name: client_repeater
+      properties: {item_template: BMALocal.PaymentForm.RowTemplate3, role: wide}
       type: RepeatingPanel
     data_bindings: []
     layout_properties: {full_width_row: false, grid_position: 'WUUYLU,BXHIPD'}
@@ -51,6 +50,7 @@ components:
       - {data_key: AmountPaid, expand: true, id: JHCREX, title: Paid, width: ''}
       - {data_key: Discount, expand: true, id: SHVONS, title: Discount}
       - {data_key: Balance, expand: true, id: TWTWEL, title: Balance}
+      - {data_key: '', id: TRUMGG, title: ''}
       foreground: theme:White
       role: wide
       rows_per_page: 25

@@ -21,7 +21,9 @@ class PaymentForm(PaymentFormTemplate):
         else:
             self.btn_download.visible= False
             self.image_1.visible=False
-
+            
+        self.JobCardId=jobcard_id
+        
     def refresh_client_table(self, payment_data):
         self.client_repeater.items = payment_data
 

@@ -28,16 +28,20 @@ class RowTemplate3(RowTemplate3Template):
 
         self.btn_DeleteRow.enabled = False
         try:
+            jobcard_id = self.item["JobCardID"]
             anvil.server.call("delete_payment", payment_id)
+
         except anvil.server.AppOfflineError:
             Notification("The server is unavailable. The payment was not deleted.", style="danger").show()
+
         except Exception as exc:
             Notification(f"Could not delete payment: {exc}", style="danger").show()
+
         else:
+            payment_data = anvil.server.call("getPaymentsDetails", jobcard_id)
             self.parent.items = [
-                item
-                for item in self.parent.items
-                if item.get("PaymentID") != payment_id
+                {**row, "JobCardID": jobcard_id}
+                for row in payment_data
             ]
             Notification("Payment deleted.", style="success").show()
         finally:

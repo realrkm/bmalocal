@@ -23,9 +23,13 @@ class PaymentForm(PaymentFormTemplate):
             self.image_1.visible=False
             
         self.JobCardId=jobcard_id
-        
+
+    #Pass the jobcard_id to the RowTemplate3 form so that it can be used to refresh the table after a payment is deleted    
     def refresh_client_table(self, payment_data):
-        self.client_repeater.items = payment_data
+        self.client_repeater.items = [
+            {**row, "JobCardID": self.JobCardId}
+            for row in (payment_data or [])
+            ]
 
     def btn_download_click(self, **event_args):
         """This method is called when the button is clicked"""

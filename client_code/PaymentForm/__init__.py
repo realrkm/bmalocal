@@ -12,6 +12,7 @@ class PaymentForm(PaymentFormTemplate):
         # Set Form properties and Data Bindings.
         self.init_components(**properties)
         anvil.js.call('replaceBanner')
+        self.JobCardId=jobcard_id
         self.refresh_client_table(payment_data)
         self.label_JobCardID.text = jobcard_id
         
@@ -22,8 +23,6 @@ class PaymentForm(PaymentFormTemplate):
             self.btn_download.visible= False
             self.image_1.visible=False
             
-        self.JobCardId=jobcard_id
-
     #Pass the jobcard_id to the RowTemplate3 form so that it can be used to refresh the table after a payment is deleted    
     def refresh_client_table(self, payment_data):
         self.client_repeater.items = [

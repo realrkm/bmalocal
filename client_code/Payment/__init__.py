@@ -230,7 +230,7 @@ class Payment(PaymentTemplate):
         anvil.server.call('save_payment_details', paymentDate, jobCardRefID, paymentMode, amountPaid, discount, bal)
         
         if bal <= 0:
-            anvil.server.call_s("update_invoice_status", self.search_keyword_1.selected_result['ID'])
+            anvil.server.call_s("update_invoice_status", jobCardRefID)
             
         Notification("Payment saved successfully", title="Success", style="success", timeout=3).show()
 

@@ -12,6 +12,7 @@ from ..QuoteForm import QuoteForm
 from ..ConfirmForm import ConfirmForm
 from ..InvoiceForm import InvoiceForm
 from ..PaymentForm import PaymentForm
+from ..VehicleInspectionChecklist import VehicleInspectionChecklist
 
 class ProgressTracker(ProgressTrackerTemplate):
     def __init__(self, **properties):
@@ -237,3 +238,9 @@ class ProgressTracker(ProgressTrackerTemplate):
         # If data exists, now show the form and pass the quote_data along
         alert(content=PaymentForm(job_id, payment_data=payment_data), buttons=[], dismissible=False, large=True)
         self.btn_Payment.enabled = True
+
+    
+    def btn_ViewInspection_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        job_id = self.drop_down_JobCardRefDetails.selected_value
+        alert(content=VehicleInspectionChecklist(job_id), buttons=[], dismissible=False, large=True)

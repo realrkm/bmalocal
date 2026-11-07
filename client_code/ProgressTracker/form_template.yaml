@@ -23,6 +23,11 @@ components:
     name: drop_down_JobCardRefDetails
     properties: {background: 'theme:White', border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', include_placeholder: true, placeholder: Select  Job Card Ref Details*}
     type: DropDown
+  - event_bindings: {click: btn_ViewInspection_click}
+    layout_properties: {grid_position: 'HTHMYM,SLAUCX'}
+    name: btn_ViewInspection
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: primary-color, text: View Inspection Details}
+    type: Button
   - layout_properties: {full_width_row: false, grid_position: 'NZUIBS,IGKOYR', row_background: ''}
     name: image_1
     properties: {background: '', border: solid, border_radius: '6000', display_mode: zoom_to_fill, role: null, source: _/theme/unnamed.png, vertical_align: center}

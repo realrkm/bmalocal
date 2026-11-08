@@ -7,6 +7,75 @@ import anvil.tables.query as q
 from anvil.tables import app_tables
 
 
+_REQUIRED_CHECKBOXES = (
+    "chk_safety",
+    "chk_jack",
+    "chk_chock",
+    "chk_ppe",
+    "chk_valuables",
+    "chk_complain",
+    "chk_test_drive",
+    "chk_scan",
+    "chk_mpesa",
+    "chk_service",
+    "chk_oil_level",
+    "chk_oil_filter",
+    "chk_air_filter",
+    "chk_coolant",
+    "chk_belt",
+    "chk_battery",
+    "chk_carriage",
+    "chk_front_arms",
+    "chk_rear_diff",
+    "chk_shocks",
+    "chk_exhaust",
+    "chk_shaft",
+    "chk_oil_leaks",
+    "chk_brakes",
+    "chk_front_pads",
+    "chk_rear_pads",
+    "chk_brake_fluid",
+    "chk_tyre_pressure",
+    "chk_final",
+    "chk_torque",
+    "chk_road_test",
+    "chk_engine_clean",
+    "chk_old_parts",
+    "chk_invoice_explain",
+)
+
+_REQUIRED_TEXTBOXES = (
+    "text_box_test_drive",
+    "text_box_fault_code",
+    "text_box_faults_cleared",
+    "text_box_customer_limit",
+    "text_box_cracks",
+    "text_box_voltage",
+    "text_box_cca",
+    "text_box_any_play",
+    "text_box_any_issue",
+    "text_box_broken",
+    "text_box_rattles",
+    "text_box_vibration",
+    "text_box_oil_leaks",
+    "text_box_front_pad_thickness",
+    "text_box_front_disc",
+    "text_box_rear_pad_thickness",
+    "text_box_17",
+    "text_box_18",
+    "text_box_22",
+    "text_box_tyre_tread",
+    "txt_next_service_mileage",
+    "txt_efficiency",
+)
+
+_REQUIRED_PHOTOS = (
+    ("image_1", "Car on jack stands"),
+    ("image_2", "Fault or old part"),
+    ("image_3", "Dashboard with no warning lights"),
+)
+
+
 class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
     def __init__(self, jobcardid, **properties):
         # Set Form properties and Data Bindings.
@@ -106,9 +175,64 @@ class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
             self.chk_old_parts.checked=False
             self.chk_invoice_explain.checked=False
 
+    def file_loader_1_change(self, **event_args):
+        self.image_1.source = self.file_loader_1.file
+
+    def file_loader_2_change(self, **event_args):
+        self.image_2.source = self.file_loader_2.file
+
+    def file_loader_3_change(self, **event_args):
+        self.image_3.source = self.file_loader_3.file
+
+    @staticmethod
+    def _component_label(component, name):
+        label = getattr(component, "text", "") or getattr(component, "placeholder", "")
+        return label.strip().rstrip(":") or name.replace("_", " ")
+
+    @staticmethod
+    def _format_missing_fields(category, fields):
+        shown_fields = fields[:3]
+        message = f"{category}: {', '.join(shown_fields)}"
+        if len(fields) > len(shown_fields):
+            message += f", and {len(fields) - len(shown_fields)} more"
+        return message
+
     def btn_Update_click(self, **event_args):
         """This method is called when the button is clicked"""
-        pass  # Write Code Here
-           
-        
-        
+        missing_checkboxes = [
+            self._component_label(getattr(self, name), name)
+            for name in _REQUIRED_CHECKBOXES
+            if not getattr(self, name).checked
+        ]
+        missing_textboxes = [
+            self._component_label(getattr(self, name), name)
+            for name in _REQUIRED_TEXTBOXES
+            if not (getattr(self, name).text or "").strip()
+        ]
+        missing_photos = [
+            description
+            for name, description in _REQUIRED_PHOTOS
+            if getattr(self, name).source is None or getattr(self, name).source == ""
+        ]
+
+        missing_fields = []
+        if missing_checkboxes:
+            missing_fields.append(
+                self._format_missing_fields("Unchecked checkboxes", missing_checkboxes)
+            )
+        if missing_textboxes:
+            missing_fields.append(
+                self._format_missing_fields("Blank text boxes", missing_textboxes)
+            )
+        if missing_photos:
+            missing_fields.append(
+                self._format_missing_fields("Missing photos", missing_photos)
+            )
+
+        if missing_fields:
+            Notification(
+                "Complete the required inspection items before updating:\n"
+                + "\n".join(missing_fields),
+                title="Incomplete Inspection Checklist",
+                style="warning",
+            ).show()

@@ -241,9 +241,12 @@ class ProgressTracker(ProgressTrackerTemplate):
 
     def btn_ViewInspection_click(self, **event_args):
         """This method is called when the button is clicked"""
+        self.btn_ViewInspection.enabled=False
         job_id = self.drop_down_JobCardRefDetails.selected_value
         if not job_id:
             Notification("No data found for the selected Job ID.", title='Missing Job Card Data', style="danger", timeout=3).show()
+            self.btn_ViewInspection.enabled=True
             return
 
         alert(content=VehicleInspectionChecklist(job_id), buttons=[], dismissible=False, large=True)
+        self.btn_ViewInspection.enabled=True

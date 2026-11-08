@@ -199,7 +199,7 @@ class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
     @staticmethod
     def _component_label(component, name):
         label = getattr(component, "text", "") or getattr(component, "placeholder", "")
-        return label.strip().rstrip(":") or name.replace("_", " ")
+        return str(label).strip().rstrip(":") or name.replace("_", " ")
 
     @staticmethod
     def _format_missing_fields(category, fields):
@@ -208,6 +208,10 @@ class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
         if len(fields) > len(shown_fields):
             message += f", and {len(fields) - len(shown_fields)} more"
         return message
+
+    def _text_value(self, name):
+        value = getattr(self, name).text
+        return str(value) if value is not None else ""
 
     def _collect_checklist_data(self):
         component_names = (
@@ -220,7 +224,7 @@ class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
                 name: getattr(self, name).checked for name in _REQUIRED_CHECKBOXES
             },
             "textboxes": {
-                name: getattr(self, name).text for name in _REQUIRED_TEXTBOXES
+                name: self._text_value(name) for name in _REQUIRED_TEXTBOXES
             },
             "dates": {
                 name: getattr(self, name).date.isoformat()
@@ -246,7 +250,7 @@ class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
         missing_textboxes = [
             self._component_label(getattr(self, name), name)
             for name in _REQUIRED_TEXTBOXES
-            if not (getattr(self, name).text or "").strip()
+            if not self._text_value(name).strip()
         ]
         missing_dates = [
             self._component_label(getattr(self, name), name)

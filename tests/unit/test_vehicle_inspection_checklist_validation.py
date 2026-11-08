@@ -153,6 +153,20 @@ def test_update_accepts_complete_checklist(monkeypatch):
     assert form.btn_Update.enabled is True
 
 
+def test_update_accepts_numeric_textbox_value(monkeypatch):
+    checklist_module, notification_factory = _load_checklist_module(monkeypatch)
+    form = _make_form(checklist_module.VehicleInspectionChecklist)
+    form.text_box_voltage.text = 12
+
+    checklist_module.VehicleInspectionChecklist.btn_Update_click(form)
+
+    notification_factory.assert_called_once_with(
+        "Inspection checklist updated.", style="success"
+    )
+    payload = checklist_module.anvil.server.call.call_args.args[2]
+    assert payload["textboxes"]["text_box_voltage"] == "12"
+
+
 def test_update_reports_server_offline_and_reenables_button(monkeypatch):
     checklist_module, notification_factory = _load_checklist_module(monkeypatch)
     form = _make_form(checklist_module.VehicleInspectionChecklist)

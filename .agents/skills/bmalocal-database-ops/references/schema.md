@@ -144,6 +144,9 @@
 ### `tbl_technicianinspectionchecklist`
 **Engine**: InnoDB | **Collation**: utf8mb4_general_ci
 
+VehicleInspectionChecklist entries use `V-`-prefixed `ItemCode` values to avoid
+colliding with technician portal and final-verification checklist entries.
+
 | # | Column Name | Type | Nullable | Key | Default | Extra | Foreign Key Ref |
 | -: | :--- | :--- | :---: | :---: | :--- | :--- | :--- |
 | 1 | `ID` | `int` | NO | PRI | NULL | auto_increment |  |

@@ -74,6 +74,11 @@ _REQUIRED_PHOTOS = (
     ("image_2", "Fault or old part"),
     ("image_3", "Dashboard with no warning lights"),
 )
+_PHOTO_UPLOADS = {
+    "image_1": "file_loader_1",
+    "image_2": "file_loader_2",
+    "image_3": "file_loader_3",
+}
 
 _REQUIRED_DATEPICKERS = (
     "date_picker_next_service",
@@ -223,11 +228,7 @@ class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
             },
             "images": {
                 image_name: getattr(self, loader_name).file
-                for image_name, loader_name in (
-                    ("image_1", "file_loader_1"),
-                    ("image_2", "file_loader_2"),
-                    ("image_3", "file_loader_3"),
-                )
+                for image_name, loader_name in _PHOTO_UPLOADS.items()
             },
             "labels": {
                 name: self._component_label(getattr(self, name), name)
@@ -255,7 +256,8 @@ class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
         missing_photos = [
             description
             for name, description in _REQUIRED_PHOTOS
-            if getattr(self, name).source is None or getattr(self, name).source == ""
+            if getattr(self, _PHOTO_UPLOADS[name]).file is None
+            or getattr(self, _PHOTO_UPLOADS[name]).file == ""
         ]
 
         missing_fields = []

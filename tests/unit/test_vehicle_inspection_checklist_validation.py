@@ -120,6 +120,8 @@ def test_update_rejects_blank_checklist_components(
     checklist_module, notification_factory = _load_checklist_module(monkeypatch)
     form = _make_form(checklist_module.VehicleInspectionChecklist)
     setattr(getattr(form, component_name), property_name, blank_value)
+    if expected_category == "photo":
+        form.file_loader_1.file = blank_value
 
     checklist_module.VehicleInspectionChecklist.btn_Update_click(form)
 
@@ -148,6 +150,22 @@ def test_update_accepts_complete_checklist(monkeypatch):
     assert payload["textboxes"]["text_box_test_drive"] == "completed"
     assert payload["dates"]["date_picker_next_service"] == datetime.date.today().isoformat()
     assert payload["images"]["image_1"] is form.file_loader_1.file
+    assert form.btn_Update.enabled is True
+
+
+def test_update_reports_server_offline_and_reenables_button(monkeypatch):
+    checklist_module, notification_factory = _load_checklist_module(monkeypatch)
+    form = _make_form(checklist_module.VehicleInspectionChecklist)
+    checklist_module.anvil.server.call.side_effect = (
+        checklist_module.anvil.server.AppOfflineError("offline")
+    )
+
+    checklist_module.VehicleInspectionChecklist.btn_Update_click(form)
+
+    assert form.btn_Update.enabled is True
+    notification_factory.assert_called_once()
+    assert notification_factory.call_args.kwargs["style"] == "danger"
+    notification_factory.return_value.show.assert_called_once()
 
 
 def test_required_field_lists_cover_checklist_template(monkeypatch):

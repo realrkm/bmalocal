@@ -231,6 +231,7 @@ class TestTechnicianChecklist(unittest.TestCase):
         self.assertIn("INSERT INTO tbl_technicianinspectionchecklist", checklist_sql)
         self.assertIn("ON DUPLICATE KEY UPDATE", checklist_sql)
         self.assertEqual(len(checklist_rows), 34)
+        self.assertTrue(all(row[1].startswith("V-") for row in checklist_rows))
         self.assertIn("INSERT INTO tbl_vehicleinspectionimages", image_sql)
         self.assertIn("ON DUPLICATE KEY UPDATE", image_sql)
         self.assertEqual(len(image_rows), 3)
@@ -298,6 +299,9 @@ class TestTechnicianChecklist(unittest.TestCase):
         self.assertEqual(data[0]["Checklist"][0]["id"], "E1")
         self.assertTrue(data[0]["Checklist"][0]["checked"])
         self.assertEqual(data[0]["Checklist"][0]["fields"][0]["value"], "6.5")
+        checklist_sql, checklist_params = mock_cursor.execute.call_args_list[1].args
+        self.assertIn("ItemCode NOT LIKE %s", checklist_sql)
+        self.assertEqual(checklist_params, (42, "V-%"))
 
     def test_save_confirmation_details_upserts_verify_checklist_json(self):
         bma = _load_callables()

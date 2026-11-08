@@ -59,7 +59,10 @@ def _make_form(checklist_class):
         / "form_template.html"
     ).read_text(encoding="utf-8")
     form = SimpleNamespace()
-    pattern = r'<anvil-component type="(CheckBox|TextBox|Image|FileLoader)"([^>]*)>'
+    pattern = (
+        r'<anvil-component type="(CheckBox|TextBox|Image|FileLoader|DatePicker)"'
+        r'([^>]*)>'
+    )
     for component_type, attributes in re.findall(pattern, template):
         name = re.search(r'name="([^"]+)"', attributes).group(1)
         text_match = re.search(r'prop:text="([^"]*)"', attributes)
@@ -82,6 +85,8 @@ def _make_form(checklist_class):
             )
         elif component_type == "Image":
             component = SimpleNamespace(source=object())
+        elif component_type == "DatePicker":
+            component = SimpleNamespace(date=object(), placeholder=label)
         else:
             component = SimpleNamespace(file=object())
         setattr(form, name, component)
@@ -97,6 +102,9 @@ def _make_form(checklist_class):
         ("text_box_test_drive", "text", "  ", "text"),
         ("image_1", "source", None, "photo"),
         ("image_1", "source", "", "photo"),
+        ("date_picker_next_service", "date", None, "date"),
+        ("date_picker_time_start", "date", None, "date"),
+        ("date_picker_time_end", "date", None, "date"),
     ],
 )
 def test_update_rejects_blank_checklist_components(
@@ -135,8 +143,10 @@ def test_required_field_lists_cover_checklist_template(monkeypatch):
     checkboxes = set()
     textboxes = set()
     images = set()
+    datepickers = set()
     for component_type, attributes in re.findall(
-        r'<anvil-component type="(CheckBox|TextBox|Image)"([^>]*)>', template
+        r'<anvil-component type="(CheckBox|TextBox|Image|DatePicker)"([^>]*)>',
+        template,
     ):
         name = re.search(r'name="([^"]+)"', attributes).group(1)
         if component_type == "CheckBox":
@@ -144,12 +154,15 @@ def test_required_field_lists_cover_checklist_template(monkeypatch):
         elif component_type == "TextBox":
             if 'prop:enabled="false"' not in attributes:
                 textboxes.add(name)
-        else:
+        elif component_type == "Image":
             images.add(name)
+        else:
+            datepickers.add(name)
 
     assert set(checklist_module._REQUIRED_CHECKBOXES) == checkboxes
     assert set(checklist_module._REQUIRED_TEXTBOXES) == textboxes
     assert {name for name, _ in checklist_module._REQUIRED_PHOTOS} == images
+    assert set(checklist_module._REQUIRED_DATEPICKERS) == datepickers
 
 
 @pytest.mark.parametrize(

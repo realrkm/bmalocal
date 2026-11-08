@@ -75,6 +75,12 @@ _REQUIRED_PHOTOS = (
     ("image_3", "Dashboard with no warning lights"),
 )
 
+_REQUIRED_DATEPICKERS = (
+    "date_picker_next_service",
+    "date_picker_time_start",
+    "date_picker_time_end",
+)
+
 
 class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
     def __init__(self, jobcardid, **properties):
@@ -209,6 +215,11 @@ class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
             for name in _REQUIRED_TEXTBOXES
             if not (getattr(self, name).text or "").strip()
         ]
+        missing_dates = [
+            self._component_label(getattr(self, name), name)
+            for name in _REQUIRED_DATEPICKERS
+            if getattr(self, name).date is None
+        ]
         missing_photos = [
             description
             for name, description in _REQUIRED_PHOTOS
@@ -223,6 +234,10 @@ class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
         if missing_textboxes:
             missing_fields.append(
                 self._format_missing_fields("Blank text boxes", missing_textboxes)
+            )
+        if missing_dates:
+            missing_fields.append(
+                self._format_missing_fields("Blank dates", missing_dates)
             )
         if missing_photos:
             missing_fields.append(

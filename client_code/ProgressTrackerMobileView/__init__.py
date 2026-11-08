@@ -291,12 +291,20 @@ class ProgressTrackerMobileView(ProgressTrackerMobileViewTemplate):
 
 
     def btn_ViewInspection_click(self, **event_args):
-        """This method is called when the button is clicked"""
         self.btn_ViewInspection.enabled=False
         job_id = self.drop_down_JobCardRefDetails.selected_value
         if not job_id:
-            Notification("No data found for the selected Job ID.", title='Missing Job Card Data', style="danger", timeout=3).show()
-            self.btn_ViewInspection.enabled=True
+            notification_timeout = 3
+            Notification(
+                "Please select Jobcard ref to proceed.",
+                title='Missing Jobcard Ref',
+                style="danger",
+                timeout=notification_timeout,
+            ).show()
+            anvil.js.window.setTimeout(
+                lambda: setattr(self.btn_ViewInspection, "enabled", True),
+                notification_timeout * 1000,
+            )
             return
 
         alert(content=VehicleInspectionChecklist(job_id), buttons=[], dismissible=False, large=True)

@@ -246,8 +246,8 @@ class ProgressTracker(ProgressTrackerTemplate):
         if not job_id:
             notification_timeout = 3
             Notification(
-                "No data found for the selected Job ID.",
-                title='Missing Job Card Data',
+                "Please select Jobcard ref to proceed.",
+                title='Missing Jobcard Ref',
                 style="danger",
                 timeout=notification_timeout,
             ).show()

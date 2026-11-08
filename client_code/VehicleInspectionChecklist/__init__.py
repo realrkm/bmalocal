@@ -105,6 +105,10 @@ class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
             self.chk_engine_clean.checked=False
             self.chk_old_parts.checked=False
             self.chk_invoice_explain.checked=False
+
+    def btn_Update_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        pass  # Write Code Here
            
         
         

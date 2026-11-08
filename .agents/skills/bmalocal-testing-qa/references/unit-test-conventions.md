@@ -100,3 +100,4 @@ When fixing a bug, register the regression test below:
 | :--- | :--- | :--- | :--- |
 | **BUG-001**: Password toggle plain text leak | `theme/assets/password_toggle.js` | `test_password_toggle_no_logging` | Ensures DOM toggle never prints or dispatches password value |
 | **BUG-002**: JobCard transition to In-Service missing technician | `server_code/BMALocal.py` | `test_jobcard_in_service_requires_tech` | Rejects transition if technician ID is null |
+| **BUG-003**: Inspection button re-enabled before notification expires | `client_code/ProgressTracker/__init__.py` | `test_inspection_button_stays_disabled_until_notification_timeout` | Keeps the inspection button disabled for the notification's 3-second timeout |

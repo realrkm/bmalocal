@@ -1,5 +1,7 @@
 import json
+import os
 import sys
+import tempfile
 import types
 import unittest
 from unittest.mock import MagicMock, patch
@@ -89,6 +91,60 @@ def _load_callables():
         return bma
 
 
+def _vehicle_inspection_payload():
+    checkboxes = (
+        "chk_safety", "chk_jack", "chk_chock", "chk_ppe", "chk_valuables",
+        "chk_complain", "chk_test_drive", "chk_scan", "chk_mpesa",
+        "chk_service", "chk_oil_level", "chk_oil_filter", "chk_air_filter",
+        "chk_coolant", "chk_belt", "chk_battery", "chk_carriage",
+        "chk_front_arms", "chk_rear_diff", "chk_shocks", "chk_exhaust",
+        "chk_shaft", "chk_oil_leaks", "chk_brakes", "chk_front_pads",
+        "chk_rear_pads", "chk_brake_fluid", "chk_tyre_pressure", "chk_final",
+        "chk_torque", "chk_road_test", "chk_engine_clean", "chk_old_parts",
+        "chk_invoice_explain",
+    )
+    textboxes = (
+        "text_box_test_drive", "text_box_fault_code", "text_box_faults_cleared",
+        "text_box_customer_limit", "text_box_cracks", "text_box_voltage",
+        "text_box_cca", "text_box_any_play", "text_box_any_issue",
+        "text_box_broken", "text_box_rattles", "text_box_vibration",
+        "text_box_oil_leaks", "text_box_front_pad_thickness", "text_box_front_disc",
+        "text_box_rear_pad_thickness", "text_box_17", "text_box_18",
+        "text_box_22", "text_box_tyre_tread", "txt_next_service_mileage",
+        "txt_efficiency",
+    )
+
+    class ImageMedia:
+        content_type = "image/png"
+
+        def get_bytes(self):
+            return b"\x89PNG\r\n\x1a\ninspection-image"
+
+    payload = {
+        "checkboxes": {name: True for name in checkboxes},
+        "textboxes": {name: "completed" for name in textboxes},
+        "dates": {
+            "date_picker_next_service": "2026-12-01",
+            "date_picker_time_start": "2026-11-08",
+            "date_picker_time_end": "2026-11-08",
+        },
+        "images": {
+            "image_1": ImageMedia(),
+            "image_2": ImageMedia(),
+            "image_3": ImageMedia(),
+        },
+    }
+    payload["labels"] = {
+        name: name.replace("_", " ")
+        for name in (
+            tuple(payload["checkboxes"])
+            + tuple(payload["textboxes"])
+            + tuple(payload["dates"])
+        )
+    }
+    return payload
+
+
 class TestTechnicianChecklist(unittest.TestCase):
     def test_save_or_update_tech_portal_with_checklist_happy_path(self):
         bma = _load_callables()
@@ -145,6 +201,60 @@ class TestTechnicianChecklist(unittest.TestCase):
         self.assertEqual(rows_arg[0][5], 1)
         self.assertEqual(rows_arg[1][1], "E1")
         self.assertEqual(json.loads(rows_arg[1][6])[0]["value"], "6.5")
+
+    def test_save_update_vehicle_inspection_persists_checklist_and_image_paths(self):
+        bma = _load_callables()
+        mock_cursor = MagicMock()
+        mock_cursor.fetchone.return_value = (42,)
+        mock_cursor.fetchall.return_value = []
+        with tempfile.TemporaryDirectory() as image_dir, \
+             patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com", "role_id": 3}), \
+             patch.object(bma, "_require_role"), \
+             patch.object(bma, "VEHICLE_INSPECTION_IMAGE_DIR", image_dir), \
+             patch.object(bma, "db_cursor") as mock_db_cursor:
+            mock_db_cursor.return_value.__enter__.return_value = mock_cursor
+
+            result = bma.save_update_vehicle_inspection(
+                42, _vehicle_inspection_payload()
+            )
+            image_rows = mock_cursor.executemany.call_args_list[1].args[1]
+            for row in image_rows:
+                self.assertEqual(row[0], 42)
+                self.assertTrue(os.path.isfile(row[2]))
+                self.assertEqual(os.path.dirname(row[2]), image_dir)
+
+        self.assertTrue(result["success"])
+        self.assertEqual(mock_cursor.executemany.call_count, 2)
+        calls = mock_cursor.executemany.call_args_list
+        checklist_sql, checklist_rows = calls[0].args
+        image_sql, image_rows = calls[1].args
+        self.assertIn("INSERT INTO tbl_technicianinspectionchecklist", checklist_sql)
+        self.assertIn("ON DUPLICATE KEY UPDATE", checklist_sql)
+        self.assertEqual(len(checklist_rows), 34)
+        self.assertIn("INSERT INTO tbl_vehicleinspectionimages", image_sql)
+        self.assertIn("ON DUPLICATE KEY UPDATE", image_sql)
+        self.assertEqual(len(image_rows), 3)
+
+    def test_save_update_vehicle_inspection_rejects_incomplete_payload(self):
+        bma = _load_callables()
+        payload = _vehicle_inspection_payload()
+        payload["textboxes"]["text_box_test_drive"] = " "
+        with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com", "role_id": 3}), \
+             patch.object(bma, "_require_role"), \
+             patch.object(bma, "db_cursor") as mock_db_cursor:
+            with self.assertRaisesRegex(ValueError, "text_box_test_drive"):
+                bma.save_update_vehicle_inspection(42, payload)
+
+        mock_db_cursor.assert_not_called()
+
+    def test_save_update_vehicle_inspection_rejects_unauthorized_user(self):
+        bma = _load_callables()
+        with patch("anvil.users.get_user", return_value={"email": "guest@bmaauto.com", "role_id": 99}), \
+             patch.object(bma, "_require_role", side_effect=Exception("permission denied")):
+            with self.assertRaisesRegex(Exception, "permission denied"):
+                bma.save_update_vehicle_inspection(
+                    42, _vehicle_inspection_payload()
+                )
 
     def test_save_or_update_tech_portal_unauthorized_rejected(self):
         bma = _load_callables()

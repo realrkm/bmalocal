@@ -88,6 +88,7 @@ class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
         super().__init__(**properties)
 
         # Any code you write here will run before the form opens.
+        self.jobcardid = jobcardid
 
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""
@@ -203,6 +204,37 @@ class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
             message += f", and {len(fields) - len(shown_fields)} more"
         return message
 
+    def _collect_checklist_data(self):
+        component_names = (
+            _REQUIRED_CHECKBOXES
+            + _REQUIRED_TEXTBOXES
+            + _REQUIRED_DATEPICKERS
+        )
+        return {
+            "checkboxes": {
+                name: getattr(self, name).checked for name in _REQUIRED_CHECKBOXES
+            },
+            "textboxes": {
+                name: getattr(self, name).text for name in _REQUIRED_TEXTBOXES
+            },
+            "dates": {
+                name: getattr(self, name).date.isoformat()
+                for name in _REQUIRED_DATEPICKERS
+            },
+            "images": {
+                image_name: getattr(self, loader_name).file
+                for image_name, loader_name in (
+                    ("image_1", "file_loader_1"),
+                    ("image_2", "file_loader_2"),
+                    ("image_3", "file_loader_3"),
+                )
+            },
+            "labels": {
+                name: self._component_label(getattr(self, name), name)
+                for name in component_names
+            },
+        }
+
     def btn_Update_click(self, **event_args):
         """This method is called when the button is clicked"""
         missing_checkboxes = [
@@ -251,3 +283,27 @@ class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
                 title="Incomplete Inspection Checklist",
                 style="warning",
             ).show()
+            return
+
+        self.btn_Update.enabled = False
+        try:
+            result = anvil.server.call(
+                "save_update_vehicle_inspection",
+                self.jobcardid,
+                self._collect_checklist_data(),
+            )
+            if not isinstance(result, dict) or result.get("success") is not True:
+                raise RuntimeError("The inspection checklist could not be saved.")
+            Notification("Inspection checklist updated.", style="success").show()
+        except anvil.server.AppOfflineError:
+            Notification(
+                "The local server is unreachable. Check the network and try again.",
+                style="danger",
+            ).show()
+        except Exception as error:
+            Notification(
+                "Unable to save the inspection checklist. Please try again or contact a manager.",
+                style="danger",
+            ).show()
+        finally:
+            self.btn_Update.enabled = True

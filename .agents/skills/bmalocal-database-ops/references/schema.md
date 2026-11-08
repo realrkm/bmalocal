@@ -1,9 +1,9 @@
 # BMALocal MySQL Database Schema Reference
 
 **Database Name**: `bmaautoaccessories2017`  
-**Total Tables**: 67 | **Total Columns**: 401 | **Foreign Keys**: 30  
+**Expected after migration V006**: 68 tables | 406 columns | 31 foreign keys
 **Primary Engine**: InnoDB | **Default Collation**: `utf8mb4_general_ci` / `latin1_swedish_ci`  
-**Verified Timestamp**: 2026-09-24 via `information_schema` live query
+**Base schema verified**: 2026-09-24 via `information_schema` live query. V006 is a new migration and must be applied to update the live schema.
 
 ---
 
@@ -40,6 +40,7 @@
 | `tbl_stockparts` | `CarPart` | `tbl_carpartnames` | `ID` | `tbl_stockparts_ibfk_1` |
 | `tbl_stockparts` | `CarPartsSupplierID` | `tbl_carpartssupplier` | `ID` | `fk_stockparts_supplier` |
 | `tbl_techniciandefectsandrequestedparts` | `JobCardRefID` | `tbl_jobcarddetails` | `ID` | `tbl_techniciandefectsandrequestedparts_ibfk_1` |
+| `tbl_vehicleinspectionimages` | `JobCardRefID` | `tbl_jobcarddetails` | `ID` | `tbl_vehicleinspectionimages_ibfk_1` |
 | `tbl_userpermissions` | `RoleID` | `tbl_roles` | `ID` | `tbl_userpermissions_ibfk_1` |
 
 ---
@@ -155,6 +156,17 @@
 | 8 | `FieldsJSON` | `json` | YES |  | NULL |  |  |
 | 9 | `PreparedByStaff` | `varchar(255)` | YES |  | NULL |  |  |
 | 10 | `UpdatedAt` | `datetime` | NO |  | CURRENT_TIMESTAMP | on update CURRENT_TIMESTAMP |  |
+
+### `tbl_vehicleinspectionimages`
+**Engine**: InnoDB | **Collation**: utf8mb4_general_ci | **Unique key**: (`JobCardRefID`, `ImageCode`)
+
+| # | Column Name | Type | Nullable | Key | Default | Extra | Foreign Key Ref |
+| -: | :--- | :--- | :---: | :---: | :--- | :--- | :--- |
+| 1 | `ID` | `int` | NO | PRI | NULL | auto_increment |  |
+| 2 | `JobCardRefID` | `int` | NO | MUL | NULL |  | `tbl_jobcarddetails.ID` |
+| 3 | `ImageCode` | `varchar(20)` | NO | MUL | NULL |  |  |
+| 4 | `ImagePath` | `varchar(1024)` | NO |  | NULL |  |  |
+| 5 | `UpdatedAt` | `datetime` | NO |  | CURRENT_TIMESTAMP | on update CURRENT_TIMESTAMP |  |
 
 ### `tbl_incomplete_defects`
 **Rows**: 44 | **Engine**: InnoDB | **Collation**: utf8mb4_0900_ai_ci
@@ -950,6 +962,7 @@
 | `tbl_userpermissions` | 214 | InnoDB | 5 | 1 | Users, Roles, Audit |
 | `tbl_users` | 7 | InnoDB | 10 | 0 | Users, Roles, Audit |
 | `tbl_usersaudit` | 4,261 | InnoDB | 7 | 0 | Users, Roles, Audit |
+| `tbl_vehicleinspectionimages` | 0 | InnoDB | 5 | 1 | Job Cards |
 | `tbl_walkietalkie_messages` | 0 | InnoDB | 6 | 0 | Communications, Walkie-Talkie |
 | `tbl_walkietalkie_reads` | 0 | InnoDB | 3 | 0 | Communications, Walkie-Talkie |
 | `tbl_workdoneinjobcard` | 41 | InnoDB | 3 | 0 | Job Cards |

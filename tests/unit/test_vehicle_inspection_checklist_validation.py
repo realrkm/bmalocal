@@ -2,6 +2,7 @@ import importlib
 import re
 import sys
 import types
+import datetime
 from html import unescape
 from pathlib import Path
 from types import SimpleNamespace
@@ -23,7 +24,11 @@ def _load_checklist_module(monkeypatch):
     anvil.__path__ = []
     anvil_tables = _module("anvil.tables", app_tables=MagicMock())
     anvil_tables.__path__ = []
-    anvil_server = _module("anvil.server")
+    anvil_server = _module(
+        "anvil.server",
+        call=MagicMock(return_value={"success": True}),
+        AppOfflineError=type("AppOfflineError", (Exception,), {}),
+    )
     anvil_users = _module("anvil.users")
     anvil.tables = anvil_tables
     anvil.server = anvil_server
@@ -86,12 +91,14 @@ def _make_form(checklist_class):
         elif component_type == "Image":
             component = SimpleNamespace(source=object())
         elif component_type == "DatePicker":
-            component = SimpleNamespace(date=object(), placeholder=label)
+            component = SimpleNamespace(date=datetime.date.today(), placeholder=label)
         else:
             component = SimpleNamespace(file=object())
         setattr(form, name, component)
     instance = object.__new__(checklist_class)
     instance.__dict__.update(vars(form))
+    instance.jobcardid = 42
+    instance.btn_Update = SimpleNamespace(enabled=True)
     return instance
 
 
@@ -120,16 +127,27 @@ def test_update_rejects_blank_checklist_components(
     notification_message = notification_factory.call_args.args[0].lower()
     assert expected_category in notification_message
     notification_factory.return_value.show.assert_called_once()
+    checklist_module.anvil.server.call.assert_not_called()
 
 
 def test_update_accepts_complete_checklist(monkeypatch):
     checklist_module, notification_factory = _load_checklist_module(monkeypatch)
 
-    checklist_module.VehicleInspectionChecklist.btn_Update_click(
-        _make_form(checklist_module.VehicleInspectionChecklist)
-    )
+    form = _make_form(checklist_module.VehicleInspectionChecklist)
+    checklist_module.VehicleInspectionChecklist.btn_Update_click(form)
 
-    notification_factory.assert_not_called()
+    notification_factory.assert_called_once_with(
+        "Inspection checklist updated.", style="success"
+    )
+    notification_factory.return_value.show.assert_called_once()
+    checklist_module.anvil.server.call.assert_called_once()
+    endpoint, jobcard_id, payload = checklist_module.anvil.server.call.call_args.args
+    assert endpoint == "save_update_vehicle_inspection"
+    assert jobcard_id == 42
+    assert payload["checkboxes"]["chk_jack"] is True
+    assert payload["textboxes"]["text_box_test_drive"] == "completed"
+    assert payload["dates"]["date_picker_next_service"] == datetime.date.today().isoformat()
+    assert payload["images"]["image_1"] is form.file_loader_1.file
 
 
 def test_required_field_lists_cover_checklist_template(monkeypatch):

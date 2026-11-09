@@ -67,7 +67,7 @@ def _make_form(checklist_class):
     ).read_text(encoding="utf-8")
     form = SimpleNamespace()
     pattern = (
-        r'<anvil-component type="(CheckBox|TextBox|Image|FileLoader|DatePicker)"'
+        r'<anvil-component type="(CheckBox|TextBox|Image|FileLoader|DatePicker|Label)"'
         r'([^>]*)>'
     )
     for component_type, attributes in re.findall(pattern, template):
@@ -94,6 +94,8 @@ def _make_form(checklist_class):
             component = SimpleNamespace(source=object())
         elif component_type == "DatePicker":
             component = SimpleNamespace(date=datetime.date.today(), placeholder=label)
+        elif component_type == "Label":
+            component = SimpleNamespace(text=label)
         else:
             component = SimpleNamespace(file=object())
         setattr(form, name, component)
@@ -174,6 +176,34 @@ def test_update_preserves_start_and_end_times(monkeypatch):
     assert payload["dates"]["date_picker_time_end"] == "2026-11-09T10:45:00"
 
 
+@pytest.mark.parametrize(
+    "handler_name",
+    ["date_picker_time_start_change", "date_picker_time_end_change"],
+)
+def test_time_change_displays_decimal_hours_worked(monkeypatch, handler_name):
+    checklist_module, _ = _load_checklist_module(monkeypatch)
+    form = _make_form(checklist_module.VehicleInspectionChecklist)
+    form.date_picker_time_start.date = datetime.datetime(2026, 11, 9, 9, 15)
+    form.date_picker_time_end.date = datetime.datetime(2026, 11, 9, 10, 45)
+
+    getattr(checklist_module.VehicleInspectionChecklist, handler_name)(form)
+
+    assert form.lbl_hrs.text == "Total hrs: 1.50"
+
+
+def test_time_change_clears_total_when_end_is_before_start(monkeypatch):
+    checklist_module, notification_factory = _load_checklist_module(monkeypatch)
+    form = _make_form(checklist_module.VehicleInspectionChecklist)
+    form.date_picker_time_start.date = datetime.datetime(2026, 11, 9, 10, 0)
+    form.date_picker_time_end.date = datetime.datetime(2026, 11, 9, 9, 0)
+
+    checklist_module.VehicleInspectionChecklist.date_picker_time_end_change(form)
+
+    assert form.lbl_hrs.text == "Total hrs: --"
+    notification_factory.assert_called_once()
+    assert notification_factory.call_args.kwargs["style"] == "warning"
+
+
 def test_form_loads_saved_vehicle_inspection_on_open(monkeypatch):
     checklist_module, _ = _load_checklist_module(monkeypatch)
     load_data = MagicMock()
@@ -222,6 +252,7 @@ def test_load_existing_inspection_data_populates_form_and_retains_photos(monkeyp
     assert form.date_picker_time_end.date == datetime.datetime(
         2026, 11, 9, 10, 45
     )
+    assert form.lbl_hrs.text == "Total hrs: 1.50"
     assert form.image_1.source is saved_photo
     assert form._collect_checklist_data()["images"]["image_1"] is saved_photo
     assert form._inspection_data_loaded is True

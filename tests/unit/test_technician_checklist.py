@@ -146,6 +146,62 @@ def _vehicle_inspection_payload():
 
 
 class TestTechnicianChecklist(unittest.TestCase):
+    def test_technician_portal_checklist_requires_all_inspection_photos(self):
+        bma = _load_callables()
+        checklist = [
+            {
+                "id": "A1",
+                "section": "A",
+                "section_title": "A. SAFETY BEFORE LIFT - MANDATORY",
+                "item": "Jack + 2 Jack Stands placed",
+                "checked": True,
+                "fields": [],
+            }
+        ]
+        with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
+             patch.object(bma, "db_cursor") as mock_db_cursor:
+            with self.assertRaisesRegex(ValueError, "(?i)all three inspection photos"):
+                bma.saveOrUpdateTechnicianPortalDefectsAndRequestedParts(
+                    jobcardID=42,
+                    tech_notes="Engine check done",
+                    defects="No defects",
+                    requiredparts="None",
+                    staff="John Tech",
+                    signature=None,
+                    checklist=checklist,
+                )
+
+        mock_db_cursor.assert_not_called()
+
+    def test_technician_portal_checklist_rejects_unsupported_photo_before_saving(self):
+        bma = _load_callables()
+        checklist = [{"id": "A1", "section": "A", "section_title": "Safety", "item": "Stands"}]
+        images = _vehicle_inspection_payload()["images"]
+
+        class UnsupportedImage:
+            content_type = "image/gif"
+
+            @staticmethod
+            def get_bytes():
+                return b"GIF89a"
+
+        images["image_1"] = UnsupportedImage()
+        with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
+             patch.object(bma, "db_cursor") as mock_db_cursor:
+            with self.assertRaisesRegex(ValueError, "Unsupported inspection photo format"):
+                bma.saveOrUpdateTechnicianPortalDefectsAndRequestedParts(
+                    jobcardID=42,
+                    tech_notes="Engine check done",
+                    defects="No defects",
+                    requiredparts="None",
+                    staff="John Tech",
+                    signature=None,
+                    checklist=checklist,
+                    inspection_images=images,
+                )
+
+        mock_db_cursor.assert_not_called()
+
     def test_save_or_update_tech_portal_with_checklist_happy_path(self):
         bma = _load_callables()
         mock_cursor = MagicMock()
@@ -176,7 +232,9 @@ class TestTechnicianChecklist(unittest.TestCase):
             },
         ]
 
-        with patch("anvil.users.get_user", return_value={"email": "admin@bmaauto.com", "role_id": 1}), \
+        with tempfile.TemporaryDirectory() as image_dir, \
+             patch.object(bma, "VEHICLE_INSPECTION_IMAGE_DIR", image_dir), \
+             patch("anvil.users.get_user", return_value={"email": "admin@bmaauto.com", "role_id": 1}), \
              patch.object(bma, "db_cursor") as mock_db_cursor, \
              patch.object(bma, "publish_technician_portal_notification", create=True):
             mock_db_cursor.return_value.__enter__.return_value = mock_cursor
@@ -189,11 +247,12 @@ class TestTechnicianChecklist(unittest.TestCase):
                 staff="John Tech",
                 signature=mock_sig,
                 checklist=checklist,
+                inspection_images=_vehicle_inspection_payload()["images"],
             )
 
         self.assertTrue(res)
-        self.assertEqual(mock_cursor.executemany.call_count, 1)
-        sql_arg, rows_arg = mock_cursor.executemany.call_args[0]
+        self.assertEqual(mock_cursor.executemany.call_count, 2)
+        sql_arg, rows_arg = mock_cursor.executemany.call_args_list[0].args
         self.assertIn("INSERT INTO tbl_technicianinspectionchecklist", sql_arg)
         self.assertNotIn("PreparedByStaff", sql_arg)
         self.assertEqual(len(rows_arg), 2)
@@ -203,6 +262,11 @@ class TestTechnicianChecklist(unittest.TestCase):
         self.assertEqual(rows_arg[0][5], 1)
         self.assertEqual(rows_arg[1][1], "E1")
         self.assertEqual(json.loads(rows_arg[1][6])[0]["value"], "6.5")
+        image_sql, image_rows = mock_cursor.executemany.call_args_list[1].args
+        self.assertIn("INSERT INTO tbl_vehicleinspectionimages", image_sql)
+        self.assertIn("ON DUPLICATE KEY UPDATE", image_sql)
+        self.assertEqual([row[1] for row in image_rows], ["image_1", "image_2", "image_3"])
+        self.assertTrue(all(os.path.dirname(row[2]) == image_dir for row in image_rows))
 
     def test_save_update_vehicle_inspection_persists_checklist_and_image_paths(self):
         bma = _load_callables()

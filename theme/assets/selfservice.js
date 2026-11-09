@@ -50,6 +50,7 @@
         // Inspection checklist state (Checked-In jobs only)
         checklist: null,
         checklistOpen: false,
+        inspectionPhotos: null,
 
         // Admin state
         adminClicks: 0,
@@ -658,6 +659,7 @@
                 renderHome();
         }
 
+        applyInspectionPhotoPreviews();
         window.scrollTo({ top: 0, behavior: 'instant' });
         lucide.createIcons();
     }
@@ -1098,6 +1100,151 @@
         return sanitizeHTML(String(value == null ? '' : value)).replace(/"/g, '&quot;');
     }
 
+    const INSPECTION_PHOTOS = [
+        { code: 'image_1', label: 'Car on jack stands' },
+        { code: 'image_2', label: 'Fault or old part' },
+        { code: 'image_3', label: 'Dashboard with no warning lights' }
+    ];
+    const INSPECTION_PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+    const MAX_INSPECTION_PHOTO_BYTES = 10 * 1024 * 1024;
+
+    function getInspectionPhotoState() {
+        if (!state.inspectionPhotos || state.inspectionPhotos.reg !== state.activeReg) {
+            state.inspectionPhotos = {
+                reg: state.activeReg,
+                uploads: {},
+                saved: {},
+                pending: {},
+                loaded: false,
+                loading: null
+            };
+        }
+        return state.inspectionPhotos;
+    }
+
+    async function loadSavedInspectionPhotoPreviews() {
+        const photos = getInspectionPhotoState();
+        if (photos.loaded) return;
+        if (photos.loading) return photos.loading;
+
+        const reg = state.activeReg;
+        photos.loading = anvil.call(mainContent, 'getVehicleInspectionPhotos', reg)
+            .then(saved => {
+                if (state.activeReg !== reg || state.inspectionPhotos !== photos) return;
+                photos.saved = saved && typeof saved === 'object' ? saved : {};
+                photos.loaded = true;
+                applyInspectionPhotoPreviews();
+            })
+            .finally(() => {
+                photos.loading = null;
+            });
+        return photos.loading;
+    }
+
+    function applyInspectionPhotoPreviews() {
+        const photos = state.inspectionPhotos;
+        const card = document.getElementById('checklist-card');
+        if (!photos || !card || card.dataset.reg !== photos.reg) return;
+
+        INSPECTION_PHOTOS.forEach(photo => {
+            const preview = card.querySelector(`[data-inspection-photo-preview="${photo.code}"]`);
+            const status = card.querySelector(`[data-inspection-photo-status="${photo.code}"]`);
+            if (!preview || !status) return;
+
+            const uploaded = photos.uploads[photo.code];
+            const source = uploaded ? uploaded.dataUrl : photos.saved[photo.code];
+            preview.hidden = !source;
+            if (source) preview.src = source;
+            else preview.removeAttribute('src');
+            status.textContent = uploaded
+                ? `${uploaded.name} — ready to upload`
+                : source
+                    ? 'Saved photo preview. Upload a current photo before saving.'
+                    : 'Required — upload before saving.';
+        });
+    }
+
+    function readInspectionPhoto(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = () => reject(new Error('Could not read the selected photo.'));
+            reader.readAsDataURL(file);
+        });
+    }
+
+    async function stageInspectionPhotoUpload(input) {
+        const code = input.dataset.inspectionPhoto;
+        const file = input.files && input.files[0];
+        if (!code || !file) return;
+
+        if (!INSPECTION_PHOTO_TYPES.includes(file.type)) {
+            input.value = '';
+            showToast('Choose a JPEG, PNG, or WebP photo.', 'error');
+            return;
+        }
+        if (file.size <= 0 || file.size > MAX_INSPECTION_PHOTO_BYTES) {
+            input.value = '';
+            showToast('Each inspection photo must be smaller than 10 MB.', 'error');
+            return;
+        }
+
+        const photos = getInspectionPhotoState();
+        const reg = state.activeReg;
+        const pending = readInspectionPhoto(file)
+            .then(dataUrl => {
+                if (
+                    state.activeReg !== reg ||
+                    state.inspectionPhotos !== photos ||
+                    photos.pending[code] !== pending
+                ) return;
+                photos.uploads[code] = { dataUrl: dataUrl, name: file.name };
+                applyInspectionPhotoPreviews();
+            })
+            .catch(error => {
+                console.error('Could not read an inspection photo:', error);
+                showToast('Could not read the selected inspection photo.', 'error');
+            })
+            .finally(() => {
+                if (photos.pending[code] === pending) {
+                    delete photos.pending[code];
+                }
+            });
+        photos.pending[code] = pending;
+        await pending;
+    }
+
+    function inspectionPhotoUploadMarkup() {
+        return `
+            <section class="cl-photo-section" aria-label="Required vehicle inspection photos" style="margin:1rem 0 1.5rem;">
+                <h3>Required inspection photos</h3>
+                <p>Upload all three photos before saving this checklist.</p>
+                <div class="cl-photo-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap:1rem;">
+                    ${INSPECTION_PHOTOS.map(photo => `
+                        <div class="cl-photo-card" data-inspection-photo-card="${photo.code}" style="min-width:0; display:flex; flex-direction:column; gap:0.5rem; padding:0.75rem; border:1px solid rgba(59, 130, 246, 0.3); border-radius:0.8rem;">
+                            <label for="cl-photo-${photo.code}">${photo.label} <span aria-hidden="true">*</span></label>
+                            <input
+                                id="cl-photo-${photo.code}"
+                                type="file"
+                                accept="image/jpeg,image/png,image/webp"
+                                capture="environment"
+                                data-inspection-photo="${photo.code}"
+                                aria-label="Upload ${photo.label}"
+                                style="max-width:100%;"
+                            >
+                            <img
+                                data-inspection-photo-preview="${photo.code}"
+                                alt="${photo.label} preview"
+                                hidden
+                                style="max-width:100%; max-height:16rem; object-fit:contain;"
+                            >
+                            <span data-inspection-photo-status="${photo.code}" role="status">Required — upload before saving.</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </section>`;
+    }
+
     // Statuses whose Parts Request tab shows the checklist (Review and Work Done entry points)
     const CHECKLIST_STATUSES = ['Checked-In', 'Create Quote', 'Confirm Quote', 'In-Service'];
 
@@ -1223,6 +1370,25 @@
 
         if (first) {
             first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function openInspectionChecklist() {
+            const card = document.getElementById('checklist-card');
+            if (!card) return;
+            state.checklistOpen = true;
+            card.classList.add('open');
+            const toggle = document.getElementById('checklist-toggle');
+            if (toggle) toggle.setAttribute('aria-expanded', 'true');
+    }
+
+    function focusMissingInspectionPhoto(codes) {
+            if (!codes.length) return;
+            openInspectionChecklist();
+            const input = document.getElementById('cl-photo-' + codes[0]);
+            if (input) {
+                input.focus();
+                input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
             const focusTarget = first.matches('input') ? first : first.querySelector('input');
             if (focusTarget) focusTarget.focus({ preventScroll: true });
         }
@@ -1272,7 +1438,7 @@
         }).join('');
 
         return `
-        <div id="checklist-card" class="checklist-card ${state.checklistOpen ? 'open' : ''}">
+        <div id="checklist-card" class="checklist-card ${state.checklistOpen ? 'open' : ''}" data-reg="${checklistAttr(state.activeReg)}">
             <button id="checklist-toggle" type="button" class="checklist-toggle" onclick="toggleChecklist()" aria-expanded="${state.checklistOpen ? 'true' : 'false'}" aria-controls="checklist-body">
                 <span>🧰 Vehicle Inspection Checklist</span>
                 <span class="checklist-toggle-right">
@@ -1285,6 +1451,7 @@
                     <button type="button" class="checklist-btn" onclick="setChecklistAll(false)">Uncheck All</button>
                     <button type="button" class="checklist-btn checklist-btn-primary" onclick="setChecklistAll(true)">Check All</button>
                 </div>
+                ${inspectionPhotoUploadMarkup()}
                 ${sectionsHTML}
             </div>
         </div>`;
@@ -2257,6 +2424,7 @@
 
         // Re-render just the tab content
         partsTabContent.innerHTML = renderPartsTabContent();
+        applyInspectionPhotoPreviews();
         
         // Re-attach event listeners WITHOUT calling populate again
         attachPartsListenersOnly();
@@ -3279,6 +3447,22 @@
 
             //  Vehicle Inspection Checklist: every checkbox ticked and every field filled
             const checklistResult = buildChecklistPayload();
+            const inspectionPhotos = getInspectionPhotoState();
+            await Promise.all(Object.values(inspectionPhotos.pending));
+            const missingPhotoCodes = checklistApplies()
+                ? INSPECTION_PHOTOS
+                    .filter(photo => !inspectionPhotos.uploads[photo.code])
+                    .map(photo => photo.code)
+                : [];
+            if (missingPhotoCodes.length > 0) {
+                const missingPhotoNames = INSPECTION_PHOTOS
+                    .filter(photo => missingPhotoCodes.includes(photo.code))
+                    .map(photo => photo.label);
+                errors.push(
+                    '• Upload all three required vehicle inspection photos: ' +
+                    missingPhotoNames.join(', ')
+                );
+            }
             if (checklistResult.missing.length > 0) {
                 errors.push(...formatChecklistErrors(checklistResult.missing));
             }
@@ -3292,6 +3476,7 @@
 
                 // Open the checklist and highlight what is still missing
                 highlightChecklistMissing(checklistResult.missing);
+                focusMissingInspectionPhoto(missingPhotoCodes);
                 return; // Stop execution
             }
 
@@ -3316,7 +3501,11 @@
                     partsAndQuantities,
                     state.selectedTechnician,
                     signature,
-                    checklistResult.list
+                    checklistResult.list,
+                    Object.fromEntries(
+                        Object.entries(inspectionPhotos.uploads)
+                            .map(([code, photo]) => [code, photo.dataUrl])
+                    )
                 );
 
                 await customAlert(
@@ -3337,6 +3526,7 @@
                 state.collapseOpen = false;
                 state.dataLoadedForReg = null;
                 state.cameFromWorkDone = false;
+                state.inspectionPhotos = null;
 
                 cartCount.innerText = 0;
                 cartCount.classList.add('hidden');
@@ -3693,13 +3883,21 @@
         };
 
         // ---- Inspection checklist handlers ----
-        window.toggleChecklist = () => {
+        window.toggleChecklist = async () => {
             const card = document.getElementById('checklist-card');
             if (!card) return;
             state.checklistOpen = !state.checklistOpen;
             card.classList.toggle('open', state.checklistOpen);
             const btn = document.getElementById('checklist-toggle');
             if (btn) btn.setAttribute('aria-expanded', state.checklistOpen ? 'true' : 'false');
+            if (state.checklistOpen) {
+                try {
+                    await loadSavedInspectionPhotoPreviews();
+                } catch (error) {
+                    console.error('Could not load saved inspection photo previews:', error);
+                    showToast('Saved inspection photo previews could not be loaded.', 'error');
+                }
+            }
         };
 
         window.setChecklistAll = (checked) => {
@@ -3724,7 +3922,9 @@
             const target = e.target;
             if (!(target instanceof HTMLInputElement)) return;
 
-            if (target.dataset.clItem) {
+            if (target.dataset.inspectionPhoto) {
+                stageInspectionPhotoUpload(target);
+            } else if (target.dataset.clItem) {
                 getChecklist().checks[target.dataset.clItem] = target.checked;
                 if (target.parentElement) target.parentElement.classList.remove('cl-missing');
                 persistChecklist();

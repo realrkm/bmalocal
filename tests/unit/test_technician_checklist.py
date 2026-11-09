@@ -1,3 +1,4 @@
+import datetime
 import json
 import os
 import sys
@@ -146,6 +147,142 @@ def _vehicle_inspection_payload():
 
 
 class TestTechnicianChecklist(unittest.TestCase):
+    def test_get_vehicle_inspection_data_maps_selfservice_checklist_rows(self):
+        bma = _load_callables()
+        portal_updated_at = datetime.datetime(2026, 11, 9, 10, 0)
+        portal_rows = [
+            ("A1", 1, None),
+            ("A2", 1, None),
+            ("A3", 1, None),
+            ("A4", 1, None),
+            ("B1", 1, json.dumps([{"name": "noise", "value": "No"}])),
+            (
+                "B2",
+                1,
+                json.dumps([
+                    {"name": "codes", "value": "P0420"},
+                    {"name": "cleared", "value": "After repair"},
+                ]),
+            ),
+            ("B3", 1, json.dumps([{"name": "yetu", "value": "Yes"}])),
+            ("C1", 1, None),
+            ("C2", 1, None),
+            ("C3", 1, None),
+            ("C4", 1, None),
+            ("C5", 1, json.dumps([{"name": "belts", "value": "No cracks"}])),
+            (
+                "C6",
+                1,
+                json.dumps([
+                    {"name": "volts", "value": "12.6"},
+                    {"name": "cca", "value": "650"},
+                ]),
+            ),
+            ("D1", 1, json.dumps([{"name": "arms", "value": "No play"}])),
+            ("D2", 1, None),
+            ("D3", 1, json.dumps([{"name": "shocks", "value": "No leaks"}])),
+            ("D4", 1, json.dumps([{"name": "exhaust", "value": "No rattles"}])),
+            ("D5", 1, json.dumps([{"name": "propshaft", "value": "No vibration"}])),
+            ("D6", 1, json.dumps([{"name": "leaks", "value": "None"}])),
+            (
+                "E1",
+                1,
+                json.dumps([
+                    {"name": "fpad", "value": "6"},
+                    {"name": "fdisc", "value": "24"},
+                ]),
+            ),
+            (
+                "E2",
+                1,
+                json.dumps([
+                    {"name": "rpad", "value": "5"},
+                    {"name": "rdisc", "value": "18"},
+                ]),
+            ),
+            ("E3", 1, None),
+            (
+                "E4",
+                1,
+                json.dumps([
+                    {"name": "pf", "value": "32"},
+                    {"name": "pr", "value": "34"},
+                    {"name": "tread", "value": "5"},
+                ]),
+            ),
+        ]
+        portal_rows.append(
+            (
+                "V-E1",
+                0,
+                json.dumps([{"name": "text_box_front_pad_thickness", "value": "2"}]),
+                datetime.datetime(2026, 11, 9, 9, 0),
+            )
+        )
+        portal_rows = [
+            row if len(row) == 4 else (*row, portal_updated_at)
+            for row in portal_rows
+        ]
+        mock_cursor = MagicMock()
+        mock_cursor.fetchall.side_effect = [portal_rows, []]
+
+        with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
+             patch.object(bma, "db_cursor") as mock_db_cursor:
+            mock_db_cursor.return_value.__enter__.return_value = mock_cursor
+            result = bma.get_vehicle_inspection_data(42)
+
+        self.assertTrue(result["checkboxes"]["chk_safety"])
+        self.assertTrue(result["checkboxes"]["chk_jack"])
+        self.assertTrue(result["checkboxes"]["chk_complain"])
+        self.assertTrue(result["checkboxes"]["chk_test_drive"])
+        self.assertTrue(result["checkboxes"]["chk_service"])
+        self.assertTrue(result["checkboxes"]["chk_carriage"])
+        self.assertTrue(result["checkboxes"]["chk_brakes"])
+        self.assertEqual(result["textboxes"]["text_box_test_drive"], "No")
+        self.assertEqual(result["textboxes"]["text_box_fault_code"], "P0420")
+        self.assertEqual(result["textboxes"]["text_box_faults_cleared"], "After repair")
+        self.assertEqual(result["textboxes"]["text_box_customer_limit"], "Yes")
+        self.assertEqual(result["textboxes"]["text_box_cracks"], "No cracks")
+        self.assertEqual(result["textboxes"]["text_box_voltage"], "12.6")
+        self.assertEqual(result["textboxes"]["text_box_cca"], "650")
+        self.assertEqual(result["textboxes"]["text_box_any_play"], "No play")
+        self.assertEqual(result["textboxes"]["text_box_front_pad_thickness"], "6")
+        self.assertEqual(result["textboxes"]["text_box_front_disc"], "24")
+        self.assertEqual(result["textboxes"]["text_box_rear_pad_thickness"], "5")
+        self.assertEqual(result["textboxes"]["text_box_17"], "18")
+        self.assertEqual(result["textboxes"]["text_box_18"], "32")
+        self.assertEqual(result["textboxes"]["text_box_22"], "34")
+        self.assertEqual(result["textboxes"]["text_box_tyre_tread"], "5")
+
+    def test_get_vehicle_inspection_data_prefers_newer_legacy_rows(self):
+        bma = _load_callables()
+        mock_cursor = MagicMock()
+        mock_cursor.fetchall.side_effect = [
+            [
+                (
+                    "A1",
+                    1,
+                    json.dumps([{"name": "noise", "value": "Portal value"}]),
+                    datetime.datetime(2026, 11, 9, 9, 0),
+                ),
+                (
+                    "V-B2",
+                    1,
+                    json.dumps([{"name": "text_box_test_drive", "value": "Legacy value"}]),
+                    datetime.datetime(2026, 11, 9, 10, 0),
+                ),
+            ],
+            [],
+        ]
+
+        with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
+             patch.object(bma, "db_cursor") as mock_db_cursor:
+            mock_db_cursor.return_value.__enter__.return_value = mock_cursor
+            result = bma.get_vehicle_inspection_data(42)
+
+        self.assertTrue(result["checkboxes"]["chk_test_drive"])
+        self.assertEqual(result["textboxes"]["text_box_test_drive"], "Legacy value")
+
     def test_technician_portal_checklist_requires_all_inspection_photos(self):
         bma = _load_callables()
         checklist = [
@@ -344,7 +481,7 @@ class TestTechnicianChecklist(unittest.TestCase):
                 image_file.write(b"\x89PNG\r\n\x1a\ninspection-image")
             mock_cursor.fetchall.side_effect = [
                 [
-                    ("V-A1", 1, None),
+                    ("V-A1", 1, None, datetime.datetime(2026, 11, 9, 10, 0)),
                     (
                         "V-F1",
                         1,
@@ -362,6 +499,7 @@ class TestTechnicianChecklist(unittest.TestCase):
                                 },
                             ]
                         ),
+                        datetime.datetime(2026, 11, 9, 10, 0),
                     ),
                 ],
                 [("image_1", image_path)],
@@ -386,7 +524,7 @@ class TestTechnicianChecklist(unittest.TestCase):
         self.assertIsNone(result["images"]["image_2"])
         queries = mock_cursor.execute.call_args_list
         self.assertIn("SELECT ItemCode, IsChecked, FieldsJSON", queries[0].args[0])
-        self.assertEqual(queries[0].args[1], (42, "V-%"))
+        self.assertEqual(queries[0].args[1], (42,))
         self.assertEqual(queries[1].args[1], (42,))
         blob_media.assert_called_once_with(
             "image/png",

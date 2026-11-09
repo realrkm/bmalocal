@@ -18,7 +18,7 @@ This register documents key `@anvil.server.callable` endpoints, their input/outp
 | `download_invoice_pdf` | `invoice_id: int` | `anvil.Media` (PDF binary) | `Admin`, `Manager`, `Cashier` | `Invoice` | [x] | [x] |
 | `search_contacts` | `keyword: str` | `list[dict]` (contacts) | Any Authenticated | `Contacts`, `Client` | [x] | [x] |
 | `save_client_contact` | `contact_dict: dict` | `dict` (success, contact_id) | `Admin`, `Manager`, `Staff` | `EditClient` | [x] | [x] |
-| `get_vehicle_inspection_data` | `jobcard_id: int` | `dict` (checkboxes, textboxes, dates, images) | Any Authenticated | `VehicleInspectionChecklist` | [x] | [ ] |
+| `get_vehicle_inspection_data` | `jobcard_id: int` | `dict` (checkboxes, textboxes, dates, images); normalizes both `V-*` checklist rows and SelfService `A1`-`E4` rows into `VehicleInspectionChecklist` component keys | Any Authenticated | `VehicleInspectionChecklist`, `SelfService` | [x] | [x] |
 | `save_update_vehicle_inspection` | `jobcard_id: int, data_dict: dict` (checkboxes, textboxes, ISO dates/datetimes, images, labels) | `dict` (success, jobcard_id) | `Administrator`, `Admin`, `Manager`, `Technician` | `VehicleInspectionChecklist` | [x] | [ ] |
 | `saveOrUpdateTechnicianPortalDefectsAndRequestedParts` | `jobcardID, tech_notes, defects, requiredparts, staff, signature, checklist=None, inspection_images=None` | `bool`; checklist saves require and upsert `image_1`, `image_2`, and `image_3` in `tbl_vehicleinspectionimages` | Any Authenticated | `SelfService` | [x] | [ ] |
 | `delete_payment` | `payment_id: int` | `dict` (success, payment_id, jobcard_id) | `Admin` | `PaymentForm.RowTemplate3` | [x] | [ ] |

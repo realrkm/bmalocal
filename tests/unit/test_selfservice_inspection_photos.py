@@ -1,5 +1,7 @@
 import base64
 import importlib
+from pathlib import Path
+import subprocess
 import sys
 import types
 from unittest.mock import MagicMock
@@ -59,6 +61,29 @@ def _data_url(content_type, content):
     return f"data:{content_type};base64,{encoded}"
 
 
+def test_missing_photo_focus_helper_is_available_to_save_handler():
+    source_path = Path(__file__).parents[2] / "theme" / "assets" / "selfservice.js"
+    source = source_path.read_text(encoding="utf-8")
+    start = source.index("    function highlightChecklistMissing(")
+    end = source.index("    function renderChecklistCard()", start)
+    helpers = source[start:end]
+    script = f"""
+        const state = {{}};
+        const document = {{ getElementById: () => null }};
+        {helpers}
+        focusMissingInspectionPhoto(['image_1']);
+    """
+
+    result = subprocess.run(
+        ["node", "-e", script],
+        capture_output=True,
+        check=False,
+        text=True,
+    )
+
+    assert result.returncode == 0, result.stderr
+
+
 @pytest.mark.parametrize(
     "images",
     [
@@ -81,6 +106,25 @@ def test_saving_selfservice_checklist_rejects_missing_photos(monkeypatch, images
 
     anvil.server.call_s.assert_not_called()
     anvil.server.call.assert_not_called()
+
+
+def test_inspection_photo_decode_works_without_validate_keyword(monkeypatch):
+    module, _ = _load_selfservice_module(monkeypatch)
+    standard_decode = base64.b64decode
+
+    def client_decode(encoded):
+        return standard_decode(encoded)
+
+    monkeypatch.setattr(module.base64, "b64decode", client_decode)
+    images = {
+        image_code: _data_url("image/png", b"\x89PNG\r\n\x1a\nphoto")
+        for image_code in ("image_1", "image_2", "image_3")
+    }
+
+    media = module.SelfService._inspection_photo_media(images)
+
+    assert set(media) == {"image_1", "image_2", "image_3"}
+    assert all(photo.get_bytes() == b"\x89PNG\r\n\x1a\nphoto" for photo in media.values())
 
 
 def test_saving_selfservice_checklist_forwards_photo_media_and_parts(monkeypatch):

@@ -1370,27 +1370,27 @@
 
         if (first) {
             first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            const focusTarget = first.matches('input') ? first : first.querySelector('input');
+            if (focusTarget) focusTarget.focus({ preventScroll: true });
+        }
     }
 
     function openInspectionChecklist() {
-            const card = document.getElementById('checklist-card');
-            if (!card) return;
-            state.checklistOpen = true;
-            card.classList.add('open');
-            const toggle = document.getElementById('checklist-toggle');
-            if (toggle) toggle.setAttribute('aria-expanded', 'true');
+        const card = document.getElementById('checklist-card');
+        if (!card) return;
+        state.checklistOpen = true;
+        card.classList.add('open');
+        const toggle = document.getElementById('checklist-toggle');
+        if (toggle) toggle.setAttribute('aria-expanded', 'true');
     }
 
     function focusMissingInspectionPhoto(codes) {
-            if (!codes.length) return;
-            openInspectionChecklist();
-            const input = document.getElementById('cl-photo-' + codes[0]);
-            if (input) {
-                input.focus();
-                input.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-            const focusTarget = first.matches('input') ? first : first.querySelector('input');
-            if (focusTarget) focusTarget.focus({ preventScroll: true });
+        if (!codes.length) return;
+        openInspectionChecklist();
+        const input = document.getElementById('cl-photo-' + codes[0]);
+        if (input) {
+            input.focus();
+            input.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     }
 

@@ -12,6 +12,7 @@ import base64
 _INSPECTION_IMAGE_CODES = ("image_1", "image_2", "image_3")
 _INSPECTION_IMAGE_TYPES = {"image/jpeg", "image/png", "image/webp"}
 _MAX_INSPECTION_IMAGE_BYTES = 10 * 1024 * 1024
+_BASE64_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 
 
 class SelfService(SelfServiceTemplate):
@@ -81,8 +82,18 @@ class SelfService(SelfServiceTemplate):
             content_type = header[5:].split(";", 1)[0].lower() if header.startswith("data:") else ""
             if content_type not in _INSPECTION_IMAGE_TYPES or ";base64" not in header:
                 raise ValueError("Use JPEG, PNG, or WebP files for inspection photos.")
+            padding = len(encoded) - len(encoded.rstrip("="))
+            payload = encoded[:-padding] if padding else encoded
+            expected_remainder = (0, 3, 2)
+            if (
+                len(encoded) % 4
+                or padding > 2
+                or len(payload) % 4 != expected_remainder[padding]
+                or any(character not in _BASE64_ALPHABET for character in payload)
+            ):
+                raise ValueError("An inspection photo could not be read.")
             try:
-                image_bytes = base64.b64decode(encoded, validate=True)
+                image_bytes = base64.b64decode(encoded)
             except (ValueError, TypeError):
                 raise ValueError("An inspection photo could not be read.")
             if not image_bytes or len(image_bytes) > _MAX_INSPECTION_IMAGE_BYTES:

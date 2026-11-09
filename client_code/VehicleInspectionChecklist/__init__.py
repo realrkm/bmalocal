@@ -373,38 +373,10 @@ class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
             return
 
         self.btn_Update.enabled = False
-        try:
-            result = anvil.server.call(
-                "save_update_vehicle_inspection",
-                self.jobcardid,
-                self._collect_checklist_data(),
-            )
-            if not isinstance(result, dict) or result.get("success") is not True:
-                raise RuntimeError("The inspection checklist could not be saved.")
-            Notification("Inspection checklist updated.", style="success").show()
-            self.clear_form()
-        except anvil.server.AppOfflineError:
-            Notification(
-                "The local server is unreachable. Check the network and try again.",
-                style="danger",
-            ).show()
-        except Exception as error:
-            Notification(
-                "Unable to save the inspection checklist. Please try again.",
-                style="danger",
-            ).show()
-            
-        finally:
-            self.btn_Update.enabled = True
+        anvil.server.call("save_update_vehicle_inspection",self.jobcardid, self._collect_checklist_data())
+        Notification("Inspection checklist updated.", style="success").show()
+        self.btn_Update.enabled = True
+        self.btn_Close_click()
+        
 
-    def clear_form(self):
-        for name in _REQUIRED_CHECKBOXES:
-            getattr(self, name).checked = False
-        for name in _REQUIRED_TEXTBOXES:
-            getattr(self, name).text = ""
-        for name in _REQUIRED_DATEPICKERS:
-            getattr(self, name).date = None
-        for image_name, loader_name in _PHOTO_UPLOADS.items():
-            getattr(self, loader_name).file = None
-            self._existing_inspection_images[image_name] = None
-            getattr(self, image_name).source = None
+    

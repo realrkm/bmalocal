@@ -311,5 +311,6 @@ class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
                 "Unable to save the inspection checklist. Please try again or contact a manager.",
                 style="danger",
             ).show()
+            alert(f"Error saving inspection checklist: {error}", title="Error")
         finally:
             self.btn_Update.enabled = True

@@ -20,7 +20,9 @@ def _module(name, **attributes):
 
 def _load_checklist_module(monkeypatch):
     notification_factory = MagicMock()
-    anvil = _module("anvil", Notification=notification_factory)
+    anvil = _module(
+        "anvil", Notification=notification_factory, alert=MagicMock()
+    )
     anvil.__path__ = []
     anvil_tables = _module("anvil.tables", app_tables=MagicMock())
     anvil_tables.__path__ = []
@@ -99,6 +101,12 @@ def _make_form(checklist_class):
     instance.__dict__.update(vars(form))
     instance.jobcardid = 42
     instance.btn_Update = SimpleNamespace(enabled=True)
+    instance._inspection_data_loaded = True
+    instance._existing_inspection_images = {
+        "image_1": None,
+        "image_2": None,
+        "image_3": None,
+    }
     return instance
 
 
@@ -164,6 +172,77 @@ def test_update_preserves_start_and_end_times(monkeypatch):
     payload = checklist_module.anvil.server.call.call_args.args[2]
     assert payload["dates"]["date_picker_time_start"] == "2026-11-09T09:15:00"
     assert payload["dates"]["date_picker_time_end"] == "2026-11-09T10:45:00"
+
+
+def test_form_loads_saved_vehicle_inspection_on_open(monkeypatch):
+    checklist_module, _ = _load_checklist_module(monkeypatch)
+    load_data = MagicMock()
+    monkeypatch.setattr(
+        checklist_module.VehicleInspectionChecklist,
+        "_load_existing_inspection_data",
+        load_data,
+        raising=False,
+    )
+
+    form = checklist_module.VehicleInspectionChecklist(42)
+
+    assert form.jobcardid == 42
+    load_data.assert_called_once_with()
+
+
+def test_load_existing_inspection_data_populates_form_and_retains_photos(monkeypatch):
+    checklist_module, _ = _load_checklist_module(monkeypatch)
+    form = _make_form(checklist_module.VehicleInspectionChecklist)
+    form.file_loader_1.file = None
+    saved_photo = object()
+    saved_data = {
+        "checkboxes": {"chk_jack": True, "chk_safety": False},
+        "textboxes": {"text_box_voltage": "12.6"},
+        "dates": {
+            "date_picker_next_service": "2026-12-26",
+            "date_picker_time_start": "2026-11-09T09:15:00",
+            "date_picker_time_end": "2026-11-09T10:45:00",
+        },
+        "images": {"image_1": saved_photo},
+    }
+    checklist_module.anvil.server.call.return_value = saved_data
+
+    checklist_module.VehicleInspectionChecklist._load_existing_inspection_data(form)
+
+    checklist_module.anvil.server.call.assert_called_once_with(
+        "get_vehicle_inspection_data", 42
+    )
+    assert form.chk_jack.checked is True
+    assert form.chk_safety.checked is False
+    assert form.text_box_voltage.text == "12.6"
+    assert form.date_picker_next_service.date == datetime.date(2026, 12, 26)
+    assert form.date_picker_time_start.date == datetime.datetime(
+        2026, 11, 9, 9, 15
+    )
+    assert form.date_picker_time_end.date == datetime.datetime(
+        2026, 11, 9, 10, 45
+    )
+    assert form.image_1.source is saved_photo
+    assert form._collect_checklist_data()["images"]["image_1"] is saved_photo
+    assert form._inspection_data_loaded is True
+
+
+def test_load_existing_inspection_data_failure_disables_saving(monkeypatch):
+    checklist_module, notification_factory = _load_checklist_module(monkeypatch)
+    form = _make_form(checklist_module.VehicleInspectionChecklist)
+    checklist_module.anvil.server.call.side_effect = RuntimeError("load failed")
+
+    checklist_module.VehicleInspectionChecklist._load_existing_inspection_data(form)
+
+    assert form._inspection_data_loaded is False
+    notification_factory.assert_called_once()
+    assert notification_factory.call_args.kwargs["style"] == "danger"
+    checklist_module.anvil.server.call.reset_mock()
+
+    checklist_module.VehicleInspectionChecklist.btn_Update_click(form)
+
+    checklist_module.anvil.server.call.assert_not_called()
+    assert notification_factory.call_count == 2
 
 
 def test_update_accepts_numeric_textbox_value(monkeypatch):

@@ -2,6 +2,7 @@ from ._anvil_designer import VehicleInspectionChecklistTemplate
 from anvil import *
 import anvil.server
 import anvil.users
+import datetime
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
@@ -94,6 +95,73 @@ class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
 
         # Any code you write here will run before the form opens.
         self.jobcardid = jobcardid
+        self._inspection_data_loaded = False
+        self._existing_inspection_images = {
+            image_name: None for image_name, _ in _REQUIRED_PHOTOS
+        }
+        self._load_existing_inspection_data()
+
+    @staticmethod
+    def _parse_saved_date(value):
+        if value is None or value == "":
+            return None
+        if isinstance(value, datetime.datetime):
+            return value
+        if isinstance(value, datetime.date):
+            return value
+        if not isinstance(value, str):
+            raise ValueError("Invalid saved inspection date.")
+        if "T" in value:
+            return datetime.datetime.fromisoformat(value)
+        return datetime.date.fromisoformat(value)
+
+    def _load_existing_inspection_data(self):
+        self._inspection_data_loaded = False
+        try:
+            data = anvil.server.call("get_vehicle_inspection_data", self.jobcardid)
+            if not isinstance(data, dict):
+                raise ValueError("Invalid saved inspection data.")
+
+            checkboxes = data.get("checkboxes", {})
+            textboxes = data.get("textboxes", {})
+            dates = data.get("dates", {})
+            images = data.get("images", {})
+            if not all(
+                isinstance(values, dict)
+                for values in (checkboxes, textboxes, dates, images)
+            ):
+                raise ValueError("Invalid saved inspection data.")
+
+            for name in _REQUIRED_CHECKBOXES:
+                if name in checkboxes:
+                    value = checkboxes[name]
+                    if not isinstance(value, bool):
+                        raise ValueError("Invalid saved inspection checkbox.")
+                    getattr(self, name).checked = value
+            for name in _REQUIRED_TEXTBOXES:
+                if name in textboxes:
+                    value = textboxes[name]
+                    getattr(self, name).text = "" if value is None else str(value)
+            for name in _REQUIRED_DATEPICKERS:
+                if name in dates:
+                    getattr(self, name).date = self._parse_saved_date(dates[name])
+            for image_name, _ in _REQUIRED_PHOTOS:
+                media = images.get(image_name)
+                self._existing_inspection_images[image_name] = media
+                getattr(self, image_name).source = media
+
+            self._inspection_data_loaded = True
+        except anvil.server.AppOfflineError:
+            Notification(
+                "The local server is unreachable. The saved inspection could not be loaded.",
+                style="danger",
+            ).show()
+        except Exception as error:
+            Notification(
+                "Unable to load the saved inspection checklist. ",
+                style="danger",
+            ).show()
+           
 
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""
@@ -231,7 +299,11 @@ class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
                 for name in _REQUIRED_DATEPICKERS
             },
             "images": {
-                image_name: getattr(self, loader_name).file
+                image_name: (
+                    getattr(self, loader_name).file
+                    if getattr(self, loader_name).file not in (None, "")
+                    else self._existing_inspection_images.get(image_name)
+                )
                 for image_name, loader_name in _PHOTO_UPLOADS.items()
             },
             "labels": {
@@ -242,6 +314,13 @@ class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
 
     def btn_Update_click(self, **event_args):
         """This method is called when the button is clicked"""
+        if not self._inspection_data_loaded:
+            Notification(
+                "The saved inspection has not loaded. Reload the form before updating.",
+                style="danger",
+            ).show()
+            return
+
         missing_checkboxes = [
             self._component_label(getattr(self, name), name)
             for name in _REQUIRED_CHECKBOXES
@@ -260,8 +339,10 @@ class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
         missing_photos = [
             description
             for name, description in _REQUIRED_PHOTOS
-            if getattr(self, _PHOTO_UPLOADS[name]).file is None
-            or getattr(self, _PHOTO_UPLOADS[name]).file == ""
+            if (
+                getattr(self, _PHOTO_UPLOADS[name]).file in (None, "")
+                and self._existing_inspection_images.get(name) is None
+            )
         ]
 
         missing_fields = []
@@ -292,11 +373,25 @@ class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
             return
 
         self.btn_Update.enabled = False
-        anvil.server.call(
-            "save_update_vehicle_inspection",
-            self.jobcardid,
-            self._collect_checklist_data(),
-        )
-        Notification("Inspection checklist updated.", style="success").show()
-        
-        self.btn_Update.enabled = True
+        try:
+            result = anvil.server.call(
+                "save_update_vehicle_inspection",
+                self.jobcardid,
+                self._collect_checklist_data(),
+            )
+            if not isinstance(result, dict) or result.get("success") is not True:
+                raise RuntimeError("The inspection checklist could not be saved.")
+            Notification("Inspection checklist updated.", style="success").show()
+        except anvil.server.AppOfflineError:
+            Notification(
+                "The local server is unreachable. Check the network and try again.",
+                style="danger",
+            ).show()
+        except Exception as error:
+            Notification(
+                "Unable to save the inspection checklist. Please try again.",
+                style="danger",
+            ).show()
+            
+        finally:
+            self.btn_Update.enabled = True

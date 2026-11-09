@@ -266,6 +266,84 @@ class TestTechnicianChecklist(unittest.TestCase):
                     42, _vehicle_inspection_payload()
                 )
 
+    def test_get_vehicle_inspection_data_returns_saved_fields_and_images(self):
+        bma = _load_callables()
+        mock_cursor = MagicMock()
+        image_path = None
+        with tempfile.TemporaryDirectory() as image_dir:
+            image_path = os.path.join(image_dir, "inspection.png")
+            with open(image_path, "wb") as image_file:
+                image_file.write(b"\x89PNG\r\n\x1a\ninspection-image")
+            mock_cursor.fetchall.side_effect = [
+                [
+                    ("V-A1", 1, None),
+                    (
+                        "V-F1",
+                        1,
+                        json.dumps(
+                            [
+                                {
+                                    "name": "text_box_voltage",
+                                    "label": "Voltage",
+                                    "value": "12.6",
+                                },
+                                {
+                                    "name": "date_picker_time_start",
+                                    "label": "Start",
+                                    "value": "2026-11-09T09:15:00",
+                                },
+                            ]
+                        ),
+                    ),
+                ],
+                [("image_1", image_path)],
+            ]
+            saved_media = object()
+            blob_media = MagicMock(return_value=saved_media)
+            with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
+                 patch.object(bma, "db_cursor") as mock_db_cursor, \
+                 patch.object(bma, "VEHICLE_INSPECTION_IMAGE_DIR", image_dir), \
+                 patch.object(bma.anvil, "BlobMedia", blob_media, create=True):
+                mock_db_cursor.return_value.__enter__.return_value = mock_cursor
+
+                result = bma.get_vehicle_inspection_data(42)
+
+        self.assertTrue(result["checkboxes"]["chk_safety"])
+        self.assertFalse(result["checkboxes"]["chk_jack"])
+        self.assertEqual(result["textboxes"]["text_box_voltage"], "12.6")
+        self.assertEqual(
+            result["dates"]["date_picker_time_start"], "2026-11-09T09:15:00"
+        )
+        self.assertIs(result["images"]["image_1"], saved_media)
+        self.assertIsNone(result["images"]["image_2"])
+        queries = mock_cursor.execute.call_args_list
+        self.assertIn("SELECT ItemCode, IsChecked, FieldsJSON", queries[0].args[0])
+        self.assertEqual(queries[0].args[1], (42, "V-%"))
+        self.assertEqual(queries[1].args[1], (42,))
+        blob_media.assert_called_once_with(
+            "image/png",
+            b"\x89PNG\r\n\x1a\ninspection-image",
+            name="inspection.png",
+        )
+
+    def test_get_vehicle_inspection_data_rejects_invalid_jobcard_id(self):
+        bma = _load_callables()
+        with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
+             patch.object(bma, "db_cursor") as mock_db_cursor:
+            with self.assertRaisesRegex(ValueError, "job card ID"):
+                bma.get_vehicle_inspection_data(0)
+
+        mock_db_cursor.assert_not_called()
+
+    def test_get_vehicle_inspection_data_requires_authenticated_user(self):
+        bma = _load_callables()
+        with patch("anvil.users.get_user", return_value=None), \
+             patch.object(bma, "db_cursor") as mock_db_cursor:
+            with self.assertRaisesRegex(Exception, "Authentication required"):
+                bma.get_vehicle_inspection_data(42)
+
+        mock_db_cursor.assert_not_called()
+
     def test_save_or_update_tech_portal_unauthorized_rejected(self):
         bma = _load_callables()
         with patch("anvil.users.get_user", return_value=None):

@@ -377,6 +377,27 @@ class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
         Notification("Inspection checklist updated.", style="success").show()
         self.btn_Update.enabled = True
         self.btn_Close_click()
-        
+
+    def date_picker_time_start_change(self, **event_args):
+        """This method is called when the selected date changes"""
+        if self.date_picker_time_start.date > self.date_picker_time_end.date:
+            Notification("Sorry, start date should be greater than end date and time",style="warning").show()
+            self.date_picker_time_start.date = None
+        elif self.date_picker_time_start.date <= self.date_picker_time_end.date:
+            #Get hrs worked on the vehicle
+            self.lbl_hrs.text = self.date_picker_time_end - self.date_picker_time_start
+    def date_picker_time_end_change(self, **event_args):
+        """This method is called when the selected date changes"""
+        if self.date_picker_time_end.date < self.date_picker_time_start.date:
+            Notification("Sorry, end date and time should not be lesser than start date and time",style="warning").show()
+            #Get hrs worked on the vehicle by calculating the datetime difference between time started and time finished
+            result = self.date_picker_time_end - self.date_picker_time_start
+            self.lbl_hrs.text = f"{result} hrs"
+        elif self.date_picker_time_start.date <= self.date_picker_time_end.date:
+            #Get hrs worked on the vehicle by calculating the datetime difference between time started and time finished
+            result = self.date_picker_time_end - self.date_picker_time_start
+            self.lbl_hrs.text = f"{result} hrs"
+            
+
 
     

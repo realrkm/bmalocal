@@ -125,8 +125,8 @@ def _vehicle_inspection_payload():
         "textboxes": {name: "completed" for name in textboxes},
         "dates": {
             "date_picker_next_service": "2026-12-01",
-            "date_picker_time_start": "2026-11-08",
-            "date_picker_time_end": "2026-11-08",
+            "date_picker_time_start": "2026-11-08T09:15:00",
+            "date_picker_time_end": "2026-11-08T10:45:00",
         },
         "images": {
             "image_1": ImageMedia(),
@@ -233,8 +233,17 @@ class TestTechnicianChecklist(unittest.TestCase):
         self.assertEqual(len(checklist_rows), 34)
         self.assertTrue(all(row[1].startswith("V-") for row in checklist_rows))
         self.assertIn("INSERT INTO tbl_vehicleinspectionimages", image_sql)
+        self.assertIn("(JobCardRefID, ImageCode, ImagePath)", image_sql)
         self.assertIn("ON DUPLICATE KEY UPDATE", image_sql)
         self.assertEqual(len(image_rows), 3)
+        fields_json = next(row[6] for row in checklist_rows if row[1] == "V-F1")
+        saved_fields = {field["name"]: field["value"] for field in json.loads(fields_json)}
+        self.assertEqual(
+            saved_fields["date_picker_time_start"], "2026-11-08T09:15:00"
+        )
+        self.assertEqual(
+            saved_fields["date_picker_time_end"], "2026-11-08T10:45:00"
+        )
 
     def test_save_update_vehicle_inspection_rejects_incomplete_payload(self):
         bma = _load_callables()

@@ -1,9 +1,8 @@
 # BMALocal MySQL Database Schema Reference
 
 **Database Name**: `bmaautoaccessories2017`  
-**Expected after migration V006**: 68 tables | 406 columns | 31 foreign keys
 **Primary Engine**: InnoDB | **Default Collation**: `utf8mb4_general_ci` / `latin1_swedish_ci`  
-**Base schema verified**: 2026-09-24 via `information_schema` live query. V006 is a new migration and must be applied to update the live schema.
+**Base schema verified**: 2026-09-24 via `information_schema` live query. V007 aligns legacy vehicle inspection image columns with the callable contract and restores the job-card foreign key.
 
 ---
 
@@ -161,7 +160,7 @@ colliding with technician portal and final-verification checklist entries.
 | 10 | `UpdatedAt` | `datetime` | NO |  | CURRENT_TIMESTAMP | on update CURRENT_TIMESTAMP |  |
 
 ### `tbl_vehicleinspectionimages`
-**Engine**: InnoDB | **Collation**: utf8mb4_general_ci | **Unique key**: (`JobCardRefID`, `ImageCode`)
+**Engine**: InnoDB | **Collation**: utf8mb4_0900_ai_ci | **Unique key**: (`JobCardRefID`, `ImageCode`)
 
 | # | Column Name | Type | Nullable | Key | Default | Extra | Foreign Key Ref |
 | -: | :--- | :--- | :---: | :---: | :--- | :--- | :--- |
@@ -169,7 +168,8 @@ colliding with technician portal and final-verification checklist entries.
 | 2 | `JobCardRefID` | `int` | NO | MUL | NULL |  | `tbl_jobcarddetails.ID` |
 | 3 | `ImageCode` | `varchar(20)` | NO | MUL | NULL |  |  |
 | 4 | `ImagePath` | `varchar(1024)` | NO |  | NULL |  |  |
-| 5 | `UpdatedAt` | `datetime` | NO |  | CURRENT_TIMESTAMP | on update CURRENT_TIMESTAMP |  |
+| 5 | `created_at` | `timestamp` | YES |  | CURRENT_TIMESTAMP |  |  |
+| 6 | `UpdatedAt` | `datetime` | NO |  | CURRENT_TIMESTAMP | on update CURRENT_TIMESTAMP |  |
 
 ### `tbl_incomplete_defects`
 **Rows**: 44 | **Engine**: InnoDB | **Collation**: utf8mb4_0900_ai_ci

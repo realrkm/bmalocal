@@ -153,6 +153,19 @@ def test_update_accepts_complete_checklist(monkeypatch):
     assert form.btn_Update.enabled is True
 
 
+def test_update_preserves_start_and_end_times(monkeypatch):
+    checklist_module, _ = _load_checklist_module(monkeypatch)
+    form = _make_form(checklist_module.VehicleInspectionChecklist)
+    form.date_picker_time_start.date = datetime.datetime(2026, 11, 9, 9, 15)
+    form.date_picker_time_end.date = datetime.datetime(2026, 11, 9, 10, 45)
+
+    checklist_module.VehicleInspectionChecklist.btn_Update_click(form)
+
+    payload = checklist_module.anvil.server.call.call_args.args[2]
+    assert payload["dates"]["date_picker_time_start"] == "2026-11-09T09:15:00"
+    assert payload["dates"]["date_picker_time_end"] == "2026-11-09T10:45:00"
+
+
 def test_update_accepts_numeric_textbox_value(monkeypatch):
     checklist_module, notification_factory = _load_checklist_module(monkeypatch)
     form = _make_form(checklist_module.VehicleInspectionChecklist)

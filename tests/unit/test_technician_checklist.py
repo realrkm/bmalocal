@@ -179,7 +179,7 @@ class TestTechnicianChecklist(unittest.TestCase):
                 ]),
             ),
             ("D1", 1, json.dumps([{"name": "arms", "value": "No play"}])),
-            ("D2", 1, None),
+            ("D2", 1, json.dumps([{"name": "reardiff", "value": "No play detected"}])),
             ("D3", 1, json.dumps([{"name": "shocks", "value": "No leaks"}])),
             ("D4", 1, json.dumps([{"name": "exhaust", "value": "No rattles"}])),
             ("D5", 1, json.dumps([{"name": "propshaft", "value": "No vibration"}])),
@@ -246,6 +246,9 @@ class TestTechnicianChecklist(unittest.TestCase):
         self.assertEqual(result["textboxes"]["text_box_voltage"], "12.6")
         self.assertEqual(result["textboxes"]["text_box_cca"], "650")
         self.assertEqual(result["textboxes"]["text_box_any_play"], "No play")
+        self.assertEqual(
+            result["textboxes"]["text_box_any_issue"], "No play detected"
+        )
         self.assertEqual(result["textboxes"]["text_box_front_pad_thickness"], "6")
         self.assertEqual(result["textboxes"]["text_box_front_disc"], "24")
         self.assertEqual(result["textboxes"]["text_box_rear_pad_thickness"], "5")

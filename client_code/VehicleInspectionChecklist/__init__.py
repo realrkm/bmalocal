@@ -410,5 +410,13 @@ class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
     def date_picker_time_end_change(self, **event_args):
         self._update_hours_worked()
 
+    def btn_Download_click(self, **event_args):
+        """This method is called when the button is clicked"""
+        media_object = anvil.server.call("downloadInspectionChecklistPdf", self.jobcardid, "InspectionChecklist")
+        anvil.media.download(media_object)
+        self.deleteFile(self.jobcardid, "InspectionChecklist")
+
+    def deleteFile(self, jobCardID, docType):
+        anvil.server.call("deleteFile", jobCardID, docType)
 
     

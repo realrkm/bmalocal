@@ -298,25 +298,5 @@ class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
             self._collect_checklist_data(),
         )
         Notification("Inspection checklist updated.", style="success").show()
-        # try:
-        #     result = anvil.server.call(
-        #         "save_update_vehicle_inspection",
-        #         self.jobcardid,
-        #         self._collect_checklist_data(),
-        #     )
-        #     if not isinstance(result, dict) or result.get("success") is not True:
-        #         raise RuntimeError("The inspection checklist could not be saved.")
-        #     Notification("Inspection checklist updated.", style="success").show()
-        # except anvil.server.AppOfflineError:
-        #     Notification(
-        #         "The local server is unreachable. Check the network and try again.",
-        #         style="danger",
-        #     ).show()
-        # except Exception as error:
-        #     Notification(
-        #         "Unable to save the inspection checklist. Please try again or contact a manager.",
-        #         style="danger",
-        #     ).show()
-        #     alert(f"Error saving inspection checklist: {error}", title="Error")
-        # finally:
+        
         self.btn_Update.enabled = True

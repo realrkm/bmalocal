@@ -156,8 +156,7 @@ colliding with technician portal and final-verification checklist entries.
 | 6 | `ItemDescription` | `text` | NO |  | NULL |  |  |
 | 7 | `IsChecked` | `tinyint(1)` | NO |  | 0 |  |  |
 | 8 | `FieldsJSON` | `json` | YES |  | NULL |  |  |
-| 9 | `PreparedByStaff` | `varchar(255)` | YES |  | NULL |  |  |
-| 10 | `UpdatedAt` | `datetime` | NO |  | CURRENT_TIMESTAMP | on update CURRENT_TIMESTAMP |  |
+| 9 | `UpdatedAt` | `datetime` | NO |  | CURRENT_TIMESTAMP | on update CURRENT_TIMESTAMP |  |
 
 ### `tbl_vehicleinspectionimages`
 **Engine**: InnoDB | **Collation**: utf8mb4_0900_ai_ci | **Unique key**: (`JobCardRefID`, `ImageCode`)

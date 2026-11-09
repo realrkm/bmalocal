@@ -195,7 +195,9 @@ class TestTechnicianChecklist(unittest.TestCase):
         self.assertEqual(mock_cursor.executemany.call_count, 1)
         sql_arg, rows_arg = mock_cursor.executemany.call_args[0]
         self.assertIn("INSERT INTO tbl_technicianinspectionchecklist", sql_arg)
+        self.assertNotIn("PreparedByStaff", sql_arg)
         self.assertEqual(len(rows_arg), 2)
+        self.assertTrue(all(len(row) == 7 for row in rows_arg))
         self.assertEqual(rows_arg[0][0], 42)
         self.assertEqual(rows_arg[0][1], "A1")
         self.assertEqual(rows_arg[0][5], 1)
@@ -229,8 +231,10 @@ class TestTechnicianChecklist(unittest.TestCase):
         checklist_sql, checklist_rows = calls[0].args
         image_sql, image_rows = calls[1].args
         self.assertIn("INSERT INTO tbl_technicianinspectionchecklist", checklist_sql)
+        self.assertNotIn("PreparedByStaff", checklist_sql)
         self.assertIn("ON DUPLICATE KEY UPDATE", checklist_sql)
         self.assertEqual(len(checklist_rows), 34)
+        self.assertTrue(all(len(row) == 7 for row in checklist_rows))
         self.assertTrue(all(row[1].startswith("V-") for row in checklist_rows))
         self.assertIn("INSERT INTO tbl_vehicleinspectionimages", image_sql)
         self.assertIn("(JobCardRefID, ImageCode, ImagePath)", image_sql)
@@ -425,7 +429,9 @@ class TestTechnicianChecklist(unittest.TestCase):
 
         last_call_sql, last_call_params = mock_cursor.execute.call_args[0]
         self.assertIn("INSERT INTO tbl_technicianinspectionchecklist", last_call_sql)
+        self.assertNotIn("PreparedByStaff", last_call_sql)
         self.assertEqual(last_call_params[0], 99)
+        self.assertEqual(len(last_call_params), 7)
         self.assertEqual(last_call_params[1], "F1")
         self.assertEqual(last_call_params[2], "F")
         self.assertEqual(last_call_params[5], 1)

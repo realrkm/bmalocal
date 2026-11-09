@@ -382,6 +382,7 @@ class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
             if not isinstance(result, dict) or result.get("success") is not True:
                 raise RuntimeError("The inspection checklist could not be saved.")
             Notification("Inspection checklist updated.", style="success").show()
+            self.clear_form()
         except anvil.server.AppOfflineError:
             Notification(
                 "The local server is unreachable. Check the network and try again.",
@@ -395,3 +396,15 @@ class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
             
         finally:
             self.btn_Update.enabled = True
+
+    def clear_form(self):
+        for name in _REQUIRED_CHECKBOXES:
+            getattr(self, name).checked = False
+        for name in _REQUIRED_TEXTBOXES:
+            getattr(self, name).text = ""
+        for name in _REQUIRED_DATEPICKERS:
+            getattr(self, name).date = None
+        for image_name, loader_name in _PHOTO_UPLOADS.items():
+            getattr(self, loader_name).file = None
+            self._existing_inspection_images[image_name] = None
+            getattr(self, image_name).source = None

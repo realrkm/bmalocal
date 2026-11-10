@@ -1003,8 +1003,7 @@
             title: 'B. CUSTOMER COMPLAINT & DIAGNOSIS (5 mins)',
             items: [
                 ['Test drive done - Noise/vibration confirmed? Yes/No:', { f: 'noise', w: 'md', l: 'Noise/vibration confirmed (Yes/No)' }],
-                ['ISTA / Diagnostic scan - Fault codes:', { f: 'codes', w: 'md', l: 'Fault codes' }, 'Faults cleared after:', { f: 'cleared', w: 'lg', l: 'Faults cleared after' }],
-                ['M-Pesa check - Customer has limit? Offer M-Pesa payment Yes/No:', { f: 'yetu', w: 'lg', l: 'Yetu/MPesa limit / payment offered' }]
+                ['ISTA / Diagnostic scan - Fault codes:', { f: 'codes', w: 'md', l: 'Fault codes' }, 'Faults cleared after:', { f: 'cleared', w: 'lg', l: 'Faults cleared after' }]
             ]
         },
         {

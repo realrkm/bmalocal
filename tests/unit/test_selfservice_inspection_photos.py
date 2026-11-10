@@ -84,6 +84,50 @@ def test_missing_photo_focus_helper_is_available_to_save_handler():
     assert result.returncode == 0, result.stderr
 
 
+def test_saved_selfservice_checklist_excludes_removed_yetu_field():
+    source_path = Path(__file__).parents[2] / "theme" / "assets" / "selfservice.js"
+    source = source_path.read_text(encoding="utf-8")
+    sections_start = source.index("    const CHECKLIST_SECTIONS = [")
+    sections_end = source.index("    function checklistStorageKey", sections_start)
+    item_id_start = source.index("    function checklistItemId", sections_end)
+    item_id_end = source.index("\n    function ", item_id_start + 1)
+    payload_start = source.index("    function buildChecklistPayload()", item_id_end)
+    payload_end = source.index("    function formatChecklistErrors", payload_start)
+    script = f"""
+        const state = {{
+            activeReg: 'JC-042',
+            checklist: {{
+                reg: 'JC-042',
+                checks: {{ B3: true }},
+                fields: {{ 'B3.yetu': 'Yes' }}
+            }}
+        }};
+        function checklistApplies() {{ return true; }}
+        function syncChecklistFromDOM() {{}}
+        function getChecklist() {{ return state.checklist; }}
+        function shortChecklistText(text) {{ return text; }}
+        {source[sections_start:sections_end]}
+        {source[item_id_start:item_id_end]}
+        {source[payload_start:payload_end]}
+        const payload = buildChecklistPayload();
+        if (payload.list.some(item => item.fields.some(field => field.name === 'yetu'))) {{
+            throw new Error('Removed Yetu field was included in the saved checklist.');
+        }}
+        if (payload.list.some(item => item.item.includes('M-Pesa check'))) {{
+            throw new Error('Removed M-Pesa checklist item was included in the saved checklist.');
+        }}
+    """
+
+    result = subprocess.run(
+        ["node", "-e", script],
+        capture_output=True,
+        check=False,
+        text=True,
+    )
+
+    assert result.returncode == 0, result.stderr
+
+
 @pytest.mark.parametrize(
     "images",
     [

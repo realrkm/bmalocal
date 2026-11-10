@@ -246,6 +246,43 @@ class TestTechnicianChecklist(unittest.TestCase):
         )
         self.assertIn("Car on jack stands", rendered)
 
+    def test_fill_inspection_checklist_html_omits_duplicate_section_rows_and_checks_saved_items(self):
+        bma = _load_callables()
+        checkboxes = {name: True for name in bma._VEHICLE_INSPECTION_CHECKBOXES}
+        labels = {}
+        section_titles = []
+        item_labels = []
+        for section_code, (header_code, header_name), items, _ in bma._VEHICLE_INSPECTION_SECTIONS:
+            title = "Section {} heading".format(section_code)
+            labels[header_name] = title
+            section_titles.append(title)
+            for index, (_item_code, item_name) in enumerate(items, start=1):
+                label = "{} item {}".format(section_code, index)
+                labels[item_name] = label
+                item_labels.append(label)
+        saved_data = {
+            "jobcard": {},
+            "checkboxes": checkboxes,
+            "textboxes": {},
+            "dates": {},
+            "images": {},
+            "labels": labels,
+        }
+
+        with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
+             patch.object(bma, "_get_inspection_checklist_data", return_value=saved_data):
+            rendered = bma.fillInspectionChecklistData(42, "InspectionChecklist")
+
+        for title in section_titles:
+            self.assertEqual(rendered.count("<h2>{}</h2>".format(title)), 1)
+            self.assertNotIn("<td>{}</td>".format(title), rendered)
+        for label in item_labels:
+            self.assertIn(
+                '<tr><td class="check">&#9745;</td><td>{}</td></tr>'.format(label),
+                rendered,
+            )
+        self.assertEqual(rendered.count('<td class="check">'), len(item_labels))
+
     def test_fill_inspection_checklist_html_uses_form_placeholders_as_field_labels(self):
         bma = _load_callables()
         template_path = (

@@ -95,6 +95,7 @@ class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
 
         # Any code you write here will run before the form opens.
         self.jobcardid = jobcardid
+        alert(jobcardid)
         self._inspection_data_loaded = False
         self._existing_inspection_images = {
             image_name: None for image_name, _ in _REQUIRED_PHOTOS

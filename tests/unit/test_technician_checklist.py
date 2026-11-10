@@ -1,3 +1,4 @@
+import base64
 import datetime
 import json
 import os
@@ -147,6 +148,130 @@ def _vehicle_inspection_payload():
 
 
 class TestTechnicianChecklist(unittest.TestCase):
+    def test_inspection_pdf_data_includes_jobcard_and_checklist_fields(self):
+        bma = _load_callables()
+        cursor = MagicMock()
+        cursor.fetchone.return_value = (
+            42,
+            "JC-042",
+            "Jane Customer",
+            "KDEO042",
+            "BMW 320i",
+            "N20",
+            "WBA123",
+            "ENG-42",
+            82500,
+            datetime.date(2026, 11, 9),
+        )
+        inspection = {
+            "checkboxes": {"chk_jack": True},
+            "textboxes": {"text_box_voltage": "12.6"},
+            "dates": {"date_picker_time_start": "2026-11-09T09:15:00"},
+            "images": {"image_1": object()},
+            "labels": {
+                "chk_jack": "Jack + 2 Jack Stands placed",
+                "text_box_voltage": "Battery voltage",
+            },
+        }
+        with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
+             patch.object(bma, "db_cursor") as mock_db_cursor, \
+             patch.object(bma, "get_vehicle_inspection_data", return_value=inspection):
+            mock_db_cursor.return_value.__enter__.return_value = cursor
+            result = bma.get_inspection_checklist_data_by_job_id(42)
+
+        self.assertEqual(result["jobcard"]["JobCardRef"], "JC-042")
+        self.assertEqual(result["jobcard"]["ClientName"], "Jane Customer")
+        self.assertEqual(result["checkboxes"], inspection["checkboxes"])
+        self.assertEqual(result["textboxes"], inspection["textboxes"])
+        self.assertEqual(result["dates"], inspection["dates"])
+        self.assertIs(result["images"]["image_1"], inspection["images"]["image_1"])
+
+    def test_fill_inspection_checklist_html_renders_checkboxes_fields_dates_and_images(self):
+        bma = _load_callables()
+        image_bytes = b"\x89PNG\r\n\x1a\ninspection-photo"
+
+        class InspectionImage:
+            content_type = "image/png"
+
+            def get_bytes(self):
+                return image_bytes
+
+        saved_data = {
+            "jobcard": {
+                "JobCardRef": "JC-042",
+                "ClientName": "Jane & Co",
+                "RegNo": "KDEO042",
+                "MakeAndModel": "BMW 320i",
+                "EngineCode": "N20",
+                "ChassisNo": "WBA123",
+                "ReceivedDate": datetime.date(2026, 11, 9),
+                "Mileage": 82500,
+            },
+            "checkboxes": {"chk_jack": True, "chk_chock": False},
+            "textboxes": {"text_box_voltage": "<12.6>"},
+            "dates": {
+                "date_picker_next_service": "2026-12-26",
+                "date_picker_time_start": "2026-11-09T09:15:00",
+                "date_picker_time_end": "2026-11-09T10:45:00",
+            },
+            "images": {"image_1": InspectionImage(), "image_2": None, "image_3": None},
+            "labels": {
+                "chk_jack": "Jack stands",
+                "chk_chock": "Wheel chock",
+                "text_box_voltage": "Battery voltage",
+                "date_picker_next_service": "Next service date",
+                "date_picker_time_start": "Time started",
+                "date_picker_time_end": "Time finished",
+            },
+        }
+        with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
+             patch.object(bma, "_get_inspection_checklist_data", return_value=saved_data):
+            rendered = bma.fillInspectionChecklistData(42, "InspectionChecklist")
+
+        self.assertIn("Jane &amp; Co", rendered)
+        self.assertIn("Jack stands", rendered)
+        self.assertIn("&#9745;", rendered)
+        self.assertIn("&#9744;", rendered)
+        self.assertIn("Battery voltage", rendered)
+        self.assertIn("&lt;12.6&gt;", rendered)
+        self.assertIn("2026-12-26", rendered)
+        self.assertIn("09:15", rendered)
+        self.assertIn("10:45", rendered)
+        self.assertIn(
+            base64.b64encode(image_bytes).decode("ascii"),
+            rendered,
+        )
+        self.assertIn("Car on jack stands", rendered)
+
+    def test_download_inspection_checklist_returns_pdf_and_removes_temporary_file(self):
+        bma = _load_callables()
+        temporary_paths = []
+        expected_media = object()
+
+        def render_pdf(_html, output_path, **_kwargs):
+            temporary_paths.append(output_path)
+            with open(output_path, "wb") as pdf_file:
+                pdf_file.write(b"%PDF-test")
+
+        with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
+             patch.object(bma, "fillInspectionChecklistData", return_value="<html></html>"), \
+             patch.object(bma.pdfkit, "from_string", side_effect=render_pdf), \
+             patch.object(
+                 bma.anvil.media,
+                 "from_file",
+                 return_value=expected_media,
+                 create=True,
+             ) as from_file:
+            result = bma.downloadInspectionChecklistPdf(42, "InspectionChecklist")
+
+        self.assertIs(result, expected_media)
+        from_file.assert_called_once_with(
+            temporary_paths[0],
+            "application/pdf",
+            name="InspectionChecklist-42.pdf",
+        )
+        self.assertFalse(os.path.exists(temporary_paths[0]))
+
     def test_get_vehicle_inspection_data_maps_selfservice_checklist_rows(self):
         bma = _load_callables()
         portal_updated_at = datetime.datetime(2026, 11, 9, 10, 0)
@@ -220,7 +345,9 @@ class TestTechnicianChecklist(unittest.TestCase):
             )
         )
         portal_rows = [
-            row if len(row) == 4 else (*row, portal_updated_at)
+            (*row, portal_updated_at, "Inspection section", "Inspection item")
+            if len(row) == 3
+            else (*row, "Inspection section", "Inspection item")
             for row in portal_rows
         ]
         mock_cursor = MagicMock()
@@ -267,12 +394,16 @@ class TestTechnicianChecklist(unittest.TestCase):
                     1,
                     json.dumps([{"name": "noise", "value": "Portal value"}]),
                     datetime.datetime(2026, 11, 9, 9, 0),
+                    "Portal section",
+                    "Portal item",
                 ),
                 (
                     "V-B2",
                     1,
                     json.dumps([{"name": "text_box_test_drive", "value": "Legacy value"}]),
                     datetime.datetime(2026, 11, 9, 10, 0),
+                    "Legacy section",
+                    "Legacy item",
                 ),
             ],
             [],
@@ -484,7 +615,14 @@ class TestTechnicianChecklist(unittest.TestCase):
                 image_file.write(b"\x89PNG\r\n\x1a\ninspection-image")
             mock_cursor.fetchall.side_effect = [
                 [
-                    ("V-A1", 1, None, datetime.datetime(2026, 11, 9, 10, 0)),
+                    (
+                        "V-A1",
+                        1,
+                        None,
+                        datetime.datetime(2026, 11, 9, 10, 0),
+                        "Safety",
+                        "Jack stands",
+                    ),
                     (
                         "V-F1",
                         1,
@@ -503,6 +641,8 @@ class TestTechnicianChecklist(unittest.TestCase):
                             ]
                         ),
                         datetime.datetime(2026, 11, 9, 10, 0),
+                        "Electrical",
+                        "Battery voltage",
                     ),
                 ],
                 [("image_1", image_path)],

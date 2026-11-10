@@ -17,7 +17,6 @@ _REQUIRED_CHECKBOXES = (
     "chk_complain",
     "chk_test_drive",
     "chk_scan",
-    "chk_mpesa",
     "chk_service",
     "chk_oil_level",
     "chk_oil_filter",
@@ -49,7 +48,6 @@ _REQUIRED_TEXTBOXES = (
     "text_box_test_drive",
     "text_box_fault_code",
     "text_box_faults_cleared",
-    "text_box_customer_limit",
     "text_box_cracks",
     "text_box_voltage",
     "text_box_cca",
@@ -185,12 +183,11 @@ class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
         if self.chk_complain.checked:
             self.chk_test_drive.checked=True
             self.chk_scan.checked=True
-            self.chk_mpesa.checked=True
+            
         else:
             self.chk_test_drive.checked=False
             self.chk_scan.checked=False
-            self.chk_mpesa.checked=False
-
+           
     def chk_service_change(self, **event_args):
         """This method is called when this checkbox is checked or unchecked"""
         if self.chk_service.checked:

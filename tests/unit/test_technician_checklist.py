@@ -99,7 +99,7 @@ def _load_callables():
 def _vehicle_inspection_payload():
     checkboxes = (
         "chk_safety", "chk_jack", "chk_chock", "chk_ppe", "chk_valuables",
-        "chk_complain", "chk_test_drive", "chk_scan", "chk_mpesa",
+        "chk_complain", "chk_test_drive", "chk_scan",
         "chk_service", "chk_oil_level", "chk_oil_filter", "chk_air_filter",
         "chk_coolant", "chk_belt", "chk_battery", "chk_carriage",
         "chk_front_arms", "chk_rear_diff", "chk_shocks", "chk_exhaust",
@@ -110,7 +110,7 @@ def _vehicle_inspection_payload():
     )
     textboxes = (
         "text_box_test_drive", "text_box_fault_code", "text_box_faults_cleared",
-        "text_box_customer_limit", "text_box_cracks", "text_box_voltage",
+        "text_box_cracks", "text_box_voltage",
         "text_box_cca", "text_box_any_play", "text_box_any_issue",
         "text_box_broken", "text_box_rattles", "text_box_vibration",
         "text_box_oil_leaks", "text_box_front_pad_thickness", "text_box_front_disc",
@@ -454,10 +454,11 @@ class TestTechnicianChecklist(unittest.TestCase):
         self.assertTrue(result["checkboxes"]["chk_service"])
         self.assertTrue(result["checkboxes"]["chk_carriage"])
         self.assertTrue(result["checkboxes"]["chk_brakes"])
+        self.assertNotIn("chk_mpesa", result["checkboxes"])
         self.assertEqual(result["textboxes"]["text_box_test_drive"], "No")
         self.assertEqual(result["textboxes"]["text_box_fault_code"], "P0420")
         self.assertEqual(result["textboxes"]["text_box_faults_cleared"], "After repair")
-        self.assertEqual(result["textboxes"]["text_box_customer_limit"], "Yes")
+        self.assertNotIn("text_box_customer_limit", result["textboxes"])
         self.assertEqual(result["textboxes"]["text_box_cracks"], "No cracks")
         self.assertEqual(result["textboxes"]["text_box_voltage"], "12.6")
         self.assertEqual(result["textboxes"]["text_box_cca"], "650")
@@ -679,7 +680,7 @@ class TestTechnicianChecklist(unittest.TestCase):
         self.assertIn("INSERT INTO tbl_technicianinspectionchecklist", checklist_sql)
         self.assertNotIn("PreparedByStaff", checklist_sql)
         self.assertIn("ON DUPLICATE KEY UPDATE", checklist_sql)
-        self.assertEqual(len(checklist_rows), 34)
+        self.assertEqual(len(checklist_rows), 33)
         self.assertTrue(all(len(row) == 7 for row in checklist_rows))
         self.assertTrue(all(row[1].startswith("V-") for row in checklist_rows))
         self.assertIn("INSERT INTO tbl_vehicleinspectionimages", image_sql)

@@ -506,6 +506,28 @@ class TestTechnicianChecklist(unittest.TestCase):
         self.assertTrue(result["checkboxes"]["chk_test_drive"])
         self.assertEqual(result["textboxes"]["text_box_test_drive"], "Legacy value")
 
+    def test_get_vehicle_inspection_data_uses_selfservice_rows_without_timestamps(self):
+        bma = _load_callables()
+        mock_cursor = MagicMock()
+        mock_cursor.fetchall.side_effect = [
+            [
+                ("A1", 1, None, None, "Safety", "Jack stands"),
+                ("A2", 1, None, None, "Safety", "Wheel chock"),
+                ("A3", 1, None, None, "Safety", "PPE"),
+                ("A4", 1, None, None, "Safety", "Valuables"),
+            ],
+            [],
+        ]
+
+        with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
+             patch.object(bma, "db_cursor") as mock_db_cursor:
+            mock_db_cursor.return_value.__enter__.return_value = mock_cursor
+            result = bma.get_vehicle_inspection_data(42)
+
+        self.assertTrue(result["checkboxes"]["chk_jack"])
+        self.assertTrue(result["checkboxes"]["chk_chock"])
+        self.assertTrue(result["checkboxes"]["chk_safety"])
+
     def test_technician_portal_checklist_requires_all_inspection_photos(self):
         bma = _load_callables()
         checklist = [

@@ -1,11 +1,14 @@
 import base64
 import datetime
+import html
 import json
 import os
+import re
 import sys
 import tempfile
 import types
 import unittest
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 try:
@@ -232,7 +235,7 @@ class TestTechnicianChecklist(unittest.TestCase):
         self.assertIn("Jack stands", rendered)
         self.assertIn("&#9745;", rendered)
         self.assertIn("&#9744;", rendered)
-        self.assertIn("Battery voltage", rendered)
+        self.assertIn("<th>Voltage</th><td>&lt;12.6&gt;</td>", rendered)
         self.assertIn("&lt;12.6&gt;", rendered)
         self.assertIn("2026-12-26", rendered)
         self.assertIn("09:15", rendered)
@@ -242,6 +245,55 @@ class TestTechnicianChecklist(unittest.TestCase):
             rendered,
         )
         self.assertIn("Car on jack stands", rendered)
+
+    def test_fill_inspection_checklist_html_uses_form_placeholders_as_field_labels(self):
+        bma = _load_callables()
+        template_path = (
+            Path(__file__).parents[2]
+            / "client_code"
+            / "VehicleInspectionChecklist"
+            / "form_template.html"
+        )
+        template = template_path.read_text(encoding="utf-8")
+        placeholders = {
+            name: html.unescape(placeholder).strip()
+            for name, placeholder in re.findall(
+                r'<anvil-component type="(?:TextBox|DatePicker)" name="([^"]+)"'
+                r'[^>]*?prop:placeholder="([^"]*)"',
+                template,
+            )
+        }
+        displayed_names = (
+            bma._VEHICLE_INSPECTION_TEXTBOXES + bma._VEHICLE_INSPECTION_DATES
+        )
+        values = {name: "saved-{}".format(name) for name in bma._VEHICLE_INSPECTION_TEXTBOXES}
+        date_values = {name: "2026-11-10" for name in bma._VEHICLE_INSPECTION_DATES}
+        saved_data = {
+            "jobcard": {},
+            "checkboxes": {},
+            "textboxes": values,
+            "dates": date_values,
+            "images": {},
+            "labels": {name: "Legacy label" for name in displayed_names},
+        }
+
+        with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
+             patch.object(bma, "_get_inspection_checklist_data", return_value=saved_data):
+            rendered = bma.fillInspectionChecklistData(42, "InspectionChecklist")
+
+        self.assertTrue(all(name in placeholders for name in displayed_names))
+        for name in bma._VEHICLE_INSPECTION_TEXTBOXES:
+            expected_row = "<th>{}</th><td>{}</td>".format(
+                html.escape(placeholders[name]),
+                html.escape(values[name]),
+            )
+            self.assertIn(expected_row, rendered)
+        for name in bma._VEHICLE_INSPECTION_DATES:
+            expected_row = "<th>{}</th><td>{}</td>".format(
+                html.escape(placeholders[name]),
+                html.escape(date_values[name]),
+            )
+            self.assertIn(expected_row, rendered)
 
     def test_download_inspection_checklist_returns_pdf_and_removes_temporary_file(self):
         bma = _load_callables()

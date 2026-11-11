@@ -95,7 +95,7 @@ def test_save_uses_datetime_module_to_set_created_timestamp(monkeypatch):
     form.chk_old_parts = types.SimpleNamespace(checked=True)
     form.chk_invoice_explain = types.SimpleNamespace(checked=True)
     form.date_picker_next_service = types.SimpleNamespace(date=datetime(2026, 12, 1))
-    form.txt_next_service_mileage = types.SimpleNamespace(text="50000")
+    form.txt_next_service_mileage = types.SimpleNamespace(text=50000)
     form.date_picker_time_start = types.SimpleNamespace(date=datetime(2026, 11, 11, 8))
     form.date_picker_time_end = types.SimpleNamespace(date=datetime(2026, 11, 11, 9))
     form.txt_efficiency = types.SimpleNamespace(text="90%")
@@ -114,3 +114,4 @@ def test_save_uses_datetime_module_to_set_created_timestamp(monkeypatch):
     assert save_call.args[5]["chk_road_test"] is True
     assert save_call.args[5]["chk_engine_clean"] is True
     assert save_call.args[5]["chk_invoice_explain"] is True
+    assert save_call.args[5]["next_service_mileage"] == "50000"

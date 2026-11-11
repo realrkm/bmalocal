@@ -241,7 +241,11 @@ class VerifyTask(VerifyTaskTemplate):
                 self.date_picker_next_service.date.strftime("%Y-%m-%d")
                 if self.date_picker_next_service.date else None
             ),
-            "next_service_mileage": self.txt_next_service_mileage.text or None,
+            "next_service_mileage": (
+                str(self.txt_next_service_mileage.text).strip()
+                if self.txt_next_service_mileage.text not in (None, "")
+                else None
+            ),
             "time_start": (
                 self.date_picker_time_start.date.isoformat()
                 if self.date_picker_time_start.date else None

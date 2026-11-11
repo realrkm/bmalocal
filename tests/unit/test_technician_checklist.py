@@ -285,6 +285,32 @@ class TestTechnicianChecklist(unittest.TestCase):
                 rendered,
             )
 
+    def test_fill_inspection_checklist_html_allows_sections_to_flow_across_pages(self):
+        bma = _load_callables()
+        saved_data = {
+            "jobcard": {},
+            "checkboxes": {},
+            "textboxes": {},
+            "dates": {},
+            "images": {},
+            "labels": {},
+        }
+
+        with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
+             patch.object(bma, "_get_inspection_checklist_data", return_value=saved_data):
+            rendered = bma.fillInspectionChecklistData(42, "InspectionChecklist")
+
+        self.assertRegex(
+            rendered,
+            r"section\s*\{\s*page-break-inside:\s*auto;\s*"
+            r"break-inside:\s*auto;\s*\}",
+        )
+        self.assertRegex(
+            rendered,
+            r"\.checklist tr\s*\{\s*page-break-inside:\s*avoid;\s*"
+            r"break-inside:\s*avoid;\s*\}",
+        )
+
     def test_fill_inspection_checklist_html_omits_duplicate_section_rows_and_checks_saved_items(self):
         bma = _load_callables()
         checkboxes = {name: True for name in bma._VEHICLE_INSPECTION_CHECKBOXES}

@@ -203,7 +203,7 @@ class VerifyTask(VerifyTaskTemplate):
 
         jobCardID = self.cmbJobCardID.selected_value['ID']
         remarks = self.txtRemarks.text
-        createdAt = datetime.now()
+        createdAt = datetime.datetime.now()
         status = self.cmbWorkflow.selected_value
 
         verify_checklist_data = {

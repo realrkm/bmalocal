@@ -246,6 +246,45 @@ class TestTechnicianChecklist(unittest.TestCase):
         )
         self.assertIn("Car on jack stands", rendered)
 
+    def test_fill_inspection_checklist_html_uses_full_section_f_labels(self):
+        bma = _load_callables()
+        section_f_labels = {
+            "chk_final": "Final Quality and Handover",
+            "chk_torque": "Torque: Wheels 140Nm, Oil drain 25Nm, Filter housing 25Nm",
+            "chk_road_test": (
+                "Road test 5km - No warning lights, no noise, ISTA no faults"
+            ),
+            "chk_engine_clean": "Engine bay cleaned, car washed, vacuumed",
+            "chk_old_parts": "Old parts in boot - Shown to customer",
+            "chk_invoice_explain": "Invoice explained",
+        }
+        saved_data = {
+            "jobcard": {},
+            "checkboxes": {name: False for name in section_f_labels},
+            "textboxes": {},
+            "dates": {},
+            "images": {},
+            "labels": {
+                name: name.replace("_", " ").title()
+                for name in section_f_labels
+            },
+        }
+
+        with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
+             patch.object(bma, "_get_inspection_checklist_data", return_value=saved_data):
+            rendered = bma.fillInspectionChecklistData(42, "InspectionChecklist")
+
+        self.assertIn("<h2>Final Quality and Handover</h2>", rendered)
+        for component_name, full_label in section_f_labels.items():
+            if component_name == "chk_final":
+                continue
+            self.assertIn(
+                '<tr><td class="check">&#9744;</td><td>{}</td></tr>'.format(
+                    html.escape(full_label)
+                ),
+                rendered,
+            )
+
     def test_fill_inspection_checklist_html_omits_duplicate_section_rows_and_checks_saved_items(self):
         bma = _load_callables()
         checkboxes = {name: True for name in bma._VEHICLE_INSPECTION_CHECKBOXES}
@@ -255,11 +294,15 @@ class TestTechnicianChecklist(unittest.TestCase):
         for section_code, (header_code, header_name), items, _ in bma._VEHICLE_INSPECTION_SECTIONS:
             title = "Section {} heading".format(section_code)
             labels[header_name] = title
-            section_titles.append(title)
+            section_titles.append(
+                bma._VEHICLE_INSPECTION_PDF_FIELD_LABELS.get(header_name, title)
+            )
             for index, (_item_code, item_name) in enumerate(items, start=1):
                 label = "{} item {}".format(section_code, index)
                 labels[item_name] = label
-                item_labels.append(label)
+                item_labels.append(
+                    bma._VEHICLE_INSPECTION_PDF_FIELD_LABELS.get(item_name, label)
+                )
         saved_data = {
             "jobcard": {},
             "checkboxes": checkboxes,

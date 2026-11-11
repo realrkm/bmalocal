@@ -17,7 +17,7 @@ components:
     - event_bindings: {change: chk_final_change}
       layout_properties: {grid_position: 'ZJCDVG,HOXNSP'}
       name: chk_final
-      properties: {align: center, background: 'theme:Gray 600', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: F. Final Quality And Handover *}
+      properties: {align: center, background: 'theme:Gray 600', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', text: F. Final Quality And Handover}
       type: CheckBox
     - layout_properties: {full_width_row: false, grid_position: 'KEYJOJ,YHEXLV'}
       name: chk_torque

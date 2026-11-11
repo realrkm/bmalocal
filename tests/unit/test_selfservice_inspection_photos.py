@@ -84,6 +84,18 @@ def test_missing_photo_focus_helper_is_available_to_save_handler():
     assert result.returncode == 0, result.stderr
 
 
+def test_required_inspection_photos_follow_checklist_sections():
+    source_path = Path(__file__).parents[2] / "theme" / "assets" / "selfservice.js"
+    source = source_path.read_text(encoding="utf-8")
+    render_start = source.index("    function renderChecklistCard()")
+    render_end = source.index("    // Updates section masters", render_start)
+    render_markup = source[render_start:render_end]
+
+    assert render_markup.index("${sectionsHTML}") < render_markup.index(
+        "${inspectionPhotoUploadMarkup()}"
+    )
+
+
 def test_saved_selfservice_checklist_excludes_removed_yetu_field():
     source_path = Path(__file__).parents[2] / "theme" / "assets" / "selfservice.js"
     source = source_path.read_text(encoding="utf-8")

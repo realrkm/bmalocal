@@ -1450,8 +1450,8 @@
                     <button type="button" class="checklist-btn" onclick="setChecklistAll(false)">Uncheck All</button>
                     <button type="button" class="checklist-btn checklist-btn-primary" onclick="setChecklistAll(true)">Check All</button>
                 </div>
-                ${inspectionPhotoUploadMarkup()}
                 ${sectionsHTML}
+                ${inspectionPhotoUploadMarkup()}
             </div>
         </div>`;
     }

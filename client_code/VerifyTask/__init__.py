@@ -90,6 +90,7 @@ class VerifyTask(VerifyTaskTemplate):
 
         elapsed_hours = elapsed_seconds / 3600
         self.lbl_hrs.text = f"Total hrs: {elapsed_hours:.2f}"
+        self.lbl_hrs.text="Hello"
 
     def date_picker_time_start_change(self, **event_args):
         self._update_hours_worked()

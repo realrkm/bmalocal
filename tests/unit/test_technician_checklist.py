@@ -922,8 +922,10 @@ class TestTechnicianChecklist(unittest.TestCase):
     def test_get_verify_task_checklist_returns_parsed_dict(self):
         bma = _load_callables()
         mock_cursor = MagicMock()
+        updated_at = datetime.datetime(2026, 11, 11, 8, 15, 30)
         mock_cursor.fetchone.return_value = (
             json.dumps({"chk_torque": True, "efficiency": "98%"}),
+            updated_at,
         )
 
         with patch("anvil.users.get_user", return_value={"email": "advisor@bmaauto.com", "role_id": 1}), \
@@ -934,6 +936,24 @@ class TestTechnicianChecklist(unittest.TestCase):
         self.assertIsNotNone(res)
         self.assertTrue(res["chk_torque"])
         self.assertEqual(res["efficiency"], "98%")
+        self.assertEqual(res["time_start"], updated_at.isoformat())
+        query, params = mock_cursor.execute.call_args.args
+        self.assertIn("MAX(UpdatedAt)", query)
+        self.assertIn("JobCardRefID", query)
+        self.assertEqual(params, (99, 99))
+
+    def test_get_verify_task_checklist_returns_updated_at_without_final_checklist(self):
+        bma = _load_callables()
+        updated_at = datetime.datetime(2026, 11, 11, 8, 15, 30)
+        mock_cursor = MagicMock()
+        mock_cursor.fetchone.return_value = (None, updated_at)
+
+        with patch("anvil.users.get_user", return_value={"email": "advisor@bmaauto.com", "role_id": 1}), \
+             patch.object(bma, "db_cursor") as mock_db_cursor:
+            mock_db_cursor.return_value.__enter__.return_value = mock_cursor
+            result = bma.getVerifyTaskChecklist(99)
+
+        self.assertEqual(result, {"time_start": updated_at.isoformat()})
 
 
 if __name__ == "__main__":

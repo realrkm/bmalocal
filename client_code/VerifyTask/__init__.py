@@ -112,11 +112,12 @@ class VerifyTask(VerifyTaskTemplate):
 
         # Mandatory Final Quality & Handover checkboxes check
         if not all([
+            self.chk_final.checked,
             self.chk_torque.checked,
-            self.chk_test.checked,
-            self.chk_clean.checked,
-            self.chk_old.checked,
-            self.chk_explain.checked,
+            self.chk_road_test.checked,
+            self.chk_engine_clean.checked,
+            self.chk_old_parts.checked,
+            self.chk_invoice_explain.checked, 
         ]):
             Notification(
                 "All Final Quality and Handover checkboxes must be ticked before saving.",
@@ -207,11 +208,12 @@ class VerifyTask(VerifyTaskTemplate):
         status = self.cmbWorkflow.selected_value
 
         verify_checklist_data = {
+            "chk_final": bool(self.chk_final.checked),
             "chk_torque": bool(self.chk_torque.checked),
-            "chk_test": bool(self.chk_test.checked),
-            "chk_clean": bool(self.chk_clean.checked),
-            "chk_old": bool(self.chk_old.checked),
-            "chk_explain": bool(self.chk_explain.checked),
+            "chk_road_test": bool(self.chk_road_test.checked),
+            "chk_engine_clean": bool(self.chk_engine_clean.checked),
+            "chk_old_parts": bool(self.chk_old_parts.checked),
+            "chk_invoice_explain": bool(self.chk_invoice_explain.checked),
             "next_service_date": (
                 self.date_picker_next_service.date.strftime("%Y-%m-%d")
                 if self.date_picker_next_service.date else None
@@ -246,3 +248,20 @@ class VerifyTask(VerifyTaskTemplate):
         """This method is called when the button is clicked"""
         self.raise_event('x-close-alert', value=True)
         get_open_form().btn_Workflow_click()
+
+
+    def chk_final_change(self, **event_args):
+        """This method is called when this checkbox is checked or unchecked"""
+        if self.chk_final.checked:
+            self.chk_torque.checked=True
+            self.chk_road_test.checked=True
+            self.chk_engine_clean.checked=True
+            self.chk_old_parts.checked=True
+            self.chk_invoice_explain.checked=True 
+        else:
+            self.chk_torque.checked=False
+            self.chk_road_test.checked=False
+            self.chk_engine_clean.checked=False
+            self.chk_old_parts.checked=False
+            self.chk_invoice_explain.checked=False
+

@@ -756,7 +756,7 @@ class TestTechnicianChecklist(unittest.TestCase):
                                 },
                             ]
                         ),
-                        datetime.datetime(2026, 11, 9, 10, 0),
+                        datetime.datetime(2026, 11, 9, 10, 30),
                         "Electrical",
                         "Battery voltage",
                     ),
@@ -777,7 +777,7 @@ class TestTechnicianChecklist(unittest.TestCase):
         self.assertFalse(result["checkboxes"]["chk_jack"])
         self.assertEqual(result["textboxes"]["text_box_voltage"], "12.6")
         self.assertEqual(
-            result["dates"]["date_picker_time_start"], "2026-11-09T09:15:00"
+            result["dates"]["date_picker_time_start"], "2026-11-09T10:30:00"
         )
         self.assertIs(result["images"]["image_1"], saved_media)
         self.assertIsNone(result["images"]["image_2"])

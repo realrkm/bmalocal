@@ -8,7 +8,7 @@ from anvil.js.window import window
 import anvil.js
 from anvil import BlobMedia
 import base64
-import time
+import datetime
 from .. import ModGetData
 from datetime import datetime
 
@@ -90,8 +90,7 @@ class VerifyTask(VerifyTaskTemplate):
 
         elapsed_hours = elapsed_seconds / 3600
         self.lbl_hrs.text = f"Total hrs: {elapsed_hours:.2f}"
-        alert(f"Total hrs: {elapsed_hours:.2f}")
-       
+               
     def date_picker_time_start_change(self, **event_args):
         self._update_hours_worked()
 

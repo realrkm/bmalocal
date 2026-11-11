@@ -10,8 +10,6 @@ from anvil import BlobMedia
 import base64
 import datetime
 from .. import ModGetData
-from datetime import datetime
-
 
 class VerifyTask(VerifyTaskTemplate):
     def __init__(self, valueID, **properties):
@@ -40,7 +38,7 @@ class VerifyTask(VerifyTaskTemplate):
 
         if data.get("next_service_date"):
             try:
-                self.date_picker_next_service.date = datetime.strptime(
+                self.date_picker_next_service.date = datetime.datetime.strptime(
                     data["next_service_date"], "%Y-%m-%d"
                 ).date()
             except ValueError:
@@ -54,17 +52,22 @@ class VerifyTask(VerifyTaskTemplate):
 
         if data.get("time_start"):
             try:
-                self.date_picker_time_start.date = datetime.fromisoformat(data["time_start"])
+                self.date_picker_time_start.date = datetime.datetime.fromisoformat(
+                    data["time_start"]
+                )
             except ValueError:
                 pass
 
         if data.get("time_end"):
             try:
-                self.date_picker_time_end.date = datetime.fromisoformat(data["time_end"])
+                self.date_picker_time_end.date = datetime.datetime.fromisoformat(
+                    data["time_end"]
+                )
             except ValueError:
                 pass
 
         self.txt_efficiency.text = data.get("efficiency") or ""
+        self._update_hours_worked(notify=False)
 
     def _update_hours_worked(self, notify=True):
         start = self.date_picker_time_start.date

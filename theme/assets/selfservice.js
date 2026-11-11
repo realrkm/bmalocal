@@ -1044,6 +1044,95 @@
         }
     ];
 
+    const SERVER_CHECKLIST_COMPONENTS = {
+        A1: 'chk_jack',
+        A2: 'chk_chock',
+        A3: 'chk_ppe',
+        A4: 'chk_valuables',
+        B1: 'chk_test_drive',
+        B2: 'chk_scan',
+        C1: 'chk_oil_level',
+        C2: 'chk_oil_filter',
+        C3: 'chk_air_filter',
+        C4: 'chk_coolant',
+        C5: 'chk_belt',
+        C6: 'chk_battery',
+        D1: 'chk_front_arms',
+        D2: 'chk_rear_diff',
+        D3: 'chk_shocks',
+        D4: 'chk_exhaust',
+        D5: 'chk_shaft',
+        D6: 'chk_oil_leaks',
+        E1: 'chk_front_pads',
+        E2: 'chk_rear_pads',
+        E3: 'chk_brake_fluid',
+        E4: 'chk_tyre_pressure'
+    };
+    const SERVER_CHECKLIST_FIELDS = {
+        'B1.noise': 'text_box_test_drive',
+        'B2.codes': 'text_box_fault_code',
+        'B2.cleared': 'text_box_faults_cleared',
+        'C5.belts': 'text_box_cracks',
+        'C6.volts': 'text_box_voltage',
+        'C6.cca': 'text_box_cca',
+        'D1.arms': 'text_box_any_play',
+        'D2.reardiff': 'text_box_any_issue',
+        'D3.shocks': 'text_box_broken',
+        'D4.exhaust': 'text_box_rattles',
+        'D5.propshaft': 'text_box_vibration',
+        'D6.leaks': 'text_box_oil_leaks',
+        'E1.fpad': 'text_box_front_pad_thickness',
+        'E1.fdisc': 'text_box_front_disc',
+        'E2.rpad': 'text_box_rear_pad_thickness',
+        'E2.rdisc': 'text_box_17',
+        'E4.pf': 'text_box_18',
+        'E4.pr': 'text_box_22',
+        'E4.tread': 'text_box_tyre_tread'
+    };
+
+    function mergeSavedInspectionChecklist(checklist, savedData) {
+        if (!checklist || !checklist.checks || typeof checklist.checks !== 'object' ||
+                !checklist.fields || typeof checklist.fields !== 'object' ||
+                !savedData || typeof savedData !== 'object') return false;
+        const checks = savedData.checkboxes;
+        const textboxes = savedData.textboxes;
+        if (!checks || typeof checks !== 'object' ||
+                !textboxes || typeof textboxes !== 'object') return false;
+
+        let changed = false;
+        Object.entries(SERVER_CHECKLIST_COMPONENTS).forEach(([id, name]) => {
+            if (Object.prototype.hasOwnProperty.call(checks, name) &&
+                    !Object.prototype.hasOwnProperty.call(checklist.checks, id)) {
+                checklist.checks[id] = checks[name] === true;
+                changed = true;
+            }
+        });
+        Object.entries(SERVER_CHECKLIST_FIELDS).forEach(([key, name]) => {
+            if (Object.prototype.hasOwnProperty.call(textboxes, name) &&
+                    !Object.prototype.hasOwnProperty.call(checklist.fields, key)) {
+                const value = textboxes[name];
+                checklist.fields[key] = value == null ? '' : String(value);
+                changed = true;
+            }
+        });
+        return changed;
+    }
+
+    function applySavedChecklistToDOM() {
+        const card = document.getElementById('checklist-card');
+        if (!card) return;
+        const checklist = getChecklist();
+        Object.entries(checklist.checks).forEach(([id, checked]) => {
+            const checkbox = card.querySelector(`[data-cl-item="${id}"]`);
+            if (checkbox) checkbox.checked = checked;
+        });
+        Object.entries(checklist.fields).forEach(([key, value]) => {
+            const input = card.querySelector(`[data-cl-field="${key}"]`);
+            if (input) input.value = value;
+        });
+        refreshChecklistUI();
+    }
+
     function checklistStorageKey(reg) {
         return 'bma_inspection_checklist_' + reg;
     }
@@ -1055,8 +1144,10 @@
             if (raw) {
                 const parsed = JSON.parse(raw);
                 if (parsed && typeof parsed === 'object') {
-                    data.checks = parsed.checks || {};
-                    data.fields = parsed.fields || {};
+                    data.checks = parsed.checks && typeof parsed.checks === 'object' &&
+                        !Array.isArray(parsed.checks) ? parsed.checks : {};
+                    data.fields = parsed.fields && typeof parsed.fields === 'object' &&
+                        !Array.isArray(parsed.fields) ? parsed.fields : {};
                 }
             }
         } catch (e) {
@@ -1132,7 +1223,13 @@
         photos.loading = anvil.call(mainContent, 'getVehicleInspectionPhotos', reg)
             .then(saved => {
                 if (state.activeReg !== reg || state.inspectionPhotos !== photos) return;
-                photos.saved = saved && typeof saved === 'object' ? saved : {};
+                photos.saved = saved && typeof saved === 'object' ? { ...saved } : {};
+                const savedChecklist = photos.saved.checklist;
+                delete photos.saved.checklist;
+                if (mergeSavedInspectionChecklist(getChecklist(), savedChecklist)) {
+                    persistChecklist();
+                    applySavedChecklistToDOM();
+                }
                 photos.loaded = true;
                 applyInspectionPhotoPreviews();
             })
@@ -3512,6 +3609,7 @@
                 );
 
                 // Clear state
+                resetChecklist();
                 state.activeReg = null;
                 state.cart = [];
                 state.techNotes = '';

@@ -18,6 +18,12 @@ def _load_verify_task_module(monkeypatch):
         call=MagicMock(),
         call_s=MagicMock(
             return_value={
+                "chk_final": True,
+                "chk_torque": True,
+                "chk_road_test": True,
+                "chk_engine_clean": True,
+                "chk_old_parts": True,
+                "chk_invoice_explain": True,
                 "time_start": "2026-11-11T08:00:00",
                 "time_end": "2026-11-11T09:30:00",
             }
@@ -56,7 +62,14 @@ def test_loading_saved_verify_times_immediately_updates_worked_hours(monkeypatch
     form.txt_next_service_mileage = types.SimpleNamespace(text="")
     form.txt_efficiency = types.SimpleNamespace(text="")
     form.lbl_hrs = types.SimpleNamespace(text="Total hrs:")
-    for name in ("chk_torque", "chk_test", "chk_clean", "chk_old", "chk_explain"):
+    for name in (
+        "chk_final",
+        "chk_torque",
+        "chk_road_test",
+        "chk_engine_clean",
+        "chk_old_parts",
+        "chk_invoice_explain",
+    ):
         setattr(form, name, types.SimpleNamespace(checked=False))
 
     form.load_existing_verify_checklist(42)
@@ -64,6 +77,9 @@ def test_loading_saved_verify_times_immediately_updates_worked_hours(monkeypatch
     assert form.date_picker_time_start.date == datetime(2026, 11, 11, 8, 0)
     assert form.date_picker_time_end.date == datetime(2026, 11, 11, 9, 30)
     assert form.lbl_hrs.text == "Total hrs: 1.50"
+    assert form.chk_final.checked is True
+    assert form.chk_road_test.checked is True
+    assert form.chk_invoice_explain.checked is True
 
 
 def test_save_uses_datetime_module_to_set_created_timestamp(monkeypatch):
@@ -73,10 +89,11 @@ def test_save_uses_datetime_module_to_set_created_timestamp(monkeypatch):
     form.Save = types.SimpleNamespace(enabled=True)
     form.cmbJobCardID = types.SimpleNamespace(selected_value={"ID": 42})
     form.chk_torque = types.SimpleNamespace(checked=True)
-    form.chk_test = types.SimpleNamespace(checked=True)
-    form.chk_clean = types.SimpleNamespace(checked=True)
-    form.chk_old = types.SimpleNamespace(checked=True)
-    form.chk_explain = types.SimpleNamespace(checked=True)
+    form.chk_final = types.SimpleNamespace(checked=True)
+    form.chk_road_test = types.SimpleNamespace(checked=True)
+    form.chk_engine_clean = types.SimpleNamespace(checked=True)
+    form.chk_old_parts = types.SimpleNamespace(checked=True)
+    form.chk_invoice_explain = types.SimpleNamespace(checked=True)
     form.date_picker_next_service = types.SimpleNamespace(date=datetime(2026, 12, 1))
     form.txt_next_service_mileage = types.SimpleNamespace(text="50000")
     form.date_picker_time_start = types.SimpleNamespace(date=datetime(2026, 11, 11, 8))
@@ -93,3 +110,7 @@ def test_save_uses_datetime_module_to_set_created_timestamp(monkeypatch):
     assert save_call.args[0] == "saveConfirmationDetails"
     assert save_call.args[1] == 42
     assert isinstance(save_call.args[4], datetime)
+    assert save_call.args[5]["chk_final"] is True
+    assert save_call.args[5]["chk_road_test"] is True
+    assert save_call.args[5]["chk_engine_clean"] is True
+    assert save_call.args[5]["chk_invoice_explain"] is True

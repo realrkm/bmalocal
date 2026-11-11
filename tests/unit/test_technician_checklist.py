@@ -777,7 +777,7 @@ class TestTechnicianChecklist(unittest.TestCase):
         self.assertFalse(result["checkboxes"]["chk_jack"])
         self.assertEqual(result["textboxes"]["text_box_voltage"], "12.6")
         self.assertEqual(
-            result["dates"]["date_picker_time_start"], "2026-11-09T10:30:00"
+            result["dates"]["date_picker_time_start"], "2026-11-09T09:15:00"
         )
         self.assertIs(result["images"]["image_1"], saved_media)
         self.assertIsNone(result["images"]["image_2"])
@@ -790,6 +790,116 @@ class TestTechnicianChecklist(unittest.TestCase):
             b"\x89PNG\r\n\x1a\ninspection-image",
             name="inspection.png",
         )
+
+    def test_get_vehicle_inspection_data_loads_verify_task_section_f_row(self):
+        bma = _load_callables()
+        verify_checklist = {
+            "chk_final": True,
+            "chk_torque": True,
+            "chk_road_test": True,
+            "chk_engine_clean": True,
+            "chk_old_parts": True,
+            "chk_invoice_explain": True,
+            "next_service_date": "2027-04-28",
+            "next_service_mileage": "125000",
+            "time_start": "2026-11-11T08:00:00",
+            "time_end": "2026-11-11T09:30:00",
+            "efficiency": "95%",
+        }
+        mock_cursor = MagicMock()
+        mock_cursor.fetchone.return_value = (1, 0)
+        mock_cursor.fetchall.side_effect = [
+            [
+                (
+                    "F1",
+                    1,
+                    json.dumps(verify_checklist),
+                    datetime.datetime(2026, 11, 11, 9, 30),
+                    "F. FINAL QUALITY AND HANDOVER",
+                    "Final Quality And Handover Checklist",
+                )
+            ],
+            [],
+        ]
+
+        with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
+             patch.object(bma, "db_cursor") as mock_db_cursor:
+            mock_db_cursor.return_value.__enter__.return_value = mock_cursor
+            result = bma.get_vehicle_inspection_data(42)
+
+        for checkbox in (
+            "chk_final",
+            "chk_torque",
+            "chk_road_test",
+            "chk_engine_clean",
+            "chk_old_parts",
+            "chk_invoice_explain",
+        ):
+            self.assertTrue(result["checkboxes"][checkbox], checkbox)
+        self.assertEqual(result["textboxes"]["txt_next_service_mileage"], "125000")
+        self.assertEqual(result["textboxes"]["txt_efficiency"], "95%")
+        self.assertEqual(result["dates"]["date_picker_next_service"], "2027-04-28")
+        self.assertEqual(
+            result["dates"]["date_picker_time_end"], "2026-11-11T09:30:00"
+        )
+
+    def test_get_vehicle_inspection_data_uses_newer_section_f_rows(self):
+        bma = _load_callables()
+        mock_cursor = MagicMock()
+        mock_cursor.fetchone.return_value = (1, 0)
+        old_verify_fields = {
+            "chk_final": True,
+            "chk_torque": True,
+            "chk_road_test": True,
+            "chk_engine_clean": True,
+            "chk_old_parts": True,
+            "chk_invoice_explain": True,
+            "next_service_mileage": "100000",
+        }
+        updated_at = datetime.datetime(2026, 11, 11, 9, 30)
+        mock_cursor.fetchall.side_effect = [
+            [
+                (
+                    "F1",
+                    1,
+                    json.dumps(old_verify_fields),
+                    datetime.datetime(2026, 11, 11, 8, 30),
+                    "VerifyTask",
+                    "Final Quality and Handover",
+                ),
+                (
+                    "V-F1",
+                    0,
+                    json.dumps(
+                        [
+                            {
+                                "name": "txt_next_service_mileage",
+                                "value": "125000",
+                            }
+                        ]
+                    ),
+                    updated_at,
+                    "Section F",
+                    "Final Quality and Handover",
+                ),
+                ("V-F2", 1, None, updated_at, "Section F", "Torque"),
+                ("V-F3", 0, None, updated_at, "Section F", "Road test"),
+                ("V-F4", 1, None, updated_at, "Section F", "Engine clean"),
+                ("V-F5", 1, None, updated_at, "Section F", "Old parts"),
+                ("V-F6", 1, None, updated_at, "Section F", "Invoice explained"),
+            ],
+            [],
+        ]
+
+        with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
+             patch.object(bma, "db_cursor") as mock_db_cursor:
+            mock_db_cursor.return_value.__enter__.return_value = mock_cursor
+            result = bma.get_vehicle_inspection_data(42)
+
+        self.assertFalse(result["checkboxes"]["chk_final"])
+        self.assertTrue(result["checkboxes"]["chk_torque"])
+        self.assertFalse(result["checkboxes"]["chk_road_test"])
+        self.assertEqual(result["textboxes"]["txt_next_service_mileage"], "125000")
 
     def test_get_vehicle_inspection_data_skips_detail_queries_without_saved_rows(self):
         bma = _load_callables()
@@ -885,11 +995,12 @@ class TestTechnicianChecklist(unittest.TestCase):
         mock_sig.get_bytes.return_value = b"sig-bytes"
 
         verify_payload = {
+            "chk_final": True,
             "chk_torque": True,
-            "chk_test": True,
-            "chk_clean": True,
-            "chk_old": True,
-            "chk_explain": True,
+            "chk_road_test": True,
+            "chk_engine_clean": True,
+            "chk_old_parts": True,
+            "chk_invoice_explain": True,
             "next_service_date": "2027-04-28",
             "next_service_mileage": "125000",
             "time_start": "2026-10-28T09:00:00",
@@ -917,7 +1028,81 @@ class TestTechnicianChecklist(unittest.TestCase):
         self.assertEqual(last_call_params[1], "F1")
         self.assertEqual(last_call_params[2], "F")
         self.assertEqual(last_call_params[5], 1)
-        self.assertEqual(json.loads(last_call_params[6])["next_service_mileage"], "125000")
+        saved_fields = {
+            field["name"]: field["value"]
+            for field in json.loads(last_call_params[6])
+        }
+        self.assertEqual(saved_fields["txt_next_service_mileage"], "125000")
+        self.assertTrue(saved_fields["chk_road_test"])
+
+    def test_save_confirmation_details_rejects_invalid_checklist_before_database(self):
+        bma = _load_callables()
+        with patch("anvil.users.get_user", return_value={"email": "advisor@bmaauto.com"}), \
+             patch.object(bma, "db_cursor") as mock_db_cursor:
+            with self.assertRaisesRegex(ValueError, "checklist"):
+                bma.saveConfirmationDetails(
+                    99,
+                    "Verified",
+                    None,
+                    "2026-10-28",
+                    {"unexpected": True},
+                )
+
+        mock_db_cursor.assert_not_called()
+
+    def test_save_confirmation_details_rejects_incomplete_section_f(self):
+        bma = _load_callables()
+        checklist = {
+            "chk_final": True,
+            "chk_torque": True,
+            "chk_road_test": False,
+            "chk_engine_clean": True,
+            "chk_old_parts": True,
+            "chk_invoice_explain": True,
+        }
+        with patch("anvil.users.get_user", return_value={"email": "advisor@bmaauto.com"}), \
+             patch.object(bma, "db_cursor") as mock_db_cursor:
+            with self.assertRaisesRegex(ValueError, "(?i)all.*checkboxes"):
+                bma.saveConfirmationDetails(
+                    99, "Verified", None, "2026-10-28", checklist
+                )
+
+        mock_db_cursor.assert_not_called()
+
+    def test_save_confirmation_details_accepts_legacy_section_f_keys(self):
+        bma = _load_callables()
+        mock_cursor = MagicMock()
+        mock_cursor.fetchone.return_value = None
+        checklist = {
+            "chk_torque": True,
+            "chk_test": True,
+            "chk_clean": True,
+            "chk_old": True,
+            "chk_explain": True,
+        }
+        with patch("anvil.users.get_user", return_value={"email": "advisor@bmaauto.com"}), \
+             patch.object(bma, "db_cursor") as mock_db_cursor:
+            mock_db_cursor.return_value.__enter__.return_value = mock_cursor
+            bma.saveConfirmationDetails(
+                99, "Verified", None, "2026-10-28", checklist
+            )
+
+        saved_row = mock_cursor.execute.call_args.args[1]
+        self.assertEqual(saved_row[5], 1)
+        saved_fields = {
+            field["name"]: field["value"] for field in json.loads(saved_row[6])
+        }
+        self.assertTrue(saved_fields["chk_final"])
+        self.assertTrue(saved_fields["chk_road_test"])
+
+    def test_save_confirmation_details_requires_authenticated_user(self):
+        bma = _load_callables()
+        with patch("anvil.users.get_user", return_value=None), \
+             patch.object(bma, "db_cursor") as mock_db_cursor:
+            with self.assertRaisesRegex(Exception, "Authentication required"):
+                bma.saveConfirmationDetails(99, "Verified", None, "2026-10-28")
+
+        mock_db_cursor.assert_not_called()
 
     def test_get_verify_task_checklist_returns_parsed_dict(self):
         bma = _load_callables()
@@ -941,6 +1126,55 @@ class TestTechnicianChecklist(unittest.TestCase):
         self.assertIn("MAX(UpdatedAt)", query)
         self.assertIn("JobCardRefID", query)
         self.assertEqual(params, (99, 99))
+
+    def test_get_verify_task_checklist_translates_shared_inspection_fields(self):
+        bma = _load_callables()
+        mock_cursor = MagicMock()
+        mock_cursor.fetchone.return_value = (
+            json.dumps(
+                [
+                    {"name": "chk_final", "value": True},
+                    {"name": "chk_road_test", "value": True},
+                    {"name": "date_picker_next_service", "value": "2027-04-28"},
+                    {"name": "txt_next_service_mileage", "value": "125000"},
+                    {"name": "date_picker_time_start", "value": "2026-11-11T08:00:00"},
+                    {"name": "date_picker_time_end", "value": "2026-11-11T09:30:00"},
+                    {"name": "txt_efficiency", "value": "95%"},
+                ]
+            ),
+            datetime.datetime(2026, 11, 11, 9, 30),
+        )
+
+        with patch("anvil.users.get_user", return_value={"email": "advisor@bmaauto.com", "role_id": 1}), \
+             patch.object(bma, "db_cursor") as mock_db_cursor:
+            mock_db_cursor.return_value.__enter__.return_value = mock_cursor
+            result = bma.getVerifyTaskChecklist(99)
+
+        self.assertTrue(result["chk_final"])
+        self.assertTrue(result["chk_road_test"])
+        self.assertEqual(result["next_service_date"], "2027-04-28")
+        self.assertEqual(result["next_service_mileage"], "125000")
+        self.assertEqual(result["time_start"], "2026-11-11T08:00:00")
+        self.assertEqual(result["time_end"], "2026-11-11T09:30:00")
+        self.assertEqual(result["efficiency"], "95%")
+
+    def test_get_verify_task_checklist_rejects_invalid_jobcard_id(self):
+        bma = _load_callables()
+        with patch("anvil.users.get_user", return_value={"email": "advisor@bmaauto.com"}), \
+             patch.object(bma, "db_cursor") as mock_db_cursor:
+            with self.assertRaisesRegex(ValueError, "job card ID"):
+                bma.getVerifyTaskChecklist(0)
+
+        mock_db_cursor.assert_not_called()
+
+    def test_get_verify_task_checklist_requires_authenticated_user(self):
+        bma = _load_callables()
+        with patch("anvil.users.get_user", return_value=None), \
+             patch.object(bma, "db_cursor") as mock_db_cursor:
+            with self.assertRaisesRegex(Exception, "Authentication required"):
+                bma.getVerifyTaskChecklist(99)
+
+        mock_db_cursor.assert_not_called()
 
     def test_get_verify_task_checklist_returns_updated_at_without_final_checklist(self):
         bma = _load_callables()

@@ -31,11 +31,33 @@ class VerifyTask(VerifyTaskTemplate):
             return
 
         self.chk_torque.checked = bool(data.get("chk_torque", False))
-        self.chk_road_test.checked = bool(data.get("chk_road_test", False))
-        self.chk_engine_clean.checked = bool(data.get("chk_engine_clean", False))
-        self.chk_old_parts.checked = bool(data.get("chk_old_parts", False))
-        self.chk_invoice_explain.checked = bool(data.get("chk_invoice_explain", False))
-                            
+        self.chk_road_test.checked = bool(
+            data.get("chk_road_test", data.get("chk_test", False))
+        )
+        self.chk_engine_clean.checked = bool(
+            data.get("chk_engine_clean", data.get("chk_clean", False))
+        )
+        self.chk_old_parts.checked = bool(
+            data.get("chk_old_parts", data.get("chk_old", False))
+        )
+        self.chk_invoice_explain.checked = bool(
+            data.get("chk_invoice_explain", data.get("chk_explain", False))
+        )
+        self.chk_final.checked = bool(
+            data.get(
+                "chk_final",
+                all(
+                    checkbox.checked
+                    for checkbox in (
+                        self.chk_torque,
+                        self.chk_road_test,
+                        self.chk_engine_clean,
+                        self.chk_old_parts,
+                        self.chk_invoice_explain,
+                    )
+                ),
+            )
+        )
 
         if data.get("next_service_date"):
             try:
@@ -265,4 +287,3 @@ class VerifyTask(VerifyTaskTemplate):
             self.chk_engine_clean.checked=False
             self.chk_old_parts.checked=False
             self.chk_invoice_explain.checked=False
-

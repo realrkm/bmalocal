@@ -284,3 +284,67 @@ def test_selfservice_loads_existing_inspection_photo_previews(monkeypatch):
     assert images["image_3"] == _data_url("image/jpeg", b"\xff\xd8\xffphoto")
     assert anvil.server.call.call_args_list[0].args == ("getJobCardID", "JC-042")
     assert anvil.server.call.call_args_list[1].args == ("get_vehicle_inspection_data", 42)
+
+
+def test_selfservice_photo_response_includes_saved_checklist_data(monkeypatch):
+    module, anvil = _load_selfservice_module(monkeypatch)
+    form = object.__new__(module.SelfService)
+    inspection_data = {
+        "images": {"image_1": None, "image_2": None, "image_3": None},
+        "checkboxes": {"chk_jack": True, "chk_final": True},
+        "textboxes": {"text_box_test_drive": "No"},
+    }
+    anvil.server.call.side_effect = [42, inspection_data]
+
+    result = form.getVehicleInspectionPhotos("JC-042")
+
+    assert result["image_1"] is None
+    assert result["image_2"] is None
+    assert result["image_3"] is None
+    assert result["checklist"] == {
+        "checkboxes": inspection_data["checkboxes"],
+        "textboxes": inspection_data["textboxes"],
+    }
+    assert anvil.server.call.call_args_list[0].args == ("getJobCardID", "JC-042")
+    assert anvil.server.call.call_args_list[1].args == (
+        "get_vehicle_inspection_data",
+        42,
+    )
+
+
+def test_selfservice_js_merges_saved_checklist_into_local_state():
+    source_path = Path(__file__).parents[2] / "theme" / "assets" / "selfservice.js"
+    source = source_path.read_text(encoding="utf-8")
+    start = source.index("    const SERVER_CHECKLIST_COMPONENTS = {")
+    end = source.index("    function checklistStorageKey", start)
+    helpers = source[start:end]
+    script = f"""
+        {helpers}
+        const checklist = {{
+            checks: {{ A1: false }},
+            fields: {{ 'B1.noise': 'Local edit' }}
+        }};
+        mergeSavedInspectionChecklist(checklist, {{
+            checkboxes: {{ chk_jack: true, chk_chock: true }},
+            textboxes: {{
+                text_box_test_drive: 'Saved value',
+                text_box_fault_code: 'P0420'
+            }}
+        }});
+        if (checklist.checks.A1 !== false || checklist.checks.A2 !== true) {{
+            throw new Error('Saved checks should fill gaps without overwriting local checks.');
+        }}
+        if (checklist.fields['B1.noise'] !== 'Local edit' ||
+                checklist.fields['B2.codes'] !== 'P0420') {{
+            throw new Error('Saved fields should fill gaps without overwriting local edits.');
+        }}
+    """
+
+    result = subprocess.run(
+        ["node", "-e", script],
+        capture_output=True,
+        check=False,
+        text=True,
+    )
+
+    assert result.returncode == 0, result.stderr

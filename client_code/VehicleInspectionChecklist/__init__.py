@@ -93,6 +93,7 @@ class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
 
         # Any code you write here will run before the form opens.
         self.jobcardid = jobcardid
+        self._inspection_data_loaded = False
         self._existing_inspection_images = {
             image_name: None for image_name, _ in _REQUIRED_PHOTOS
         }
@@ -113,7 +114,7 @@ class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
         return datetime.date.fromisoformat(value)
 
     def _load_existing_inspection_data(self):
-        
+        self._inspection_data_loaded = False
         try:
             data = anvil.server.call("get_vehicle_inspection_data", self.jobcardid)
             if not isinstance(data, dict):
@@ -148,17 +149,17 @@ class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
                 getattr(self, image_name).source = media
 
             self._update_hours_worked(notify=False)
+            self._inspection_data_loaded = True
         except anvil.server.AppOfflineError:
             Notification(
                 "The local server is unreachable. The saved inspection could not be loaded.",
                 style="danger",
             ).show()
-        except Exception as error:
+        except Exception:
             Notification(
-                "Unable to load the saved inspection checklist. ",
+                "Unable to load the saved inspection checklist.",
                 style="danger",
             ).show()
-           
 
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""
@@ -310,7 +311,13 @@ class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
 
     def btn_Update_click(self, **event_args):
         """This method is called when the button is clicked"""
-        
+        if not self._inspection_data_loaded:
+            Notification(
+                "The saved inspection could not be loaded. Close and reopen the checklist before updating.",
+                style="danger",
+            ).show()
+            return
+
         missing_checkboxes = [
             self._component_label(getattr(self, name), name)
             for name in _REQUIRED_CHECKBOXES
@@ -363,9 +370,28 @@ class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
             return
 
         self.btn_Update.enabled = False
-        anvil.server.call("save_update_vehicle_inspection",self.jobcardid, self._collect_checklist_data())
+        try:
+            anvil.server.call(
+                "save_update_vehicle_inspection",
+                self.jobcardid,
+                self._collect_checklist_data(),
+            )
+        except anvil.server.AppOfflineError:
+            Notification(
+                "The local server is unreachable. The inspection could not be updated.",
+                style="danger",
+            ).show()
+            return
+        except Exception:
+            Notification(
+                "Unable to update the saved inspection checklist.",
+                style="danger",
+            ).show()
+            return
+        finally:
+            self.btn_Update.enabled = True
+
         Notification("Inspection checklist updated.", style="success").show()
-        self.btn_Update.enabled = True
         self.btn_Close_click()
 
     def _update_hours_worked(self, notify=True):

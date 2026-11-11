@@ -106,13 +106,18 @@ class SelfService(SelfServiceTemplate):
     def getVehicleInspectionPhotos(self, jobcard_ref):
         jobcard_id = anvil.server.call("getJobCardID", jobcard_ref)
         if not jobcard_id:
-            return {image_code: None for image_code in _INSPECTION_IMAGE_CODES}
+            return {
+                **{image_code: None for image_code in _INSPECTION_IMAGE_CODES},
+                "checklist": {"checkboxes": {}, "textboxes": {}},
+            }
 
         inspection_data = anvil.server.call(
             "get_vehicle_inspection_data", jobcard_id
         )
-        images = inspection_data.get("images", {}) if isinstance(inspection_data, dict) else {}
-        return {
+        if not isinstance(inspection_data, dict):
+            raise ValueError("Saved vehicle inspection data is invalid.")
+        images = inspection_data.get("images", {})
+        result = {
             image_code: (
                 "data:{};base64,{}".format(
                     photo.content_type,
@@ -124,6 +129,11 @@ class SelfService(SelfServiceTemplate):
             for image_code in _INSPECTION_IMAGE_CODES
             for photo in (images.get(image_code),)
         }
+        result["checklist"] = {
+            "checkboxes": inspection_data.get("checkboxes", {}),
+            "textboxes": inspection_data.get("textboxes", {}),
+        }
+        return result
 
     def get_signature_image(self, signature_data):
         

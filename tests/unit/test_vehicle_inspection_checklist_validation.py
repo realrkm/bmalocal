@@ -103,6 +103,7 @@ def _make_form(checklist_class):
     instance.__dict__.update(vars(form))
     instance.jobcardid = 42
     instance.btn_Update = SimpleNamespace(enabled=True)
+    instance.raise_event = MagicMock()
     instance._inspection_data_loaded = True
     instance._existing_inspection_images = {
         "image_1": None,
@@ -226,10 +227,23 @@ def test_load_existing_inspection_data_populates_form_and_retains_photos(monkeyp
     form.file_loader_1.file = None
     saved_photo = object()
     saved_data = {
-        "checkboxes": {"chk_jack": True, "chk_safety": False},
-        "textboxes": {"text_box_voltage": "12.6"},
+        "checkboxes": {
+            "chk_jack": True,
+            "chk_safety": False,
+            "chk_final": True,
+            "chk_torque": True,
+            "chk_road_test": True,
+            "chk_engine_clean": True,
+            "chk_old_parts": True,
+            "chk_invoice_explain": True,
+        },
+        "textboxes": {
+            "text_box_voltage": "12.6",
+            "txt_next_service_mileage": "125000",
+            "txt_efficiency": "95%",
+        },
         "dates": {
-            "date_picker_next_service": "2026-12-26",
+            "date_picker_next_service": "2027-04-28",
             "date_picker_time_start": "2026-11-09T09:15:00",
             "date_picker_time_end": "2026-11-09T10:45:00",
         },
@@ -244,8 +258,16 @@ def test_load_existing_inspection_data_populates_form_and_retains_photos(monkeyp
     )
     assert form.chk_jack.checked is True
     assert form.chk_safety.checked is False
+    assert form.chk_final.checked is True
+    assert form.chk_torque.checked is True
+    assert form.chk_road_test.checked is True
+    assert form.chk_engine_clean.checked is True
+    assert form.chk_old_parts.checked is True
+    assert form.chk_invoice_explain.checked is True
     assert form.text_box_voltage.text == "12.6"
-    assert form.date_picker_next_service.date == datetime.date(2026, 12, 26)
+    assert form.txt_next_service_mileage.text == "125000"
+    assert form.txt_efficiency.text == "95%"
+    assert form.date_picker_next_service.date == datetime.date(2027, 4, 28)
     assert form.date_picker_time_start.date == datetime.datetime(
         2026, 11, 9, 9, 15
     )

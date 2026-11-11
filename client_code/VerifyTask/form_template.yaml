@@ -71,11 +71,11 @@ components:
       type: Label
     - layout_properties: {grid_position: 'ATZOWK,UBTKXK'}
       name: date_picker_time_start
-      properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', format: '%d/%m/%Y', pick_time: true, placeholder: 'Time started:'}
+      properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', format: '%d/%m/%Y %H:%M', pick_time: true, placeholder: 'Time started:'}
       type: DatePicker
     - layout_properties: {grid_position: 'ATZOWK,BKSASI'}
       name: date_picker_time_end
-      properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', format: '%d/%m/%Y', pick_time: true, placeholder: 'Time finished:'}
+      properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', format: '%d/%m/%Y %H:%M', pick_time: true, placeholder: 'Time finished:'}
       type: DatePicker
     - layout_properties: {grid_position: 'ATZOWK,VJIFWX'}
       name: lbl_hrs

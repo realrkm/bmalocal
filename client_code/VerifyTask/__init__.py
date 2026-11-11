@@ -31,10 +31,11 @@ class VerifyTask(VerifyTaskTemplate):
             return
 
         self.chk_torque.checked = bool(data.get("chk_torque", False))
-        self.chk_test.checked = bool(data.get("chk_test", False))
-        self.chk_clean.checked = bool(data.get("chk_clean", False))
-        self.chk_old.checked = bool(data.get("chk_old", False))
-        self.chk_explain.checked = bool(data.get("chk_explain", False))
+        self.chk_road_test.checked = bool(data.get("chk_road_test", False))
+        self.chk_engine_clean.checked = bool(data.get("chk_engine_clean", False))
+        self.chk_old_parts.checked = bool(data.get("chk_old_parts", False))
+        self.chk_invoice_explain.checked = bool(data.get("chk_invoice_explain", False))
+                            
 
         if data.get("next_service_date"):
             try:

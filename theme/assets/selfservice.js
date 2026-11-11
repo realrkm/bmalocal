@@ -1225,11 +1225,11 @@
                             <input
                                 id="cl-photo-${photo.code}"
                                 type="file"
+                                class="cl-photo-file-input"
                                 accept="image/jpeg,image/png,image/webp"
                                 capture="environment"
                                 data-inspection-photo="${photo.code}"
                                 aria-label="Upload ${photo.label}"
-                                style="max-width:100%;"
                             >
                             <img
                                 data-inspection-photo-preview="${photo.code}"
@@ -1570,7 +1570,7 @@
                 </h3>
                 <button 
                     onclick="openPartsModal()"
-                    style="background:linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color:white; padding:1rem 2rem; border-radius:0.8rem; border:2px solid rgba(59, 130, 246, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); display:flex; align-items:center; gap:0.5rem;">
+                    class="btn-add-parts">
                     Add Parts
                 </button>
             </div>

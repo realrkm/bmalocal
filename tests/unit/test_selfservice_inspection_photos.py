@@ -1,6 +1,7 @@
 import base64
 import importlib
 from pathlib import Path
+import re
 import subprocess
 import sys
 import types
@@ -93,6 +94,18 @@ def test_required_inspection_photos_follow_checklist_sections():
 
     assert render_markup.index("${sectionsHTML}") < render_markup.index(
         "${inspectionPhotoUploadMarkup()}"
+    )
+
+
+def test_inspection_photo_file_buttons_share_add_parts_button_style():
+    assets_path = Path(__file__).parents[2] / "theme" / "assets"
+    source = (assets_path / "selfservice.js").read_text(encoding="utf-8")
+    styles = (assets_path / "selfservice.css").read_text(encoding="utf-8")
+
+    assert 'class="cl-photo-file-input"' in source
+    assert re.search(
+        r"\.btn-add-parts,\s*\.cl-photo-file-input::file-selector-button\s*\{",
+        styles,
     )
 
 

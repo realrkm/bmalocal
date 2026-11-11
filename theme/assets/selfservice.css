@@ -1454,6 +1454,36 @@ RESPONSIVE BREAKPOINTS
 
 .checklist-btn:hover { filter: brightness(1.1); }
 
+.btn-add-parts,
+.cl-photo-file-input::file-selector-button {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 0.8rem;
+    border: 2px solid rgba(59, 130, 246, 0.3);
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1.8rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.btn-add-parts {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.cl-photo-file-input {
+    max-width: 100%;
+}
+
+.btn-add-parts:hover,
+.cl-photo-file-input::file-selector-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
+}
+
 .cl-section {
     border: 2px solid rgba(59, 130, 246, 0.25);
     border-radius: 0.8rem;

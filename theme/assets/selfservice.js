@@ -956,6 +956,8 @@
         </div>
     `;
 
+        applyInspectionPhotoPreviews();
+
         if (state.activePartsTab === 'request') {
             attachPartsRequestListeners();
         } else if (state.activePartsTab === 'feedback') {
@@ -1679,9 +1681,6 @@
     // Add these new functions after your existing functions
 
     function openPartsModal() {
-        //load car part categories
-        loadCarPartCategories();
-        
         // Create modal overlay
         const modalOverlay = document.createElement('div');
         modalOverlay.className = 'modal-overlay';

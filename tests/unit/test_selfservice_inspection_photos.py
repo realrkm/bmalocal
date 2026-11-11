@@ -109,6 +109,27 @@ def test_inspection_photo_file_buttons_share_add_parts_button_style():
     )
 
 
+def test_opening_parts_modal_uses_loaded_catalog_without_refetching():
+    source_path = Path(__file__).parents[2] / "theme" / "assets" / "selfservice.js"
+    source = source_path.read_text(encoding="utf-8")
+    modal_start = source.index("    function openPartsModal()")
+    modal_end = source.index("    function closePartsModal()", modal_start)
+
+    assert "loadCarPartCategories()" not in source[modal_start:modal_end]
+
+
+def test_request_parts_rerender_restores_selected_inspection_photo_previews():
+    source_path = Path(__file__).parents[2] / "theme" / "assets" / "selfservice.js"
+    source = source_path.read_text(encoding="utf-8")
+    render_start = source.index("    function renderRequestParts()")
+    render_end = source.index("    function renderPartsTabContent()", render_start)
+    render_function = source[render_start:render_end]
+
+    assert render_function.index("mainContent.innerHTML =") < render_function.index(
+        "applyInspectionPhotoPreviews()"
+    )
+
+
 def test_saved_selfservice_checklist_excludes_removed_yetu_field():
     source_path = Path(__file__).parents[2] / "theme" / "assets" / "selfservice.js"
     source = source_path.read_text(encoding="utf-8")

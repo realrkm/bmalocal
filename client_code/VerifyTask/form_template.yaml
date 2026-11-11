@@ -69,11 +69,13 @@ components:
 
           If any box is not ticked - Car does not leave workshop. Advisor must document.
       type: Label
-    - layout_properties: {grid_position: 'ATZOWK,UBTKXK'}
+    - event_bindings: {change: date_picker_time_start_change}
+      layout_properties: {grid_position: 'ATZOWK,UBTKXK'}
       name: date_picker_time_start
       properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', format: '%d/%m/%Y %H:%M', pick_time: true, placeholder: 'Time started:'}
       type: DatePicker
-    - layout_properties: {grid_position: 'ATZOWK,BKSASI'}
+    - event_bindings: {change: date_picker_time_end_change}
+      layout_properties: {grid_position: 'ATZOWK,BKSASI'}
       name: date_picker_time_end
       properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', format: '%d/%m/%Y %H:%M', pick_time: true, placeholder: 'Time finished:'}
       type: DatePicker

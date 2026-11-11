@@ -66,6 +66,37 @@ class VerifyTask(VerifyTaskTemplate):
 
         self.txt_efficiency.text = data.get("efficiency") or ""
 
+    def _update_hours_worked(self, notify=True):
+        start = self.date_picker_time_start.date
+        end = self.date_picker_time_end.date
+        if start is None or end is None:
+            self.lbl_hrs.text = "Total hrs: --"
+            return
+
+        if isinstance(start, datetime.date) and not isinstance(start, datetime.datetime):
+            start = datetime.datetime.combine(start, datetime.time.min)
+        if isinstance(end, datetime.date) and not isinstance(end, datetime.datetime):
+            end = datetime.datetime.combine(end, datetime.time.min)
+
+        elapsed_seconds = (end - start).total_seconds()
+        if elapsed_seconds < 0:
+            self.lbl_hrs.text = "Total hrs: --"
+            if notify:
+                Notification(
+                    "End date and time cannot be earlier than the start date and time.",
+                    style="warning",
+                ).show()
+            return
+
+        elapsed_hours = elapsed_seconds / 3600
+        self.lbl_hrs.text = f"Total hrs: {elapsed_hours:.2f}"
+
+    def date_picker_time_start_change(self, **event_args):
+        self._update_hours_worked()
+
+    def date_picker_time_end_change(self, **event_args):
+        self._update_hours_worked()
+
     def Save_click(self, **event_args):
         """Triggered when user clicks 'Save' button in Anvil UI"""
         self.Save.enabled = False  # Prevent multiple clicks

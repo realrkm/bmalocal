@@ -427,9 +427,11 @@ class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
 
     def btn_Download_click(self, **event_args):
         """This method is called when the button is clicked"""
+        self.btn_Download.enabled = False
         media_object = anvil.server.call("downloadInspectionChecklistPdf", self.jobcardid, "InspectionChecklist")
         anvil.media.download(media_object)
         self.deleteFile(self.jobcardid, "InspectionChecklist")
+        self.btn_Download.enabled = True
 
     def deleteFile(self, jobCardID, docType):
         anvil.server.call("deleteFile", jobCardID, docType)

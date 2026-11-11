@@ -440,6 +440,7 @@ class TestTechnicianChecklist(unittest.TestCase):
             for row in portal_rows
         ]
         mock_cursor = MagicMock()
+        mock_cursor.fetchone.return_value = (1, 0)
         mock_cursor.fetchall.side_effect = [portal_rows, []]
 
         with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
@@ -477,6 +478,7 @@ class TestTechnicianChecklist(unittest.TestCase):
     def test_get_vehicle_inspection_data_prefers_newer_legacy_rows(self):
         bma = _load_callables()
         mock_cursor = MagicMock()
+        mock_cursor.fetchone.return_value = (1, 0)
         mock_cursor.fetchall.side_effect = [
             [
                 (
@@ -510,6 +512,7 @@ class TestTechnicianChecklist(unittest.TestCase):
     def test_get_vehicle_inspection_data_uses_selfservice_rows_without_timestamps(self):
         bma = _load_callables()
         mock_cursor = MagicMock()
+        mock_cursor.fetchone.return_value = (1, 0)
         mock_cursor.fetchall.side_effect = [
             [
                 ("A1", 1, None, None, "Safety", "Jack stands"),
@@ -720,6 +723,7 @@ class TestTechnicianChecklist(unittest.TestCase):
     def test_get_vehicle_inspection_data_returns_saved_fields_and_images(self):
         bma = _load_callables()
         mock_cursor = MagicMock()
+        mock_cursor.fetchone.return_value = (1, 1)
         image_path = None
         with tempfile.TemporaryDirectory() as image_dir:
             image_path = os.path.join(image_dir, "inspection.png")
@@ -778,14 +782,35 @@ class TestTechnicianChecklist(unittest.TestCase):
         self.assertIs(result["images"]["image_1"], saved_media)
         self.assertIsNone(result["images"]["image_2"])
         queries = mock_cursor.execute.call_args_list
-        self.assertIn("SELECT ItemCode, IsChecked, FieldsJSON", queries[0].args[0])
-        self.assertEqual(queries[0].args[1], (42,))
+        self.assertIn("SELECT ItemCode, IsChecked, FieldsJSON", queries[1].args[0])
         self.assertEqual(queries[1].args[1], (42,))
+        self.assertEqual(queries[2].args[1], (42,))
         blob_media.assert_called_once_with(
             "image/png",
             b"\x89PNG\r\n\x1a\ninspection-image",
             name="inspection.png",
         )
+
+    def test_get_vehicle_inspection_data_skips_detail_queries_without_saved_rows(self):
+        bma = _load_callables()
+        mock_cursor = MagicMock()
+        mock_cursor.fetchone.return_value = (0, 0)
+
+        with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
+             patch.object(bma, "db_cursor") as mock_db_cursor:
+            mock_db_cursor.return_value.__enter__.return_value = mock_cursor
+
+            result = bma.get_vehicle_inspection_data(42)
+
+        self.assertEqual(mock_cursor.execute.call_count, 1)
+        existence_sql, jobcard_ids = mock_cursor.execute.call_args.args
+        self.assertIn("tbl_technicianinspectionchecklist", existence_sql)
+        self.assertIn("tbl_vehicleinspectionimages", existence_sql)
+        self.assertEqual(jobcard_ids, (42, 42))
+        self.assertEqual(mock_cursor.fetchall.call_count, 0)
+        self.assertTrue(all(not checked for checked in result["checkboxes"].values()))
+        self.assertTrue(all(not value for value in result["textboxes"].values()))
+        self.assertTrue(all(value is None for value in result["images"].values()))
 
     def test_get_vehicle_inspection_data_rejects_invalid_jobcard_id(self):
         bma = _load_callables()

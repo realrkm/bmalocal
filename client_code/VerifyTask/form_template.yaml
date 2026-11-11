@@ -86,7 +86,7 @@ components:
       type: Label
     - layout_properties: {grid_position: 'ATZOWK,XPFSJP'}
       name: txt_efficiency
-      properties: {background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: 'Efficiency: '}
+      properties: {align: center, background: 'theme:White', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', placeholder: 'Efficiency: '}
       type: TextBox
     layout_properties: {grid_position: 'MHMCVQ,DLSDXU'}
     name: card_3

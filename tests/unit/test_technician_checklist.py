@@ -234,7 +234,7 @@ class TestTechnicianChecklist(unittest.TestCase):
         self.assertIn("Jane &amp; Co", rendered)
         self.assertIn("Jack stands", rendered)
         self.assertIn("&#9745;", rendered)
-        self.assertIn("&#9744;", rendered)
+        self.assertNotIn("&#9744;", rendered)
         self.assertIn("<th>Voltage</th><td>&lt;12.6&gt;</td>", rendered)
         self.assertIn("&lt;12.6&gt;", rendered)
         self.assertIn("2026-12-26", rendered)
@@ -279,11 +279,32 @@ class TestTechnicianChecklist(unittest.TestCase):
             if component_name == "chk_final":
                 continue
             self.assertIn(
-                '<tr><td class="check">&#9744;</td><td>{}</td></tr>'.format(
+                '<tr><td class="check">&#9745;</td><td>{}</td></tr>'.format(
                     html.escape(full_label)
                 ),
                 rendered,
             )
+
+    def test_fill_inspection_checklist_html_renders_every_item_as_checked(self):
+        bma = _load_callables()
+        checkboxes = {name: False for name in bma._VEHICLE_INSPECTION_CHECKBOXES}
+        saved_data = {
+            "jobcard": {},
+            "checkboxes": checkboxes,
+            "textboxes": {},
+            "dates": {},
+            "images": {},
+            "labels": {},
+        }
+
+        with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
+             patch.object(bma, "_get_inspection_checklist_data", return_value=saved_data):
+            rendered = bma.fillInspectionChecklistData(42, "InspectionChecklist")
+
+        row_count = sum(len(items) for _, _, items, _ in bma._VEHICLE_INSPECTION_SECTIONS)
+        self.assertEqual(rendered.count("&#9745;"), row_count)
+        self.assertNotIn("&#9744;", rendered)
+        self.assertTrue(all(value is False for value in checkboxes.values()))
 
     def test_fill_inspection_checklist_html_allows_sections_to_flow_across_pages(self):
         bma = _load_callables()

@@ -392,7 +392,7 @@ class VehicleInspectionChecklist(VehicleInspectionChecklistTemplate):
             self.btn_Update.enabled = True
 
         Notification("Inspection checklist updated.", style="success").show()
-        self.btn_Close_click()
+        
 
     def _update_hours_worked(self, notify=True):
         start = self.date_picker_time_start.date

@@ -711,9 +711,16 @@ class TestTechnicianChecklist(unittest.TestCase):
         with tempfile.TemporaryDirectory() as image_dir, \
              patch.object(bma, "VEHICLE_INSPECTION_IMAGE_DIR", image_dir), \
              patch("anvil.users.get_user", return_value={"email": "admin@bmaauto.com", "role_id": 1}), \
-             patch.object(bma, "db_cursor") as mock_db_cursor, \
-             patch.object(bma, "publish_technician_portal_notification", create=True):
-            mock_db_cursor.return_value.__enter__.return_value = mock_cursor
+             patch.object(bma, "db_cursor") as mock_db_cursor:
+            db_context = MagicMock()
+            db_context.__enter__.return_value = mock_cursor
+
+            def open_db_cursor():
+                self.assertEqual(len(os.listdir(image_dir)), 3)
+                return db_context
+
+            mock_db_cursor.side_effect = open_db_cursor
+            mock_cursor.fetchone.side_effect = [None, ("JC-042",)]
 
             res = bma.saveOrUpdateTechnicianPortalDefectsAndRequestedParts(
                 jobcardID=42,
@@ -727,7 +734,15 @@ class TestTechnicianChecklist(unittest.TestCase):
             )
 
         self.assertTrue(res)
+        self.assertEqual(mock_db_cursor.call_count, 1)
         self.assertEqual(mock_cursor.executemany.call_count, 2)
+        notification_calls = [
+            call
+            for call in mock_cursor.execute.call_args_list
+            if "INSERT INTO tbl_technician_portal_notifications" in call.args[0]
+        ]
+        self.assertEqual(len(notification_calls), 1)
+        self.assertEqual(notification_calls[0].args[1][0], "JC-042")
         sql_arg, rows_arg = mock_cursor.executemany.call_args_list[0].args
         self.assertIn("INSERT INTO tbl_technicianinspectionchecklist", sql_arg)
         self.assertNotIn("PreparedByStaff", sql_arg)

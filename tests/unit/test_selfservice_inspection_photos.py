@@ -85,6 +85,53 @@ def test_missing_photo_focus_helper_is_available_to_save_handler():
     assert result.returncode == 0, result.stderr
 
 
+def test_selfservice_js_reuses_saved_inspection_photos_for_save():
+    source_path = Path(__file__).parents[2] / "theme" / "assets" / "selfservice.js"
+    source = source_path.read_text(encoding="utf-8")
+    start = source.index("    function getInspectionPhotoPayload(")
+    end = source.index("    function getInspectionPhotoState()", start)
+    helper = source[start:end]
+    script = f"""
+        const INSPECTION_PHOTOS = [
+            {{ code: 'image_1' }},
+            {{ code: 'image_2' }},
+            {{ code: 'image_3' }}
+        ];
+        {helper}
+        const payload = getInspectionPhotoPayload({{
+            uploads: {{ image_2: {{ dataUrl: 'new-image-2' }} }},
+            saved: {{
+                image_1: 'saved-image-1',
+                image_2: 'saved-image-2',
+                image_3: 'saved-image-3'
+            }}
+        }});
+        if (payload.image_1 !== 'saved-image-1' ||
+                payload.image_2 !== 'new-image-2' ||
+                payload.image_3 !== 'saved-image-3') {{
+            throw new Error('Saved images should be reused and new uploads should take precedence.');
+        }}
+        const missing = INSPECTION_PHOTOS
+            .filter(photo => !getInspectionPhotoPayload({{
+                uploads: {{}},
+                saved: {{ image_1: 'saved-image-1', image_2: null }}
+            }})[photo.code])
+            .map(photo => photo.code);
+        if (missing.join(',') !== 'image_2,image_3') {{
+            throw new Error('Only photo slots with no saved or uploaded image should be missing.');
+        }}
+    """
+
+    result = subprocess.run(
+        ["node", "-e", script],
+        capture_output=True,
+        check=False,
+        text=True,
+    )
+
+    assert result.returncode == 0, result.stderr
+
+
 def test_required_inspection_photos_follow_checklist_sections():
     source_path = Path(__file__).parents[2] / "theme" / "assets" / "selfservice.js"
     source = source_path.read_text(encoding="utf-8")

@@ -1200,6 +1200,19 @@
     const INSPECTION_PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
     const MAX_INSPECTION_PHOTO_BYTES = 10 * 1024 * 1024;
 
+    function getInspectionPhotoPayload(photos) {
+        const payload = {};
+        INSPECTION_PHOTOS.forEach(photo => {
+            const uploaded = photos.uploads[photo.code];
+            const source = uploaded && uploaded.dataUrl
+                ? uploaded.dataUrl
+                : photos.saved[photo.code];
+            payload[photo.code] =
+                typeof source === 'string' && source.trim() ? source : null;
+        });
+        return payload;
+    }
+
     function getInspectionPhotoState() {
         if (!state.inspectionPhotos || state.inspectionPhotos.reg !== state.activeReg) {
             state.inspectionPhotos = {
@@ -1257,7 +1270,7 @@
             status.textContent = uploaded
                 ? `${uploaded.name} — ready to upload`
                 : source
-                    ? 'Saved photo preview. Upload a current photo before saving.'
+                    ? 'Saved photo — will be reused unless replaced.'
                     : 'Required — upload before saving.';
         });
     }
@@ -1316,7 +1329,7 @@
         return `
             <section class="cl-photo-section" aria-label="Required vehicle inspection photos" style="margin:1rem 0 1.5rem;">
                 <h3>Required inspection photos</h3>
-                <p>Upload all three photos before saving this checklist.</p>
+                <p>All three photos are required; saved photos will be reused unless replaced.</p>
                 <div class="cl-photo-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap:1rem;">
                     ${INSPECTION_PHOTOS.map(photo => `
                         <div class="cl-photo-card" data-inspection-photo-card="${photo.code}" style="min-width:0; display:flex; flex-direction:column; gap:0.5rem; padding:0.75rem; border:1px solid rgba(59, 130, 246, 0.3); border-radius:0.8rem;">
@@ -3541,12 +3554,25 @@
             }
 
             //  Vehicle Inspection Checklist: every checkbox ticked and every field filled
-            const checklistResult = buildChecklistPayload();
+            const requiresChecklist = checklistApplies();
             const inspectionPhotos = getInspectionPhotoState();
+            if (requiresChecklist) {
+                try {
+                    await loadSavedInspectionPhotoPreviews();
+                } catch (error) {
+                    console.error('Could not load saved inspection photos before saving:', error);
+                    showToast('Could not load saved inspection photos. Please try again.', 'error');
+                    return;
+                }
+            }
             await Promise.all(Object.values(inspectionPhotos.pending));
-            const missingPhotoCodes = checklistApplies()
+            const checklistResult = buildChecklistPayload();
+            const inspectionImagePayload = requiresChecklist
+                ? getInspectionPhotoPayload(inspectionPhotos)
+                : {};
+            const missingPhotoCodes = requiresChecklist
                 ? INSPECTION_PHOTOS
-                    .filter(photo => !inspectionPhotos.uploads[photo.code])
+                    .filter(photo => !inspectionImagePayload[photo.code])
                     .map(photo => photo.code)
                 : [];
             if (missingPhotoCodes.length > 0) {
@@ -3554,7 +3580,7 @@
                     .filter(photo => missingPhotoCodes.includes(photo.code))
                     .map(photo => photo.label);
                 errors.push(
-                    '• Upload all three required vehicle inspection photos: ' +
+                    '• Add the missing vehicle inspection photos: ' +
                     missingPhotoNames.join(', ')
                 );
             }
@@ -3597,10 +3623,7 @@
                     state.selectedTechnician,
                     signature,
                     checklistResult.list,
-                    Object.fromEntries(
-                        Object.entries(inspectionPhotos.uploads)
-                            .map(([code, photo]) => [code, photo.dataUrl])
-                    )
+                    inspectionImagePayload
                 );
 
                 await customAlert(

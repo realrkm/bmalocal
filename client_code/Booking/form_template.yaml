@@ -65,6 +65,7 @@ components:
       - {data_key: '', id: BALGFU, title: Send Info, width: '90'}
       foreground: theme:White
       role: wide
+      wrap_on: mobile
     type: DataGrid
   layout_properties: {full_width_row: true, grid_position: 'ZJVONF,GUMGUK'}
   name: card_1

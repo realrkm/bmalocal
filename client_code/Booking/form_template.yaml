@@ -46,31 +46,26 @@ components:
     properties: {align: center, background: 'theme:White', font: Mozilla Headline, font_size: 16, foreground: '#ff0000', text: Only Current And Future Appointments Are Displayed}
     type: Label
   - components:
-    - components:
-      - name: repeating_panel_1
-        properties: {item_template: Booking.RowTemplate24}
-        type: RepeatingPanel
-      layout_properties: {full_width_row: true, grid_position: 'PPEOCD,LRZUJS'}
-      name: data_grid_1
-      properties:
-        background: theme:Black
-        border: solid
-        columns:
-        - {data_key: 'No', expand: true, id: ORJKYJ, title: 'No', width: ''}
-        - {data_key: Fullname, expand: true, id: JKSDUP, title: Client}
-        - {data_key: Phone, expand: true, id: FBQCCA, title: Phone, width: ''}
-        - {data_key: RegNo, expand: true, id: VJQQOR, title: RegNo}
-        - {data_key: FormattedSchedule, expand: true, id: GNQKCR, title: Date And Time}
-        - {data_key: Details, expand: true, id: OJLQEN, title: Details}
-        - {data_key: ID, id: SAJOYS, title: '', width: '0.1'}
-        - {data_key: '', id: BALGFU, title: Send Info, width: '90'}
-        foreground: theme:White
-        role: wide
-      type: DataGrid
-    layout_properties: {full_width_row: true, grid_position: 'GMSFYC,OBBQHR'}
-    name: card_3
-    properties: {role: glass-panel, wrap_on: never}
-    type: ColumnPanel
+    - name: repeating_panel_1
+      properties: {item_template: Booking.RowTemplate24}
+      type: RepeatingPanel
+    layout_properties: {grid_position: 'IXHRAH,PIKPIL'}
+    name: data_grid_1
+    properties:
+      background: theme:Black
+      border: solid
+      columns:
+      - {data_key: 'No', expand: true, id: ORJKYJ, title: 'No', width: ''}
+      - {data_key: Fullname, expand: true, id: JKSDUP, title: Client}
+      - {data_key: Phone, expand: true, id: FBQCCA, title: Phone, width: ''}
+      - {data_key: RegNo, expand: true, id: VJQQOR, title: RegNo}
+      - {data_key: FormattedSchedule, expand: true, id: GNQKCR, title: Date And Time}
+      - {data_key: Details, expand: true, id: OJLQEN, title: Details}
+      - {data_key: ID, id: SAJOYS, title: '', width: '0.1'}
+      - {data_key: '', id: BALGFU, title: Send Info, width: '90'}
+      foreground: theme:White
+      role: wide
+    type: DataGrid
   layout_properties: {full_width_row: true, grid_position: 'ZJVONF,GUMGUK'}
   name: card_1
   properties: {role: null}

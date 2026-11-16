@@ -19,14 +19,13 @@ def getLocationAndSupplier(force_refresh=False):
         _inventory_dropdown_cache = anvil.server.call("getLocationAndSupplier")
     return _inventory_dropdown_cache
 
-def _show_error(label, message, title="", timeout=5):
+def _show_error(message, title="", timeout=5):
     """
-    Displays an error message in a label and clears it after timeout seconds.
+    Displays an error notification and suppresses duplicates until it expires.
     
-    :param label:   The Anvil Label component to display the message in.
     :param message: The error message text.
     :param title:   Optional title prefix shown before the message.
-    :param timeout: Seconds before the label is cleared (default: 5).
+    :param timeout: Seconds before another notification with this title is shown.
     """
     now = anvil.js.window.Date.now()
     last_shown = _notification_shown_at.get(title, 0)
@@ -36,23 +35,22 @@ def _show_error(label, message, title="", timeout=5):
 
     _notification_shown_at[title] = now
 
-    # Show message in label
-    label.text = f"{title}: {message}" if title else message
-    label.visible = True
+    Notification(
+        message,
+        title=title or None,
+        style="danger",
+        timeout=timeout,
+    ).show()
 
-    # Clear the label after timeout using JS setTimeout
-    def clear_label():
-        label.text = ""
-        label.visible = False
+    def clear_notification_lock():
         _notification_shown_at.pop(title, None)  # Reset the lock
 
-    anvil.js.window.setTimeout(clear_label, timeout * 1000)
+    anvil.js.window.setTimeout(clear_notification_lock, timeout * 1000)
 
 
-def handle_server_errors(exc, label):
+def handle_server_errors(exc):
     if isinstance(exc, anvil.server.UplinkDisconnectedError):
         _show_error(
-            label=label,
             message="Connection via anvil uplink is lost. Please check your internet or try again later.",
             title="Disconnected"
         )
@@ -60,13 +58,11 @@ def handle_server_errors(exc, label):
         anvil.js.window.location.reload()
     elif isinstance(exc, anvil.server.AppOfflineError):
         _show_error(
-            label=label,
             message="Please ensure the server is up and running.",
             title="Lost connection"
         )
     else:
         _show_error(
-            label=label,
             message=f"{exc}",
             title="Issue Detected"
         )

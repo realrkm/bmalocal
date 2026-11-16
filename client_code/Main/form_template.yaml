@@ -69,14 +69,6 @@ components:
     wrap_on: never
   type: ColumnPanel
 - components:
-  - layout_properties: {}
-    name: notification_label
-    properties: {}
-    type: Label
-  - layout_properties: {}
-    name: error_label
-    properties: {}
-    type: Label
   - components: []
     event_bindings: {click: link_1_click}
     layout_properties: {}

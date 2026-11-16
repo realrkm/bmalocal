@@ -39,8 +39,6 @@ class Main(MainTemplate):
                     self.permissions = {}
             self.apply_permissions()
 
-            self.notification_label.visible = True
-            self.error_label.visible = True   
             self.notificationsandalerts = None
 
             user_agent = navigator.userAgent
@@ -48,10 +46,9 @@ class Main(MainTemplate):
             anvil.js.window.setTimeout(lambda: anvil.server.call_s('get_stats', user_agent), 4000)
 
             ModNavigation.home_form = self
-            self.error_label.visible = False
 
             set_default_error_handling(
-                lambda exc: ModGetData.handle_server_errors(exc, self.error_label)
+                ModGetData.handle_server_errors
             )
 
             self.polling_active = True
@@ -145,7 +142,6 @@ class Main(MainTemplate):
         self.poll_running = True
         try:
             with anvil.server.no_loading_indicator:
-                self.notification_label.text = ""
                 self.notificationsandalerts = anvil.server.call_s(
                     'fetch_all_dashboard_notifications', self.user
                 )
@@ -167,8 +163,13 @@ class Main(MainTemplate):
                     self.link_1.text = None
                     self.link_1.foreground = "#FFFFFF"
 
-                for n in notifications:
-                    self.notification_label.text = f"{n['jobcard']} - {n['message']}"
+                if notifications:
+                    notification = notifications[-1]
+                    Notification(
+                        f"{notification['jobcard']} - {notification['message']}",
+                        style="warning",
+                        timeout=3,
+                    ).show()
 
         except Exception as e:
             if "Authentication" in str(e) or "auth" in str(e).lower():

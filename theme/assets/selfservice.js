@@ -209,7 +209,7 @@
                         ${sanitizeHTML(title)}
                     </div>
                     <div class="custom-alert-message">${sanitizeHTML(message)}</div>
-                    <div class="service-status-filters">
+                    <div style="display:flex; gap:1rem;">
                         <button class="custom-alert-button" style="background:#64748b;" data-action="cancel">Cancel</button>
                         <button class="custom-alert-button" data-action="confirm">Confirm</button>
                     </div>
@@ -753,7 +753,7 @@
         </div>
         
         <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:2rem; flex-wrap:wrap;">
-            <div style="display:flex; gap:1rem;">
+            <div class="service-status-filters">
                 <button class="btn-status ${state.currentStatusFilter === 'Checked-In' ? 'active-filter' : ''}" onclick="filterByStatus('Checked-In')">Checked-In</button>
                 <button class="btn-status ${state.currentStatusFilter === 'Create Quote' ? 'active-filter' : ''}" onclick="filterByStatus('Create Quote')">Create Quote</button>
                 <button class="btn-status ${state.currentStatusFilter === 'Confirm Quote' ? 'active-filter' : ''}" onclick="filterByStatus('Confirm Quote')">Confirm Quote</button>

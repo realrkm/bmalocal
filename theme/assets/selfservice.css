@@ -985,6 +985,12 @@ RESPONSIVE BREAKPOINTS
     .header-left h1 {
         font-size: 1.6rem;
     }
+
+    .service-status-filters {
+        flex: 1 1 100%;
+        width: 100%;
+        max-width: 100%;
+    }
     
     /* Keep service cards in a row on portrait/mobile */
     .service-card-grid {

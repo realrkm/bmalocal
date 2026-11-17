@@ -132,6 +132,57 @@ def test_selfservice_js_reuses_saved_inspection_photos_for_save():
     assert result.returncode == 0, result.stderr
 
 
+def test_selfservice_save_skips_saved_photo_load_when_all_photos_are_uploaded():
+    source_path = Path(__file__).parents[2] / "theme" / "assets" / "selfservice.js"
+    source = source_path.read_text(encoding="utf-8")
+    start = source.index("    function hasAllInspectionPhotoUploads(")
+    end = source.index("\n    function ", start + 1)
+    helper = source[start:end]
+    save_start = source.index("        window.savePartsDetails = async () => {")
+    save_end = source.index("        window.saveWorkDoneFromTab = async () => {", save_start)
+    save_handler = source[save_start:save_end]
+    script = f"""
+        const INSPECTION_PHOTOS = [
+            {{ code: 'image_1' }},
+            {{ code: 'image_2' }},
+            {{ code: 'image_3' }}
+        ];
+        {helper}
+        const allUploaded = {{
+            uploads: {{
+                image_1: {{ dataUrl: 'camera-image-1' }},
+                image_2: {{ dataUrl: 'camera-image-2' }},
+                image_3: {{ dataUrl: 'camera-image-3' }}
+            }}
+        }};
+        const partial = {{
+            uploads: {{
+                image_1: {{ dataUrl: 'camera-image-1' }},
+                image_2: {{ dataUrl: 'camera-image-2' }}
+            }}
+        }};
+        if (!hasAllInspectionPhotoUploads(allUploaded)) {{
+            throw new Error('All staged camera photos should be ready without loading saved photos.');
+        }}
+        if (hasAllInspectionPhotoUploads(partial)) {{
+            throw new Error('Missing staged photos must still require saved-photo lookup.');
+        }}
+    """
+
+    result = subprocess.run(
+        ["node", "-e", script],
+        capture_output=True,
+        check=False,
+        text=True,
+    )
+
+    assert result.returncode == 0, result.stderr
+    pending_wait = save_handler.index("await Promise.all(Object.values(inspectionPhotos.pending));")
+    conditional_load = save_handler.index("!hasAllInspectionPhotoUploads(inspectionPhotos)")
+    assert pending_wait < conditional_load
+    assert "checklistResult.missing.length > 0" in save_handler
+
+
 def test_required_inspection_photos_follow_checklist_sections():
     source_path = Path(__file__).parents[2] / "theme" / "assets" / "selfservice.js"
     source = source_path.read_text(encoding="utf-8")

@@ -209,7 +209,7 @@
                         ${sanitizeHTML(title)}
                     </div>
                     <div class="custom-alert-message">${sanitizeHTML(message)}</div>
-                    <div style="display:flex; gap:1rem;">
+                    <div class="service-status-filters">
                         <button class="custom-alert-button" style="background:#64748b;" data-action="cancel">Cancel</button>
                         <button class="custom-alert-button" data-action="confirm">Confirm</button>
                     </div>

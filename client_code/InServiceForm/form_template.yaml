@@ -57,37 +57,32 @@ components:
   name: card_1
   properties: {border: '', role: glass-panel}
   type: ColumnPanel
+- layout_properties: {grid_position: 'GCGHTD,ZMEXRO'}
+  name: label_customer_feedback
+  properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: '', role: null, text: Confirmed Customer Quotation Feedback}
+  type: Label
+- layout_properties: {grid_position: 'GLKRMY,YJSKCC'}
+  name: spacer_1_copy
+  properties: {height: 11.79998779296875}
+  type: Spacer
 - components:
-  - layout_properties: {grid_position: 'VMCUTK,CRESEO'}
-    name: label_customer_feedback
-    properties: {align: center, background: 'theme:Gray 300', border: solid, font: Mozilla Headline, font_size: 16, foreground: 'theme:Black', icon: '', role: null, text: Confirmed Customer Quotation Feedback}
-    type: Label
-  - layout_properties: {grid_position: 'LGSYZL,WQRYSS'}
-    name: spacer_1_copy
-    properties: {height: 11.79998779296875}
-    type: Spacer
-  - components:
-    - name: repeating_panel_1
-      properties: {item_template: InServiceForm.RowTemplate5}
-      type: RepeatingPanel
-    layout_properties: {grid_position: 'NFESDV,JYPYST'}
-    name: data_grid_1
-    properties:
-      background: theme:Black
-      border: solid
-      columns:
-      - {data_key: Item, expand: true, id: JKSDUP, title: Item}
-      - {data_key: Quantity, expand: true, id: VJQQOR, title: Quantity}
-      foreground: theme:White
-      role: wide
-      rows_per_page: 200
-      show_page_controls: false
-      wrap_on: mobile
-    type: DataGrid
-  layout_properties: {grid_position: 'UGCJBE,NJHZDA', row_background: ''}
-  name: card_2
-  properties: {border: solid, role: glass-panel}
-  type: ColumnPanel
+  - name: repeating_panel_1
+    properties: {item_template: InServiceForm.RowTemplate5}
+    type: RepeatingPanel
+  layout_properties: {grid_position: 'DDZZKV,TKXJLR'}
+  name: data_grid_1
+  properties:
+    background: theme:Black
+    border: solid
+    columns:
+    - {data_key: Item, expand: true, id: JKSDUP, title: Item}
+    - {data_key: Quantity, expand: true, id: VJQQOR, title: Quantity}
+    foreground: theme:White
+    role: wide
+    rows_per_page: 200
+    show_page_controls: false
+    wrap_on: mobile
+  type: DataGrid
 - components:
   - layout_properties: {grid_position: 'AKCRRX,BAUKLE'}
     name: label_WorkDone

@@ -103,7 +103,7 @@ BMALocal is hosted locally via the open-source **Anvil App Server** coupled with
 | **Frontend Framework** | Anvil Client (Python Skulpt) | Pure Python client logic compiling to browser JavaScript |
 | **Frontend Styling** | Vanilla CSS3 (`theme.css`) | Responsive design, glassmorphism UI, fixed FAB controls |
 | **Frontend Scripts** | Native JavaScript | `walkietalkie.js`, `signature.js`, `selfservice.js`, `barcode.js` |
-| **Chat Server** | `websockets` (v17+) | Asynchronous real-time WebSocket server integrated into `BMALocal.py` |
+| **Chat Server** | `websockets` (v17+) | Asynchronous real-time WebSocket server in `server_code/realtime.py` |
 | **Primary Database** | MySQL 8.0+ / MariaDB | Relational storage for business entities and chat history |
 | **Internal Data Store** | PostgreSQL (embedded) | Embedded DB managed by Anvil App Server for app state/users |
 | **Document Engine** | `wkhtmltopdf` + `pdfkit` | Headless HTML-to-PDF rendering for invoices and reports |
@@ -217,7 +217,7 @@ BMALocal relies on the following core Python libraries:
 | :--- | :---: | :--- |
 | **`anvil-app-server`** | `>=1.17.0` | Standalone local application server that runs client/server Anvil code |
 | **`anvil-uplink`** | `>=0.7.0` | Anvil uplink library for background services and server-to-server RPCs |
-| **`websockets`** | `>=17.0` | Asynchronous WebSocket server daemon (integrated in `BMALocal.py`) for live chat |
+| **`websockets`** | `>=17.0` | Asynchronous WebSocket server daemon in `server_code/realtime.py` for live chat |
 | **`mysql-connector-python`**| `>=8.0.0` | Official MySQL driver with connection pooling (`pooling.MySQLConnectionPool`) |
 | **`python-dotenv`** | `>=1.0.0` | Parses `.env` configuration file for database, paths, and server settings |
 | **`pdfkit`** | `>=1.0.0` | Python wrapper for `wkhtmltopdf` to render invoices, quotes & job card PDFs |
@@ -439,6 +439,11 @@ anvil-app-server --app . --origin https://192.168.100.12:443 --manual-cert-file 
 
 ## Project Directory Structure
 
+Backend code is organized by scenario. Import a feature module directly, for example
+`from server_code.invoices import saveInvoice`; existing imports from
+`server_code.BMALocal` remain supported. Shared database, authentication, and runtime
+configuration helpers live in `server_code/_common.py`.
+
 ```text
 BMALocal/
 ├── anvil.yaml                      # Anvil application manifest, schemas, tables & dependencies
@@ -465,7 +470,24 @@ BMALocal/
 │   ├── WalkieTalkieChat.py         # Anvil wrapper for live WebSocket chat
 │   └── ModNavigation/              # Global form routing controller
 ├── server_code/                    # Backend server-side services (Python)
-│   └── BMALocal.py                 # Core server functions, DB queries & integrated WebSocket server
+│   ├── BMALocal.py                 # Compatibility exports and service startup
+│   ├── _common.py                  # Shared DB, auth, and runtime helpers
+│   ├── modAnalytics.py             # Analytics endpoints and network helpers
+│   ├── people.py                   # Clients, technicians, staff, and toolkits
+│   ├── vehicles.py                 # Vehicle records
+│   ├── job_cards.py                # Job cards, technician work, and verification
+│   ├── quotations.py               # Quotes and quote feedback
+│   ├── invoices.py                 # Invoices and payments
+│   ├── inventory.py                # Parts, suppliers, locations, and stock
+│   ├── reports.py                  # Report generation and exports
+│   ├── users.py                    # Accounts, roles, and permissions
+│   ├── orders.py                   # Order tracking and schedules
+│   ├── notifications.py            # Dashboard and technician notifications
+│   ├── technician_portal.py        # Technician self-service workflows
+│   ├── dashboard.py                # Dashboard endpoints
+│   ├── bookings.py                 # Booking records
+│   ├── realtime.py                 # WebSocket chat and presence
+│   └── vehicle_inspection.py       # Inspection data and PDFs
 └── theme/                          # Visual theme, assets, HTML templates & styles
     ├── parameters.yaml             # Theme roles and color tokens
     └── assets/

@@ -1213,13 +1213,6 @@
         return payload;
     }
 
-    function hasAllInspectionPhotoUploads(photos) {
-        return INSPECTION_PHOTOS.every(photo => {
-            const uploaded = photos.uploads[photo.code];
-            return uploaded && typeof uploaded.dataUrl === 'string' && uploaded.dataUrl.trim();
-        });
-    }
-
     function getInspectionPhotoState() {
         if (!state.inspectionPhotos || state.inspectionPhotos.reg !== state.activeReg) {
             state.inspectionPhotos = {
@@ -3563,13 +3556,7 @@
             //  Vehicle Inspection Checklist: every checkbox ticked and every field filled
             const requiresChecklist = checklistApplies();
             const inspectionPhotos = getInspectionPhotoState();
-            await Promise.all(Object.values(inspectionPhotos.pending));
-            let checklistResult = buildChecklistPayload();
-            if (
-                requiresChecklist &&
-                (!hasAllInspectionPhotoUploads(inspectionPhotos) ||
-                    checklistResult.missing.length > 0)
-            ) {
+            if (requiresChecklist) {
                 try {
                     await loadSavedInspectionPhotoPreviews();
                 } catch (error) {
@@ -3577,8 +3564,9 @@
                     showToast('Could not load saved inspection photos. Please try again.', 'error');
                     return;
                 }
-                checklistResult = buildChecklistPayload();
             }
+            await Promise.all(Object.values(inspectionPhotos.pending));
+            const checklistResult = buildChecklistPayload();
             const inspectionImagePayload = requiresChecklist
                 ? getInspectionPhotoPayload(inspectionPhotos)
                 : {};

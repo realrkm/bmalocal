@@ -3,10 +3,11 @@ import datetime
 import re
 from unittest.mock import MagicMock, patch
 import server_code.BMALocal as bma
+from server_code import realtime
 
 def test_get_chat_user_profile(mock_anvil_users):
     """Verify initials and profile formatting for chat user."""
-    with patch("server_code.BMALocal.db_cursor") as mock_cursor_ctx:
+    with patch.object(realtime, "db_cursor") as mock_cursor_ctx:
         mock_cursor = MagicMock()
         mock_cursor.fetchone.return_value = ("Admin",)
         mock_cursor_ctx.return_value.__enter__.return_value = mock_cursor

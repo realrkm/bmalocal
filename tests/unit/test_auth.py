@@ -1,6 +1,7 @@
 import pytest
 from unittest.mock import MagicMock, patch
 import server_code.BMALocal as bma
+from server_code import _common
 
 def test_get_current_user_authenticated():
     """Verify _get_current_user returns user object when session is active."""
@@ -18,19 +19,21 @@ def test_get_current_user_unauthenticated():
 def test_require_role_authorized():
     """Verify _require_role succeeds when user role is in allowed list."""
     with patch("anvil.users.get_user") as mock_user, \
-         patch("server_code.BMALocal.db_cursor") as mock_cursor_ctx:
+         patch.object(_common, "db_cursor") as mock_cursor_ctx:
         mock_user.return_value = {"email": "admin@bmaauto.com", "role_id": 1}
         mock_cursor = MagicMock()
         mock_cursor.fetchone.return_value = ("Admin",)
         mock_cursor_ctx.return_value.__enter__.return_value = mock_cursor
         
-        user = bma._require_role("Admin", "Manager")
-        assert user["role_id"] == 1
+        bma._require_role("Admin", "Manager")
+        mock_cursor.execute.assert_called_once_with(
+            "SELECT Roles FROM tbl_roles WHERE ID = %s", (1,)
+        )
 
 def test_require_role_unauthorized():
     """Verify _require_role raises Exception when user role is not allowed."""
     with patch("anvil.users.get_user") as mock_user, \
-         patch("server_code.BMALocal.db_cursor") as mock_cursor_ctx:
+         patch.object(_common, "db_cursor") as mock_cursor_ctx:
         mock_user.return_value = {"email": "tech@bmaauto.com", "role_id": 3}
         mock_cursor = MagicMock()
         mock_cursor.fetchone.return_value = ("Technician",)

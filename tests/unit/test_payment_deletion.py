@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 import server_code.BMALocal as bma
+from server_code import invoices
 
 
 def test_delete_payment_removes_record_and_recalculates_balances():
@@ -12,8 +13,8 @@ def test_delete_payment_removes_record_and_recalculates_balances():
     cursor.fetchall.return_value = [(20, 20.10, 0.03), (21, 21.12, 0.02)]
     cursor.rowcount = 1
 
-    with patch.object(bma, "_require_role") as require_role, patch.object(
-        bma, "db_cursor"
+    with patch.object(invoices, "_require_role") as require_role, patch.object(
+        invoices, "db_cursor"
     ) as db_cursor:
         db_cursor.return_value.__enter__.return_value = cursor
 
@@ -37,7 +38,7 @@ def test_delete_payment_removes_record_and_recalculates_balances():
 
 @pytest.mark.parametrize("payment_id", [0, -1, True, "17", None])
 def test_delete_payment_rejects_invalid_id(payment_id):
-    with patch.object(bma, "_require_role"), patch.object(bma, "db_cursor") as db_cursor:
+    with patch.object(invoices, "_require_role"), patch.object(invoices, "db_cursor") as db_cursor:
         with pytest.raises(ValueError, match="Invalid payment_id"):
             bma.delete_payment(payment_id)
 
@@ -48,8 +49,8 @@ def test_delete_payment_rejects_missing_payment():
     cursor = MagicMock()
     cursor.fetchone.return_value = None
 
-    with patch.object(bma, "_require_role"), patch.object(
-        bma, "db_cursor"
+    with patch.object(invoices, "_require_role"), patch.object(
+        invoices, "db_cursor"
     ) as db_cursor:
         db_cursor.return_value.__enter__.return_value = cursor
 
@@ -61,8 +62,8 @@ def test_delete_payment_rejects_missing_payment():
 
 def test_delete_payment_rejects_unauthorized_user():
     with patch.object(
-        bma, "_require_role", side_effect=Exception("You do not have permission")
-    ), patch.object(bma, "db_cursor") as db_cursor:
+        invoices, "_require_role", side_effect=Exception("You do not have permission")
+    ), patch.object(invoices, "db_cursor") as db_cursor:
         with pytest.raises(Exception, match="You do not have permission"):
             bma.delete_payment(17)
 
@@ -75,8 +76,8 @@ def test_get_payments_details_includes_payment_id():
         (datetime.date(2026, 1, 1), "JC-1", "Cash", 100, 40, 0, 60, 17)
     ]
 
-    with patch.object(bma, "_get_current_user"), patch.object(
-        bma, "db_cursor"
+    with patch.object(invoices, "_get_current_user"), patch.object(
+        invoices, "db_cursor"
     ) as db_cursor:
         db_cursor.return_value.__enter__.return_value = cursor
 

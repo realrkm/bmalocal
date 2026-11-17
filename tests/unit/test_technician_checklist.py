@@ -8,6 +8,7 @@ import sys
 import tempfile
 import types
 import unittest
+from contextlib import ExitStack, contextmanager
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -96,6 +97,16 @@ def _load_callables():
         return bma
 
 
+@contextmanager
+def _patch_bma_global(bma, name, *args, **kwargs):
+    replacement = args[0] if args else MagicMock(**kwargs)
+    with ExitStack() as stack:
+        for module in (bma, bma._common, *bma._SCENARIO_MODULES):
+            if hasattr(module, name):
+                stack.enter_context(patch.object(module, name, replacement))
+        yield replacement
+
+
 def _vehicle_inspection_payload():
     checkboxes = (
         "chk_safety", "chk_jack", "chk_chock", "chk_ppe", "chk_valuables",
@@ -177,8 +188,8 @@ class TestTechnicianChecklist(unittest.TestCase):
             },
         }
         with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
-             patch.object(bma, "db_cursor") as mock_db_cursor, \
-             patch.object(bma, "get_vehicle_inspection_data", return_value=inspection):
+             _patch_bma_global(bma, "db_cursor") as mock_db_cursor, \
+             _patch_bma_global(bma, "get_vehicle_inspection_data", return_value=inspection):
             mock_db_cursor.return_value.__enter__.return_value = cursor
             result = bma.get_inspection_checklist_data_by_job_id(42)
 
@@ -228,7 +239,7 @@ class TestTechnicianChecklist(unittest.TestCase):
             },
         }
         with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
-             patch.object(bma, "_get_inspection_checklist_data", return_value=saved_data):
+             _patch_bma_global(bma, "_get_inspection_checklist_data", return_value=saved_data):
             rendered = bma.fillInspectionChecklistData(42, "InspectionChecklist")
 
         self.assertIn("Jane &amp; Co", rendered)
@@ -271,7 +282,7 @@ class TestTechnicianChecklist(unittest.TestCase):
         }
 
         with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
-             patch.object(bma, "_get_inspection_checklist_data", return_value=saved_data):
+             _patch_bma_global(bma, "_get_inspection_checklist_data", return_value=saved_data):
             rendered = bma.fillInspectionChecklistData(42, "InspectionChecklist")
 
         self.assertIn("<h2>Final Quality and Handover</h2>", rendered)
@@ -298,7 +309,7 @@ class TestTechnicianChecklist(unittest.TestCase):
         }
 
         with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
-             patch.object(bma, "_get_inspection_checklist_data", return_value=saved_data):
+             _patch_bma_global(bma, "_get_inspection_checklist_data", return_value=saved_data):
             rendered = bma.fillInspectionChecklistData(42, "InspectionChecklist")
 
         row_count = sum(len(items) for _, _, items, _ in bma._VEHICLE_INSPECTION_SECTIONS)
@@ -318,7 +329,7 @@ class TestTechnicianChecklist(unittest.TestCase):
         }
 
         with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
-             patch.object(bma, "_get_inspection_checklist_data", return_value=saved_data):
+             _patch_bma_global(bma, "_get_inspection_checklist_data", return_value=saved_data):
             rendered = bma.fillInspectionChecklistData(42, "InspectionChecklist")
 
         self.assertRegex(
@@ -360,7 +371,7 @@ class TestTechnicianChecklist(unittest.TestCase):
         }
 
         with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
-             patch.object(bma, "_get_inspection_checklist_data", return_value=saved_data):
+             _patch_bma_global(bma, "_get_inspection_checklist_data", return_value=saved_data):
             rendered = bma.fillInspectionChecklistData(42, "InspectionChecklist")
 
         for title in section_titles:
@@ -405,7 +416,7 @@ class TestTechnicianChecklist(unittest.TestCase):
         }
 
         with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
-             patch.object(bma, "_get_inspection_checklist_data", return_value=saved_data):
+             _patch_bma_global(bma, "_get_inspection_checklist_data", return_value=saved_data):
             rendered = bma.fillInspectionChecklistData(42, "InspectionChecklist")
 
         self.assertTrue(all(name in placeholders for name in displayed_names))
@@ -433,7 +444,7 @@ class TestTechnicianChecklist(unittest.TestCase):
                 pdf_file.write(b"%PDF-test")
 
         with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
-             patch.object(bma, "fillInspectionChecklistData", return_value="<html></html>"), \
+             _patch_bma_global(bma, "fillInspectionChecklistData", return_value="<html></html>"), \
              patch.object(bma.pdfkit, "from_string", side_effect=render_pdf), \
              patch.object(
                  bma.anvil.media,
@@ -534,7 +545,7 @@ class TestTechnicianChecklist(unittest.TestCase):
         mock_cursor.fetchall.side_effect = [portal_rows, []]
 
         with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
-             patch.object(bma, "db_cursor") as mock_db_cursor:
+             _patch_bma_global(bma, "db_cursor") as mock_db_cursor:
             mock_db_cursor.return_value.__enter__.return_value = mock_cursor
             result = bma.get_vehicle_inspection_data(42)
 
@@ -592,7 +603,7 @@ class TestTechnicianChecklist(unittest.TestCase):
         ]
 
         with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
-             patch.object(bma, "db_cursor") as mock_db_cursor:
+             _patch_bma_global(bma, "db_cursor") as mock_db_cursor:
             mock_db_cursor.return_value.__enter__.return_value = mock_cursor
             result = bma.get_vehicle_inspection_data(42)
 
@@ -614,7 +625,7 @@ class TestTechnicianChecklist(unittest.TestCase):
         ]
 
         with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
-             patch.object(bma, "db_cursor") as mock_db_cursor:
+             _patch_bma_global(bma, "db_cursor") as mock_db_cursor:
             mock_db_cursor.return_value.__enter__.return_value = mock_cursor
             result = bma.get_vehicle_inspection_data(42)
 
@@ -635,7 +646,7 @@ class TestTechnicianChecklist(unittest.TestCase):
             }
         ]
         with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
-             patch.object(bma, "db_cursor") as mock_db_cursor:
+             _patch_bma_global(bma, "db_cursor") as mock_db_cursor:
             with self.assertRaisesRegex(ValueError, "(?i)all three inspection photos"):
                 bma.saveOrUpdateTechnicianPortalDefectsAndRequestedParts(
                     jobcardID=42,
@@ -663,7 +674,7 @@ class TestTechnicianChecklist(unittest.TestCase):
 
         images["image_1"] = UnsupportedImage()
         with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
-             patch.object(bma, "db_cursor") as mock_db_cursor:
+             _patch_bma_global(bma, "db_cursor") as mock_db_cursor:
             with self.assertRaisesRegex(ValueError, "Unsupported inspection photo format"):
                 bma.saveOrUpdateTechnicianPortalDefectsAndRequestedParts(
                     jobcardID=42,
@@ -709,9 +720,9 @@ class TestTechnicianChecklist(unittest.TestCase):
         ]
 
         with tempfile.TemporaryDirectory() as image_dir, \
-             patch.object(bma, "VEHICLE_INSPECTION_IMAGE_DIR", image_dir), \
+             _patch_bma_global(bma, "VEHICLE_INSPECTION_IMAGE_DIR", image_dir), \
              patch("anvil.users.get_user", return_value={"email": "admin@bmaauto.com", "role_id": 1}), \
-             patch.object(bma, "db_cursor") as mock_db_cursor:
+             _patch_bma_global(bma, "db_cursor") as mock_db_cursor:
             db_context = MagicMock()
             db_context.__enter__.return_value = mock_cursor
 
@@ -766,9 +777,9 @@ class TestTechnicianChecklist(unittest.TestCase):
         mock_cursor.fetchall.return_value = []
         with tempfile.TemporaryDirectory() as image_dir, \
              patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com", "role_id": 3}), \
-             patch.object(bma, "_require_role"), \
-             patch.object(bma, "VEHICLE_INSPECTION_IMAGE_DIR", image_dir), \
-             patch.object(bma, "db_cursor") as mock_db_cursor:
+             _patch_bma_global(bma, "_require_role"), \
+             _patch_bma_global(bma, "VEHICLE_INSPECTION_IMAGE_DIR", image_dir), \
+             _patch_bma_global(bma, "db_cursor") as mock_db_cursor:
             mock_db_cursor.return_value.__enter__.return_value = mock_cursor
 
             result = bma.save_update_vehicle_inspection(
@@ -809,8 +820,8 @@ class TestTechnicianChecklist(unittest.TestCase):
         payload = _vehicle_inspection_payload()
         payload["textboxes"]["text_box_test_drive"] = " "
         with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com", "role_id": 3}), \
-             patch.object(bma, "_require_role"), \
-             patch.object(bma, "db_cursor") as mock_db_cursor:
+             _patch_bma_global(bma, "_require_role"), \
+             _patch_bma_global(bma, "db_cursor") as mock_db_cursor:
             with self.assertRaisesRegex(ValueError, "text_box_test_drive"):
                 bma.save_update_vehicle_inspection(42, payload)
 
@@ -819,7 +830,7 @@ class TestTechnicianChecklist(unittest.TestCase):
     def test_save_update_vehicle_inspection_rejects_unauthorized_user(self):
         bma = _load_callables()
         with patch("anvil.users.get_user", return_value={"email": "guest@bmaauto.com", "role_id": 99}), \
-             patch.object(bma, "_require_role", side_effect=Exception("permission denied")):
+             _patch_bma_global(bma, "_require_role", side_effect=Exception("permission denied")):
             with self.assertRaisesRegex(Exception, "permission denied"):
                 bma.save_update_vehicle_inspection(
                     42, _vehicle_inspection_payload()
@@ -871,8 +882,8 @@ class TestTechnicianChecklist(unittest.TestCase):
             saved_media = object()
             blob_media = MagicMock(return_value=saved_media)
             with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
-                 patch.object(bma, "db_cursor") as mock_db_cursor, \
-                 patch.object(bma, "VEHICLE_INSPECTION_IMAGE_DIR", image_dir), \
+                 _patch_bma_global(bma, "db_cursor") as mock_db_cursor, \
+                 _patch_bma_global(bma, "VEHICLE_INSPECTION_IMAGE_DIR", image_dir), \
                  patch.object(bma.anvil, "BlobMedia", blob_media, create=True):
                 mock_db_cursor.return_value.__enter__.return_value = mock_cursor
 
@@ -928,7 +939,7 @@ class TestTechnicianChecklist(unittest.TestCase):
         ]
 
         with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
-             patch.object(bma, "db_cursor") as mock_db_cursor:
+             _patch_bma_global(bma, "db_cursor") as mock_db_cursor:
             mock_db_cursor.return_value.__enter__.return_value = mock_cursor
             result = bma.get_vehicle_inspection_data(42)
 
@@ -997,7 +1008,7 @@ class TestTechnicianChecklist(unittest.TestCase):
         ]
 
         with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
-             patch.object(bma, "db_cursor") as mock_db_cursor:
+             _patch_bma_global(bma, "db_cursor") as mock_db_cursor:
             mock_db_cursor.return_value.__enter__.return_value = mock_cursor
             result = bma.get_vehicle_inspection_data(42)
 
@@ -1012,7 +1023,7 @@ class TestTechnicianChecklist(unittest.TestCase):
         mock_cursor.fetchone.return_value = (0, 0)
 
         with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
-             patch.object(bma, "db_cursor") as mock_db_cursor:
+             _patch_bma_global(bma, "db_cursor") as mock_db_cursor:
             mock_db_cursor.return_value.__enter__.return_value = mock_cursor
 
             result = bma.get_vehicle_inspection_data(42)
@@ -1030,7 +1041,7 @@ class TestTechnicianChecklist(unittest.TestCase):
     def test_get_vehicle_inspection_data_rejects_invalid_jobcard_id(self):
         bma = _load_callables()
         with patch("anvil.users.get_user", return_value={"email": "tech@bmaauto.com"}), \
-             patch.object(bma, "db_cursor") as mock_db_cursor:
+             _patch_bma_global(bma, "db_cursor") as mock_db_cursor:
             with self.assertRaisesRegex(ValueError, "job card ID"):
                 bma.get_vehicle_inspection_data(0)
 
@@ -1039,7 +1050,7 @@ class TestTechnicianChecklist(unittest.TestCase):
     def test_get_vehicle_inspection_data_requires_authenticated_user(self):
         bma = _load_callables()
         with patch("anvil.users.get_user", return_value=None), \
-             patch.object(bma, "db_cursor") as mock_db_cursor:
+             _patch_bma_global(bma, "db_cursor") as mock_db_cursor:
             with self.assertRaisesRegex(Exception, "Authentication required"):
                 bma.get_vehicle_inspection_data(42)
 
@@ -1077,7 +1088,7 @@ class TestTechnicianChecklist(unittest.TestCase):
         ]
 
         with patch("anvil.users.get_user", return_value={"email": "admin@bmaauto.com", "role_id": 1}), \
-             patch.object(bma, "db_cursor") as mock_db_cursor:
+             _patch_bma_global(bma, "db_cursor") as mock_db_cursor:
             mock_db_cursor.return_value.__enter__.return_value = mock_cursor
             data = bma.get_jobcard_and_defect_details("JC-042")
 
@@ -1114,7 +1125,7 @@ class TestTechnicianChecklist(unittest.TestCase):
         }
 
         with patch("anvil.users.get_user", return_value={"email": "advisor@bmaauto.com", "role_id": 1}), \
-             patch.object(bma, "db_cursor") as mock_db_cursor:
+             _patch_bma_global(bma, "db_cursor") as mock_db_cursor:
             mock_db_cursor.return_value.__enter__.return_value = mock_cursor
 
             bma.saveConfirmationDetails(
@@ -1143,7 +1154,7 @@ class TestTechnicianChecklist(unittest.TestCase):
     def test_save_confirmation_details_rejects_invalid_checklist_before_database(self):
         bma = _load_callables()
         with patch("anvil.users.get_user", return_value={"email": "advisor@bmaauto.com"}), \
-             patch.object(bma, "db_cursor") as mock_db_cursor:
+             _patch_bma_global(bma, "db_cursor") as mock_db_cursor:
             with self.assertRaisesRegex(ValueError, "checklist"):
                 bma.saveConfirmationDetails(
                     99,
@@ -1166,7 +1177,7 @@ class TestTechnicianChecklist(unittest.TestCase):
             "chk_invoice_explain": True,
         }
         with patch("anvil.users.get_user", return_value={"email": "advisor@bmaauto.com"}), \
-             patch.object(bma, "db_cursor") as mock_db_cursor:
+             _patch_bma_global(bma, "db_cursor") as mock_db_cursor:
             with self.assertRaisesRegex(ValueError, "(?i)all.*checkboxes"):
                 bma.saveConfirmationDetails(
                     99, "Verified", None, "2026-10-28", checklist
@@ -1186,7 +1197,7 @@ class TestTechnicianChecklist(unittest.TestCase):
             "chk_explain": True,
         }
         with patch("anvil.users.get_user", return_value={"email": "advisor@bmaauto.com"}), \
-             patch.object(bma, "db_cursor") as mock_db_cursor:
+             _patch_bma_global(bma, "db_cursor") as mock_db_cursor:
             mock_db_cursor.return_value.__enter__.return_value = mock_cursor
             bma.saveConfirmationDetails(
                 99, "Verified", None, "2026-10-28", checklist
@@ -1203,7 +1214,7 @@ class TestTechnicianChecklist(unittest.TestCase):
     def test_save_confirmation_details_requires_authenticated_user(self):
         bma = _load_callables()
         with patch("anvil.users.get_user", return_value=None), \
-             patch.object(bma, "db_cursor") as mock_db_cursor:
+             _patch_bma_global(bma, "db_cursor") as mock_db_cursor:
             with self.assertRaisesRegex(Exception, "Authentication required"):
                 bma.saveConfirmationDetails(99, "Verified", None, "2026-10-28")
 
@@ -1219,7 +1230,7 @@ class TestTechnicianChecklist(unittest.TestCase):
         )
 
         with patch("anvil.users.get_user", return_value={"email": "advisor@bmaauto.com", "role_id": 1}), \
-             patch.object(bma, "db_cursor") as mock_db_cursor:
+             _patch_bma_global(bma, "db_cursor") as mock_db_cursor:
             mock_db_cursor.return_value.__enter__.return_value = mock_cursor
             res = bma.getVerifyTaskChecklist(99)
 
@@ -1251,7 +1262,7 @@ class TestTechnicianChecklist(unittest.TestCase):
         )
 
         with patch("anvil.users.get_user", return_value={"email": "advisor@bmaauto.com", "role_id": 1}), \
-             patch.object(bma, "db_cursor") as mock_db_cursor:
+             _patch_bma_global(bma, "db_cursor") as mock_db_cursor:
             mock_db_cursor.return_value.__enter__.return_value = mock_cursor
             result = bma.getVerifyTaskChecklist(99)
 
@@ -1266,7 +1277,7 @@ class TestTechnicianChecklist(unittest.TestCase):
     def test_get_verify_task_checklist_rejects_invalid_jobcard_id(self):
         bma = _load_callables()
         with patch("anvil.users.get_user", return_value={"email": "advisor@bmaauto.com"}), \
-             patch.object(bma, "db_cursor") as mock_db_cursor:
+             _patch_bma_global(bma, "db_cursor") as mock_db_cursor:
             with self.assertRaisesRegex(ValueError, "job card ID"):
                 bma.getVerifyTaskChecklist(0)
 
@@ -1275,7 +1286,7 @@ class TestTechnicianChecklist(unittest.TestCase):
     def test_get_verify_task_checklist_requires_authenticated_user(self):
         bma = _load_callables()
         with patch("anvil.users.get_user", return_value=None), \
-             patch.object(bma, "db_cursor") as mock_db_cursor:
+             _patch_bma_global(bma, "db_cursor") as mock_db_cursor:
             with self.assertRaisesRegex(Exception, "Authentication required"):
                 bma.getVerifyTaskChecklist(99)
 
@@ -1288,7 +1299,7 @@ class TestTechnicianChecklist(unittest.TestCase):
         mock_cursor.fetchone.return_value = (None, updated_at)
 
         with patch("anvil.users.get_user", return_value={"email": "advisor@bmaauto.com", "role_id": 1}), \
-             patch.object(bma, "db_cursor") as mock_db_cursor:
+             _patch_bma_global(bma, "db_cursor") as mock_db_cursor:
             mock_db_cursor.return_value.__enter__.return_value = mock_cursor
             result = bma.getVerifyTaskChecklist(99)
 

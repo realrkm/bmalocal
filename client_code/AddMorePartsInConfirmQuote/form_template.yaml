@@ -120,7 +120,7 @@ components:
     name: repeating_panel_assigned_parts
     properties: {item_template: ConfirmQuote.RowTemplate}
     type: RepeatingPanel
-  layout_properties: {grid_position: 'GZBCTM,GCZMAK'}
+  layout_properties: {full_width_row: true, grid_position: 'GZBCTM,GCZMAK'}
   name: data_grid_1
   properties:
     background: theme:Black

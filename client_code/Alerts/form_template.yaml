@@ -13,7 +13,7 @@ components:
     - name: repeating_panel_1
       properties: {item_template: Alerts.RowTemplate21}
       type: RepeatingPanel
-    layout_properties: {full_width_row: false, grid_position: 'AKAKUY,NXYLBT'}
+    layout_properties: {full_width_row: true, grid_position: 'AKAKUY,NXYLBT'}
     name: data_grid_1
     properties:
       columns:

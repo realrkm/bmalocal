@@ -124,11 +124,11 @@ components:
 - layout_properties: {grid_position: 'XLRWXE,DWRFMB'}
   name: label_4
   properties:
-    background: theme:White
+    background: theme:Black
     bold: false
     font: Mozilla Headline
     font_size: 16
-    foreground: theme:Black
+    foreground: theme:White
     text: |-
       NOTE: THE ABOVE ESTIMATE IS SUBJECT TO REVIEW DUE TO:
       1. Price change at the time of actual repair

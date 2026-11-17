@@ -8,7 +8,6 @@ import anvil.users
 import anvil.media
 import anvil.js
 from .. import ModGetData
-from ..EditQuote import EditQuote
 from datetime import date
 
 class ConfirmQuote(ConfirmQuoteTemplate):

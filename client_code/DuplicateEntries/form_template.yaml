@@ -27,7 +27,8 @@ components:
       - {data_key: CreatedBy, expand: true, id: DMVQYN, title: CreatedBy, width: ''}
       - {data_key: '', id: KPULMH, title: '', width: '90'}
       foreground: theme:White
-      role: null
+      role: wide
+      wrap_on: mobile
     type: DataGrid
   layout_properties: {full_width_row: true, grid_position: 'ZRRHHY,MJNFYK'}
   name: card_1

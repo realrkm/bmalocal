@@ -79,6 +79,7 @@ components:
       - {data_key: Item, expand: true, id: JKSDUP, title: Item}
       - {data_key: Quantity, expand: true, id: VJQQOR, title: Quantity}
       foreground: theme:White
+      role: wide
       rows_per_page: 200
       show_page_controls: false
       wrap_on: mobile

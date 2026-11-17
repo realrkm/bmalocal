@@ -1197,8 +1197,11 @@
         { code: 'image_2', label: 'Fault or old part' },
         { code: 'image_3', label: 'Dashboard with no warning lights' }
     ];
-    const INSPECTION_PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
-    const MAX_INSPECTION_PHOTO_BYTES = 10 * 1024 * 1024;
+    // Raw camera files can be large; they are downscaled/compressed before storing,
+    // so this limit only guards against absurdly large originals.
+    const MAX_INSPECTION_PHOTO_BYTES = 40 * 1024 * 1024;
+    const INSPECTION_PHOTO_MAX_DIMENSION = 1600;
+    const INSPECTION_PHOTO_JPEG_QUALITY = 0.8;
 
     function getInspectionPhotoPayload(photos) {
         const payload = {};
@@ -1211,6 +1214,13 @@
                 typeof source === 'string' && source.trim() ? source : null;
         });
         return payload;
+    }
+
+    function hasAllInspectionPhotoUploads(photos) {
+        return INSPECTION_PHOTOS.every(photo => {
+            const uploaded = photos.uploads[photo.code];
+            return uploaded && typeof uploaded.dataUrl === 'string' && uploaded.dataUrl.trim();
+        });
     }
 
     function getInspectionPhotoState() {
@@ -1275,13 +1285,41 @@
         });
     }
 
-    function readInspectionPhoto(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = () => reject(new Error('Could not read the selected photo.'));
-            reader.readAsDataURL(file);
-        });
+    // Decodes the photo (respecting EXIF orientation), downscales it and re-encodes
+    // it as JPEG. Phone camera photos are often 5-15 MB; this brings them to ~200-500 KB.
+    async function readInspectionPhoto(file) {
+        let source;
+        let revoke = null;
+        try {
+            source = await createImageBitmap(file, { imageOrientation: 'from-image' });
+        } catch (e) {
+            // Fallback for browsers without createImageBitmap options support
+            source = await new Promise((resolve, reject) => {
+                const url = URL.createObjectURL(file);
+                revoke = () => URL.revokeObjectURL(url);
+                const img = new Image();
+                img.onload = () => resolve(img);
+                img.onerror = () => reject(new Error('Could not decode the photo. Try taking it again.'));
+                img.src = url;
+            });
+        }
+
+        try {
+            const w = source.width;
+            const h = source.height;
+            const scale = Math.min(1, INSPECTION_PHOTO_MAX_DIMENSION / Math.max(w, h));
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.max(1, Math.round(w * scale));
+            canvas.height = Math.max(1, Math.round(h * scale));
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffffff'; // avoids black background for transparent PNGs
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(source, 0, 0, canvas.width, canvas.height);
+            return canvas.toDataURL('image/jpeg', INSPECTION_PHOTO_JPEG_QUALITY);
+        } finally {
+            if (source && typeof source.close === 'function') source.close();
+            if (revoke) revoke();
+        }
     }
 
     async function stageInspectionPhotoUpload(input) {
@@ -1289,14 +1327,17 @@
         const file = input.files && input.files[0];
         if (!code || !file) return;
 
-        if (!INSPECTION_PHOTO_TYPES.includes(file.type)) {
+        // Phones may report an empty or HEIC/HEIF type, so also accept by file extension
+        const looksLikeImage = (file.type && file.type.startsWith('image/')) ||
+            /\.(jpe?g|png|webp|heic|heif)$/i.test(file.name || '');
+        if (!looksLikeImage) {
             input.value = '';
-            showToast('Choose a JPEG, PNG, or WebP photo.', 'error');
+            showToast('Choose a photo.', 'error');
             return;
         }
         if (file.size <= 0 || file.size > MAX_INSPECTION_PHOTO_BYTES) {
             input.value = '';
-            showToast('Each inspection photo must be smaller than 10 MB.', 'error');
+            showToast('This photo is too large. Please try again.', 'error');
             return;
         }
 
@@ -1314,7 +1355,7 @@
             })
             .catch(error => {
                 console.error('Could not read an inspection photo:', error);
-                showToast('Could not read the selected inspection photo.', 'error');
+                showToast((error && error.message) || 'Could not read the selected inspection photo.', 'error');
             })
             .finally(() => {
                 if (photos.pending[code] === pending) {
@@ -3556,7 +3597,13 @@
             //  Vehicle Inspection Checklist: every checkbox ticked and every field filled
             const requiresChecklist = checklistApplies();
             const inspectionPhotos = getInspectionPhotoState();
-            if (requiresChecklist) {
+            await Promise.all(Object.values(inspectionPhotos.pending));
+            let checklistResult = buildChecklistPayload();
+            if (
+                requiresChecklist &&
+                (!hasAllInspectionPhotoUploads(inspectionPhotos) ||
+                    checklistResult.missing.length > 0)
+            ) {
                 try {
                     await loadSavedInspectionPhotoPreviews();
                 } catch (error) {
@@ -3564,9 +3611,8 @@
                     showToast('Could not load saved inspection photos. Please try again.', 'error');
                     return;
                 }
+                checklistResult = buildChecklistPayload();
             }
-            await Promise.all(Object.values(inspectionPhotos.pending));
-            const checklistResult = buildChecklistPayload();
             const inspectionImagePayload = requiresChecklist
                 ? getInspectionPhotoPayload(inspectionPhotos)
                 : {};

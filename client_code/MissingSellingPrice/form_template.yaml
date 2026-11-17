@@ -32,37 +32,37 @@ components:
     name: btn_Search
     properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: SEARCH}
     type: Button
-  - layout_properties: {grid_position: 'VYGHIA,EBSWFC'}
-    name: spacer_1
-    properties: {height: 7}
-    type: Spacer
-  - components:
-    - layout_properties: {}
-      name: repeating_panel_1
-      properties: {item_template: MissingSellingPrice.RowTemplate, role: wide}
-      type: RepeatingPanel
-    layout_properties: {full_width_row: true, grid_position: 'NMRTRA,IOXZSL'}
-    name: data_grid_1
-    properties:
-      background: theme:Black
-      border: solid
-      columns:
-      - {data_key: 'No', expand: false, id: JKSDUP, title: 'No', width: 71}
-      - {data_key: Supplier, expand: true, id: JUAWGL, title: Supplier}
-      - {data_key: Name, expand: true, id: OJLQEN, title: Name, width: ''}
-      - {data_key: PartNo, expand: true, id: GOXAZB, title: PartNo, width: ''}
-      - {data_key: Amount, expand: true, id: GYUEKP, title: Selling Price (Kshs)}
-      - {data_key: Discount, expand: true, id: DVVRBR, title: Discounted Price (Kshs)}
-      - {data_key: '', id: MEXKYQ, title: '', width: '90'}
-      foreground: theme:White
-      role: wide
-      wrap_on: mobile
-    type: DataGrid
-  layout_properties: {grid_position: 'AWGLFW,UVUHMI'}
+  layout_properties: {grid_position: 'SAUNNC,WJLHRI'}
   name: card_1
   properties:
     col_widths: '{"NAGFFN":40,"GLYMLM":20}'
     role: [wide, glass-panel]
   type: ColumnPanel
+- layout_properties: {grid_position: 'THNVHN,HCPIWJ'}
+  name: spacer_1
+  properties: {height: 7}
+  type: Spacer
+- components:
+  - layout_properties: {}
+    name: repeating_panel_1
+    properties: {item_template: MissingSellingPrice.RowTemplate, role: wide}
+    type: RepeatingPanel
+  layout_properties: {grid_position: 'DGTMVG,NYKBRT'}
+  name: data_grid_1
+  properties:
+    background: theme:Black
+    border: solid
+    columns:
+    - {data_key: 'No', expand: false, id: JKSDUP, title: 'No', width: 71}
+    - {data_key: Supplier, expand: true, id: JUAWGL, title: Supplier}
+    - {data_key: Name, expand: true, id: OJLQEN, title: Name, width: ''}
+    - {data_key: PartNo, expand: true, id: GOXAZB, title: PartNo, width: ''}
+    - {data_key: Amount, expand: true, id: GYUEKP, title: Selling Price (Kshs)}
+    - {data_key: Discount, expand: true, id: DVVRBR, title: Discounted Price (Kshs)}
+    - {data_key: '', id: MEXKYQ, title: '', width: '90'}
+    foreground: theme:White
+    role: wide
+    wrap_on: mobile
+  type: DataGrid
 container: {type: ColumnPanel}
 is_package: true

@@ -1,0 +1,25 @@
+<anvil-form container="ColumnPanel">
+    <anvil-component type="ColumnPanel" name="card_1" prop:role="null" container:full_width_row="true" container:grid_position="PDWSZI,BWPUAZ" container:row_background="">
+        <anvil-component type="ColumnPanel" name="card_2" prop:role="glass-panel" container:grid_position="CPEGMA,DJEWHZ" container:row_background="">
+            <anvil-component type="Label" name="label_title" prop:align="center" prop:background="#0056D6" prop:bold="false" prop:font="Mozilla Headline" prop:font_size="22" prop:foreground="theme:White" prop:role="null" prop:text="Monthly Performance Schedule" container:grid_position="HKYWOW,YMXWJW"></anvil-component>
+            <anvil-component type="Button" name="btn_ViewSchedule" prop:align="full" prop:background="#0056D6" prop:font="Mozilla Headline" prop:font_size="16" prop:foreground="theme:White" prop:text="VIEW SCHEDULE" on:click="self.btn_ViewSchedule_click" container:grid_position="CYKWQI,AMSVBP"></anvil-component>
+            <anvil-component type="Label" name="label_1" prop:align="center" prop:background="theme:White" prop:border="solid" prop:font="Mozilla Headline" prop:font_size="16" prop:foreground="#dc1818" prop:text="Enter the correct date period to populate the Jobcard Reference" container:grid_position="SHOLKV,IYMYUH"></anvil-component>
+            <anvil-component type="ColumnPanel" name="card_3" prop:border="" prop:col_widths='"{}"' prop:role="glass-panel" container:grid_position="DGUZZI,GEYWTI">
+                <anvil-component type="DatePicker" name="date_picker_start" prop:background="theme:White" prop:border="" prop:font="Mozilla Headline" prop:font_size="16" prop:foreground="theme:Black" prop:placeholder="Enter Start Date *" on:change="self.searchInvoices" container:grid_position="QIPYEX,GYABAL"></anvil-component>
+                <anvil-component type="DatePicker" name="date_picker_end" prop:background="theme:White" prop:border="" prop:font="Mozilla Headline" prop:font_size="16" prop:foreground="theme:Black" prop:placeholder="Enter End Date *" on:change="self.searchInvoices" container:grid_position="QIPYEX,KEKGQW"></anvil-component>
+                <anvil-component type="Spacer" name="spacer_1" prop:height='"10"' container:grid_position="LACFQY,NERPCM"></anvil-component>
+                <anvil-component type="Label" name="label_2" prop:align="center" prop:background="theme:White" prop:border="solid" prop:font="Mozilla Headline" prop:font_size="16" prop:foreground="#dc1818" prop:text="Select a Jobcard Reference to show Invoice Details for categorization." container:grid_position="KSFECM,NKELFR"></anvil-component>
+                <anvil-component type="DropDown" name="drop_down_1" prop:background="theme:White" prop:border="" prop:foreground="theme:Black" prop:include_placeholder="true" prop:placeholder="Select Jobcard Ref *" on:change="self.drop_down_1_change" container:grid_position="FIIHJR,HYZAJX"></anvil-component>
+                <anvil-component type="Label" name="lbl_ClientName" prop:visible="false" container:grid_position="ELYZAA,OWDJAF"></anvil-component>
+                <anvil-component type="Label" name="lbl_TotalInvoiceAmount" prop:visible="false" container:grid_position="ELYZAA,TIFJWN"></anvil-component>
+                <anvil-component type="Label" name="lbl_TotalAmountPaid" prop:visible="false" container:grid_position="ELYZAA,NKVEFS"></anvil-component>
+                <anvil-component type="Label" name="lbl_TotalDiscount" prop:visible="false" container:grid_position="ELYZAA,OPWIKD"></anvil-component>
+                <anvil-component type="Label" name="lbl_PaymentBalance" prop:visible="false" container:grid_position="ELYZAA,PENQHC"></anvil-component>
+            </anvil-component>
+        </anvil-component>
+        <anvil-component type="DataGrid" name="data_grid_1" prop:background="theme:Black" prop:border="solid" prop:columns='[{"data_key":"No","expand":true,"id":"JUWUQN","title":"No","width":""},{"data_key":"Date","expand":true,"id":"JKSDUP","title":"Date"},{"data_key":"Item","expand":true,"id":"VJQQOR","title":"Item"},{"data_key":"Part_No","expand":true,"id":"OJLQEN","title":"Part_No"},{"data_key":"QuantityIssued","expand":true,"id":"SRGBRL","title":"QuantityIssued"},{"data_key":"Amount","expand":true,"id":"KAYLJA","title":"Amount"},{"data_key":"Category","expand":true,"id":"UHZAXM","title":"Category"}]' prop:foreground="theme:White" prop:wrap_on="mobile" prop:role="wide" container:full_width_row="true" container:grid_position="ZFKUFS,XNMDEY">
+            <anvil-component type="RepeatingPanel" name="repeating_panel_1" prop:item_template="BMALocal.MonthlyPerformanceSchedule.RowTemplate19"></anvil-component>
+        </anvil-component>
+        <anvil-component type="Button" name="btn_SaveAndNew" prop:align="full" prop:background="#0056D6" prop:font="Mozilla Headline" prop:font_size="16" prop:foreground="theme:White" prop:text="SAVE AND NEW" on:click="self.btn_SaveAndNew_click" container:grid_position="ETUKPL,JKKCHW"></anvil-component>
+    </anvil-component>
+</anvil-form>

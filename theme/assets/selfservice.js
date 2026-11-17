@@ -1821,9 +1821,13 @@
             </button>
             ` : ''}
             <button 
+                id="save-details-button"
+                type="button"
                 onclick="savePartsDetails()" 
-                style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:1.2rem 2.5rem; border-radius:0.8rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);">
-                Save Details
+                aria-busy="false"
+                style="background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:white; padding:1.2rem 2.5rem; border-radius:0.8rem; border:2px solid rgba(34, 197, 94, 0.3); font-weight:bold; cursor:pointer; font-size:1.8rem; transition:all 0.3s ease; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3); display:inline-flex; align-items:center; justify-content:center; gap:0.7rem;">
+                <span class="save-details-spinner" aria-hidden="true"></span>
+                <span data-save-details-label>Save Details</span>
             </button>
         </div>
         `;
@@ -3562,7 +3566,7 @@
             }
         };
 
-        window.savePartsDetails = async () => {
+        const savePartsDetailsHandler = async () => {
             // Get current values from DOM elements
             const techNotesTextarea = document.getElementById('tech-notes-textarea');
             const defectsTextarea = document.getElementById('defects-textarea');
@@ -3715,6 +3719,18 @@
                 }
 
                 await customAlert(errorMessage, '❌ Error');
+            }
+        };
+
+        window.savePartsDetails = async () => {
+            const saveButton = document.getElementById('save-details-button');
+            if (saveButton && saveButton.disabled) return;
+
+            setSaveDetailsButtonLoading(true, saveButton);
+            try {
+                await savePartsDetailsHandler();
+            } finally {
+                setSaveDetailsButtonLoading(false, saveButton);
             }
         };
 
@@ -4081,6 +4097,17 @@
             persistChecklist();
             refreshChecklistUI();
         };
+
+        function setSaveDetailsButtonLoading(isLoading, button) {
+            const saveButton = button || document.getElementById('save-details-button');
+            if (!saveButton) return;
+
+            saveButton.disabled = isLoading;
+            saveButton.setAttribute('aria-busy', String(isLoading));
+            saveButton.classList.toggle('is-loading', isLoading);
+            const label = saveButton.querySelector('[data-save-details-label]');
+            if (label) label.textContent = isLoading ? 'Saving...' : 'Save Details';
+        }
 
         // Delegated so they survive every re-render of the parts tab
         mainContent.addEventListener('change', (e) => {

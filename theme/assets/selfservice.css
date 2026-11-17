@@ -1620,3 +1620,29 @@ RESPONSIVE BREAKPOINTS
     border-color: #ef4444;
     box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.35);
 }
+
+#save-details-button:disabled {
+    cursor: wait !important;
+    opacity: 0.85;
+}
+
+.save-details-spinner {
+    display: none;
+    width: 1em;
+    height: 1em;
+    flex: none;
+    border: 0.16em solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+}
+
+#save-details-button.is-loading .save-details-spinner {
+    display: inline-block;
+    animation: save-details-spin 0.75s linear infinite;
+}
+
+@keyframes save-details-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

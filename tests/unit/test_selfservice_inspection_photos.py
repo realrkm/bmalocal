@@ -138,7 +138,7 @@ def test_selfservice_save_skips_saved_photo_load_when_all_photos_are_uploaded():
     start = source.index("    function hasAllInspectionPhotoUploads(")
     end = source.index("\n    function ", start + 1)
     helper = source[start:end]
-    save_start = source.index("        window.savePartsDetails = async () => {")
+    save_start = source.index("        const savePartsDetailsHandler = async () => {")
     save_end = source.index("        window.saveWorkDoneFromTab = async () => {", save_start)
     save_handler = source[save_start:save_end]
     script = f"""
@@ -446,3 +446,55 @@ def test_selfservice_js_merges_saved_checklist_into_local_state():
     )
 
     assert result.returncode == 0, result.stderr
+
+
+def test_save_details_button_shows_and_clears_loading_state():
+    source_path = Path(__file__).parents[2] / "theme" / "assets" / "selfservice.js"
+    source = source_path.read_text(encoding="utf-8")
+    helper_start = source.index("    function setSaveDetailsButtonLoading(")
+    helper_end = source.index("\n        // Delegated so they survive every re-render", helper_start)
+    helper = source[helper_start:helper_end]
+    markup_start = source.index('id="save-details-button"')
+    markup_end = source.index("</button>", markup_start)
+    button_markup = source[markup_start:markup_end]
+    save_start = source.index("        window.savePartsDetails = async () => {")
+    save_end = source.index("        window.saveWorkDoneFromTab = async () => {", save_start)
+    save_handler = source[save_start:save_end]
+    css_path = Path(__file__).parents[2] / "theme" / "assets" / "selfservice.css"
+    styles = css_path.read_text(encoding="utf-8")
+    script = f"""
+        let currentLabel = 'Save Details';
+        const attrs = {{}};
+        const classes = {{}};
+        const button = {{
+            disabled: false,
+            setAttribute: (name, value) => {{ attrs[name] = value; }},
+            classList: {{ toggle: (name, value) => {{ classes[name] = value; }} }},
+            querySelector: () => ({{ set textContent(value) {{ currentLabel = value; }} }})
+        }};
+        const document = {{ getElementById: () => button }};
+        {helper}
+        setSaveDetailsButtonLoading(true);
+        if (!button.disabled || attrs['aria-busy'] !== 'true' ||
+                !classes['is-loading'] || currentLabel !== 'Saving...') {{
+            throw new Error('Save Details should show an accessible loading state.');
+        }}
+        setSaveDetailsButtonLoading(false);
+        if (button.disabled || attrs['aria-busy'] !== 'false' ||
+                classes['is-loading'] || currentLabel !== 'Save Details') {{
+            throw new Error('Save Details should restore its idle state.');
+        }}
+    """
+
+    result = subprocess.run(
+        ["node", "-e", script],
+        capture_output=True,
+        check=False,
+        text=True,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert 'class="save-details-spinner"' in button_markup
+    assert "setSaveDetailsButtonLoading(true, saveButton)" in save_handler
+    assert "finally" in save_handler
+    assert "#save-details-button.is-loading .save-details-spinner" in styles

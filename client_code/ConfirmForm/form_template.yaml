@@ -105,7 +105,7 @@ components:
     name: txtTotal
     properties: {align: right, background: 'theme:Black', bold: true, border: '', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', role: wide}
     type: TextBox
-  layout_properties: {grid_position: 'QUVSQT,NCYCTT'}
+  layout_properties: {full_width_row: true, grid_position: 'QUVSQT,NCYCTT'}
   name: data_grid_1
   properties:
     background: theme:Black
@@ -124,7 +124,7 @@ components:
 - layout_properties: {grid_position: 'XLRWXE,DWRFMB'}
   name: label_4
   properties:
-    background: theme:Black
+    background: ''
     bold: false
     font: Mozilla Headline
     font_size: 16

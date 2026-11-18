@@ -47,7 +47,7 @@ components:
     name: repeating_panel_1
     properties: {item_template: MissingSellingPrice.RowTemplate, role: wide}
     type: RepeatingPanel
-  layout_properties: {grid_position: 'DGTMVG,NYKBRT'}
+  layout_properties: {full_width_row: true, grid_position: 'DGTMVG,NYKBRT'}
   name: data_grid_1
   properties:
     background: theme:Black

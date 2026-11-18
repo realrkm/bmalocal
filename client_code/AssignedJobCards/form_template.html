@@ -1,0 +1,26 @@
+<anvil-form container="ColumnPanel">
+    <anvil-component type="ColumnPanel" name="card_1" prop:role="null" container:grid_position="IZDBAG,YJKGEX">
+        <anvil-component type="ColumnPanel" name="card_2" prop:border="" prop:role="glass-panel" container:grid_position="LLTWBQ,PVTCFM" container:row_background="">
+            <anvil-component type="Label" name="label_title" prop:align="center" prop:background="#0056D6" prop:bold="false" prop:font="Mozilla Headline" prop:font_size="22" prop:foreground="theme:White" prop:text="Assigned Job Cards" container:grid_position="KEAUNM,BNCICX"></anvil-component>
+            <anvil-component type="Label" name="label_3" prop:align="center" prop:background="theme:White" prop:border="solid" prop:font="Mozilla Headline" prop:font_size="16" prop:foreground="#dc1818" prop:text="Search Date Period Only, Technician Only Or Both Date Period And Technician" container:grid_position="OOYBGD,EOFTAN"></anvil-component>
+            <anvil-component type="Spacer" name="spacer_1" prop:height="14" container:grid_position="YTJFAT,KYHHUZ"></anvil-component>
+            <anvil-component type="DatePicker" name="date_picker_start" prop:background="theme:White" prop:border="solid" prop:font="Mozilla Headline" prop:font_size="16" prop:foreground="theme:Black" prop:placeholder="Enter Start Date *" container:grid_position="ODFPEN,CGIEXY"></anvil-component>
+            <anvil-component type="DatePicker" name="date_picker_end" prop:background="theme:White" prop:border="solid" prop:font="Mozilla Headline" prop:font_size="16" prop:foreground="theme:Black" prop:placeholder="Enter End Date *" container:grid_position="ODFPEN,BOCWDB"></anvil-component>
+            <anvil-component type="Spacer" name="spacer_2" prop:height="14" container:grid_position="YSLAKU,QCAFCU"></anvil-component>
+            <anvil-component type="DropDown" name="drop_down_selectTechnician" prop:background="theme:White" prop:border="solid" prop:font="Mozilla Headline" prop:font_size="16" prop:foreground="theme:Black" prop:include_placeholder="true" prop:placeholder="Select Technician " container:grid_position="GCCYHQ,IRFWQW"></anvil-component>
+            <anvil-component type="Spacer" name="spacer_3" prop:height="14" container:grid_position="RLFWIY,MGRIDE" container:row_background=""></anvil-component>
+            <anvil-component type="Button" name="btn_Search" prop:align="full" prop:background="#0056D6" prop:foreground="theme:White" prop:text="SEARCH" on:click="self.btn_Search_click" container:grid_position="RKVMTG,LKYLQO"></anvil-component>
+            <anvil-component type="Spacer" name="spacer_3_copy" prop:height="14" container:grid_position="TLWJXQ,QMSGJR"></anvil-component>
+            <anvil-component type="Button" name="btn_Export" prop:align="full" prop:background="#0056D6" prop:font="Mozilla Headline" prop:font_size="16" prop:foreground="theme:White" prop:text="EXPORT AS EXCEL" on:click="self.btn_Export_click" container:grid_position="UGRZUH,XOCSZR"></anvil-component>
+        </anvil-component>
+    </anvil-component>
+    <anvil-component type="DataGrid" name="data_grid_1" prop:background="theme:Black" prop:border="solid" prop:columns='[{"data_key":"No","expand":false,"id":"JKSDUP","title":"No","width":82.5},{"data_key":"ReceivedDate","expand":false,"id":"VJQQOR","title":"Date Received","width":142.5},{"data_key":"JobCardRef","expand":true,"id":"OJLQEN","title":"Job Card Ref"},{"data_key":"Technician","expand":true,"id":"QKFHUA","title":"Technician Assigned"},{"data_key":"InvoicedAmount","expand":true,"id":"BPALQG","title":"Invoiced (Kshs)"},{"data_key":"LabourAmount","expand":true,"id":"DESKMU","title":"Labour (Kshs)"},{"data_key":"MakeAndModel","expand":true,"id":"OADPGP","title":"Make &amp; Model"}]' prop:foreground="theme:White" prop:role="wide" prop:wrap_on="mobile" container:grid_position="MYLAXG,PPJWLO" container:full_width_row="true">
+        <anvil-component type="RepeatingPanel" name="repeating_panel_1" prop:item_template="BMALocal.AssignedJobCards.RowTemplate13"></anvil-component>
+        <anvil-component type="DataRowPanel" name="data_row_panel_1">
+            <anvil-component type="Label" name="label_1" prop:text="Total Invoiced" container:column="QKFHUA"></anvil-component>
+            <anvil-component type="Label" name="labelInvoiceTotal" container:column="BPALQG"></anvil-component>
+            <anvil-component type="Label" name="labelLabourTotal" container:column="DESKMU"></anvil-component>
+        </anvil-component>
+    </anvil-component>
+    <anvil-component type="Spacer" name="spacer_3_copy_copy_copy" prop:height="14" container:grid_position="IFFMDX,QPPQUZ"></anvil-component>
+</anvil-form>

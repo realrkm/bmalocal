@@ -151,7 +151,7 @@ components:
   - name: repeating_panel_assigned_parts
     properties: {item_template: Invoice.RowTemplate6}
     type: RepeatingPanel
-  layout_properties: {grid_position: 'POACAL,DWOUUN'}
+  layout_properties: {full_width_row: true, grid_position: 'POACAL,DWOUUN'}
   name: data_grid_1
   properties:
     background: theme:Black

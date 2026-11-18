@@ -38,7 +38,7 @@ components:
   - name: repeating_panel_1
     properties: {item_template: PeriodicQuoteVsInvoice.RowTemplate15}
     type: RepeatingPanel
-  layout_properties: {grid_position: 'QQESRG,VXLMQC'}
+  layout_properties: {full_width_row: true, grid_position: 'QQESRG,VXLMQC'}
   name: data_grid_1
   properties:
     background: theme:Black

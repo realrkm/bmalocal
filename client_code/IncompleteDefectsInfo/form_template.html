@@ -1,0 +1,9 @@
+<anvil-form container="ColumnPanel">
+    <anvil-component type="ColumnPanel" name="card_1" prop:role="glass-panel" container:grid_position="REBAXM,CTGCBX" container:full_width_row="true">
+        <anvil-component type="Label" name="label_1" prop:font="Mozilla Headline" prop:font_size="16" prop:foreground="theme:Black" prop:text="Incomplete Defects List" container:grid_position="RQJEUK,SGDWQF"></anvil-component>
+        <anvil-component type="Button" name="btn_UpdateStatus" prop:role="null" prop:bold="false" prop:align="full" prop:background="#0056D6" prop:font="Mozilla Headline" prop:foreground="theme:White" prop:border="" prop:font_size="16" prop:text="Update Pending StatUS" on:click="self.btn_UpdateStatus_click" container:grid_position="HPGUCW,UTFWCT"></anvil-component>
+        <anvil-component type="DataGrid" name="data_grid_1" prop:columns='[{"data_key":"jobcard","expand":true,"id":"JKSDUP","title":"JobCard Ref"},{"data_key":"message","expand":true,"id":"VJQQOR","title":"Message"},{"data_key":"created_at","expand":true,"id":"OJLQEN","title":"Created At"},{"data_key":"active","expand":true,"id":"EAFWMU","title":"Pending"},{"data_key":"","id":"ZLADCO","title":"","width":"90"}]' prop:foreground="theme:White" prop:role="wide" prop:wrap_on="mobile" prop:background="theme:Black" container:full_width_row="true" container:grid_position="AKAKUY,NXYLBT">
+            <anvil-component type="RepeatingPanel" name="repeating_panel_1" prop:item_template="BMALocal.IncompleteDefectsInfo.RowTemplate1" prop:background="theme:Black" prop:foreground="theme:White"></anvil-component>
+        </anvil-component>
+    </anvil-component>
+</anvil-form>

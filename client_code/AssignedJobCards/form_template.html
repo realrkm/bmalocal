@@ -13,13 +13,15 @@
             <anvil-component type="Spacer" name="spacer_3_copy" prop:height="14" container:grid_position="TLWJXQ,QMSGJR"></anvil-component>
             <anvil-component type="Button" name="btn_Export" prop:align="full" prop:background="#0056D6" prop:font="Mozilla Headline" prop:font_size="16" prop:foreground="theme:White" prop:text="EXPORT AS EXCEL" on:click="self.btn_Export_click" container:grid_position="UGRZUH,XOCSZR"></anvil-component>
         </anvil-component>
-    </anvil-component>
-    <anvil-component type="DataGrid" name="data_grid_1" prop:background="theme:Black" prop:border="solid" prop:columns='[{"data_key":"No","expand":false,"id":"JKSDUP","title":"No","width":82.5},{"data_key":"ReceivedDate","expand":false,"id":"VJQQOR","title":"Date Received","width":142.5},{"data_key":"JobCardRef","expand":true,"id":"OJLQEN","title":"Job Card Ref"},{"data_key":"Technician","expand":true,"id":"QKFHUA","title":"Technician Assigned"},{"data_key":"InvoicedAmount","expand":true,"id":"BPALQG","title":"Invoiced (Kshs)"},{"data_key":"LabourAmount","expand":true,"id":"DESKMU","title":"Labour (Kshs)"},{"data_key":"MakeAndModel","expand":true,"id":"OADPGP","title":"Make &amp; Model"}]' prop:foreground="theme:White" prop:role="wide" prop:wrap_on="mobile" container:grid_position="MYLAXG,PPJWLO" container:full_width_row="true">
-        <anvil-component type="RepeatingPanel" name="repeating_panel_1" prop:item_template="BMALocal.AssignedJobCards.RowTemplate13"></anvil-component>
-        <anvil-component type="DataRowPanel" name="data_row_panel_1">
-            <anvil-component type="Label" name="label_1" prop:text="Total Invoiced" container:column="QKFHUA"></anvil-component>
-            <anvil-component type="Label" name="labelInvoiceTotal" container:column="BPALQG"></anvil-component>
-            <anvil-component type="Label" name="labelLabourTotal" container:column="DESKMU"></anvil-component>
+        <anvil-component type="ColumnPanel" name="card_3" prop:role="glass-panel" container:grid_position="EVDBGK,ABEZFZ" container:full_width_row="true">
+            <anvil-component type="DataGrid" name="data_grid_1" prop:background="theme:Black" prop:border="solid" prop:columns='[{"data_key":"No","expand":false,"id":"JKSDUP","title":"No","width":82.5},{"data_key":"ReceivedDate","expand":false,"id":"VJQQOR","title":"Date Received","width":142.5},{"data_key":"JobCardRef","expand":true,"id":"OJLQEN","title":"Job Card Ref"},{"data_key":"Technician","expand":true,"id":"QKFHUA","title":"Technician Assigned"},{"data_key":"InvoicedAmount","expand":true,"id":"BPALQG","title":"Invoiced (Kshs)"},{"data_key":"LabourAmount","expand":true,"id":"DESKMU","title":"Labour (Kshs)"},{"data_key":"MakeAndModel","expand":true,"id":"OADPGP","title":"Make &amp; Model"}]' prop:foreground="theme:White" prop:role="wide" prop:wrap_on="mobile" container:grid_position="FHYMKD,TLJAAU" container:full_width_row="true">
+                <anvil-component type="RepeatingPanel" name="repeating_panel_1" prop:item_template="BMALocal.AssignedJobCards.RowTemplate13" prop:background="theme:Black" prop:foreground="theme:White"></anvil-component>
+                <anvil-component type="DataRowPanel" name="data_row_panel_1">
+                    <anvil-component type="Label" name="label_1" prop:text="Total Invoiced" container:column="QKFHUA"></anvil-component>
+                    <anvil-component type="Label" name="labelInvoiceTotal" container:column="BPALQG"></anvil-component>
+                    <anvil-component type="Label" name="labelLabourTotal" container:column="DESKMU"></anvil-component>
+                </anvil-component>
+            </anvil-component>
         </anvil-component>
     </anvil-component>
     <anvil-component type="Spacer" name="spacer_3_copy_copy_copy" prop:height="14" container:grid_position="IFFMDX,QPPQUZ"></anvil-component>

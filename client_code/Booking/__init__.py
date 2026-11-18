@@ -22,7 +22,7 @@ class Booking(BookingTemplate):
         # Load initial data into the Repeating Panel
         self.refresh_data_grid()
 
-    def refresh_data_grid(self):
+    def refresh_data_grid(self, **event_args):
         """Helper method to reload the history table"""
         self.repeating_panel_1.items = anvil.server.call("getBookingDetails")
     

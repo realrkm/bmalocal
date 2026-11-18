@@ -14,7 +14,7 @@ class _RepeatingPanel:
         self.event_handlers[event_name] = handler
 
     def raise_event(self, event_name):
-        self.event_handlers[event_name]()
+        self.event_handlers[event_name](sender=self)
 
 
 def _module(name, **attributes):

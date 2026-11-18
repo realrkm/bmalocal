@@ -24,14 +24,16 @@
             <anvil-component type="TextBox" name="txtMileage" prop:align="left" prop:enabled="false" prop:font="Mozilla Headline" prop:font_size="16" prop:foreground="theme:Black" container:grid_position="RGWNOY,ZVZBYL HOSGQB,ZZUQYQ"></anvil-component>
         </anvil-component>
     </anvil-component>
-    <anvil-component type="DataGrid" name="data_grid_1" prop:background="theme:Black" prop:border="solid" prop:columns='[{"data_key":"Item","expand":true,"id":"JKSDUP","title":"Item"},{"data_key":"Quantity","expand":true,"id":"OJLQEN","title":"Quantity"},{"data_key":"Amount","expand":true,"id":"VGKUXC","title":"Amount (Kshs)"},{"data_key":"Total","expand":true,"id":"VQKMLW","title":"Total (Kshs)"}]' prop:foreground="theme:White" prop:role="wide" prop:rows_per_page="200" prop:show_page_controls="false" prop:wrap_on="mobile" container:grid_position="CARWSN,DUMECX" container:full_width_row="true">
-        <anvil-component type="RepeatingPanel" name="repeating_panel_1" prop:background="" prop:border="" prop:foreground="" prop:item_template="BMALocal.QuoteForm.RowTemplate4" prop:role="wide"></anvil-component>
-        <anvil-component type="TextBox" name="txtTotal" prop:align="right" prop:background="theme:Black" prop:bold="true" prop:border="" prop:font="Mozilla Headline" prop:font_size="16" prop:foreground="theme:White" prop:role="wide"></anvil-component>
-    </anvil-component>
-    <anvil-component type="Spacer" name="spacer_3" prop:height='"5"' container:grid_position=""></anvil-component>
-    <anvil-component type="Label" name="label_4" prop:bold="false" prop:font="Mozilla Headline" prop:font_size="16" prop:foreground="theme:Black" prop:text="NOTE: THE ABOVE ESTIMATE IS SUBJECT TO REVIEW DUE TO:
+    <anvil-component type="ColumnPanel" name="card_2" prop:role="glass-panel" container:grid_position="OYRUDC,PTVAUP">
+        <anvil-component type="DataGrid" name="data_grid_1" prop:background="theme:Black" prop:border="" prop:columns='[{"data_key":"Item","expand":true,"id":"JKSDUP","title":"Item"},{"data_key":"Quantity","expand":true,"id":"OJLQEN","title":"Quantity"},{"data_key":"Amount","expand":true,"id":"VGKUXC","title":"Amount (Kshs)"},{"data_key":"Total","expand":true,"id":"VQKMLW","title":"Total (Kshs)"}]' prop:foreground="theme:White" prop:role="wide" prop:rows_per_page="200" prop:show_page_controls="false" prop:wrap_on="mobile" container:grid_position="ORLDSJ,GYNOZA">
+            <anvil-component type="RepeatingPanel" name="repeating_panel_1" prop:background="theme:Black" prop:border="" prop:foreground="theme:White" prop:item_template="BMALocal.QuoteForm.RowTemplate4" prop:role="wide"></anvil-component>
+            <anvil-component type="TextBox" name="txtTotal" prop:align="right" prop:background="theme:Black" prop:bold="true" prop:border="" prop:font="Mozilla Headline" prop:font_size="16" prop:foreground="theme:White" prop:role="wide"></anvil-component>
+        </anvil-component>
+        <anvil-component type="Label" name="label_4" prop:bold="false" prop:font="Mozilla Headline" prop:font_size="16" prop:foreground="theme:Black" prop:text="NOTE: THE ABOVE ESTIMATE IS SUBJECT TO REVIEW DUE TO:
 1. Price change at the time of actual repair
 2. Further damages found during repairs
 3. 100% Deposit on imported parts
-4. 70% deposit on local parts on commencement" container:grid_position="GSLWOR,BDCDJV"></anvil-component>
+4. 70% deposit on local parts on commencement" container:grid_position="QGNRDF,JOGVRZ"></anvil-component>
+    </anvil-component>
+    <anvil-component type="Spacer" name="spacer_3" prop:height='"5"' container:grid_position=""></anvil-component>
 </anvil-form>

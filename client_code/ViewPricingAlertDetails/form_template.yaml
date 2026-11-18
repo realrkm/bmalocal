@@ -12,6 +12,8 @@ components:
     layout_properties: {full_width_row: true, grid_position: 'AKAKUY,NXYLBT'}
     name: data_grid_1
     properties:
+      background: theme:Black
+      border: ''
       columns:
       - {data_key: 'No', expand: false, id: OFDFRX, title: 'No', width: 60}
       - {data_key: Name, expand: true, id: JKSDUP, title: Name}
@@ -22,13 +24,13 @@ components:
       - {data_key: Discount, expand: true, id: JNDAOA, title: Discount, width: ''}
       - {data_key: BuyingPriceExceedsSelling, expand: true, id: PPDHEG, title: Margin Error}
       - {data_key: '', id: ISSMTN, title: '', width: '90'}
-      foreground: theme:Black
+      foreground: theme:White
       role: wide
       wrap_on: mobile
     type: DataGrid
   layout_properties: {full_width_row: true, grid_position: 'VEVJGL,WBCQON'}
   name: card_1
-  properties: {role: null, wrap_on: never}
+  properties: {role: glass-panel, wrap_on: never}
   type: ColumnPanel
 container:
   properties: {wrap_on: never}

@@ -28,10 +28,7 @@ components:
     type: DataGrid
   layout_properties: {full_width_row: true, grid_position: 'RUMOZS,BSEBLH'}
   name: card_1
-  properties:
-    background: ''
-    role: [glass-panel, wide-card]
-    wrap_on: mobile
+  properties: {background: '', role: glass-panel, wrap_on: mobile}
   type: ColumnPanel
 container:
   properties: {wrap_on: mobile}

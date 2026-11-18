@@ -49,54 +49,41 @@ components:
       name: spacer_3_copy
       properties: {height: '10'}
       type: Spacer
-    - layout_properties: {grid_position: 'MTKDUL,ESCYVB'}
-      name: spacer_3_copy_3
-      properties: {height: '10'}
-      type: Spacer
     layout_properties: {grid_position: 'ZJIVZQ,PWNTXO'}
     name: card_3
     properties: {border: '', role: null}
-    type: ColumnPanel
-  - components:
-    - components:
-      - layout_properties: {}
-        name: repeating_panel_1
-        properties: {item_template: StockTake.RowTemplate17, role: wide}
-        type: RepeatingPanel
-      layout_properties: {full_width_row: true, grid_position: 'JUEKXC,IUTOAB'}
-      name: data_grid_1
-      properties:
-        background: theme:Black
-        border: solid
-        columns:
-        - {data_key: 'No', id: YBBYDJ, title: 'No', width: '90'}
-        - {data_key: Item, expand: true, id: JKSDUP, title: Item}
-        - {data_key: '', id: UMQGZM, title: '', width: '40'}
-        - {data_key: PartNo, expand: true, id: VJQQOR, title: PartNo}
-        - {data_key: '', expand: false, id: BLVRUR, title: '', width: '40'}
-        - {data_key: Quantity, expand: false, id: OJLQEN, title: Quantity, width: 172.5}
-        - {data_key: '', id: HALCHC, title: '', width: '90'}
-        foreground: theme:White
-        role: wide
-        wrap_on: mobile
-      type: DataGrid
-    - layout_properties: {grid_position: 'QYDYTY,UTLRVM'}
-      name: spacer_3_copy_2
-      properties: {height: '10'}
-      type: Spacer
-    - event_bindings: {click: btn_Upload_click}
-      layout_properties: {full_width_row: true, grid_position: 'AGBZGH,NFHPHC'}
-      name: btn_Upload
-      properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: UPLOAD STOCK TAKE}
-      type: Button
-    layout_properties: {full_width_row: true, grid_position: 'TJTDEE,JOQLUH'}
-    name: card_4
-    properties: {role: glass-panel}
     type: ColumnPanel
   layout_properties: {full_width_row: true, grid_position: 'ANCFAM,MDCSDB', row_background: ''}
   name: card_2
   properties: {role: null}
   type: ColumnPanel
+- components:
+  - layout_properties: {}
+    name: repeating_panel_1
+    properties: {item_template: StockTake.RowTemplate17, role: wide}
+    type: RepeatingPanel
+  layout_properties: {full_width_row: true, grid_position: 'PMZHFP,JCDJDQ'}
+  name: data_grid_1
+  properties:
+    background: theme:Black
+    border: solid
+    columns:
+    - {data_key: 'No', id: YBBYDJ, title: 'No', width: '90'}
+    - {data_key: Item, expand: true, id: JKSDUP, title: Item}
+    - {data_key: '', id: UMQGZM, title: '', width: '40'}
+    - {data_key: PartNo, expand: true, id: VJQQOR, title: PartNo}
+    - {data_key: '', expand: false, id: BLVRUR, title: '', width: '40'}
+    - {data_key: Quantity, expand: false, id: OJLQEN, title: Quantity, width: 172.5}
+    - {data_key: '', id: HALCHC, title: '', width: '90'}
+    foreground: theme:White
+    role: wide
+    wrap_on: mobile
+  type: DataGrid
+- event_bindings: {click: btn_Upload_click}
+  layout_properties: {grid_position: 'PVXHVX,MSSDBF'}
+  name: btn_Upload
+  properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', text: UPLOAD STOCK TAKE}
+  type: Button
 container:
   properties: {col_widths: '{}'}
   type: ColumnPanel

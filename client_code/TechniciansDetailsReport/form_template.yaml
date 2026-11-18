@@ -24,7 +24,7 @@ components:
     properties: {item_template: ClientContactReport.RowTemplate3, role: wide}
     type: RepeatingPanel
   data_bindings: []
-  layout_properties: {grid_position: 'PMKHFP,PQZCRD'}
+  layout_properties: {full_width_row: true, grid_position: 'PMKHFP,PQZCRD'}
   name: data_grid_1
   properties:
     background: theme:Black

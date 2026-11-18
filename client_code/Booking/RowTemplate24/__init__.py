@@ -37,6 +37,8 @@ class RowTemplate24(RowTemplate24Template):
         #Ensure WhatsApp Desktop is installed
         url = f"whatsapp://send?phone={phone}&text={encoded_message}"
         anvil.server.call('updateAppointmentSent', self.item['ID'])
+        
+        #Refresh the repeating panel by calling the refresh_data_grid function in the main form
         self.parent.raise_event("x-refresh-bookings")
     
         anvil.js.window.open(url, "_blank")

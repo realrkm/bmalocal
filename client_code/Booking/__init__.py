@@ -15,10 +15,6 @@ class Booking(BookingTemplate):
         # External JS call for styling/layout
         anvil.js.call('replaceBanner')
 
-        self.repeating_panel_1.set_event_handler(
-            "x-refresh-bookings", self.refresh_data_grid
-        )
-
         # Load initial data into the Repeating Panel
         self.refresh_data_grid()
 

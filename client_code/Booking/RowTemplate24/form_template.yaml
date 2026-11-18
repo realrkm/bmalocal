@@ -11,6 +11,6 @@ components:
   properties: {}
   type: Label
 container:
-  properties: {font: Mozilla Headline, font_size: 16}
+  properties: {font: Mozilla Headline, font_size: 16, role: wide}
   type: DataRowPanel
 is_package: true

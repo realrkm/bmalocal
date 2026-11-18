@@ -40,7 +40,7 @@ components:
     name: repeating_panel_1
     properties: {item_template: PeriodicPayment.RowTemplate}
     type: RepeatingPanel
-  layout_properties: {full_width_row: true, grid_position: 'JZOYJO,FOLRMD'}
+  layout_properties: {full_width_row: false, grid_position: 'JZOYJO,FOLRMD'}
   name: data_grid_1
   properties:
     background: theme:Black

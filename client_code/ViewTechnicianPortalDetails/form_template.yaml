@@ -24,11 +24,12 @@ components:
       type: Spacer
     - layout_properties: {}
       name: repeating_panel_1
-      properties: {border: '', foreground: 'theme:Black', item_template: ViewTechnicianPortalDetails.RowTemplate, role: null}
+      properties: {background: 'theme:Black', border: '', foreground: 'theme:White', item_template: ViewTechnicianPortalDetails.RowTemplate, role: null}
       type: RepeatingPanel
     layout_properties: {full_width_row: true, grid_position: 'AKAKUY,NXYLBT'}
     name: data_grid_1
     properties:
+      background: theme:Black
       border: ''
       columns:
       - {data_key: jobcard, expand: true, id: JKSDUP, title: JobCard Ref}
@@ -36,7 +37,7 @@ components:
       - {data_key: created_at, expand: true, id: OJLQEN, title: Created At}
       - {data_key: active, expand: true, id: EAFWMU, title: Pending}
       - {data_key: column_1, id: IUWOMF, title: '', width: '90'}
-      foreground: theme:Black
+      foreground: theme:White
       role: wide
       wrap_on: mobile
     type: DataGrid

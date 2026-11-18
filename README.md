@@ -371,47 +371,135 @@ To launch both services and run an automated MySQL backup with a single double-c
 
 ```cmd
 @echo off
-SETLOCAL EnableDelayedExpansion
+SETLOCAL
 
 REM ==================================================
-REM BMALocal Workshop System Launcher
+REM BMAOnline Launcher - MySQL Backup + Start Anvil
 REM ==================================================
-SET "APP_DIR=D:\BMAAutoAccessories\venv\Lib\site-packages\BMALocal"
-SET "PYTHON_EXE=D:\BMAAutoAccessories\venv\Scripts\python.exe"
-SET "LOG_DIR=%APP_DIR%\logs"
-mkdir "%LOG_DIR%" 2>nul
 
-echo ==================================================
-echo [1/3] Starting MySQL Automated Backup...
-echo ==================================================
+REM Locale-independent timestamp (yyyy-MM-dd_HH-mm-ss), used for log + backup names
+for /f %%i in ('powershell -NoProfile -Command "Get-Date -Format yyyy-MM-dd_HH-mm-ss"') do set "TIMESTAMP=%%i"
+
+SET "LOG_DIR=D:\BMAAutoAccessories\venv\Lib\site-packages\BMALocal\logs"
+if not exist "%LOG_DIR%" mkdir "%LOG_DIR%"
+
+SET "LOG_FILE=%LOG_DIR%\service_output_%TIMESTAMP%.log"
+SET "CHAT_LOG_FILE=%LOG_DIR%\chat_ws_server.log"
+echo Service started at %DATE% %TIME% >> "%LOG_FILE%"
+
+REM ==================================================
+REM ===============  MYSQL BACKUP FIRST  =============
+REM ==================================================
+
+echo Starting MySQL backup... >> "%LOG_FILE%"
+
 REM Load MySQL credentials from .env
-for /f "usebackq tokens=1,2 delims==" %%a in ("%APP_DIR%\.env") do (
-    set "%%a=%%b"
+for /f "usebackq tokens=1,2 delims==" %%a in ("D:\BMAAutoAccessories\venv\Lib\site-packages\BMALocal\.env") do (
+    set %%a=%%b
 )
 
-set "BACKUP_DIR=D:\BMAAutoAccessories\Dumps"
-mkdir "%BACKUP_DIR%" 2>nul
-set "DUMP_FILE=%BACKUP_DIR%\backup_%DATE:~10,4%-%DATE:~4,2%-%DATE:~7,2%.sql"
+REM Backup directories + tools
+set BACKUP_DIR=D:\BMAAutoAccessories\Dumps
+set ZIP_EXE="C:\Program Files\7-Zip\7z.exe"
 
-if exist "%MYSQL_PATH%" (
-    "%MYSQL_PATH%" -h %DB_HOST% -P %DB_PORT% -u %DB_USER% --password=%DB_PASSWORD% %DB_NAME% > "%DUMP_FILE%"
-    echo [+] Database backup saved to: %DUMP_FILE%
-) else (
-    echo [!] Warning: mysqldump not found at %MYSQL_PATH%, skipping backup.
+if not exist "%BACKUP_DIR%" mkdir "%BACKUP_DIR%"
+
+set SQL_FILE=%BACKUP_DIR%\%DB_NAME%_%TIMESTAMP%.sql
+set ZIP_FILE=%BACKUP_DIR%\%DB_NAME%_%TIMESTAMP%.zip
+
+REM Run database dump
+echo Running mysqldump... >> "%LOG_FILE%"
+"%MYSQL_PATH%" -u%DB_USER% -p%DB_PASSWORD% --routines --events %DB_NAME% > "%SQL_FILE%"
+IF %ERRORLEVEL% NEQ 0 (
+    echo ERROR: MySQL backup failed at %DATE% %TIME%. Aborting launch. >> "%LOG_FILE%"
+    exit /b 1
 )
 
-echo.
-echo ==================================================
-echo [2/3] Launching Walkie Talkie Chat WebSocket Server...
-echo ==================================================
-start "BMALocal WebSocket Server" /min "%PYTHON_EXE%" "%APP_DIR%\server_code\BMALocal.py"
+REM ZIP compression
+echo Compressing backup... >> "%LOG_FILE%"
+%ZIP_EXE% a -tzip "%ZIP_FILE%" "%SQL_FILE%" >nul
+del "%SQL_FILE%"
 
-echo.
-echo ==================================================
-echo [3/3] Launching Anvil App Server...
-echo ==================================================
-cd /d "%APP_DIR%"
-anvil-app-server --app . --origin https://192.168.100.12:443 --manual-cert-file "%APP_DIR%\cert\192.168.100.12.pem" --manual-cert-key-file "%APP_DIR%\cert\192.168.100.12-key.pem" --auto-migrate
+echo Backup completed successfully: %ZIP_FILE% >> "%LOG_FILE%"
+
+REM ==================================================
+REM ======= VEHICLE INSPECTION IMAGES BACKUP =========
+REM ==================================================
+
+set "IMAGES_DIR=D:\BMAAutoAccessories\venv\Lib\site-packages\BMALocal\VehicleInspectionImages"
+set "IMAGES_ZIP=%BACKUP_DIR%\VehicleInspectionImages_%TIMESTAMP%.zip"
+
+if exist "%IMAGES_DIR%" (
+    echo Backing up VehicleInspectionImages... >> "%LOG_FILE%"
+    %ZIP_EXE% a -tzip "%IMAGES_ZIP%" "%IMAGES_DIR%" >nul
+    IF ERRORLEVEL 1 (
+        echo WARNING: VehicleInspectionImages backup failed at %DATE% %TIME%. Continuing launch. >> "%LOG_FILE%"
+    ) ELSE (
+        echo Images backup completed successfully: %IMAGES_ZIP% >> "%LOG_FILE%"
+    )
+) ELSE (
+    echo WARNING: Images folder not found: %IMAGES_DIR%. Skipping images backup. >> "%LOG_FILE%"
+)
+
+REM ==================================================
+REM ======= Proceed to launch Anvil App Server =======
+REM ==================================================
+
+SET "BMA_ROOT=D:\BMAAutoAccessories\venv"
+
+echo Attempting to change to Scripts directory... >> "%LOG_FILE%"
+cd /d "%BMA_ROOT%\Scripts"
+IF %ERRORLEVEL% NEQ 0 (
+    echo Error: Could not change to "%BMA_ROOT%\Scripts". >> "%LOG_FILE%"
+    exit /b %ERRORLEVEL%
+)
+
+echo Attempting to activate virtual environment... >> "%LOG_FILE%"
+call activate.bat >> "%LOG_FILE%" 2>&1
+IF %ERRORLEVEL% NEQ 0 (
+    echo Error: Could not activate virtual environment. >> "%LOG_FILE%"
+    exit /b %ERRORLEVEL%
+)
+
+echo Attempting to change to site-packages directory... >> "%LOG_FILE%"
+cd /d "%BMA_ROOT%\Lib\site-packages"
+IF %ERRORLEVEL% NEQ 0 (
+    echo Error: Could not change to site-packages. >> "%LOG_FILE%"
+    exit /b %ERRORLEVEL%
+)
+
+REM --------------------------------------------------
+REM 1. Stop any existing WebSocket Server on port 8765
+REM --------------------------------------------------
+for /f "tokens=5" %%p in ('netstat -aon ^| findstr ":8765" ^| findstr "LISTENING"') do (
+    echo Stopping existing WebSocket server PID %%p >> "%LOG_FILE%"
+    taskkill /F /PID %%p >nul 2>&1
+)
+
+REM --------------------------------------------------
+REM 2. Start Walkie Talkie WebSocket Server via BMALocal.py (port 8765)
+REM --------------------------------------------------
+echo Starting Walkie Talkie WebSocket Server via BMALocal.py... >> "%LOG_FILE%"
+start "BMALocal Chat Server" /B "%BMA_ROOT%\Scripts\python.exe" "%BMA_ROOT%\Lib\site-packages\BMALocal\server_code\BMALocal.py" >> "%CHAT_LOG_FILE%" 2>&1
+
+REM --------------------------------------------------
+REM 3. Start Anvil Server (internal HTTPS)
+REM --------------------------------------------------
+echo Starting Anvil App Server... >> "%LOG_FILE%"
+anvil-app-server --app BMALocal --data-dir "./.anvil-data" --origin https://192.168.100.12:443 --manual-cert-file D:\BMAAutoAccessories\venv\Lib\site-packages\BMALocal\cert\192.168.100.12.pem --manual-cert-key-file D:\BMAAutoAccessories\venv\Lib\site-packages\BMALocal\cert\192.168.100.12-key.pem --auto-migrate >> "%LOG_FILE%" 2>&1
+
+REM --------------------------------------------------
+REM 4. Stop WebSocket Server when Anvil exits
+REM --------------------------------------------------
+echo Stopping Walkie Talkie WebSocket Server... >> "%LOG_FILE%"
+for /f "tokens=5" %%p in ('netstat -aon ^| findstr ":8765" ^| findstr "LISTENING"') do (
+    echo Terminating WebSocket server PID %%p >> "%LOG_FILE%"
+    taskkill /F /PID %%p >nul 2>&1
+)
+echo Service stopped at %DATE% %TIME% >> "%LOG_FILE%"
+
+ENDLOCAL
+exit /b 0
 ```
 
 ---

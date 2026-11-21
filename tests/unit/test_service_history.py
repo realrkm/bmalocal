@@ -407,3 +407,126 @@ def test_selfservice_js_service_history_helpers():
         text=True,
     )
     assert result.returncode == 0, result.stderr
+
+
+# =============================================================================
+# Anvil Form: ServiceHistory (data_grid_1 / repeating_panel_1)
+# =============================================================================
+
+
+def _load_service_history_form_module(monkeypatch):
+    notification_instances = []
+
+    class FakeNotification:
+        def __init__(self, message, **kwargs):
+            self.message = message
+            self.kwargs = kwargs
+            self.shown = False
+            notification_instances.append(self)
+
+        def show(self):
+            self.shown = True
+
+    server = _module("anvil.server", call=MagicMock(return_value={"reg_no": "KDA234S", "make_and_model": "BMW X5", "records": []}))
+    anvil = _module(
+        "anvil",
+        Notification=FakeNotification,
+        server=server,
+        users=MagicMock(),
+    )
+    anvil.__path__ = []
+    anvil_tables = _module("anvil.tables", app_tables=MagicMock())
+    anvil_tables.__path__ = []
+    class FakeServiceHistoryTemplate:
+        def __init__(self, **kw):
+            self.txt_VehicleReg = types.SimpleNamespace(text="")
+            self.btn_Search = types.SimpleNamespace(enabled=True)
+            self.label_2 = types.SimpleNamespace(text="Service History")
+            self.repeating_panel_1 = types.SimpleNamespace(items=[])
+
+    stubs = {
+        "anvil": anvil,
+        "anvil.server": server,
+        "anvil.users": anvil.users,
+        "anvil.tables": anvil_tables,
+        "anvil.tables.query": _module("anvil.tables.query"),
+        "client_code.ServiceHistory._anvil_designer": _module(
+            "client_code.ServiceHistory._anvil_designer",
+            ServiceHistoryTemplate=FakeServiceHistoryTemplate,
+        ),
+    }
+    target_module = "client_code.ServiceHistory"
+    monkeypatch.delitem(sys.modules, target_module, raising=False)
+    for name, module in stubs.items():
+        monkeypatch.setitem(sys.modules, name, module)
+
+    return importlib.import_module(target_module), anvil, notification_instances
+
+
+def test_service_history_form_search_populates_data_grid(monkeypatch):
+    module, anvil, notifications = _load_service_history_form_module(monkeypatch)
+    form = module.ServiceHistory()
+    form.txt_VehicleReg = types.SimpleNamespace(text=" kda 234s ")
+    form.btn_Search = types.SimpleNamespace(enabled=True)
+    form.label_2 = types.SimpleNamespace(text="Service History")
+    form.repeating_panel_1 = types.SimpleNamespace(items=[])
+
+    anvil.server.call.return_value = {
+        "reg_no": "KDA234S",
+        "make_and_model": "Toyota Prado",
+        "records": [
+            {
+                "jobcard_id": 101,
+                "date": "2026-11-15",
+                "jobcard_ref": "JC-2026-101",
+                "status": "Completed",
+                "technician": "ALEX MEDINA",
+                "mileage": 85000,
+                "next_service_mileage": "95000",
+                "client_instruction": "Major service\nCheck brakes",
+                "defects": "Worn pads",
+                "notes": "Bumper scratch",
+                "work_done": "Replaced pads",
+                "parts_and_services": [
+                    {"item": "Oil Filter", "part_no": "OF-1", "quantity": "1"}
+                ],
+                "has_inspection": True,
+            }
+        ],
+    }
+
+    form.btn_SearchJobcard_click()
+
+    anvil.server.call.assert_called_once_with("get_vehicle_service_history", "kda 234s")
+    assert form.btn_Search.enabled is True
+    assert "KDA234S" in form.label_2.text
+    assert "Toyota Prado" in form.label_2.text
+    assert len(form.repeating_panel_1.items) == 1
+    row = form.repeating_panel_1.items[0]
+    assert row["date"] == "2026-11-15"
+    assert row["jobcardstatus"] == "JC-2026-101\n(Completed)"
+    assert row["technician"] == "ALEX MEDINA"
+    assert row["mileage"] == "85000 km\nNext: 95000 km"
+    assert row["clientinstructions"] == "• Major service\n• Check brakes"
+    assert "Defects:\nWorn pads" in row["defectsnotes"]
+    assert "Notes:\nBumper scratch" in row["defectsnotes"]
+    assert row["workdone"] == "Replaced pads"
+    assert row["partsservices"] == "• Oil Filter [OF-1] × 1"
+    assert row["has_inspection"] is True
+    assert row["inspection"] == ""
+    assert notifications == []
+
+
+def test_service_history_form_rejects_blank_reg(monkeypatch):
+    module, anvil, notifications = _load_service_history_form_module(monkeypatch)
+    form = module.ServiceHistory()
+    form.txt_VehicleReg = types.SimpleNamespace(text="   ")
+    form.btn_Search = types.SimpleNamespace(enabled=True)
+    form.label_2 = types.SimpleNamespace(text="Service History")
+    form.repeating_panel_1 = types.SimpleNamespace(items=[{"date": "old"}])
+
+    form.btn_SearchJobcard_click()
+
+    anvil.server.call.assert_not_called()
+    assert form.repeating_panel_1.items == []
+    assert len(notifications) == 1 and notifications[0].shown is True

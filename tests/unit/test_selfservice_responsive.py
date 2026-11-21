@@ -13,7 +13,7 @@ def test_service_status_filters_wrap_on_mobile():
     status_group = source[group_start:group_end]
 
     assert 'class="service-status-filters"' in status_group
-    assert status_group.count('class="btn-status') == 4
+    assert status_group.count('class="btn-status') == 5
     status_styles = re.search(
         r"\.service-status-filters\s*\{([^}]*)\}",
         styles,
@@ -30,3 +30,24 @@ def test_service_status_filters_wrap_on_mobile():
     assert "flex: 1 1 100%;" in mobile_status_styles.group(1)
     assert "width: 100%;" in mobile_status_styles.group(1)
     assert "max-width: 100%;" in mobile_status_styles.group(1)
+
+
+def test_instruction_column_always_wraps_on_initial_load():
+    styles = (Path(__file__).parents[2] / "theme" / "assets" / "selfservice.css").read_text(
+        encoding="utf-8"
+    )
+
+    fixed_layout = re.search(
+        r"\.kiosk-table:not\(\.service-history-table\)\s*\{([^}]*)\}",
+        styles,
+    )
+    assert fixed_layout
+    assert "table-layout: fixed;" in fixed_layout.group(1)
+
+    instruction_col = re.search(
+        r"\.kiosk-table th:nth-child\(5\),\s*\.kiosk-table td:nth-child\(5\)\s*\{([^}]*)\}",
+        styles,
+    )
+    assert instruction_col
+    assert "white-space: normal;" in instruction_col.group(1)
+    assert "overflow-wrap: anywhere;" in instruction_col.group(1)

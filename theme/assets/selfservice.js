@@ -36,6 +36,16 @@
         currentStatusFilter: 'all',
         currentWorkDoneReg: null,
 
+        // Inline Service History state (Home dashboard)
+        serviceHistoryOpen: false,
+        serviceHistoryQuery: '',
+        serviceHistoryLastSearched: '',
+        serviceHistoryMakeModel: '',
+        serviceHistoryResults: [],
+        serviceHistoryLoading: false,
+        serviceHistoryError: '',
+        serviceHistoryHasSearched: false,
+
         // Parts request state
         partsSearchQuery: '',
         techNotes: '',
@@ -456,6 +466,10 @@
         // Persist signature before leaving the request parts view
         getSignatureData();
 
+        if (state.serviceHistoryOpen) {
+            resetServiceHistoryState();
+        }
+
         state.navigationHistory.push({
             view: state.currentView,
             state: {
@@ -518,7 +532,9 @@
             state.autoRefreshInterval = setInterval(async () => { 
                 if (state.currentView === 'home') {
                     await loadActiveServices();
-                    render();
+                    if (!state.serviceHistoryOpen) {
+                        render();
+                    }
                 }
             }, 60000);
 
@@ -754,18 +770,22 @@
         
         <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:2rem; flex-wrap:wrap;">
             <div class="service-status-filters">
-                <button class="btn-status ${state.currentStatusFilter === 'Checked-In' ? 'active-filter' : ''}" onclick="filterByStatus('Checked-In')">Checked-In</button>
-                <button class="btn-status ${state.currentStatusFilter === 'Create Quote' ? 'active-filter' : ''}" onclick="filterByStatus('Create Quote')">Create Quote</button>
-                <button class="btn-status ${state.currentStatusFilter === 'Confirm Quote' ? 'active-filter' : ''}" onclick="filterByStatus('Confirm Quote')">Confirm Quote</button>
-                <button class="btn-status ${state.currentStatusFilter === 'In-Service' ? 'active-filter' : ''}" onclick="filterByStatus('In-Service')">In-Service</button>
+                <button class="btn-status ${!state.serviceHistoryOpen && state.currentStatusFilter === 'Checked-In' ? 'active-filter' : ''}" onclick="filterByStatus('Checked-In')">Checked-In</button>
+                <button class="btn-status ${!state.serviceHistoryOpen && state.currentStatusFilter === 'Create Quote' ? 'active-filter' : ''}" onclick="filterByStatus('Create Quote')">Create Quote</button>
+                <button class="btn-status ${!state.serviceHistoryOpen && state.currentStatusFilter === 'Confirm Quote' ? 'active-filter' : ''}" onclick="filterByStatus('Confirm Quote')">Confirm Quote</button>
+                <button class="btn-status ${!state.serviceHistoryOpen && state.currentStatusFilter === 'In-Service' ? 'active-filter' : ''}" onclick="filterByStatus('In-Service')">In-Service</button>
+                <button id="service-history-btn" class="btn-status btn-service-history ${state.serviceHistoryOpen ? 'active-filter' : ''}" onclick="openServiceHistory()">Service History</button>
             </div>
             
+            ${state.serviceHistoryOpen ? '' : `
             <div style="position:relative; flex:1; max-width:400px; min-width:300px;">
                 <input type="text" id="service-search" class="search-input" placeholder="Search by JobCard, Technician, Status..." value="${sanitizeHTML(state.serviceSearchQuery)}" style="font-size:1.5rem; padding:1rem 1rem 1rem 3.5rem; width:100%;">
                 <span style="position:absolute; left:1rem; top:1.2rem; color:#94a3b8;">🔍</span>
             </div>
+            `}
         </div>
 
+        ${state.serviceHistoryOpen ? renderServiceHistoryPanel() : `
         <div class="service-table-container">
             <table class="kiosk-table">
                 <thead><tr><th>No</th><th>Received</th><th>Technician</th><th>JobCard Ref</th><th>Instruction</th><th>Status</th><th>Action</th></tr></thead>
@@ -794,27 +814,429 @@
                 </tbody>
             </table>
         </div>
+        `}
     `;
 
-        const sInput = document.getElementById('service-search');
-        if (sInput) {
-            const debouncedSearch = debounce((value) => {
-                state.serviceSearchQuery = value;
-                updateServiceTable();
-            }, 300);
-
-            sInput.oninput = (e) => {
-                debouncedSearch(e.target.value);
-            };
-
-            sInput.onkeydown = (e) => {
-                if (e.key === 'Enter') {
-                    state.serviceSearchQuery = e.target.value;
+        if (state.serviceHistoryOpen) {
+            attachServiceHistoryListeners();
+        } else {
+            const sInput = document.getElementById('service-search');
+            if (sInput) {
+                const debouncedSearch = debounce((value) => {
+                    state.serviceSearchQuery = value;
                     updateServiceTable();
+                }, 300);
+
+                sInput.oninput = (e) => {
+                    debouncedSearch(e.target.value);
+                };
+
+                sInput.onkeydown = (e) => {
+                    if (e.key === 'Enter') {
+                        state.serviceSearchQuery = e.target.value;
+                        updateServiceTable();
+                    }
+                };
+
+                sInput.onclick = (e) => e.target.focus();
+            }
+        }
+    }
+
+    function normalizeServiceHistoryReg(reg) {
+        return String(reg || '').trim().replace(/[\s-]+/g, '').toUpperCase();
+    }
+
+    function resetServiceHistoryState() {
+        closeServiceHistoryInspection();
+        state.serviceHistoryOpen = false;
+        state.serviceHistoryQuery = '';
+        state.serviceHistoryLastSearched = '';
+        state.serviceHistoryMakeModel = '';
+        state.serviceHistoryResults = [];
+        state.serviceHistoryLoading = false;
+        state.serviceHistoryError = '';
+        state.serviceHistoryHasSearched = false;
+    }
+
+    function getServiceHistoryStatusClass(status) {
+        const s = String(status || '').toLowerCase();
+        if (s === 'in service' || s === 'in-service') return 'status-in-service';
+        if (s === 'create quote') return 'status-create-quote';
+        if (s === 'confirm quote') return 'status-confirm-quote';
+        if (s === 'checked in' || s === 'checked-in') return 'status-checked-in';
+        return 'status-completed';
+    }
+
+    function formatHistoryMultiline(text) {
+        const cleaned = String(text || '').trim();
+        if (!cleaned) return '<span class="sh-empty-cell">—</span>';
+        const lines = cleaned.split('\n').map(l => l.trim()).filter(Boolean);
+        if (lines.length === 1) {
+            return `<span>${sanitizeHTML(lines[0])}</span>`;
+        }
+        return `<ul class="sh-cell-list">${lines.map(l => `<li>${sanitizeHTML(l)}</li>`).join('')}</ul>`;
+    }
+
+    function formatHistoryParts(parts) {
+        if (!Array.isArray(parts) || parts.length === 0) {
+            return '<span class="sh-empty-cell">—</span>';
+        }
+        return `<ul class="sh-parts-list">${parts.map(p => {
+            const item = sanitizeHTML(p.item || '');
+            const partNo = p.part_no ? ` <span class="sh-part-no">[${sanitizeHTML(p.part_no)}]</span>` : '';
+            const qty = p.quantity !== undefined && p.quantity !== '' ? ` <span class="sh-part-qty">&times; ${sanitizeHTML(String(p.quantity))}</span>` : '';
+            return `<li>${item}${partNo}${qty}</li>`;
+        }).join('')}</ul>`;
+    }
+
+    function renderServiceHistoryPanel() {
+        let bodyHTML = '';
+
+        if (state.serviceHistoryLoading) {
+            bodyHTML = `
+                <div class="sh-state-box">
+                    <div class="sh-spinner" aria-hidden="true"></div>
+                    <p>Searching service history for <strong>${sanitizeHTML(state.serviceHistoryLastSearched || state.serviceHistoryQuery)}</strong>...</p>
+                </div>
+            `;
+        } else if (state.serviceHistoryError) {
+            bodyHTML = `
+                <div class="sh-state-box sh-state-error">
+                    <p>${sanitizeHTML(state.serviceHistoryError)}</p>
+                </div>
+            `;
+        } else if (!state.serviceHistoryHasSearched) {
+            bodyHTML = `
+                <div class="sh-state-box">
+                    <p>Enter an exact vehicle registration number above and click <strong>Search</strong> to view its service history.</p>
+                </div>
+            `;
+        } else if (state.serviceHistoryResults.length === 0) {
+            bodyHTML = `
+                <div class="sh-state-box">
+                    <p>No service history found for registration <strong>${sanitizeHTML(state.serviceHistoryLastSearched)}</strong>.</p>
+                </div>
+            `;
+        } else {
+            const makeModelBadge = state.serviceHistoryMakeModel
+                ? `<span class="sh-meta-pill">${sanitizeHTML(state.serviceHistoryMakeModel)}</span>`
+                : '';
+            bodyHTML = `
+                <div class="sh-summary-bar">
+                    <div class="sh-summary-left">
+                        <span class="sh-reg-pill">${sanitizeHTML(state.serviceHistoryLastSearched)}</span>
+                        ${makeModelBadge}
+                    </div>
+                    <div class="sh-summary-right">
+                        <span class="sh-count-pill">${state.serviceHistoryResults.length} ${state.serviceHistoryResults.length === 1 ? 'Visit' : 'Visits'}</span>
+                    </div>
+                </div>
+                <div class="service-table-container sh-table-wrap">
+                    <table class="kiosk-table service-history-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>JobCard &amp; Status</th>
+                                <th>Technician</th>
+                                <th>Mileage</th>
+                                <th>Client Instructions</th>
+                                <th>Defects &amp; Notes</th>
+                                <th>Work Done</th>
+                                <th>Parts &amp; Services</th>
+                                <th>Inspection</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${state.serviceHistoryResults.map(rec => {
+                                const visitMileage = (rec.mileage !== '' && rec.mileage !== null && rec.mileage !== undefined)
+                                    ? `${sanitizeHTML(String(rec.mileage))} km`
+                                    : '<span class="sh-empty-cell">—</span>';
+                                const nextMileage = rec.next_service_mileage
+                                    ? `<div class="sh-next-mileage">Next: <strong>${sanitizeHTML(String(rec.next_service_mileage))} km</strong></div>`
+                                    : '<div class="sh-next-mileage sh-empty-cell">Next: —</div>';
+                                const defectsParts = [];
+                                if (rec.defects) {
+                                    defectsParts.push(`<div class="sh-subblock"><span class="sh-sublabel">Defects:</span> ${formatHistoryMultiline(rec.defects)}</div>`);
+                                }
+                                if (rec.notes) {
+                                    defectsParts.push(`<div class="sh-subblock"><span class="sh-sublabel">Notes:</span> ${formatHistoryMultiline(rec.notes)}</div>`);
+                                }
+                                const defectsAndNotesHTML = defectsParts.length
+                                    ? defectsParts.join('')
+                                    : '<span class="sh-empty-cell">—</span>';
+                                const inspectionCell = rec.has_inspection
+                                    ? `<button type="button" class="btn-view-inspection" onclick="openServiceHistoryInspection(${Number(rec.jobcard_id)}, '${sanitizeHTML(rec.jobcard_ref)}')">View Inspection</button>`
+                                    : '<span class="sh-empty-cell">—</span>';
+
+                                return `
+                                    <tr>
+                                        <td data-label="Date">${sanitizeHTML(rec.date || '—')}</td>
+                                        <td data-label="JobCard & Status">
+                                            <div class="sh-jobcard-ref">${sanitizeHTML(rec.jobcard_ref || '—')}</div>
+                                            <span class="status-badge sh-status-badge ${getServiceHistoryStatusClass(rec.status)}">${sanitizeHTML(rec.status || 'Historical')}</span>
+                                        </td>
+                                        <td data-label="Technician">${rec.technician ? `<strong>${sanitizeHTML(rec.technician)}</strong>` : '<span class="sh-empty-cell">—</span>'}</td>
+                                        <td data-label="Mileage">
+                                            <div class="sh-visit-mileage">${visitMileage}</div>
+                                            ${nextMileage}
+                                        </td>
+                                        <td data-label="Client Instructions">${formatHistoryMultiline(rec.client_instruction)}</td>
+                                        <td data-label="Defects & Notes">${defectsAndNotesHTML}</td>
+                                        <td data-label="Work Done">${formatHistoryMultiline(rec.work_done)}</td>
+                                        <td data-label="Parts & Services">${formatHistoryParts(rec.parts_and_services)}</td>
+                                        <td data-label="Inspection">${inspectionCell}</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        return `
+            <section id="service-history-panel" class="service-history-panel" aria-label="Vehicle Service History">
+                <div class="service-history-search-bar">
+                    <div class="sh-input-wrap">
+                        <input
+                            type="text"
+                            id="service-history-reg-input"
+                            class="search-input sh-reg-input"
+                            placeholder="Enter exact vehicle reg(e.g. KZA 234S)"
+                            value="${sanitizeHTML(state.serviceHistoryQuery)}"
+                            autocomplete="off"
+                            aria-label="Exact vehicle registration number"
+                        />
+                    </div>
+                    <button
+                        type="button"
+                        id="service-history-search-btn"
+                        class="btn-status sh-search-btn"
+                        ${state.serviceHistoryLoading ? 'disabled' : ''}
+                    >
+                        ${state.serviceHistoryLoading ? 'Searching...' : 'Search'}
+                    </button>
+                </div>
+                <div id="service-history-results-container">
+                    ${bodyHTML}
+                </div>
+            </section>
+        `;
+    }
+
+    function attachServiceHistoryListeners() {
+        const regInput = document.getElementById('service-history-reg-input');
+        const searchBtn = document.getElementById('service-history-search-btn');
+
+        if (regInput) {
+            regInput.oninput = (e) => {
+                state.serviceHistoryQuery = e.target.value;
+            };
+            regInput.onkeydown = (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    searchServiceHistory();
                 }
             };
+        }
 
-            sInput.onclick = (e) => e.target.focus();
+        if (searchBtn) {
+            searchBtn.onclick = () => {
+                searchServiceHistory();
+            };
+        }
+    }
+
+    function refreshServiceHistoryPanel() {
+        const existing = document.getElementById('service-history-panel');
+        if (!existing) {
+            render();
+            return;
+        }
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = renderServiceHistoryPanel().trim();
+        existing.replaceWith(wrapper.firstElementChild);
+        attachServiceHistoryListeners();
+        lucide.createIcons();
+    }
+
+    async function searchServiceHistory() {
+        const regInput = document.getElementById('service-history-reg-input');
+        if (regInput) {
+            state.serviceHistoryQuery = regInput.value;
+        }
+
+        const normalized = normalizeServiceHistoryReg(state.serviceHistoryQuery);
+        if (!normalized) {
+            showToast('Please enter an exact vehicle registration number.', 'warning');
+            if (regInput) regInput.focus();
+            return;
+        }
+
+        state.serviceHistoryLoading = true;
+        state.serviceHistoryError = '';
+        state.serviceHistoryLastSearched = normalized;
+        refreshServiceHistoryPanel();
+
+        try {
+            const response = await anvil.call(mainContent, 'getServiceHistory', state.serviceHistoryQuery);
+            state.serviceHistoryLastSearched = (response && response.reg_no) ? response.reg_no : normalized;
+            state.serviceHistoryMakeModel = (response && response.make_and_model) ? response.make_and_model : '';
+            state.serviceHistoryResults = (response && Array.isArray(response.records)) ? response.records : [];
+            state.serviceHistoryHasSearched = true;
+            state.serviceHistoryError = '';
+        } catch (error) {
+            console.error('Error loading service history:', error);
+            state.serviceHistoryResults = [];
+            state.serviceHistoryMakeModel = '';
+            state.serviceHistoryHasSearched = true;
+            state.serviceHistoryError = (error && error.message)
+                ? error.message
+                : 'Failed to load service history. Please try again.';
+            showToast('Failed to load vehicle service history.', 'error');
+        } finally {
+            state.serviceHistoryLoading = false;
+            refreshServiceHistoryPanel();
+        }
+    }
+
+    function closeServiceHistoryInspection() {
+        const existing = document.getElementById('sh-inspection-modal');
+        if (existing) existing.remove();
+        document.removeEventListener('keydown', handleServiceHistoryModalKeydown);
+    }
+
+    function handleServiceHistoryModalKeydown(e) {
+        if (e.key === 'Escape') {
+            closeServiceHistoryInspection();
+        }
+    }
+
+    function renderInspectionModalContent(data) {
+        const photos = (data && data.images) ? data.images : {};
+        const checklist = (data && Array.isArray(data.checklist)) ? data.checklist : [];
+
+        const photoLabels = [
+            { code: 'image_1', label: 'Inspection Photo 1' },
+            { code: 'image_2', label: 'Inspection Photo 2' },
+            { code: 'image_3', label: 'Inspection Photo 3' }
+        ];
+        const availablePhotos = photoLabels.filter(p => photos[p.code]);
+
+        const photosHTML = availablePhotos.length
+            ? `
+                <div class="sh-modal-section">
+                    <h4>Inspection Photos</h4>
+                    <div class="sh-photo-grid">
+                        ${availablePhotos.map(p => `
+                            <figure class="sh-photo-card">
+                                <img src="${photos[p.code]}" alt="${sanitizeHTML(p.label)}" loading="lazy" />
+                                <figcaption>${sanitizeHTML(p.label)}</figcaption>
+                            </figure>
+                        `).join('')}
+                    </div>
+                </div>
+            `
+            : '';
+
+        let checklistHTML = '';
+        if (checklist.length) {
+            const grouped = new Map();
+            checklist.forEach(item => {
+                const title = item.section_title || item.section_code || 'Inspection';
+                if (!grouped.has(title)) grouped.set(title, []);
+                grouped.get(title).push(item);
+            });
+
+            const sections = Array.from(grouped.entries()).map(([sectionTitle, items]) => `
+                <div class="sh-cl-section">
+                    <div class="sh-cl-section-title">${sanitizeHTML(sectionTitle)}</div>
+                    <ul class="sh-cl-list">
+                        ${items.map(item => {
+                            const fields = Array.isArray(item.fields)
+                                ? item.fields.filter(f => f && f.value !== '' && f.value !== null && f.value !== undefined)
+                                : [];
+                            const fieldsHTML = fields.length
+                                ? `<div class="sh-cl-fields">${fields.map(f => {
+                                    const label = sanitizeHTML(f.label || f.name || '');
+                                    const val = typeof f.value === 'boolean' ? (f.value ? 'Yes' : 'No') : sanitizeHTML(String(f.value));
+                                    return `<span class="sh-cl-field-pill"><strong>${label}:</strong> ${val}</span>`;
+                                }).join('')}</div>`
+                                : '';
+                            return `
+                                <li class="sh-cl-item">
+                                    <span class="sh-cl-status ${item.is_checked ? 'is-checked' : 'is-unchecked'}">${item.is_checked ? '✓' : '○'}</span>
+                                    <div class="sh-cl-item-content">
+                                        <div>${sanitizeHTML(item.item_description || item.item_code)}</div>
+                                        ${fieldsHTML}
+                                    </div>
+                                </li>
+                            `;
+                        }).join('')}
+                    </ul>
+                </div>
+            `).join('');
+
+            checklistHTML = `
+                <div class="sh-modal-section">
+                    <h4>Inspection Checklist Findings</h4>
+                    ${sections}
+                </div>
+            `;
+        }
+
+        if (!photosHTML && !checklistHTML) {
+            return '<p class="sh-empty-cell">No saved inspection checklist items or photos were found for this visit.</p>';
+        }
+
+        return photosHTML + checklistHTML;
+    }
+
+    async function openServiceHistoryInspection(jobcardId, jobcardRef) {
+        closeServiceHistoryInspection();
+
+        const overlay = document.createElement('div');
+        overlay.id = 'sh-inspection-modal';
+        overlay.className = 'custom-alert-overlay sh-modal-overlay';
+        overlay.setAttribute('role', 'dialog');
+        overlay.setAttribute('aria-modal', 'true');
+        overlay.setAttribute('aria-label', `Inspection details for ${jobcardRef || jobcardId}`);
+
+        overlay.innerHTML = `
+            <div class="sh-modal-box">
+                <div class="sh-modal-header">
+                    <h3>Inspection Details — ${sanitizeHTML(jobcardRef || `#${jobcardId}`)}</h3>
+                    <button type="button" class="sh-modal-close" aria-label="Close inspection details" onclick="closeServiceHistoryInspection()">&times;</button>
+                </div>
+                <div id="sh-modal-body" class="sh-modal-body">
+                    <div class="sh-state-box">
+                        <div class="sh-spinner" aria-hidden="true"></div>
+                        <p>Loading inspection checklist &amp; photos...</p>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        overlay.onclick = (e) => {
+            if (e.target === overlay) closeServiceHistoryInspection();
+        };
+
+        document.body.appendChild(overlay);
+        document.addEventListener('keydown', handleServiceHistoryModalKeydown);
+
+        try {
+            const data = await anvil.call(mainContent, 'getServiceHistoryInspection', Number(jobcardId));
+            const body = document.getElementById('sh-modal-body');
+            if (body) {
+                body.innerHTML = renderInspectionModalContent(data);
+            }
+        } catch (error) {
+            console.error('Error loading service history inspection:', error);
+            const body = document.getElementById('sh-modal-body');
+            if (body) {
+                body.innerHTML = `<div class="sh-state-box sh-state-error"><p>Failed to load inspection details. Please try again.</p></div>`;
+            }
         }
     }
 
@@ -3456,6 +3878,7 @@
     // ===========================
 
     function goToHome() {
+        resetServiceHistoryState();
         state.currentView = 'home';
         state.serviceSearchQuery = '';
         state.currentStatusFilter = 'all';
@@ -3915,8 +4338,17 @@
             }
         };
 
-        window.filterByStatus = (s) => { 
-            state.currentStatusFilter = (state.currentStatusFilter === s) ? 'all' : s; 
+        window.filterByStatus = (s) => {
+            const wasHistoryOpen = state.serviceHistoryOpen;
+            if (wasHistoryOpen) {
+                resetServiceHistoryState();
+            }
+            state.currentStatusFilter = (!wasHistoryOpen && state.currentStatusFilter === s) ? 'all' : s;
+
+            if (wasHistoryOpen) {
+                render();
+                return;
+            }
             
             // Update button states
             const buttons = document.querySelectorAll('.btn-status');
@@ -3932,6 +4364,23 @@
             // Update the table
             updateServiceTable();
         };
+
+        window.openServiceHistory = () => {
+            if (state.serviceHistoryOpen) {
+                resetServiceHistoryState();
+                render();
+                return;
+            }
+            resetServiceHistoryState();
+            state.serviceHistoryOpen = true;
+            render();
+            const regInput = document.getElementById('service-history-reg-input');
+            if (regInput) regInput.focus();
+        };
+
+        window.searchServiceHistory = searchServiceHistory;
+        window.openServiceHistoryInspection = openServiceHistoryInspection;
+        window.closeServiceHistoryInspection = closeServiceHistoryInspection;
 
         window.openParts = (reg) => { 
             if (state.activeReg !== reg) {

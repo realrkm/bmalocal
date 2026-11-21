@@ -155,6 +155,31 @@ class SelfService(SelfServiceTemplate):
     def getCustomerFeedback(self, jobcardref):
         return anvil.server.call("get_parts_and_feedback_by_jobcardref", jobcardref)
 
+    def getServiceHistory(self, reg_no):
+        return anvil.server.call("get_vehicle_service_history", reg_no)
+
+    def getServiceHistoryInspection(self, jobcard_id):
+        inspection = anvil.server.call("get_service_history_inspection", int(jobcard_id))
+        if not isinstance(inspection, dict):
+            raise ValueError("Saved inspection data is invalid.")
+        images = inspection.get("images", {})
+        encoded_images = {
+            image_code: (
+                "data:{};base64,{}".format(
+                    photo.content_type,
+                    base64.b64encode(photo.get_bytes()).decode("ascii"),
+                )
+                if photo is not None
+                else None
+            )
+            for image_code in _INSPECTION_IMAGE_CODES
+            for photo in (images.get(image_code),)
+        }
+        return {
+            "checklist": inspection.get("checklist", []),
+            "images": encoded_images,
+        }
+
     def logoutUser(self):
         try:
             import anvil.js

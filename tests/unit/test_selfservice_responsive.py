@@ -51,3 +51,28 @@ def test_instruction_column_always_wraps_on_initial_load():
     assert instruction_col
     assert "white-space: normal;" in instruction_col.group(1)
     assert "overflow-wrap: anywhere;" in instruction_col.group(1)
+
+
+def test_service_history_table_columns_have_legible_min_widths():
+    styles = (Path(__file__).parents[2] / "theme" / "assets" / "selfservice.css").read_text(
+        encoding="utf-8"
+    )
+
+    table_rule = re.search(r"\.service-history-table\s*\{([^}]*)\}", styles)
+    assert table_rule
+    assert "min-width: 1550px;" in table_rule.group(1)
+
+    cell_rule = re.search(
+        r"\.service-history-table th,\s*\.service-history-table td\s*\{([^}]*)\}",
+        styles,
+    )
+    assert cell_rule
+    assert "overflow-wrap: break-word;" in cell_rule.group(1)
+    assert "word-break: normal;" in cell_rule.group(1)
+
+    client_instr_rule = re.search(
+        r"\.service-history-table th:nth-child\(5\),\s*\.service-history-table td:nth-child\(5\)\s*\{([^}]*)\}",
+        styles,
+    )
+    assert client_instr_rule
+    assert "min-width: 240px;" in client_instr_rule.group(1)

@@ -428,12 +428,12 @@ header {
 /* Column-specific widths */
 .kiosk-table th:nth-child(1), .kiosk-table td:nth-child(1) { width: 4%; text-align: center; }
 .kiosk-table th:nth-child(2), .kiosk-table td:nth-child(2) { width: 11%; white-space: nowrap; }
-.kiosk-table th:nth-child(3), .kiosk-table td:nth-child(3) { width: 13%; white-space: normal; overflow-wrap: break-word; }
+.kiosk-table th:nth-child(3), .kiosk-table td:nth-child(3) { width: 12%; white-space: normal; overflow-wrap: break-word; }
 .kiosk-table th:nth-child(4), .kiosk-table td:nth-child(4) { width: 14%; white-space: normal; overflow-wrap: break-word; }
 .kiosk-table th:nth-child(5), .kiosk-table td:nth-child(5) { width: 30%; white-space: normal; word-wrap: break-word; overflow-wrap: anywhere; }
 .kiosk-table td:nth-child(5) ul, .kiosk-table td:nth-child(5) li { white-space: normal; overflow-wrap: anywhere; word-break: break-word; }
 .kiosk-table th:nth-child(6), .kiosk-table td:nth-child(6) { width: 14%; text-align: center; }
-.kiosk-table th:nth-child(7), .kiosk-table td:nth-child(7) { width: 14%; text-align: center; }
+.kiosk-table th:nth-child(7), .kiosk-table td:nth-child(7) { width: 15%; text-align: center; }
 
 /* Enhanced status badges */
 .status-badge {
@@ -515,11 +515,14 @@ header {
     border-radius: 0.8rem;
     cursor: pointer;
     font-weight: bold;
-    padding: 0.7rem 1.2rem;
-    font-size: 1.6rem;
+    padding: 0.65rem 0.9rem;
+    font-size: 1.45rem;
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
-    min-width: 150px; /* Ensures consistent button width */
+    width: 100%;
+    max-width: 150px;
+    min-width: 0;
+    white-space: nowrap;
     text-align: center;
 }
 
@@ -536,11 +539,14 @@ header {
     border-radius: 0.8rem;
     cursor: pointer;
     font-weight: bold;
-    padding: 0.7rem 1.2rem;
-    font-size: 1.6rem;
+    padding: 0.65rem 0.9rem;
+    font-size: 1.45rem;
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
-    min-width: 150px; /* Same as btn-issue-parts */
+    width: 100%;
+    max-width: 150px;
+    min-width: 0;
+    white-space: nowrap;
     text-align: center;
 }
 
@@ -1788,6 +1794,15 @@ RESPONSIVE BREAKPOINTS
 }
 
 /* Override fixed 7-column widths from .kiosk-table for the 9-column Service History table */
+.sh-table-wrap {
+    -webkit-overflow-scrolling: touch;
+}
+
+.service-history-table {
+    min-width: 1550px;
+    table-layout: auto;
+}
+
 .service-history-table th,
 .service-history-table td {
     width: auto !important;
@@ -1795,11 +1810,73 @@ RESPONSIVE BREAKPOINTS
     vertical-align: top;
     font-size: 1.35rem;
     white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: normal;
+}
+
+.service-history-table th {
+    white-space: nowrap;
+    padding: 0.9rem 1rem;
+}
+
+.service-history-table td {
+    padding: 1rem;
+    line-height: 1.45;
+}
+
+.service-history-table td:nth-child(5) ul,
+.service-history-table td:nth-child(5) li {
+    overflow-wrap: break-word;
+    word-break: normal;
 }
 
 .service-history-table th:nth-child(1),
 .service-history-table td:nth-child(1) {
+    min-width: 115px;
     white-space: nowrap;
+}
+
+.service-history-table th:nth-child(2),
+.service-history-table td:nth-child(2) {
+    min-width: 150px;
+}
+
+.service-history-table th:nth-child(3),
+.service-history-table td:nth-child(3) {
+    min-width: 140px;
+}
+
+.service-history-table th:nth-child(4),
+.service-history-table td:nth-child(4) {
+    min-width: 145px;
+    white-space: nowrap;
+}
+
+.service-history-table th:nth-child(5),
+.service-history-table td:nth-child(5) {
+    min-width: 240px;
+}
+
+.service-history-table th:nth-child(6),
+.service-history-table td:nth-child(6) {
+    min-width: 250px;
+}
+
+.service-history-table th:nth-child(7),
+.service-history-table td:nth-child(7) {
+    min-width: 220px;
+}
+
+.service-history-table th:nth-child(8),
+.service-history-table td:nth-child(8) {
+    min-width: 240px;
+}
+
+.service-history-table th:nth-child(9),
+.service-history-table td:nth-child(9) {
+    min-width: 150px;
+    text-align: center !important;
 }
 
 .sh-jobcard-ref {

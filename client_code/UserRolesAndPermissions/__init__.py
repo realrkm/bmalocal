@@ -133,7 +133,7 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
 
     def btn_UpdateRoleAndPermissions_click(self, **event_args):
         role_id = self.drop_down_selectrole.selected_value
-
+        
         if not role_id:
             Notification("Please select a role before saving permissions.", title="Missing Role", style="danger", timeout=3).show()
             return
@@ -149,7 +149,7 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
                 role_name = item
                 break
 
-        is_admin = (role_name == "Administrator" or role_id == "Administrator")
+        is_admin = (role_name == "Administrator" or role_id == 1)
 
         # 2. Check if SETTINGS (main checkbox or any sub-permission) is checked
         settings_selected = self.chk_settings.checked or any(sub.checked for sub in self.sections.get("SETTINGS", []))

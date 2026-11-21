@@ -129,7 +129,7 @@ class ServiceHistory(ServiceHistoryTemplate):
             vehicle_meta = f" ({make_model})" if make_model else ""
             self.label_3.visible=True
             self.label_4.visible=True
-            self.label_3.text = f"{display_reg}{vehicle_meta}"
+            self.label_3.text = f"{vehicle_meta}"
             self.label_4.text = f"{len(records)} {visit_label}"
             self.repeating_panel_1.items = format_service_history_rows(records)
         except Exception as exc:

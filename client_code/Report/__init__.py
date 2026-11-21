@@ -105,6 +105,7 @@ class Report(ReportTemplate):
     def add_item(self, new_item):
         items = list(self.cmbReport.items or [])
         items.append(new_item)
+        items.sort()  # Sort the items alphabetically
         self.cmbReport.items = items
 
 

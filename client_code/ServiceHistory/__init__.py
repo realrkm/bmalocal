@@ -88,13 +88,14 @@ class ServiceHistory(ServiceHistoryTemplate):
 
         # Any code you write here will run before the form opens.
         self.repeating_panel_1.items = []
+        self.label_3.visible=False
+        self.label_4.visible=False
 
     def btn_SearchJobcard_click(self, **event_args):
         """Search exact vehicle registration and populate data_grid_1."""
         reg_no = (self.txt_VehicleReg.text or "").strip()
         if not reg_no:
             self.repeating_panel_1.items = []
-            self.label_2.text = "Service History"
             Notification(
                 "Please enter an exact vehicle registration number.",
                 title="Blank Field",
@@ -116,7 +117,6 @@ class ServiceHistory(ServiceHistoryTemplate):
 
             if not records:
                 self.repeating_panel_1.items = []
-                self.label_2.text = "Service History"
                 Notification(
                     f"No service history found for registration {display_reg}.",
                     title="Not Found",
@@ -127,11 +127,13 @@ class ServiceHistory(ServiceHistoryTemplate):
 
             visit_label = "Visit" if len(records) == 1 else "Visits"
             vehicle_meta = f" ({make_model})" if make_model else ""
-            self.label_2.text = f"Service History — {display_reg}{vehicle_meta} • {len(records)} {visit_label}"
+            self.label_3.visible=True
+            self.label_4.visible=True
+            self.label_3.text = f"{display_reg}{vehicle_meta}"
+            self.label_4.text = f"{len(records)} {visit_label}"
             self.repeating_panel_1.items = format_service_history_rows(records)
         except Exception as exc:
             self.repeating_panel_1.items = []
-            self.label_2.text = "Service History"
             Notification(
                 str(exc) or "Failed to load vehicle service history.",
                 title="Search Error",

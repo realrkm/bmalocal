@@ -50,6 +50,7 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
         self.chk_quoteinvoicereport.tag = "Quote And Invoice Report"
         self.chk_paymentreport.tag = "Payment Report"
         self.chk_MonthlySchedule.tag = "Monthly Schedule"
+        self.chk_ServiceHistory.tag = "Service History"
         self.chk_partshub.tag = "PARTS HUB"
         self.chk_partscatalog.tag = "Parts Catalog"
         self.chk_ordertracking.tag = "Order Tracking"
@@ -79,7 +80,7 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
             "REPORTS": [
                 self.chk_clientreport, self.chk_cardetailsreport, self.chk_techniciansreport,
                 self.chk_staffreports, self.chk_inventoryreport, self.chk_quoteinvoicereport, 
-                self.chk_paymentreport, self.chk_MonthlySchedule
+                self.chk_paymentreport, self.chk_MonthlySchedule, self.chk_ServiceHistory
             ],
             "PARTS HUB": [self.chk_partscatalog, self.chk_ordertracking],
             "SETTINGS": [self.chk_useraccounts, self.chk_roleasandpermissions],

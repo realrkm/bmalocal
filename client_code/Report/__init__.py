@@ -14,6 +14,7 @@ from ..InventoryReport import InventoryReport
 from ..PeriodicQuoteVsInvoice import PeriodicQuoteVsInvoice
 from ..PeriodicPayment import PeriodicPayment
 from ..MonthlyPerformanceSchedule import MonthlyPerformanceSchedule
+from ..ServiceHistory import ServiceHistory
 from .. import ModGetData
 
 class Report(ReportTemplate):
@@ -94,6 +95,12 @@ class Report(ReportTemplate):
                     self.add_item(first_visible)
                     first_visible = None
 
+            elif subsection == "Service History":
+                if value and first_visible is None:
+                    first_visible = "Service History"
+                    self.add_item(first_visible)
+                    first_visible = None
+
 
     def add_item(self, new_item):
         items = list(self.cmbReport.items or [])
@@ -168,7 +175,12 @@ class Report(ReportTemplate):
             self.card_panel.add_component(MonthlyPerformanceSchedule(), full_width_row=True)
             self.card_panel.visible = True
 
-
+        elif self.cmbReport.selected_value == "Service History":
+            self.search_keyword_1.text_box_search.visible = False
+            self.search_keyword_1.repeating_panel_results.visible = False
+            self.card_panel.clear()
+            self.card_panel.add_component(ServiceHistory(), full_width_row=True)
+            self.card_panel.visible = True
 
     def getValue(self, **event_args):
         """This method is called when the text in this text box is edited"""
@@ -177,8 +189,7 @@ class Report(ReportTemplate):
         if selectedReport == "Clients":
             results = anvil.server.call("getClientFullname")
             return [{'entry': r['Fullname'], 'ID': r['ID']} for r in results]
-
-            
+       
         elif selectedReport =="Technicians":
             results = anvil.server.call("getTechnicians")
             return [{'entry': r['Fullname'], 'ID': r['ID']} for r in results]

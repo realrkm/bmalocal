@@ -896,7 +896,6 @@
         if (state.serviceHistoryLoading) {
             bodyHTML = `
                 <div class="sh-state-box">
-                    <div class="sh-spinner" aria-hidden="true"></div>
                     <p>Searching service history for <strong>${sanitizeHTML(state.serviceHistoryLastSearched || state.serviceHistoryQuery)}</strong>...</p>
                 </div>
             `;

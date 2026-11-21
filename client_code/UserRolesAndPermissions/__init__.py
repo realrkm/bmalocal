@@ -138,10 +138,11 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
             Notification("Please select a role before saving permissions.", title="Missing Role", style="danger", timeout=3).show()
             return
 
+
         # 1. Resolve role name from dropdown items
         role_name = None
         for item in (self.drop_down_selectrole.items or []):
-            if isinstance(item, tuple) and len(item) == 2:
+            if isinstance(item, (list, tuple)) and len(item) == 2:
                 if item[1] == role_id:
                     role_name = item[0]
                     break

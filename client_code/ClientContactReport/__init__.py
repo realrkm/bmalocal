@@ -43,8 +43,18 @@ class ClientContactReport(ClientContactReportTemplate):
             self._offset += self._page_size
             self.refresh_client_table(self.client_id)
 
+    def _unsubscribe_realtime(self):
+        try:
+            rt = getattr(anvil.js.window, "bmaRealtime", None)
+            if rt and self._rt_token:
+                rt.unsubscribe(self._rt_token)
+        except Exception:
+            pass
+        self._rt_token = None
+
     def form_show(self, **event_args):
-        self.form_hide()
+        self._is_mounted = True
+        self._unsubscribe_realtime()
         try:
             rt = getattr(anvil.js.window, "bmaRealtime", None)
             if rt:
@@ -54,13 +64,7 @@ class ClientContactReport(ClientContactReportTemplate):
 
     def form_hide(self, **event_args):
         self._is_mounted = False
-        try:
-            rt = getattr(anvil.js.window, "bmaRealtime", None)
-            if rt and self._rt_token:
-                rt.unsubscribe(self._rt_token)
-        except Exception:
-            pass
-        self._rt_token = None
+        self._unsubscribe_realtime()
 
     def _on_contacts_changed(self, evt=None):
         with anvil.server.no_loading_indicator:

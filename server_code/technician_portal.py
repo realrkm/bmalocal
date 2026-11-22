@@ -252,6 +252,9 @@ def saveOrUpdateTechnicianPortalDefectsAndRequestedParts(
         raise
 
     _remove_vehicle_inspection_images(replaced_image_paths)
+    publish_realtime_event("jobcards", "technician_portal_updated", entity_id=jobcardID)
+    publish_realtime_event("notifications", "technician_portal_updated", entity_id=jobcardID)
+    publish_realtime_event("technician_portal", "updated", entity_id=jobcardID)
     return True
 
         

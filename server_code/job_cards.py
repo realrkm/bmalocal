@@ -258,6 +258,7 @@ def save_job_card_details(
             technicianDetails,  # The technician
         )
         cursor.execute(query2, values2)
+    publish_realtime_event("jobcards", "created", entity_id=job_card_id)
 
 
 # Get job card id to assign in tbl_pendingassignedjobs
@@ -584,6 +585,7 @@ def update_job_card_details(
             # 2b. If it does NOT exist, INSERT it
             query3 = "INSERT INTO tbl_workdoneinjobcard (JobCardRefID, WorkDone) VALUES (%s, %s)"
             cursor.execute(query3, (jobcardID, workDone))
+    publish_realtime_event("jobcards", "updated", entity_id=jobcardID)
 
 
 @anvil.server.callable()
@@ -1374,6 +1376,7 @@ def updateDefectsList(
                 WHERE JobCardRefID = %s
             """
             cursor.execute(query3, (defects, priceddefects, parts, staffId, jobcardID))
+    publish_realtime_event("jobcards", "defects_updated", entity_id=jobcardID)
 
 @anvil.server.callable()
 def transitionCheckedInToCreateQuote():
@@ -1714,6 +1717,7 @@ def saveConfirmationDetails(jobCardId, remarks, signature, dateCompleted, verify
                     json.dumps(fields_json),
                 ),
             )
+    publish_realtime_event("jobcards", "confirmed", entity_id=jobCardId)
 
 
 @anvil.server.callable()

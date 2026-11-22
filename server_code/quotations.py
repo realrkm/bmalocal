@@ -1394,7 +1394,9 @@ def saveJobCardDetailsFromInterimQuotation(
                 1,
             ),
         )
-        return cursor.lastrowid
+        new_id = cursor.lastrowid
+    publish_realtime_event("jobcards", "interim_created", entity_id=new_id)
+    return new_id
 
 
 @anvil.server.callable()
@@ -1541,6 +1543,8 @@ def transitionInterimQuoteToInvoice(jocardID):
             "UPDATE tbl_jobcarddetails SET Status = 'Ready for Pickup' WHERE ID = %s",
             (jocardID,),
         )
+    publish_realtime_event("jobcards", "ready_for_pickup", entity_id=jocardID)
+    publish_realtime_event("payments", "invoice_created", entity_id=jocardID)
 
 __all__ = [
     'getDuplicateQuotationEntries',

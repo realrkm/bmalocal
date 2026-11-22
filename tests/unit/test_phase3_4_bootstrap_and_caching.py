@@ -194,3 +194,60 @@ def test_self_service_bootstrap_and_inspection_by_ref():
     with patch.object(technician_portal, "_get_current_user", side_effect=Exception("Authentication required.")):
         with pytest.raises(Exception, match="Authentication required"):
             bma.get_self_service_bootstrap()
+
+
+def test_responsive_pagination_bar_roles_loading_and_css_breakpoints(monkeypatch):
+    import importlib
+    import sys
+    import types
+    from pathlib import Path
+
+    class _FakeComp:
+        def __init__(self, **kw):
+            self.__dict__.update(kw)
+            self.components = []
+            self.handlers = {}
+            self.visible = True
+
+        def add_component(self, c, **kw):
+            self.components.append(c)
+
+        def set_event_handler(self, ev, fn):
+            self.handlers[ev] = fn
+
+    fake_anvil = types.ModuleType("anvil")
+    fake_anvil.FlowPanel = _FakeComp
+    fake_anvil.Button = _FakeComp
+    fake_anvil.Label = _FakeComp
+    monkeypatch.setitem(sys.modules, "anvil", fake_anvil)
+
+    if "client_code.ModPagination" in sys.modules:
+        del sys.modules["client_code.ModPagination"]
+    mod_pag = importlib.import_module("client_code.ModPagination")
+
+    events = []
+    bar = mod_pag.create_pagination_bar(lambda: events.append("prev"), lambda: events.append("next"))
+    assert bar["panel"].role == "bma-pagination-bar"
+    assert "bma-pagination-btn" in bar["btn_prev"].role
+    assert "bma-pagination-btn" in bar["btn_next"].role
+    assert bar["lbl_info"].role == "bma-pagination-info"
+
+    mod_pag.update_pagination_bar(bar, offset=50, limit=50, total=125)
+    assert bar["lbl_info"].text == "Page 2 of 3 (125 records)"
+    assert bar["btn_prev"].enabled is True
+    assert bar["btn_next"].enabled is True
+    assert bar["panel"].visible is True
+
+    # Loading lock disables both buttons, then restores on unlock
+    mod_pag.set_pagination_loading(bar, True)
+    assert bar["btn_prev"].enabled is False
+    assert bar["btn_next"].enabled is False
+    mod_pag.set_pagination_loading(bar, False)
+    assert bar["btn_prev"].enabled is True
+    assert bar["btn_next"].enabled is True
+
+    # Verify responsive breakpoints exist in theme.css
+    css = (Path(__file__).resolve().parents[2] / "theme" / "assets" / "theme.css").read_text(encoding="utf-8")
+    assert ".anvil-role-bma-pagination-bar" in css
+    assert "@media screen and (max-width: 1024px) and (min-width: 600px)" in css
+    assert "@media screen and (max-width: 599px)" in css

@@ -1677,3 +1677,131 @@ input[data-bma-password-field="true"]::-ms-clear {
     fill: none !important;
     pointer-events: none !important;
 }
+
+/* =========================================================================
+   Responsive Page Navigation (ModPagination) — Desktop, Tablet & Mobile
+   ========================================================================= */
+.anvil-role-bma-pagination-bar {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 10px 16px;
+    margin: 12px 0 4px 0;
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid #E0E0E0;
+    border-radius: 10px;
+}
+
+.anvil-role-bma-pagination-bar > .flow-panel-gutter {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 12px 16px !important;
+    margin: 0 !important;
+}
+
+.anvil-role-bma-pagination-bar > .flow-panel-gutter > .flow-panel-item {
+    margin: 0 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.anvil-role-bma-pagination-btn button {
+    min-height: 40px;
+    min-width: 118px;
+    padding: 8px 18px !important;
+    border-radius: 8px !important;
+    font-family: 'Inter', Roboto, Arial, sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.01em;
+    transition: background-color 0.15s ease, opacity 0.15s ease, transform 0.1s ease;
+}
+
+.anvil-role-bma-pagination-btn button:hover:not(:disabled) {
+    background-color: #1976D2 !important;
+}
+
+.anvil-role-bma-pagination-btn button:focus-visible {
+    outline: 2px solid #2196F3 !important;
+    outline-offset: 2px;
+}
+
+.anvil-role-bma-pagination-btn button:disabled {
+    opacity: 0.45 !important;
+    cursor: not-allowed !important;
+}
+
+.anvil-role-bma-pagination-info,
+.anvil-role-bma-pagination-info .label-text {
+    font-family: 'Inter', Roboto, Arial, sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: #212121 !important;
+    white-space: nowrap;
+    text-align: center;
+    padding: 4px 8px;
+}
+
+/* Tablet (600px - 1024px): full-width bar with spacious touch targets */
+@media screen and (max-width: 1024px) and (min-width: 600px) {
+    .anvil-role-bma-pagination-bar {
+        padding: 10px 14px;
+    }
+
+    .anvil-role-bma-pagination-bar > .flow-panel-gutter {
+        justify-content: space-between !important;
+        gap: 10px 12px !important;
+    }
+
+    .anvil-role-bma-pagination-btn button {
+        min-height: 44px;
+        min-width: 124px;
+        font-size: 14px !important;
+    }
+
+    .anvil-role-bma-pagination-info,
+    .anvil-role-bma-pagination-info .label-text {
+        font-size: 14px !important;
+    }
+}
+
+/* Mobile (< 600px): page counter on top row, full-tap Prev/Next side by side below */
+@media screen and (max-width: 599px) {
+    .anvil-role-bma-pagination-bar {
+        padding: 10px 10px;
+        border-radius: 8px;
+    }
+
+    .anvil-role-bma-pagination-bar > .flow-panel-gutter {
+        justify-content: space-between !important;
+        gap: 8px 10px !important;
+    }
+
+    .anvil-role-bma-pagination-bar > .flow-panel-gutter > .flow-panel-item:has(.anvil-role-bma-pagination-info) {
+        order: -1;
+        flex: 1 0 100%;
+    }
+
+    .anvil-role-bma-pagination-bar > .flow-panel-gutter > .flow-panel-item:has(.anvil-role-bma-pagination-btn) {
+        flex: 1 1 calc(50% - 6px);
+    }
+
+    .anvil-role-bma-pagination-btn,
+    .anvil-role-bma-pagination-btn button {
+        width: 100% !important;
+        min-width: 0 !important;
+        min-height: 44px !important;
+        padding: 10px 12px !important;
+        font-size: 14px !important;
+    }
+
+    .anvil-role-bma-pagination-info,
+    .anvil-role-bma-pagination-info .label-text {
+        font-size: 13px !important;
+        white-space: normal;
+        padding: 2px 4px;
+    }
+}

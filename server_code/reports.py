@@ -13,6 +13,9 @@ def make_excel(headers, rows, filename="report.xlsx", sheet_name="Data"):
     :return: anvil.BlobMedia
     """
     _get_current_user()
+    from openpyxl import Workbook
+    from openpyxl.styles import Font, PatternFill
+    from openpyxl.utils import get_column_letter
     wb = Workbook()
     ws = wb.active
     ws.title = sheet_name
@@ -412,6 +415,7 @@ def import_selling_prices_and_reorder_levels(file):
     _get_current_user()
     
     # Load the uploaded Excel file from Anvil media object
+    from openpyxl import load_workbook
     file_bytes = BytesIO(file.get_bytes())
     wb = load_workbook(file_bytes, data_only=True)
     ws = wb.active
@@ -1278,8 +1282,8 @@ def createSignedJobcardPdf(jobCardID):
         }
 
         html_string = fillJobCardReport(jobCardID)
-        pdfkit.from_string(
-            html_string, fileName, options=setting_options, configuration=config
+        get_pdfkit().from_string(
+            html_string, fileName, options=setting_options, configuration=get_pdfkit_config()
         )
         media_object = anvil.media.from_file(fileName, "application/pdf", name=fileName)
         return media_object

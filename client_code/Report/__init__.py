@@ -1,20 +1,10 @@
 from ._anvil_designer import ReportTemplate
-from ..QuoteForm import QuoteForm
 from anvil import *
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
 import anvil.server
 import anvil.js
-from ..ClientContactReport import ClientContactReport
-from ..CarDetailsReport import CarDetailsReport
-from ..StaffDetailsReport import StaffDetailsReport
-from ..TechnicianJobCardDetails import TechnicianJobCardDetails
-from ..InventoryReport import InventoryReport
-from ..PeriodicQuoteVsInvoice import PeriodicQuoteVsInvoice
-from ..PeriodicPayment import PeriodicPayment
-from ..MonthlyPerformanceSchedule import MonthlyPerformanceSchedule
-from ..ServiceHistory import ServiceHistory
 from .. import ModGetData
 
 class Report(ReportTemplate):
@@ -35,6 +25,7 @@ class Report(ReportTemplate):
 
         #Load permissions
         self.permissions = permissions
+        self._report_load_seq = 0
 
         # Apply permissions to buttons and load the first available subform
         self.apply_permissions()
@@ -112,76 +103,93 @@ class Report(ReportTemplate):
     def refresh(self, **event_args):
         self.set_event_handler("x-refresh", self.refresh)
 
+    def _mount_report(self, load_seq, expected_report, component):
+        """Mount a report component only if it still matches the latest combobox selection."""
+        if load_seq != self._report_load_seq or self.cmbReport.selected_value != expected_report:
+            return
+        self.card_panel.clear()
+        self.card_panel.add_component(component, full_width_row=True)
+        self.card_panel.visible = True
+
     def cmbReport_change(self, **event_args):
         """This method is called when an item is selected"""
-        if self.cmbReport.selected_value == "Clients":
+        selected = self.cmbReport.selected_value
+        self._report_load_seq += 1
+        load_seq = self._report_load_seq
+
+        self.card_panel.clear()
+        if not selected:
+            self.card_panel.visible = False
+            return
+
+        if selected == "Clients":
+            from ..ClientContactReport import ClientContactReport
             self.search_keyword_1.text_box_search.visible = True
             self.search_keyword_1.repeating_panel_results.visible = True
-            self.search_keyword_1.text_box_search.text=""
+            self.search_keyword_1.text_box_search.text = ""
             self.search_keyword_1.text_box_search.placeholder = "Search Client's Name"
             self.search_keyword_1.text_box_search.focus()
-            self.card_panel.clear()
-            self.card_panel.add_component(ClientContactReport(None), full_width_row=True)
-            self.card_panel.visible = True
+            comp = ClientContactReport(None)
+            self._mount_report(load_seq, selected, comp)
 
-        elif self.cmbReport.selected_value == "Car Details":
+        elif selected == "Car Details":
+            from ..CarDetailsReport import CarDetailsReport
             self.search_keyword_1.text_box_search.visible = False
             self.search_keyword_1.repeating_panel_results.visible = False
-            self.card_panel.clear()
-            self.card_panel.add_component(CarDetailsReport(), full_width_row=True)
-            self.card_panel.visible = True
-        
-        elif self.cmbReport.selected_value == "Technicians":
+            comp = CarDetailsReport()
+            self._mount_report(load_seq, selected, comp)
+
+        elif selected == "Technicians":
+            from ..TechnicianJobCardDetails import TechnicianJobCardDetails
             self.search_keyword_1.text_box_search.visible = False
             self.search_keyword_1.repeating_panel_results.visible = False
-            self.card_panel.clear()
-            self.card_panel.add_component(TechnicianJobCardDetails("Technician"), full_width_row=True)
-            self.card_panel.visible = True
+            comp = TechnicianJobCardDetails("Technician")
+            self._mount_report(load_seq, selected, comp)
 
-        elif self.cmbReport.selected_value == "Staffs":
+        elif selected == "Staffs":
+            from ..StaffDetailsReport import StaffDetailsReport
             self.search_keyword_1.text_box_search.visible = True
             self.search_keyword_1.repeating_panel_results.visible = True
-            self.search_keyword_1.text_box_search.text=""
+            self.search_keyword_1.text_box_search.text = ""
             self.search_keyword_1.text_box_search.placeholder = "Search Staff's Name"
             self.search_keyword_1.text_box_search.focus()
-            self.card_panel.clear()
-            self.card_panel.add_component(StaffDetailsReport(None), full_width_row=True)
-            self.card_panel.visible = True
+            comp = StaffDetailsReport(None)
+            self._mount_report(load_seq, selected, comp)
 
-        elif self.cmbReport.selected_value == "Inventory":
+        elif selected == "Inventory":
+            from ..InventoryReport import InventoryReport
             self.search_keyword_1.text_box_search.visible = False
             self.search_keyword_1.repeating_panel_results.visible = False
-            self.card_panel.clear()
-            self.card_panel.add_component(InventoryReport("Catalogue"), full_width_row=True)
-            self.card_panel.visible = True
+            comp = InventoryReport("Catalogue")
+            self._mount_report(load_seq, selected, comp)
 
-        elif self.cmbReport.selected_value == "Periodic Quote And Invoice":
+        elif selected == "Periodic Quote And Invoice":
+            from ..PeriodicQuoteVsInvoice import PeriodicQuoteVsInvoice
             self.search_keyword_1.text_box_search.visible = False
             self.search_keyword_1.repeating_panel_results.visible = False
-            self.card_panel.clear()
-            self.card_panel.add_component(PeriodicQuoteVsInvoice(), full_width_row=True)
-            self.card_panel.visible = True
+            comp = PeriodicQuoteVsInvoice()
+            self._mount_report(load_seq, selected, comp)
 
-        elif self.cmbReport.selected_value == "Periodic Payment Details":
+        elif selected == "Periodic Payment Details":
+            from ..PeriodicPayment import PeriodicPayment
             self.search_keyword_1.text_box_search.visible = False
             self.search_keyword_1.repeating_panel_results.visible = False
-            self.card_panel.clear()
-            self.card_panel.add_component(PeriodicPayment(), full_width_row=True)
-            self.card_panel.visible = True
+            comp = PeriodicPayment()
+            self._mount_report(load_seq, selected, comp)
 
-        elif self.cmbReport.selected_value == "Monthly Performance Schedule":
+        elif selected == "Monthly Performance Schedule":
+            from ..MonthlyPerformanceSchedule import MonthlyPerformanceSchedule
             self.search_keyword_1.text_box_search.visible = False
             self.search_keyword_1.repeating_panel_results.visible = False
-            self.card_panel.clear()
-            self.card_panel.add_component(MonthlyPerformanceSchedule(), full_width_row=True)
-            self.card_panel.visible = True
+            comp = MonthlyPerformanceSchedule()
+            self._mount_report(load_seq, selected, comp)
 
-        elif self.cmbReport.selected_value == "Service History":
+        elif selected == "Service History":
+            from ..ServiceHistory import ServiceHistory
             self.search_keyword_1.text_box_search.visible = False
             self.search_keyword_1.repeating_panel_results.visible = False
-            self.card_panel.clear()
-            self.card_panel.add_component(ServiceHistory(), full_width_row=True)
-            self.card_panel.visible = True
+            comp = ServiceHistory()
+            self._mount_report(load_seq, selected, comp)
 
     def getValue(self, **event_args):
         """This method is called when the text in this text box is edited"""
@@ -192,11 +200,11 @@ class Report(ReportTemplate):
             return [{'entry': r['Fullname'], 'ID': r['ID']} for r in results]
        
         elif selectedReport =="Technicians":
-            results = anvil.server.call("getTechnicians")
+            results = ModGetData.getTechniciansCached()
             return [{'entry': r['Fullname'], 'ID': r['ID']} for r in results]
 
         elif selectedReport =="Staffs":
-            results = anvil.server.call("getStaff")
+            results = ModGetData.getStaffCached()
             return [{'entry': r['Staff'], 'ID': r['ID']} for r in results]
 
         else:
@@ -205,36 +213,38 @@ class Report(ReportTemplate):
     def searchValue(self, result, **event_args):
         """Do something when a result is selected from search hints."""
         jobCardID = result['ID']
+        selected = self.cmbReport.selected_value
+        self._report_load_seq += 1
+        load_seq = self._report_load_seq
         
-        if self.cmbReport.selected_value == "Clients":
+        if selected == "Clients":
             if jobCardID is None:
                 Notification("Client is not found. Enter correct name of the client", title="Missing Client Details", style="danger", timeout=3).show()
                 self.card_panel.clear()
                 self.card_panel.visible = False
             else:
-                self.card_panel.clear()
-                self.card_panel.add_component(ClientContactReport(self.search_keyword_1.selected_result["ID"]), full_width_row=True)
-                self.card_panel.visible = True
+                from ..ClientContactReport import ClientContactReport
+                comp = ClientContactReport(self.search_keyword_1.selected_result["ID"])
+                self._mount_report(load_seq, selected, comp)
 
-                
-        elif self.cmbReport.selected_value == "Technicians":
+        elif selected == "Technicians":
             if jobCardID is None:
                 Notification("Technician is not found. Enter correct name of the technician", title="Missing Technician Details", style="danger", timeout=3).show()
                 self.card_panel.clear()
                 self.card_panel.visible = False
             else:
-                self.card_panel.clear()
-                self.card_panel.add_component(TechnicianJobCardDetails(), full_width_row=True)
-                self.card_panel.visible = True
+                from ..TechnicianJobCardDetails import TechnicianJobCardDetails
+                comp = TechnicianJobCardDetails()
+                self._mount_report(load_seq, selected, comp)
 
-        elif self.cmbReport.selected_value == "Staffs":
+        elif selected == "Staffs":
             if jobCardID is None:
                 Notification("Staff is not found. Enter correct name of the staff", title="Missing Staff Details", style="danger", timeout=3).show()
                 self.card_panel.clear()
                 self.card_panel.visible = False
             else:
-                self.card_panel.clear()
-                self.card_panel.add_component(StaffDetailsReport(self.search_keyword_1.selected_result["ID"]), full_width_row=True)
-                self.card_panel.visible = True
+                from ..StaffDetailsReport import StaffDetailsReport
+                comp = StaffDetailsReport(self.search_keyword_1.selected_result["ID"])
+                self._mount_report(load_seq, selected, comp)
                 
        

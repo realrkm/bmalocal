@@ -7,6 +7,7 @@ import anvil.tables.query as q
 from anvil.tables import app_tables
 import anvil.js
 from .. import ModGetData
+from .. import ModCache
 from ..TransitionInterimQuoteToInvoice import TransitionInterimQuoteToInvoice
 
 class InterimQuotation(InterimQuotationTemplate):
@@ -17,7 +18,12 @@ class InterimQuotation(InterimQuotationTemplate):
         # Any code you write here will run before the form opens.
         anvil.js.call('replaceBanner')
         
-        self.drop_down_CheckInstaff.items = anvil.server.call('getInterimQuoteAndAmendedInvoiceStaff')
+        self.drop_down_CheckInstaff.items = ModCache.get_or_fetch(
+            "interim_staff",
+            lambda: anvil.server.call('getInterimQuoteAndAmendedInvoiceStaff'),
+            topic="contacts",
+            ttl_seconds=300,
+        )
           
     def refresh(self, **event_args):
         self.set_event_handler("x-refresh", self.refresh)
@@ -88,13 +94,18 @@ class InterimQuotation(InterimQuotationTemplate):
     def drop_down_selectPart_change(self, **event_args):
         """This method is called when an item is selected"""
         self.lbl_ID.text = self.drop_down_selectPart.selected_value
-        result2 =  anvil.server.call_s("getCarPartNumberWithID", self.lbl_ID.text)
-        self.lbl_PartNumber.text = result2[0]["PartNo"]
-        partname = anvil.server.call_s("getCarPartNamesWithId", self.drop_down_selectPart.selected_value)
-        self.lbl_PartName.text = partname[0]["Name"]
-
-        price = ModGetData.getSellingPrice(self.lbl_ID.text)
-        self.txtSellingPrice.text = price
+        details = anvil.server.call_s("get_part_edit_details", self.lbl_ID.text)
+        if not details:
+            return
+        self.lbl_PartNumber.text = details["part_no"]
+        self.lbl_PartName.text = details["part_name"]
+        selling = details.get("selling_details")
+        if selling is None or selling.get("Amount") is None:
+            ModGetData.trackMissingPrice(self.lbl_ID.text)
+            Notification("Sorry, please enter selling price to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+            self.txtSellingPrice.text = None
+        else:
+            self.txtSellingPrice.text = selling["Amount"]
 
 
     def btn_AddParts_click(self, **event_args):

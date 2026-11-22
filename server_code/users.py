@@ -7,36 +7,32 @@ from ._common import *
 def getUsers():
     _require_role("Administrator")
     with db_cursor() as cursor:
-        rows = app_tables.users.search()
-        result = []
-        for i, row in enumerate(rows, start=1):
+        cursor.execute("SELECT ID, Roles FROM tbl_roles")
+        roles_by_id = {row[0]: row[1] for row in cursor.fetchall()}
 
-            def fmt_date(val):
-                if val:
-                    if (
-                        hasattr(val, "tzinfo") and val.tzinfo
-                    ):  # remove timezone if exists
-                        val = val.replace(tzinfo=None)
-                    return val.strftime("%Y-%m-%d %H:%M:%S")
-                return None
+    rows = app_tables.users.search()
+    result = []
 
-            cursor.execute(
-                "SELECT Roles FROM tbl_roles WHERE ID = %s", (row["role_id"],)
-            )
-            role = cursor.fetchone()
+    def fmt_date(val):
+        if val:
+            if hasattr(val, "tzinfo") and val.tzinfo:
+                val = val.replace(tzinfo=None)
+            return val.strftime("%Y-%m-%d %H:%M:%S")
+        return None
 
-            result.append(
-                {
-                    "No": i,
-                    "email": row["email"],
-                    "last_login": fmt_date(row["last_login"]),
-                    "signed_up": fmt_date(row["signed_up"]),
-                    "role": role[0] if role else None,
-                    "enabled": "Yes" if row["enabled"] else "No",
-                    "loginattempts": row["n_password_failures"],
-                }
-            )
-        return result
+    for i, row in enumerate(rows, start=1):
+        result.append(
+            {
+                "No": i,
+                "email": row["email"],
+                "last_login": fmt_date(row["last_login"]),
+                "signed_up": fmt_date(row["signed_up"]),
+                "role": roles_by_id.get(row["role_id"]),
+                "enabled": "Yes" if row["enabled"] else "No",
+                "loginattempts": row["n_password_failures"],
+            }
+        )
+    return result
 
 
 # *************************************************** Roles Section ************************************
@@ -45,12 +41,11 @@ def getUsers():
 @anvil.server.callable()
 def listRoles():
     _get_current_user()
-    with db_cursor() as cursor:
-        query = "SELECT Roles, Description FROM tbl_roles ORDER BY Roles"
-        cursor.execute(query)
-        rows = cursor.fetchall()
-        result = [{"Roles": row[0], "Description": row[1]} for row in rows]
-        return result
+    def _load():
+        with db_cursor() as cursor:
+            cursor.execute("SELECT Roles, Description FROM tbl_roles ORDER BY Roles")
+            return [{"Roles": row[0], "Description": row[1]} for row in cursor.fetchall()]
+    return list(cached_lookup("roles_list", _load, ttl_seconds=300))
 
 
 @anvil.server.callable()
@@ -75,23 +70,24 @@ def duplicateRole(role, description):
         # If not found, insert new
         query = "INSERT INTO tbl_roles (Roles, Description) VALUES (%s, %s)"
         cursor.execute(query, (role, description))
-        return {
-            "status": "inserted",
-            "id": cursor.lastrowid,
-            "role": role,
-            "description": description,
-        }
+        new_id = cursor.lastrowid
+    invalidate_lookup_cache("roles_list", "roles_dropdown")
+    return {
+        "status": "inserted",
+        "id": new_id,
+        "role": role,
+        "description": description,
+    }
 
 
 @anvil.server.callable()
 def getRoles():
     _get_current_user()
-    with db_cursor() as cursor:
-        query = "SELECT ID, Roles FROM tbl_roles ORDER BY Roles"
-        cursor.execute(query)
-        rows = cursor.fetchall()
-        result = [(row[1], row[0]) for row in rows]
-        return result
+    def _load():
+        with db_cursor() as cursor:
+            cursor.execute("SELECT ID, Roles FROM tbl_roles ORDER BY Roles")
+            return [(row[1], row[0]) for row in cursor.fetchall()]
+    return list(cached_lookup("roles_dropdown", _load, ttl_seconds=300))
 
 
 @anvil.server.callable()
@@ -123,6 +119,7 @@ def save_user_permissions(role_id, permissions_dict):
                     """,
                     (role_id, section, sub, int(allowed)),
                 )
+    publish_realtime_event("permissions", "updated", entity_id=role_id)
 
 
 # *************************************************** Get User Permissions Section ************************************
@@ -254,6 +251,7 @@ def hash_password(password, salt):
     if not isinstance(salt, bytes):
         raise TypeError("salt must be bytes produced by bcrypt.gensalt()")
 
+    bcrypt = get_bcrypt()
     result = bcrypt.hashpw(password, salt)
 
     if isinstance(result, bytes):
@@ -283,6 +281,7 @@ def reset_password(email, new_password):
     if not user:
         raise Exception("Invalid request.")
 
+    bcrypt = get_bcrypt()
     user["password_hash"] = hash_password(new_password, bcrypt.gensalt())
     return "Password reset successfully."
 

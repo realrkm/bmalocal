@@ -569,6 +569,8 @@ def save_work_done_by_technician(jobcardref, work_done):
     #Update work done in job card details
     jobcardid = getJobCardID(jobcardref)
     saveWorkDoneInJobCard(jobcardid, work_done)
+    publish_realtime_event("jobcards", "work_done", entity_id=jobcardid)
+    publish_realtime_event("technician_portal", "work_done", entity_id=jobcardid)
 
 # *************************************************** Self Service Portal - Vehicle Service History Section ************************************
 @anvil.server.callable()
@@ -825,6 +827,29 @@ def get_service_history_inspection(jobcard_id):
     }
 
 
+@anvil.server.callable()
+def get_self_service_bootstrap():
+    """Combined single-round-trip bootstrap for SelfService (Technician Portal)."""
+    _get_current_user()
+    return {
+        "parts_taxonomy": getCarPartNamesAndCategory(),
+        "jobcards_by_status": get_technician_jobcards_by_status(),
+        "technicians": get_technicians_list(),
+    }
+
+
+@anvil.server.callable()
+def get_vehicle_inspection_by_ref(jobcard_ref):
+    """Resolve jobcard_ref and return its vehicle inspection data in one round-trip."""
+    _get_current_user()
+    if not jobcard_ref or not str(jobcard_ref).strip():
+        raise ValueError("Invalid jobcard_ref provided.")
+    jobcard_id = getJobCardID(jobcard_ref)
+    if not jobcard_id:
+        return None
+    return get_vehicle_inspection_data(jobcard_id)
+
+
 __all__ = [
     'get_technician_jobcards_by_status',
     'getExistingJobCardInDefectsAndRequestedParts',
@@ -843,6 +868,8 @@ __all__ = [
     'save_work_done_by_technician',
     'get_vehicle_service_history',
     'get_service_history_inspection',
+    'get_self_service_bootstrap',
+    'get_vehicle_inspection_by_ref',
 ]
 
 from . import BMALocal as _compatibility_facade

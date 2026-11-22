@@ -21,10 +21,63 @@ class ProgressTrackerMobileView(ProgressTrackerMobileViewTemplate):
 
         # Any code you write here will run before the form opens.
         anvil.js.call('replaceBanner')
+        self._rt_tokens = []
+        self._rt_conn_token = None
+        self.set_event_handler("hide", self.form_hide)
+
+    def _sync_timer_with_ws(self):
+        try:
+            rt = getattr(anvil.js.window, "bmaRealtime", None)
+            ws_live = bool(rt and rt.isConnected())
+        except Exception:
+            ws_live = False
+        if ws_live:
+            self.timer_update.interval = 0
+            self.timer_update.enabled = False
+        else:
+            self.timer_update.interval = 60
+            self.timer_update.enabled = True
+
+    def _on_realtime_event(self, evt=None):
+        selected_id = self.drop_down_JobCardRefDetails.selected_value
+        if not selected_id:
+            return
+        entity_id = evt.get("entity_id") if isinstance(evt, dict) else None
+        if entity_id is None or str(entity_id) == str(selected_id):
+            self.refresh_selected_job_card()
 
     def form_show(self, **event_args):
-        self.timer_update.interval = 30
-        self.timer_update.enabled = True
+        self.form_hide()
+        try:
+            rt = getattr(anvil.js.window, "bmaRealtime", None)
+            if rt:
+                self._rt_tokens = [
+                    rt.subscribe("jobcards", self._on_realtime_event),
+                    rt.subscribe("payments", self._on_realtime_event),
+                ]
+                def _on_conn(status):
+                    self._sync_timer_with_ws()
+                    if status and status.get("reconnected"):
+                        self.refresh_selected_job_card()
+                self._rt_conn_token = rt.onConnectionChange(_on_conn)
+        except Exception:
+            pass
+        self._sync_timer_with_ws()
+
+    def form_hide(self, **event_args):
+        self.timer_update.interval = 0
+        self.timer_update.enabled = False
+        try:
+            rt = getattr(anvil.js.window, "bmaRealtime", None)
+            if rt:
+                for tok in self._rt_tokens:
+                    rt.unsubscribe(tok)
+                if self._rt_conn_token:
+                    rt.offConnectionChange(self._rt_conn_token)
+        except Exception:
+            pass
+        self._rt_tokens = []
+        self._rt_conn_token = None
 
     def timer_update_tick(self, **event_args):
         self.refresh_selected_job_card()

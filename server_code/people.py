@@ -139,6 +139,7 @@ def getClientFullname():
     return result
 
 
+
 @anvil.server.callable()
 def getClientFullnameFromSearchWord(valueSearch):
     _get_current_user()
@@ -190,6 +191,8 @@ def save_client_data(name, phone, address, email, narration):
             VALUES (%s, %s, %s, %s, %s)
         """
         cursor.execute(query, (name, phone, address, email, narration))
+        new_id = cursor.lastrowid
+    publish_realtime_event("contacts", "client_created", entity_id=new_id)
 
 
 # Get Client report
@@ -230,6 +233,61 @@ def getClientReport(clientID):
 
 
 @anvil.server.callable()
+def get_client_report_paginated(clientID=None, limit=50, offset=0):
+    """Paginated client report using MySQL COUNT(*) + LIMIT/OFFSET."""
+    _get_current_user()
+    if not isinstance(limit, int) or limit <= 0 or limit > 200:
+        raise ValueError("limit must be an integer between 1 and 200.")
+    if not isinstance(offset, int) or offset < 0:
+        raise ValueError("offset must be a non-negative integer.")
+
+    with db_cursor() as cursor:
+        if clientID is None:
+            cursor.execute("SELECT COUNT(*) FROM tbl_clientcontacts")
+            total = cursor.fetchone()[0]
+            cursor.execute(
+                """
+                SELECT ID, Fullname, Phone, Address, Email, Narration
+                FROM tbl_clientcontacts
+                ORDER BY Fullname ASC
+                LIMIT %s OFFSET %s
+                """,
+                (limit, offset),
+            )
+        else:
+            cursor.execute(
+                "SELECT COUNT(*) FROM tbl_clientcontacts WHERE ID = %s",
+                (clientID,),
+            )
+            total = cursor.fetchone()[0]
+            cursor.execute(
+                """
+                SELECT ID, Fullname, Phone, Address, Email, Narration
+                FROM tbl_clientcontacts
+                WHERE ID = %s
+                LIMIT %s OFFSET %s
+                """,
+                (clientID, limit, offset),
+            )
+
+        rows = cursor.fetchall()
+        items = [
+            {
+                "No": offset + index + 1,
+                "ID": row[0],
+                "Fullname": row[1],
+                "Phone": row[2],
+                "Address": row[3],
+                "Email": row[4],
+                "Narration": row[5],
+            }
+            for index, row in enumerate(rows)
+        ]
+
+    return {"items": items, "total": total, "limit": limit, "offset": offset}
+
+
+@anvil.server.callable()
 def updateClientDetails(client_id, name, phone, address, email, narration):
     _get_current_user()
     with db_cursor() as cursor:
@@ -243,6 +301,7 @@ def updateClientDetails(client_id, name, phone, address, email, narration):
             WHERE ID = %s
         """
         cursor.execute(query, (name, phone, address, email, narration, client_id))
+    publish_realtime_event("contacts", "client_updated", entity_id=client_id)
 
 
 @anvil.server.callable()
@@ -305,19 +364,22 @@ def getTechnicianReport(technicianName):
     return result
 
 
+
 @anvil.server.callable()
 def getTechnicians():
     _get_current_user()
-    with db_cursor() as cursor:
-        query = """
-            SELECT ID, Fullname
-            FROM tbl_technicians
-            WHERE IsArchived = FALSE
-            ORDER BY Fullname ASC
-        """
-        cursor.execute(query)
-        result = cursor.fetchall()
-        return [{"ID": r[0], "Fullname": r[1]} for r in result]
+    def _load():
+        with db_cursor() as cursor:
+            query = """
+                SELECT ID, Fullname
+                FROM tbl_technicians
+                WHERE IsArchived = FALSE
+                ORDER BY Fullname ASC
+            """
+            cursor.execute(query)
+            result = cursor.fetchall()
+            return [{"ID": r[0], "Fullname": r[1]} for r in result]
+    return list(cached_lookup("technicians", _load, ttl_seconds=300))
 
 
 @anvil.server.callable()
@@ -347,6 +409,9 @@ def save_technician_data(fullname, phone, toolkit):
             INSERT INTO tbl_technicians(Fullname,Phone,ToolkitID,IsArchived) VALUES (%s, %s, %s, %s)
         """
         cursor.execute(query, (fullname, phone, toolkit, 0))
+        new_id = cursor.lastrowid
+    invalidate_lookup_cache("technicians")
+    publish_realtime_event("contacts", "technician_created", entity_id=new_id)
 
 
 @anvil.server.callable()
@@ -383,6 +448,7 @@ def get_technician_details(value):
         return result
 
 
+
 @anvil.server.callable()
 def update_technician_data(name, phone, toolkit, archived, technician_id):
     _get_current_user()
@@ -396,6 +462,8 @@ def update_technician_data(name, phone, toolkit, archived, technician_id):
             WHERE ID = %s
         """
         cursor.execute(query, (name, phone, toolkit, archived, technician_id))
+    invalidate_lookup_cache("technicians")
+    publish_realtime_event("contacts", "technician_updated", entity_id=technician_id)
 
 
 @anvil.server.callable()
@@ -510,6 +578,7 @@ def get_toolkit_details(value):
         return result
 
 
+
 @anvil.server.callable()
 def update_toolkit_data(name, amount, toolkit_id):
     _get_current_user()
@@ -534,6 +603,9 @@ def save_staff_data(fullname, phone):
             INSERT INTO tbl_checkstaff(Staff,Phone,IsArchived) VALUES (%s, %s, %s)
         """
         cursor.execute(query, (fullname, phone, 0))
+        new_id = cursor.lastrowid
+    invalidate_lookup_cache("staff")
+    publish_realtime_event("contacts", "staff_created", entity_id=new_id)
 
 
 @anvil.server.callable()
@@ -569,6 +641,7 @@ def get_staff_details(value):
         return result
 
 
+
 @anvil.server.callable()
 def update_staff_data(name, phone, archived, staff_id):
     _get_current_user()
@@ -581,6 +654,8 @@ def update_staff_data(name, phone, archived, staff_id):
             WHERE ID = %s
         """
         cursor.execute(query, (name, phone, archived, staff_id))
+    invalidate_lookup_cache("staff")
+    publish_realtime_event("contacts", "staff_updated", entity_id=staff_id)
 
 
 @anvil.server.callable()
@@ -617,20 +692,23 @@ def getStaffReport(staffID):
     return result
 
 
+
 # Get Staff Details
 @anvil.server.callable()
 def getStaff():
     _get_current_user()
-    with db_cursor() as cursor:
-        query = """
-                SELECT ID, Staff
-                FROM tbl_checkstaff
-                WHERE IsArchived = FALSE
-                ORDER BY Staff ASC
-            """
-        cursor.execute(query)
-        result = cursor.fetchall()
-        return [{"ID": r[0], "Staff": r[1]} for r in result]
+    def _load():
+        with db_cursor() as cursor:
+            query = """
+                    SELECT ID, Staff
+                    FROM tbl_checkstaff
+                    WHERE IsArchived = FALSE
+                    ORDER BY Staff ASC
+                """
+            cursor.execute(query)
+            result = cursor.fetchall()
+            return [{"ID": r[0], "Staff": r[1]} for r in result]
+    return list(cached_lookup("staff", _load, ttl_seconds=300))
 
 
 @anvil.server.callable()
@@ -729,6 +807,7 @@ __all__ = [
     'getClientNameWithID',
     'save_client_data',
     'getClientReport',
+    'get_client_report_paginated',
     'updateClientDetails',
     'getClientNameAndPhoneNumber',
     'getTechnicianReport',

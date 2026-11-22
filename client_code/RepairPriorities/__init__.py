@@ -65,9 +65,20 @@ class RepairPriorities(RepairPrioritiesTemplate):
 
     def drop_down_selectPart_change(self, **event_args):
         """This method is called when an item is selected"""
-        partname = anvil.server.call_s("getCarPartNamesWithId", self.drop_down_selectPart.selected_value)
-        self.lbl_PartName.text = partname[0]["Name"]
-        self.txtSellingPrice.text = ModGetData.getSellingPrice(self.lbl_ID.text)
+        part_id = self.drop_down_selectPart.selected_value
+        self.lbl_ID.text = part_id
+        details = anvil.server.call_s("get_part_edit_details", part_id)
+        if not details:
+            return
+        self.lbl_PartNumber.text = details["part_no"]
+        self.lbl_PartName.text = details["part_name"]
+        selling = details.get("selling_details")
+        if selling is None or selling.get("Amount") is None:
+            ModGetData.trackMissingPrice(part_id)
+            Notification("Sorry, please enter selling price to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+            self.txtSellingPrice.text = None
+        else:
+            self.txtSellingPrice.text = selling["Amount"]
 
     def btn_AddParts_click(self, **event_args):
         """This method is called when the button is clicked"""

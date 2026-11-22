@@ -29,13 +29,13 @@ class JobCard(JobCardTemplate):
         self.search_keyword_4.text_box_search.placeholder = "Checked In By *"
         
     def getTechnicianName(self,  **event_args):
-        """Return technician records to SearchKeyword."""
-        results = anvil.server.call("getTechnicians")
+        """Return technician records to SearchKeyword (served from ModCache)."""
+        results = ModGetData.getTechniciansCached()
         return [{'entry': r['Fullname'], 'ID': r['ID']} for r in results]
 
     def getStaffDetails(self,  **event_args):
-        """Return customer records to SearchKeyword."""
-        results = anvil.server.call('getStaff')
+        """Return staff records to SearchKeyword (served from ModCache)."""
+        results = ModGetData.getStaffCached()
         return [{'entry': r['Staff'], 'ID': r['ID']} for r in results]
 
     def populateClientAndCarDetails(self, result, **event_args):

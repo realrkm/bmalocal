@@ -33,6 +33,7 @@ def updateNotifications(jobcard, createdat, notification):
                 Update tbl_technician_portal_notifications SET active = 0 WHERE jobcard = %s AND created_at = %s
             """
         cursor.execute(query, (jobcard, createdat))
+    publish_realtime_event("notifications", "deactivated", entity_id=jobcard)
         
 
 # *************************************************** Role-Based Notification Section ************************************
@@ -47,6 +48,7 @@ def publish_role_notification(JobCardID, message):
             VALUES (%s, %s, %s, %s, %s)
         """
         cursor.execute(query, (jobcard, message, 1, datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=3))), True))
+    publish_realtime_event("notifications", "created", entity_id=JobCardID)
 
 @anvil.server.callable()
 def fetch_role_notifications(logged_in_user):

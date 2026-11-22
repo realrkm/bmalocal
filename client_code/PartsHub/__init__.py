@@ -5,46 +5,48 @@ import anvil.users
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
-from ..PartsCatalog import PartsCatalog
-from ..OrderTracking import OrderTracking
 import anvil.js
 
 
 class PartsHub(PartsHubTemplate):
     def __init__(self, permissions, **properties):
-        """Initialize Contacts form with permissions and optionally load a subform."""
+        """Initialize PartsHub form with permissions and defer loading the first subform."""
         # Set Form properties and Data Bindings
         self.init_components(**properties)
         anvil.js.call("replaceBanner")
         
         # Store permissions
         self.permissions = permissions
+        self._initial_subform_loaded = False
+        self._first_visible = None
 
-        # Apply permissions to buttons and load the first available subform
+        # Apply permissions to buttons and defer first subform load to form_show
         self.apply_permissions()
+        self.set_event_handler("show", self.form_show)
+
+    def form_show(self, **event_args):
+        """Load the first authorized subform once the PartsHub container is mounted."""
+        if not self._initial_subform_loaded:
+            self._initial_subform_loaded = True
+            if self._first_visible:
+                self.show_clicked_button(self._first_visible)
 
     def apply_permissions(self):
-        """Apply only PARTS HUB-related permissions and load the first available subform."""
+        """Apply only PARTS HUB-related permissions and record the first available subform."""
         online_perms = self.permissions.get("PARTS HUB", {"main": False, "subs": {}})
-
-        first_visible = None  # track which subform to load first
 
         for subsection, value in online_perms["subs"].items():
            if subsection == "Parts Catalog":
                 self.btn_PartsCatalog.visible = value
                 self.btn_PartsCatalog.enabled = value
-                if value and first_visible is None:
-                    first_visible = "Parts Catalog"
+                if value and self._first_visible is None:
+                    self._first_visible = "Parts Catalog"
 
            elif subsection == "Order Tracking":
                self.btn_OrderTracking.visible = value
                self.btn_OrderTracking.enabled = value
-               if value and first_visible is None:
-                   first_visible = "Order Tracking"
-                   
-        # Load the first visible subform automatically
-        if first_visible:
-            self.show_clicked_button(first_visible)
+               if value and self._first_visible is None:
+                   self._first_visible = "Order Tracking"
 
     def show_clicked_button(self, buttonName, **event_args):
         """
@@ -69,12 +71,14 @@ class PartsHub(PartsHubTemplate):
     # --- Button click handlers ---
     def btn_PartsCatalog_click(self, **event_args):
         """Load Parts Catalog subform."""
+        from ..PartsCatalog import PartsCatalog
         self.highlight_active_button("PARTS CATALOG")
         self.card_2.clear()
         self.card_2.add_component(PartsCatalog(), full_width_row=True)
 
     def btn_OrderTracking_click(self, **event_args):
         """Load Order Tracking subform."""
+        from ..OrderTracking import OrderTracking
         self.highlight_active_button("ORDER TRACKING")
         self.card_2.clear()
         self.card_2.add_component(OrderTracking(), full_width_row=True)

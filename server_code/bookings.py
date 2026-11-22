@@ -14,13 +14,13 @@ def saveBookingDetails(customer_id, regno, period, details):
         """
         try:
             cursor.execute(query, (customer_id, regno, period, details))
-            # If your connection doesn't auto-commit, uncomment the next line:
-            # cursor.connection.commit()
-            return True
+            new_id = cursor.lastrowid
         except Exception as e:
             # Log the error and raise it back to the UI if needed
             print(f"Error saving booking: {e}")
             raise e
+    publish_realtime_event("bookings", "booking_created", entity_id=new_id)
+    return True
         
 @anvil.server.callable()
 def getBookingDetails():
@@ -70,6 +70,7 @@ def updateAppointmentSent(booking_id):
             WHERE ID = %s
         """
         cursor.execute(query, (booking_id,))
+    publish_realtime_event("bookings", "booking_sent", entity_id=booking_id)
 
 __all__ = [
     'saveBookingDetails',

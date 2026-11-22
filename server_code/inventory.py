@@ -1291,11 +1291,11 @@ def downloadDefectsPdfForm(jobcardID, docType):
         if docType == "DefectsList" or docType == "PricedDefectsList":
             html_string = fillDefectsListFormData(jobcardID, docType)
 
-        pdfkit.from_string(
+        get_pdfkit().from_string(
             html_string,
             fileName,
             options={**setting_options, "debug-javascript": ""},
-            configuration=config,
+            configuration=get_pdfkit_config(),
         )
 
         media_object = anvil.media.from_file(fileName, "application/pdf", name=fileName)
@@ -1334,8 +1334,8 @@ def downloadRevisionPdfForm(regNo, docType):
         elif docType == "Brand":
             html_string = fillBrandComparisonFormData(regNo, docType)
 
-        pdfkit.from_string(
-            html_string, fileName, options=setting_options, configuration=config
+        get_pdfkit().from_string(
+            html_string, fileName, options=setting_options, configuration=get_pdfkit_config()
         )
         media_object = anvil.media.from_file(fileName, "application/pdf", name=fileName)
         return media_object
@@ -1827,20 +1827,17 @@ def saveBrand(assignedDate, regNo, name, number, quantity, amount, groupid):
 @anvil.server.callable()
 def getLocation():
     _get_current_user()
-    with db_cursor() as cursor:
-        query = """
-            SELECT ID, Location
-            FROM tbl_carpartslocation
-            ORDER BY Location ASC
-        """
-        cursor.execute(query)
-        results = cursor.fetchall()
-
-        # Return as a list of dicts for Anvil Dropdown
-        # label = what user sees, value = what is stored
-        dropdown_items = [(row[1], row[0]) for row in results]
-
-    return dropdown_items
+    def _load():
+        with db_cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT ID, Location
+                FROM tbl_carpartslocation
+                ORDER BY Location ASC
+                """
+            )
+            return [(row[1], row[0]) for row in cursor.fetchall()]
+    return list(cached_lookup("locations", _load, ttl_seconds=300))
 
 
 @anvil.server.callable()
@@ -1851,6 +1848,8 @@ def addLocation(locationName):
             INSERT INTO tbl_carpartslocation (Location) VALUES (%s)
         """
         cursor.execute(query, (locationName,))
+    invalidate_lookup_cache("locations", "locations_and_suppliers")
+    publish_realtime_event("inventory", "location_added")
 
 
 @anvil.server.callable()
@@ -1879,6 +1878,8 @@ def updateLocation(value, id):
             WHERE ID = %s
         """
         cursor.execute(query, (value, id))
+    invalidate_lookup_cache("locations", "locations_and_suppliers")
+    publish_realtime_event("inventory", "location_updated", entity_id=id)
 
 
 # *************************************************** Supplier Details Section ************************************
@@ -1887,20 +1888,17 @@ def updateLocation(value, id):
 @anvil.server.callable()
 def getSupplier():
     _get_current_user()
-    with db_cursor() as cursor:
-        query = """
-            SELECT ID, Name
-            FROM tbl_carpartssupplier
-            Order By Name ASC
-        """
-        cursor.execute(query)
-        results = cursor.fetchall()
-
-        # Return as a list of dicts for Anvil Dropdown
-        # label = what user sees, value = what is stored
-        dropdown_items = [(row[1], row[0]) for row in results]
-
-    return dropdown_items
+    def _load():
+        with db_cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT ID, Name
+                FROM tbl_carpartssupplier
+                Order By Name ASC
+                """
+            )
+            return [(row[1], row[0]) for row in cursor.fetchall()]
+    return list(cached_lookup("suppliers", _load, ttl_seconds=300))
 
 
 @anvil.server.callable()
@@ -1911,6 +1909,8 @@ def addSupplier(supplierName, supplierPhone):
             INSERT INTO tbl_carpartssupplier (Name, Phone) VALUES (%s, %s)
         """
         cursor.execute(query, (supplierName, supplierPhone))
+    invalidate_lookup_cache("suppliers", "locations_and_suppliers")
+    publish_realtime_event("inventory", "supplier_added")
 
 
 @anvil.server.callable()
@@ -1940,19 +1940,24 @@ def updateSupplier(supplierName, supplierPhone, supplierID):
             WHERE ID = %s
         """
         cursor.execute(query, (supplierName, supplierPhone, supplierID))
+    invalidate_lookup_cache("suppliers", "locations_and_suppliers")
+    publish_realtime_event("inventory", "supplier_updated", entity_id=supplierID)
 
 # **************************************************** Combined Location and Supplier Details **************************
 @anvil.server.callable()
 def getLocationAndSupplier():
     _get_current_user()
-    with db_cursor() as cursor:
-        cursor.execute("SELECT ID, Location FROM tbl_carpartslocation ORDER BY Location ASC")
-        locations = [(row[1], row[0]) for row in cursor.fetchall()]
+    def _load():
+        with db_cursor() as cursor:
+            cursor.execute("SELECT ID, Location FROM tbl_carpartslocation ORDER BY Location ASC")
+            locations = [(row[1], row[0]) for row in cursor.fetchall()]
 
-        cursor.execute("SELECT ID, Name FROM tbl_carpartssupplier ORDER BY Name ASC")
-        suppliers = [(row[1], row[0]) for row in cursor.fetchall()]
+            cursor.execute("SELECT ID, Name FROM tbl_carpartssupplier ORDER BY Name ASC")
+            suppliers = [(row[1], row[0]) for row in cursor.fetchall()]
 
-    return {"locations": locations, "suppliers": suppliers}
+        return {"locations": locations, "suppliers": suppliers}
+    data = cached_lookup("locations_and_suppliers", _load, ttl_seconds=300)
+    return {"locations": list(data["locations"]), "suppliers": list(data["suppliers"])}
 
 # *************************************************** New Car Parts Details Section ************************************
 
@@ -1996,6 +2001,8 @@ def addNewParts(
         cursor.execute(
             query3, (purchaseDate, partID, supplierID, units, buyingPrice, " ")
         )
+    invalidate_lookup_cache_prefix("price_catalogue:", "stock_balance:")
+    publish_realtime_event("inventory", "part_added", entity_id=partID)
 
 
 @anvil.server.callable()
@@ -2071,6 +2078,172 @@ def getPartsSellingDetailsID(valueID):
 
 
 @anvil.server.callable()
+def get_part_edit_details(part_id):
+    """Combined single-round-trip bootstrap for part details, part number/name, and selling price."""
+    _get_current_user()
+    if part_id is None:
+        raise ValueError("Invalid part_id provided.")
+
+    with db_cursor() as cursor:
+        cursor.execute(
+            "SELECT ID, Name, PartNo, OrderLevel, Location FROM tbl_carpartnames WHERE ID = %s",
+            (part_id,),
+        )
+        part_row = cursor.fetchone()
+        if not part_row:
+            return None
+
+        cursor.execute(
+            """
+            SELECT Date, NoOfUnits, UnitCost, CarPartsSupplierID
+            FROM tbl_stockparts
+            WHERE CarPart = %s
+            ORDER BY Date DESC
+            LIMIT 1
+            """,
+            (part_id,),
+        )
+        stock_row = cursor.fetchone()
+
+        cursor.execute(
+            """
+            SELECT SetPriceDate, Amount, SaleDiscount
+            FROM tbl_partssellingprice
+            WHERE CarPartsNamesID = %s
+            """,
+            (part_id,),
+        )
+        selling_row = cursor.fetchone()
+
+    stock_part = None
+    if stock_row:
+        stock_part = {
+            "Date": stock_row[0],
+            "NoOfUnits": stock_row[1],
+            "UnitCost": stock_row[2],
+            "CarPartsSupplierID": stock_row[3],
+            "Name": part_row[1],
+            "PartNo": part_row[2],
+            "OrderLevel": part_row[3],
+            "Location": part_row[4],
+        }
+
+    selling_details = (
+        dict(zip(["SetPriceDate", "Amount", "SaleDiscount"], selling_row))
+        if selling_row
+        else None
+    )
+
+    return {
+        "id": part_row[0],
+        "part_name": part_row[1],
+        "part_no": part_row[2],
+        "stock_part": stock_part,
+        "selling_details": selling_details,
+    }
+
+
+@anvil.server.callable()
+def get_assigned_jobcards_bootstrap():
+    """Combined single-round-trip bootstrap for AssignedJobCards form."""
+    _get_current_user()
+    jobs = get_assigned_jobs(None, None, None)
+    technicians = getTechnicianInJobCard()
+    return {"jobs": jobs, "technicians": technicians}
+
+
+@anvil.server.callable()
+def search_car_parts_paginated(query_text="", limit=50, offset=0):
+    """Paginated search over tbl_carpartnames keeping responses bounded within latency budgets."""
+    _get_current_user()
+    if not isinstance(limit, int) or limit <= 0 or limit > 200:
+        raise ValueError("limit must be an integer between 1 and 200.")
+    if not isinstance(offset, int) or offset < 0:
+        raise ValueError("offset must be a non-negative integer.")
+
+    term = (query_text or "").strip()
+    like_val = f"%{term}%"
+    with db_cursor() as cursor:
+        if term:
+            cursor.execute(
+                "SELECT COUNT(*) FROM tbl_carpartnames WHERE PartNo LIKE %s OR Name LIKE %s",
+                (like_val, like_val),
+            )
+            total = cursor.fetchone()[0]
+            cursor.execute(
+                """
+                SELECT ID, PartNo, Name, OrderLevel, Location
+                FROM tbl_carpartnames
+                WHERE PartNo LIKE %s OR Name LIKE %s
+                ORDER BY Name ASC
+                LIMIT %s OFFSET %s
+                """,
+                (like_val, like_val, limit, offset),
+            )
+        else:
+            cursor.execute("SELECT COUNT(*) FROM tbl_carpartnames")
+            total = cursor.fetchone()[0]
+            cursor.execute(
+                """
+                SELECT ID, PartNo, Name, OrderLevel, Location
+                FROM tbl_carpartnames
+                ORDER BY Name ASC
+                LIMIT %s OFFSET %s
+                """,
+                (limit, offset),
+            )
+        rows = cursor.fetchall()
+
+    items = [
+        {"ID": r[0], "PartNo": r[1], "Name": r[2], "OrderLevel": r[3], "Location": r[4]}
+        for r in rows
+    ]
+    return {"items": items, "total": total, "limit": limit, "offset": offset}
+
+
+@anvil.server.callable()
+def get_filtered_parts_paginated(part_filter="", limit=50, offset=0):
+    """Paginated Price Catalogue endpoint backed by short-TTL cache for instant page turns."""
+    _get_current_user()
+    if not isinstance(limit, int) or limit <= 0 or limit > 200:
+        raise ValueError("limit must be an integer between 1 and 200.")
+    if not isinstance(offset, int) or offset < 0:
+        raise ValueError("offset must be a non-negative integer.")
+
+    term = (part_filter or "").strip()
+    cache_key = f"price_catalogue:{term.lower()}"
+    all_rows = cached_lookup(
+        cache_key,
+        lambda: get_filtered_parts(term),
+        ttl_seconds=30,
+    )
+    total = len(all_rows)
+    page_rows = all_rows[offset:offset + limit]
+    return {"items": page_rows, "total": total, "limit": limit, "offset": offset}
+
+
+@anvil.server.callable()
+def get_car_parts_summary_paginated(search_term="", limit=50, offset=0):
+    """Paginated Stock Balance endpoint backed by short-TTL cache for instant page turns."""
+    _get_current_user()
+    if not isinstance(limit, int) or limit <= 0 or limit > 200:
+        raise ValueError("limit must be an integer between 1 and 200.")
+    if not isinstance(offset, int) or offset < 0:
+        raise ValueError("offset must be a non-negative integer.")
+
+    term = (search_term or "").strip()
+    cache_key = f"stock_balance:{term.lower()}"
+    all_rows = cached_lookup(
+        cache_key,
+        lambda: get_car_parts_summary(term),
+        ttl_seconds=30,
+    )
+    total = len(all_rows)
+    page_rows = all_rows[offset:offset + limit]
+    return {"items": page_rows, "total": total, "limit": limit, "offset": offset}
+
+
+@anvil.server.callable()
 def updateNewParts(
     purchaseDate,
     partName,
@@ -2132,6 +2305,8 @@ def updateNewParts(
                 oldSupplierID,
             ),
         )
+    invalidate_lookup_cache_prefix("price_catalogue:", "stock_balance:")
+    publish_realtime_event("inventory", "part_updated", entity_id=valueID)
 
 
 @anvil.server.callable()
@@ -2147,6 +2322,8 @@ def addStock(additionDate, supplierID, partID, no_of_units, unit_cost):
         cursor.execute(
             query, (additionDate, partID, supplierID, no_of_units, unit_cost, "")
         )
+    invalidate_lookup_cache_prefix("price_catalogue:", "stock_balance:")
+    publish_realtime_event("inventory", "stock_added", entity_id=partID)
 
 # ***************************************************  Car Parts Where Buying Price Exceeds Selling Price Section ************************************
 @anvil.server.callable()
@@ -2769,6 +2946,7 @@ def import_counting_stock_quantity(file):
     _get_current_user()
 
     # Load the uploaded Excel file from Anvil media object
+    from openpyxl import load_workbook
     file_bytes = BytesIO(file.get_bytes())
     wb = load_workbook(file_bytes, data_only=True)
     ws = wb.active
@@ -3064,6 +3242,11 @@ __all__ = [
     'check_duplicate_number',
     'getPartsDetailsID',
     'getPartsSellingDetailsID',
+    'get_part_edit_details',
+    'get_assigned_jobcards_bootstrap',
+    'search_car_parts_paginated',
+    'get_filtered_parts_paginated',
+    'get_car_parts_summary_paginated',
     'updateNewParts',
     'addStock',
     'getPartsWhereBuyingPriceExceedsSelling',

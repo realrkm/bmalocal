@@ -360,12 +360,36 @@ async def send_presence():
     })
 
 
+def _is_loopback_peer(websocket) -> bool:
+    """Return True if the WebSocket peer originates from the local loopback interface."""
+    remote = getattr(websocket, "remote_address", None)
+    if not remote:
+        return False
+    host = remote[0] if isinstance(remote, (tuple, list)) else str(remote)
+    return host in ("127.0.0.1", "::1", "localhost", "::ffff:127.0.0.1")
+
+
+def _validate_internal_publish(websocket, data: dict) -> bool:
+    """Validate loopback origin, shared secret, and topic format for internal_publish frames."""
+    if not _is_loopback_peer(websocket):
+        return False
+    provided_secret = str(data.get("secret") or "")
+    expected_secret = get_realtime_internal_secret()
+    if not provided_secret or not hmac.compare_digest(provided_secret, expected_secret):
+        return False
+    topic = data.get("topic")
+    if not isinstance(topic, str) or not re.fullmatch(r"[A-Za-z0-9_]{1,64}", topic.strip()):
+        return False
+    return True
+
+
 async def chat_handler(websocket):
     current_user = {
         "email": "",
         "role_name": "User",
         "initials": "U",
     }
+    is_internal_publisher = False
     connected_clients[websocket] = current_user
 
     try:
@@ -376,6 +400,28 @@ async def chat_handler(websocket):
                 continue
 
             msg_type = data.get("type")
+
+            if msg_type == "internal_publish":
+                is_internal_publisher = True
+                connected_clients.pop(websocket, None)
+                if not _validate_internal_publish(websocket, data):
+                    await websocket.send(json.dumps({
+                        "type": "publish_ack",
+                        "ok": False,
+                        "error": "Unauthorized internal publish.",
+                    }))
+                    break
+                event_payload = {
+                    "type": "data_changed",
+                    "topic": data["topic"].strip(),
+                    "action": str(data.get("action") or "updated").strip()[:64],
+                    "entity_id": data.get("entity_id"),
+                    "version": data.get("version") or int(time.time() * 1000),
+                    "actor": str(data.get("actor") or "")[:128],
+                }
+                await broadcast(event_payload)
+                await websocket.send(json.dumps({"type": "publish_ack", "ok": True}))
+                break
 
             if msg_type == "join":
                 user_info = data.get("user", {})
@@ -484,14 +530,16 @@ async def chat_handler(websocket):
             elif msg_type == "ping":
                 await websocket.send(json.dumps({"type": "pong"}))
 
-    except websockets.exceptions.ConnectionClosed:
+    except get_websockets().exceptions.ConnectionClosed:
         pass
     finally:
         connected_clients.pop(websocket, None)
-        await send_presence()
+        if not is_internal_publisher:
+            await send_presence()
 
 
 async def main_ws():
+    websockets = get_websockets()
     init_chat_db()
     ssl_context = None
     protocol = "ws"

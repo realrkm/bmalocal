@@ -373,15 +373,15 @@ def test_selfservice_loads_existing_inspection_photo_previews(monkeypatch):
             "image_3": FakeMedia("image/jpeg", b"\xff\xd8\xffphoto"),
         }
     }
-    anvil.server.call.side_effect = [42, saved_data]
+    anvil.server.call.return_value = saved_data
 
     images = form.getVehicleInspectionPhotos("JC-042")
 
     assert images["image_1"] == _data_url("image/png", b"\x89PNG\r\n\x1a\nphoto")
     assert images["image_2"] is None
     assert images["image_3"] == _data_url("image/jpeg", b"\xff\xd8\xffphoto")
-    assert anvil.server.call.call_args_list[0].args == ("getJobCardID", "JC-042")
-    assert anvil.server.call.call_args_list[1].args == ("get_vehicle_inspection_data", 42)
+    assert anvil.server.call.call_args_list[0].args == ("get_vehicle_inspection_by_ref", "JC-042")
+    assert anvil.server.call.call_count == 1
 
 
 def test_selfservice_photo_response_includes_saved_checklist_data(monkeypatch):
@@ -392,7 +392,7 @@ def test_selfservice_photo_response_includes_saved_checklist_data(monkeypatch):
         "checkboxes": {"chk_jack": True, "chk_final": True},
         "textboxes": {"text_box_test_drive": "No"},
     }
-    anvil.server.call.side_effect = [42, inspection_data]
+    anvil.server.call.return_value = inspection_data
 
     result = form.getVehicleInspectionPhotos("JC-042")
 
@@ -403,11 +403,8 @@ def test_selfservice_photo_response_includes_saved_checklist_data(monkeypatch):
         "checkboxes": inspection_data["checkboxes"],
         "textboxes": inspection_data["textboxes"],
     }
-    assert anvil.server.call.call_args_list[0].args == ("getJobCardID", "JC-042")
-    assert anvil.server.call.call_args_list[1].args == (
-        "get_vehicle_inspection_data",
-        42,
-    )
+    assert anvil.server.call.call_args_list[0].args == ("get_vehicle_inspection_by_ref", "JC-042")
+    assert anvil.server.call.call_count == 1
 
 
 def test_selfservice_js_merges_saved_checklist_into_local_state():

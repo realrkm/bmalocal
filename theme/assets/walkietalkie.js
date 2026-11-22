@@ -7,11 +7,83 @@
 
     let ws = null;
     let reconnectTimer = null;
+    let reconnectAttempts = 0;
+    let hasConnectedOnce = false;
     let lastRenderedDate = null;
     let isConnected = false;
     let unreadCount = 0;
     let isChatPopupOpen = false;
     let latestMessagesHistory = [];
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // BMALocal Real-Time Data Invalidation Bus (window.bmaRealtime)
+    // Shares the port 8765 WebSocket with Walkie-Talkie chat.
+    // ─────────────────────────────────────────────────────────────────────────
+    const rtSubscribers = new Map();       // token -> { topic, cb }
+    const rtConnListeners = new Map();     // token -> cb
+    const rtPendingByTopic = new Map();    // topic -> { timer, event }
+    let rtTokenSeq = 0;
+
+    function dispatchRealtimeEvent(evt) {
+        if (!evt || !evt.topic) return;
+        const topic = String(evt.topic);
+        const existing = rtPendingByTopic.get(topic);
+        if (existing) {
+            clearTimeout(existing.timer);
+            // If multiple distinct entities changed in the same burst, signal a full refresh
+            if (existing.event.entity_id !== evt.entity_id) {
+                evt = Object.assign({}, evt, { entity_id: null });
+            }
+        }
+        const timer = setTimeout(() => {
+            rtPendingByTopic.delete(topic);
+            rtSubscribers.forEach((sub) => {
+                if (sub.topic === topic || sub.topic === "*") {
+                    try {
+                        sub.cb(evt);
+                    } catch (err) {
+                        console.error("bmaRealtime subscriber error:", err);
+                    }
+                }
+            });
+        }, 200);
+        rtPendingByTopic.set(topic, { timer, event: evt });
+    }
+
+    function notifyConnectionChange(connected, reconnected) {
+        const status = { connected: !!connected, reconnected: !!reconnected };
+        rtConnListeners.forEach((cb) => {
+            try {
+                cb(status);
+            } catch (err) {
+                console.error("bmaRealtime connection listener error:", err);
+            }
+        });
+    }
+
+    window.bmaRealtime = {
+        subscribe: function (topic, callback) {
+            if (!topic || typeof callback !== "function") return null;
+            const token = "rt_" + (++rtTokenSeq);
+            rtSubscribers.set(token, { topic: String(topic), cb: callback });
+            return token;
+        },
+        unsubscribe: function (token) {
+            if (token) rtSubscribers.delete(token);
+        },
+        onConnectionChange: function (callback) {
+            if (typeof callback !== "function") return null;
+            const token = "rtc_" + (++rtTokenSeq);
+            rtConnListeners.set(token, callback);
+            return token;
+        },
+        offConnectionChange: function (token) {
+            if (token) rtConnListeners.delete(token);
+        },
+        isConnected: function () {
+            return !!(isConnected && ws && ws.readyState === WebSocket.OPEN);
+        }
+    };
 
     // Default user state: null until explicitly set on authenticated login
     window.wtCurrentUser = window.wtCurrentUser || null;
@@ -790,7 +862,10 @@
         }
 
         ws.onopen = function () {
+            const wasReconnect = hasConnectedOnce || reconnectAttempts > 0;
             isConnected = true;
+            hasConnectedOnce = true;
+            reconnectAttempts = 0;
             if (reconnectTimer) clearTimeout(reconnectTimer);
             if (els.statusDot) els.statusDot.classList.remove("offline");
 
@@ -801,6 +876,7 @@
                     user: window.wtCurrentUser
                 }));
             }
+            notifyConnectionChange(true, wasReconnect);
         };
 
         ws.onmessage = function (event) {
@@ -855,6 +931,8 @@
                         b.disabled = false;
                         b.style.opacity = "1";
                     });
+                } else if (data.type === "data_changed") {
+                    dispatchRealtimeEvent(data);
                 } else if (data.type === "presence") {
                     const count = typeof data.online_count === "number" ? data.online_count : 0;
                     if (els.onlineText) {
@@ -885,6 +963,7 @@
             const els = initElements();
             if (els.statusDot) els.statusDot.classList.add("offline");
             if (els.onlineText) els.onlineText.textContent = "Offline";
+            notifyConnectionChange(false, false);
             scheduleReconnect();
         };
     }
@@ -895,9 +974,11 @@
         if (!window.wtCurrentUser || !window.wtCurrentUser.email) {
             return;
         }
+        const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 10000);
+        reconnectAttempts++;
         reconnectTimer = setTimeout(() => {
             connectWebSocket();
-        }, 3000);
+        }, delay);
     }
 
     function sendMessage() {

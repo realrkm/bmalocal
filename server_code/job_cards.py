@@ -627,6 +627,7 @@ def saveCancellationReason(jobcardid, reason):
             VALUES (%s, %s, NOW())
         """
         cursor.execute(query, (jobcardid, reason))
+    publish_realtime_event("jobcards", "cancelled", entity_id=jobcardid)
 
 
 @anvil.server.callable()
@@ -1135,11 +1136,11 @@ def downloadTechNotesPdfForm(jobcardID, docType):
 
         html_string = fillTechNotesFormData(jobcardID, docType)
 
-        pdfkit.from_string(
+        get_pdfkit().from_string(
             html_string,
             fileName,
             options={**setting_options, "debug-javascript": ""},
-            configuration=config,
+            configuration=get_pdfkit_config(),
         )
 
         media_object = anvil.media.from_file(fileName, "application/pdf", name=fileName)
@@ -1313,6 +1314,7 @@ def updateJobCardStatus(jobcardid, status):
                         WHERE ID = %s;
                     """
         cursor.execute(query, (status, jobcardid))
+    publish_realtime_event("jobcards", "status_updated", entity_id=jobcardid)
 
 
 @anvil.server.callable()
@@ -1795,6 +1797,7 @@ def transitionreadyforpickuptocomplete():
             WHERE Status = 'Ready for Pickup'
         """
         cursor.execute(query)
+    publish_realtime_event("jobcards", "bulk_completed")
     return "All 'Ready for Pickup' jobcards have been updated to 'Complete'."
 
 __all__ = [

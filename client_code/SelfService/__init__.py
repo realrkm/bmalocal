@@ -23,6 +23,9 @@ class SelfService(SelfServiceTemplate):
         # Any code you write here will run before the form opens.
         anvil.js.call('replaceBanner')       
         
+    def get_self_service_bootstrap(self):
+        return anvil.server.call("get_self_service_bootstrap")
+
     def getCarPartNamesAndCategory(self):
         return anvil.server.call('getCarPartNamesAndCategory')
 
@@ -104,16 +107,14 @@ class SelfService(SelfServiceTemplate):
         return media
 
     def getVehicleInspectionPhotos(self, jobcard_ref):
-        jobcard_id = anvil.server.call("getJobCardID", jobcard_ref)
-        if not jobcard_id:
+        inspection_data = anvil.server.call(
+            "get_vehicle_inspection_by_ref", jobcard_ref
+        )
+        if not inspection_data:
             return {
                 **{image_code: None for image_code in _INSPECTION_IMAGE_CODES},
                 "checklist": {"checkboxes": {}, "textboxes": {}},
             }
-
-        inspection_data = anvil.server.call(
-            "get_vehicle_inspection_data", jobcard_id
-        )
         if not isinstance(inspection_data, dict):
             raise ValueError("Saved vehicle inspection data is invalid.")
         images = inspection_data.get("images", {})

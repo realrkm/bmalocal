@@ -13,7 +13,20 @@ class CarDetailsReport(CarDetailsReportTemplate):
         # Set Form properties and Data Bindings.
         self.init_components(**properties)
         anvil.js.call('replaceBanner')
-        self.car_repeater.items = anvil.server.call("get_car_details", None)
+        self._is_mounted = True
+        self.set_event_handler("hide", self.form_hide)
+        anvil.js.window.setTimeout(self._load_initial_data, 10)
+
+    def form_hide(self, **event_args):
+        self._is_mounted = False
+
+    def _load_initial_data(self):
+        if not self._is_mounted:
+            return
+        with anvil.server.no_loading_indicator:
+            rows = anvil.server.call("get_car_details", None)
+        if self._is_mounted:
+            self.car_repeater.items = rows
         
     def btn_Search_click(self, **event_args):
         """This method is called when the button is clicked"""

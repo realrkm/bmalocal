@@ -1529,7 +1529,7 @@ def downloadInspectionChecklistPdf(jobCardID, docType):
     os.close(file_descriptor)
     try:
         html_string = fillInspectionChecklistData(jobCardID, docType)
-        pdfkit.from_string(
+        get_pdfkit().from_string(
             html_string,
             temporary_path,
             options={
@@ -1544,7 +1544,7 @@ def downloadInspectionChecklistPdf(jobCardID, docType):
                 "enable-local-file-access": None,
                 "quiet": "",
             },
-            configuration=config,
+            configuration=get_pdfkit_config(),
         )
         return anvil.media.from_file(
             temporary_path,

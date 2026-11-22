@@ -8,15 +8,17 @@ import anvil.users
 from .. import ModNavigation
 from .. import ModGetData
 import anvil.js
+import json
 from anvil.js import window
 from anvil.js.window import navigator, setTimeout
 from ..NotificationsAndAlerts import NotificationsAndAlerts
-from ..WalkieTalkieChat import WalkieTalkieChat
+
+_PERMS_STORAGE_KEY = "bma_user_permissions_cache_v1"
 
 
 class Main(MainTemplate):
 
-    def __init__(self, permissions=None, user=None, **properties):
+    def __init__(self, permissions=None, user=None, revalidate_permissions=False, **properties):
         self.init_components(**properties)
         self.home_component = self.column_panel_content
         anvil.js.call('replaceBanner')
@@ -39,6 +41,9 @@ class Main(MainTemplate):
                     self.permissions = {}
             self.apply_permissions()
 
+            if revalidate_permissions:
+                anvil.js.window.setTimeout(self.refresh_permissions_async, 500)
+
             self.notificationsandalerts = None
 
             user_agent = navigator.userAgent
@@ -54,7 +59,10 @@ class Main(MainTemplate):
             self.polling_active = True
             self.poll_running = False   # ← guard against stacking
             self.timeout_id = None
-            # Defer initial notification poll by 1500ms so dashboard UI paints immediately
+            self._rt_tokens = []
+            self._rt_conn_token = None
+            self._subscribe_realtime()
+            # Defer initial notification fetch by 1500ms so dashboard UI paints immediately
             anvil.js.window.setTimeout(self.start_notification_loop, 1500)
 
             # Trigger an immediate check when user returns to this browser tab
@@ -91,17 +99,58 @@ class Main(MainTemplate):
             except Exception as e:
                 print("Error registering WT current user on login:", e)
 
-        # Eagerly mount WalkieTalkieChat into self.live_popup (hidden) so DOM elements (#wtMessagesBody, etc.)
-        # are immediately ready on login. This ensures offline/unread message badges display on the FAB
-        # without requiring the user to click the FAB first, and makes opening chat instant.
-        try:
-            self.walkie_chat = WalkieTalkieChat(user_profile=user_prof, on_close=self.close_chat)
-            self.live_popup.add_component(self.walkie_chat, full_width_row=True)
-        except Exception as e:
-            print("Error initializing WalkieTalkieChat on login:", e)
-            self.walkie_chat = None
+        # Defer mounting WalkieTalkieChat slightly so the Main shell & sidebar paint first.
+        # Once mounted (hidden), DOM elements (#wtMessagesBody, etc.) are ready for unread badges
+        # and instant popup opening.
+        self._wt_user_prof = user_prof
+        self.walkie_chat = None
+        anvil.js.window.setTimeout(self._mount_walkie_chat, 250)
 
         self._safe_js_call("updateWtBadgeDisplay")
+
+    def _mount_walkie_chat(self):
+        """Lazily mount WalkieTalkieChat after Main finishes initial paint."""
+        if self.walkie_chat is not None or not self.user:
+            return
+        try:
+            from ..WalkieTalkieChat import WalkieTalkieChat
+            self.walkie_chat = WalkieTalkieChat(user_profile=self._wt_user_prof, on_close=self.close_chat)
+            self.live_popup.clear()
+            self.live_popup.add_component(self.walkie_chat, full_width_row=True)
+            self._safe_js_call("updateWtBadgeDisplay")
+        except Exception as e:
+            print("Error initializing WalkieTalkieChat:", e)
+            self.walkie_chat = None
+
+    def refresh_permissions_async(self):
+        """Silently refresh permissions from the server and update sidebar & cache."""
+        if not self.user:
+            return
+        try:
+            with anvil.server.no_loading_indicator:
+                context = anvil.server.call_s("get_user_session_context")
+            if not context:
+                return
+            fresh_perms = context.get("permissions", {})
+            if fresh_perms != self.permissions:
+                self.permissions = fresh_perms
+                self.apply_permissions()
+            try:
+                email = self.user.get("email", "") if isinstance(self.user, dict) else self.user["email"]
+                role_id = self.user.get("role_id") if isinstance(self.user, dict) else self.user["role_id"]
+                anvil.js.window.sessionStorage.setItem(
+                    _PERMS_STORAGE_KEY,
+                    json.dumps({
+                        "email": email,
+                        "role_id": role_id,
+                        "permissions": fresh_perms,
+                        "is_technician": bool(context.get("is_technician")),
+                    }),
+                )
+            except Exception:
+                pass
+        except Exception as e:
+            print(f"Background permission refresh skipped: {e}")
 
     def _safe_js_call(self, fn_name, *args):
         """Invoke a JS function on window safely without throwing if not yet ready."""
@@ -119,6 +168,51 @@ class Main(MainTemplate):
         self.live_popup.visible = False
         self.is_open = False
         self._safe_js_call("setWtChatOpenStatus", False)
+
+    def _is_ws_connected(self):
+        try:
+            rt = getattr(anvil.js.window, "bmaRealtime", None)
+            return bool(rt and rt.isConnected())
+        except Exception:
+            return False
+
+    def _subscribe_realtime(self):
+        """Subscribe Main to live notification and permission invalidation events."""
+        self._unsubscribe_realtime()
+        try:
+            rt = getattr(anvil.js.window, "bmaRealtime", None)
+            if not rt:
+                return
+            self._rt_tokens = [
+                rt.subscribe("notifications", lambda evt: self.run_notification_poll()),
+                rt.subscribe("permissions", lambda evt: self.refresh_permissions_async()),
+            ]
+            def _on_conn_change(status):
+                if status and status.get("connected"):
+                    if self.timeout_id is not None:
+                        anvil.js.window.clearTimeout(self.timeout_id)
+                        self.timeout_id = None
+                    if status.get("reconnected"):
+                        self.run_notification_poll()
+                elif self.polling_active and self.timeout_id is None:
+                    self.timeout_id = anvil.js.window.setTimeout(self.run_notification_poll, 30000)
+            self._rt_conn_token = rt.onConnectionChange(_on_conn_change)
+        except Exception as e:
+            print(f"Main realtime subscription skipped: {e}")
+
+    def _unsubscribe_realtime(self):
+        try:
+            rt = getattr(anvil.js.window, "bmaRealtime", None)
+            if not rt:
+                return
+            for tok in getattr(self, "_rt_tokens", []) or []:
+                rt.unsubscribe(tok)
+            self._rt_tokens = []
+            if getattr(self, "_rt_conn_token", None):
+                rt.offConnectionChange(self._rt_conn_token)
+                self._rt_conn_token = None
+        except Exception:
+            pass
 
     def start_notification_loop(self):
         self.polling_active = True
@@ -179,8 +273,8 @@ class Main(MainTemplate):
             print(f"Notification poll failed temporarily: {e}")
         finally:
             self.poll_running = False   # ← releases the guard
-            if self.polling_active:
-                # 2. Increased from 5,000ms (5s) to 30,000ms (30s)
+            if self.polling_active and not self._is_ws_connected():
+                # Fallback poll only when WebSocket is offline
                 self.timeout_id = anvil.js.window.setTimeout(self.run_notification_poll, 30000)
 
     def link_1_click(self, **event_args):
@@ -197,6 +291,7 @@ class Main(MainTemplate):
     def fab_btn_click(self, **event_args):
         if not hasattr(self, "walkie_chat") or self.walkie_chat is None:
             # Lazy initialize WalkieTalkieChat on first user interaction
+            from ..WalkieTalkieChat import WalkieTalkieChat
             user_prof = None
             if self.user:
                 try:
@@ -363,12 +458,22 @@ class Main(MainTemplate):
         self.call_js('hideSidebarIfModal')
 
     def btn_Logout_click(self, **event_args):
-        # Stop the poll first, before anything else
+        # Stop the poll and realtime listeners first, before anything else
         self.polling_active = False
+        self._unsubscribe_realtime()
         if self.timeout_id is not None:
             anvil.js.window.clearTimeout(self.timeout_id)
             self.timeout_id = None
         self.user = None  # Clear user reference immediately
+        try:
+            from .. import ModCache
+            ModCache.clear()
+        except Exception:
+            pass
+        try:
+            anvil.js.window.sessionStorage.removeItem(_PERMS_STORAGE_KEY)
+        except Exception:
+            pass
 
         # Explicitly disconnect Walkie Talkie chat on logout
         self._safe_js_call("disconnectWtChat")
@@ -386,6 +491,7 @@ class Main(MainTemplate):
 
     def form_hide(self, **events_args):
         self.polling_active = False
+        self._unsubscribe_realtime()
         if self.timeout_id is not None:
             anvil.js.window.clearTimeout(self.timeout_id)
             self.timeout_id = None

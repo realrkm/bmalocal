@@ -5,19 +5,41 @@ import anvil.tables.query as q
 from anvil.tables import app_tables
 from anvil import *
 import anvil.js
+from . import ModCache
 
 # ************************************************* Error Handling Section *******************************
 
 _notification_shown_at = {}  # title -> JS timestamp
-_inventory_dropdown_cache = None
-
 
 
 def getLocationAndSupplier(force_refresh=False):
-    global _inventory_dropdown_cache
-    if _inventory_dropdown_cache is None or force_refresh:
-        _inventory_dropdown_cache = anvil.server.call("getLocationAndSupplier")
-    return _inventory_dropdown_cache
+    return ModCache.get_or_fetch(
+        "locations_and_suppliers",
+        lambda: anvil.server.call("getLocationAndSupplier"),
+        topic="inventory",
+        ttl_seconds=300,
+        force_refresh=force_refresh,
+    )
+
+
+def getTechniciansCached(force_refresh=False):
+    return ModCache.get_or_fetch(
+        "technicians_list",
+        lambda: anvil.server.call_s("getTechnicians"),
+        topic="contacts",
+        ttl_seconds=300,
+        force_refresh=force_refresh,
+    )
+
+
+def getStaffCached(force_refresh=False):
+    return ModCache.get_or_fetch(
+        "staff_list",
+        lambda: anvil.server.call_s("getStaff"),
+        topic="contacts",
+        ttl_seconds=300,
+        force_refresh=force_refresh,
+    )
 
 def _show_error(message, title="", timeout=5):
     """
@@ -104,11 +126,14 @@ def getAssignedTechnician(id):
     return anvil.server.call_s('getAssignedTechnician', id)
     
 #************************************************* Car Parts Section *******************************
-def getCarPartNames():
-    carpartname_list = []
-    for row in anvil.server.call_s('getCarPartNames'):
-        carpartname_list.append((row['Name'], row))
-    return carpartname_list
+def getCarPartNames(force_refresh=False):
+    return ModCache.get_or_fetch(
+        "car_part_names",
+        lambda: [(row['Name'], row) for row in anvil.server.call_s('getCarPartNames')],
+        topic="inventory",
+        ttl_seconds=300,
+        force_refresh=force_refresh,
+    )
 
 def getCarPartNumber(name):
     carpartnumber_list = []

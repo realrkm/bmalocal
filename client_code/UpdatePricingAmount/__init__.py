@@ -8,6 +8,7 @@ import anvil.users
 from ..AddLocation import AddLocation
 from ..AddSupplier import AddSupplier
 import anvil.js
+from .. import ModGetData
 
 
 class UpdatePricingAmount(UpdatePricingAmountTemplate):
@@ -17,8 +18,9 @@ class UpdatePricingAmount(UpdatePricingAmountTemplate):
 
         # Any code you write here will run before the form opens.
         anvil.js.call("replaceBanner")
-        self.drop_down_location.items = anvil.server.call("getLocation")
-        self.drop_down_supplier.items = anvil.server.call("getSupplier")
+        lookups = ModGetData.getLocationAndSupplier()
+        self.drop_down_location.items = lookups.get("locations", [])
+        self.drop_down_supplier.items = lookups.get("suppliers", [])
         self.text_box_searchPartNo.text = partno
         self.btn_Search_click()
        
@@ -49,12 +51,13 @@ class UpdatePricingAmount(UpdatePricingAmountTemplate):
     def drop_down_selectPart_change(self, **event_args):
         """This method is called when an item is selected"""
         self.lbl_ID.text = self.drop_down_selectPart.selected_value
-        result2 = anvil.server.call_s("getCarPartNumberWithID", self.lbl_ID.text)
-        self.lbl_PartNumber.text = result2[0]["PartNo"]
-
-        stockParts = anvil.server.call("getPartsDetailsID", self.lbl_ID.text)
+        details = anvil.server.call("get_part_edit_details", self.lbl_ID.text)
+        if not details or not details.get("stock_part"):
+            return
+        self.lbl_PartNumber.text = details["part_no"]
+        stockParts = details["stock_part"]
         self.lbl_SupplierId.text = stockParts["CarPartsSupplierID"]
-        sellingDetails = anvil.server.call("getPartsSellingDetailsID", self.lbl_ID.text)
+        sellingDetails = details.get("selling_details")
 
         # Populate form
         self.date_picker_purchase.date = stockParts["Date"]

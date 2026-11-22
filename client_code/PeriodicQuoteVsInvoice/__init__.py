@@ -14,8 +14,36 @@ class PeriodicQuoteVsInvoice(PeriodicQuoteVsInvoiceTemplate):
 
         # Any code you write here will run before the form opens.
         anvil.js.call('replaceBanner')
-        
-        self.repeating_panel_1.items = anvil.server.call("get_jobcard_quote_invoice_totals")
+        self._rt_tokens = []
+        self.set_event_handler("show", self.form_show)
+        self.set_event_handler("hide", self.form_hide)
+        anvil.js.window.setTimeout(self._load_initial_data, 10)
+
+    def _load_initial_data(self):
+        with anvil.server.no_loading_indicator:
+            self.repeating_panel_1.items = anvil.server.call("get_jobcard_quote_invoice_totals")
+
+    def form_show(self, **event_args):
+        self.form_hide()
+        try:
+            rt = getattr(anvil.js.window, "bmaRealtime", None)
+            if rt:
+                self._rt_tokens = [
+                    rt.subscribe("jobcards", lambda evt: self._load_initial_data()),
+                    rt.subscribe("payments", lambda evt: self._load_initial_data()),
+                ]
+        except Exception:
+            pass
+
+    def form_hide(self, **event_args):
+        try:
+            rt = getattr(anvil.js.window, "bmaRealtime", None)
+            if rt:
+                for tok in self._rt_tokens:
+                    rt.unsubscribe(tok)
+        except Exception:
+            pass
+        self._rt_tokens = []
 
     def btn_Search_click(self, **event_args):
         """This method is called when the button is clicked"""

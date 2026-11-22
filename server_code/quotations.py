@@ -1102,8 +1102,8 @@ def createQuotationInvoicePdf(jobCardID, docType):
         }
 
         html_string = fillQuotationInvoiceData(jobCardID, docType)
-        pdfkit.from_string(
-            html_string, fileName, options=setting_options, configuration=config
+        get_pdfkit().from_string(
+            html_string, fileName, options=setting_options, configuration=get_pdfkit_config()
         )
         media_object = anvil.media.from_file(fileName, "application/pdf", name=fileName)
         return media_object
@@ -1418,17 +1418,19 @@ def saveInterimQuotationPartsAndServices(assignedDate, jobCardID, items):
 @anvil.server.callable()
 def getInterimQuoteAndAmendedInvoiceStaff():
     _get_current_user()
-    with db_cursor() as cursor:
-        query = """
-            SELECT ID, Staff
-            FROM tbl_checkstaff
-            WHERE IsArchived = FALSE
-            ORDER BY Staff ASC
-        """
-        cursor.execute(query)
-        result = cursor.fetchall()
-        # Return list of tuples: (label shown, value stored)
-        return [(r[1], r[0]) for r in result]
+    def _load():
+        with db_cursor() as cursor:
+            query = """
+                SELECT ID, Staff
+                FROM tbl_checkstaff
+                WHERE IsArchived = FALSE
+                ORDER BY Staff ASC
+            """
+            cursor.execute(query)
+            result = cursor.fetchall()
+            # Return list of tuples: (label shown, value stored)
+            return [(r[1], r[0]) for r in result]
+    return list(cached_lookup("interim_staff", _load, ttl_seconds=300))
 
 
 @anvil.server.callable()

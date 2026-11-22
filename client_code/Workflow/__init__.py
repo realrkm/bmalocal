@@ -20,6 +20,9 @@ class Workflow(WorkflowTemplate):
 
         # Apply permissions to buttons and load the first available subform
         self.apply_permissions()
+        self._rt_token = None
+        self._rt_conn_token = None
+        self.set_event_handler("hide", self.form_hide)
 
         # Defer dashboard metrics fetch so the Workflow UI renders instantly
         anvil.js.window.setTimeout(self.load_dashboard_data, 10)
@@ -50,14 +53,65 @@ class Workflow(WorkflowTemplate):
     def refresh(self, **event_args):
         self.set_event_handler("x-refresh", self.refresh)
         
-    def form_show(self, **event_args):
-        """Set up real-time updates for dashboard forms"""
-        if hasattr(self, 'timer_update'):
-            self.timer_update.interval = 30  # 30 seconds
+    def _sync_timer_with_ws(self):
+        """Run fallback timer only when WebSocket is disconnected."""
+        if not hasattr(self, 'timer_update'):
+            return
+        try:
+            rt = getattr(anvil.js.window, "bmaRealtime", None)
+            ws_live = bool(rt and rt.isConnected())
+        except Exception:
+            ws_live = False
+        if ws_live:
+            self.timer_update.interval = 0
+            self.timer_update.enabled = False
+        else:
+            self.timer_update.interval = 60
             self.timer_update.enabled = True
-    
+
+    def _on_jobcard_event(self, evt=None):
+        self.load_dashboard_data()
+        if self.cmbStatus.selected_value and self.vehicle_repeater.visible:
+            try:
+                with anvil.server.no_loading_indicator:
+                    self.populateCards(self.cmbStatus.selected_value, self.cmbRegNo.selected_value)
+            except Exception as e:
+                print(f"Workflow realtime card refresh skipped: {e}")
+
+    def form_show(self, **event_args):
+        """Set up WebSocket-driven updates (fallback timer only when WS offline)."""
+        self.form_hide()
+        try:
+            rt = getattr(anvil.js.window, "bmaRealtime", None)
+            if rt:
+                self._rt_token = rt.subscribe("jobcards", self._on_jobcard_event)
+                def _on_conn(status):
+                    self._sync_timer_with_ws()
+                    if status and status.get("reconnected"):
+                        self._on_jobcard_event()
+                self._rt_conn_token = rt.onConnectionChange(_on_conn)
+        except Exception:
+            pass
+        self._sync_timer_with_ws()
+
+    def form_hide(self, **event_args):
+        if hasattr(self, 'timer_update'):
+            self.timer_update.interval = 0
+            self.timer_update.enabled = False
+        try:
+            rt = getattr(anvil.js.window, "bmaRealtime", None)
+            if rt:
+                if self._rt_token:
+                    rt.unsubscribe(self._rt_token)
+                if self._rt_conn_token:
+                    rt.offConnectionChange(self._rt_conn_token)
+        except Exception:
+            pass
+        self._rt_token = None
+        self._rt_conn_token = None
+
     def timer_update_tick(self, **event_args):
-        """Refresh dashboard data"""
+        """Fallback refresh when WebSocket is offline."""
         self.load_dashboard_data()
         
     def load_dashboard_data(self):

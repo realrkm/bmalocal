@@ -14,7 +14,32 @@ class PeriodicPayment(PeriodicPaymentTemplate):
 
         # Any code you write here will run before the form opens.
         anvil.js.call('replaceBanner')
-        self.repeating_panel_1.items = anvil.server.call("get_client_payment_summary")
+        self._rt_token = None
+        self.set_event_handler("show", self.form_show)
+        self.set_event_handler("hide", self.form_hide)
+        anvil.js.window.setTimeout(self._load_initial_data, 10)
+
+    def _load_initial_data(self):
+        with anvil.server.no_loading_indicator:
+            self.repeating_panel_1.items = anvil.server.call("get_client_payment_summary")
+
+    def form_show(self, **event_args):
+        self.form_hide()
+        try:
+            rt = getattr(anvil.js.window, "bmaRealtime", None)
+            if rt:
+                self._rt_token = rt.subscribe("payments", lambda evt: self._load_initial_data())
+        except Exception:
+            pass
+
+    def form_hide(self, **event_args):
+        try:
+            rt = getattr(anvil.js.window, "bmaRealtime", None)
+            if rt and self._rt_token:
+                rt.unsubscribe(self._rt_token)
+        except Exception:
+            pass
+        self._rt_token = None
 
     def btn_Search_click(self, **event_args):
         """This method is called when the button is clicked"""

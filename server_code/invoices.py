@@ -220,6 +220,8 @@ def update_invoice_status(jobCardRefID):
             WHERE AssignedJobID = %s
         """
         cursor.execute(query, (jobCardRefID,))
+    publish_realtime_event("payments", "invoice_paid", entity_id=jobCardRefID)
+    publish_realtime_event("jobcards", "invoice_paid", entity_id=jobCardRefID)
 
 
 @anvil.server.callable()
@@ -1032,8 +1034,8 @@ def createReportPdf(jobCardID, docType):
         }
 
         html_string = fillReportData(jobCardID, docType)
-        pdfkit.from_string(
-            html_string, fileName, options=setting_options, configuration=config
+        get_pdfkit().from_string(
+            html_string, fileName, options=setting_options, configuration=get_pdfkit_config()
         )
         media_object = anvil.media.from_file(fileName, "application/pdf", name=fileName)
         return media_object

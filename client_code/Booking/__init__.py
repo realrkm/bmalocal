@@ -14,9 +14,34 @@ class Booking(BookingTemplate):
 
         # External JS call for styling/layout
         anvil.js.call('replaceBanner')
+        self._rt_token = None
+        self.set_event_handler("show", self.form_show)
+        self.set_event_handler("hide", self.form_hide)
 
         # Load initial data into the Repeating Panel
         self.refresh_data_grid()
+
+    def form_show(self, **event_args):
+        self.form_hide()
+        try:
+            rt = getattr(anvil.js.window, "bmaRealtime", None)
+            if rt:
+                self._rt_token = rt.subscribe("bookings", self._on_bookings_changed)
+        except Exception:
+            pass
+
+    def form_hide(self, **event_args):
+        try:
+            rt = getattr(anvil.js.window, "bmaRealtime", None)
+            if rt and self._rt_token:
+                rt.unsubscribe(self._rt_token)
+        except Exception:
+            pass
+        self._rt_token = None
+
+    def _on_bookings_changed(self, evt=None):
+        with anvil.server.no_loading_indicator:
+            self.refresh_data_grid()
 
     def refresh_data_grid(self, **event_args):
         """Helper method to reload the history table"""

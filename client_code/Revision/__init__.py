@@ -15,44 +15,48 @@ class Revision(RevisionTemplate):
         # Any code you write here will run before the form opens.
         anvil.js.call('replaceBanner')
         self.permissions = permissions
+        self._initial_subform_loaded = False
+        self._first_visible = None
 
-        # Apply permissions to buttons and load the first available subform
+        # Apply permissions to buttons and defer first subform load to form_show
         self.apply_permissions()
+        self.set_event_handler("show", self.form_show)
+
+    def form_show(self, **event_args):
+        """Load the first authorized subform once the Revision container is mounted."""
+        if not self._initial_subform_loaded:
+            self._initial_subform_loaded = True
+            if self._first_visible:
+                self.show_clicked_button(self._first_visible)
 
     def apply_permissions(self):
-        """Apply only REVISION-related permissions and load the first available subform."""
+        """Apply only REVISION-related permissions and record the first available subform."""
         revision_perms = self.permissions.get("REVISION", {"main": False, "subs": {}})
-
-        first_visible = None  # track which subform to load first
 
         for subsection, value in revision_perms["subs"].items():
             if subsection == "Interim Quote":
                 self.btn_InterimQuotation.visible = value
                 self.btn_InterimQuotation.enabled = value
-                if value and first_visible is None:
-                    first_visible = "INTERIM QUOTATION"
+                if value and self._first_visible is None:
+                    self._first_visible = "INTERIM QUOTATION"
 
             elif subsection == "Amended Invoice":
                 self.btn_AmendedInvoice.visible = value
                 self.btn_AmendedInvoice.enabled = value
-                if value and first_visible is None:
-                    first_visible = "AMENDED INVOICE"
+                if value and self._first_visible is None:
+                    self._first_visible = "AMENDED INVOICE"
 
             elif subsection == "Repair Priorities":
                 self.btn_RepairPriorities.visible = value
                 self.btn_RepairPriorities.enabled = value
-                if value and first_visible is None:
-                    first_visible = "REPAIR PRIORITIES"
+                if value and self._first_visible is None:
+                    self._first_visible = "REPAIR PRIORITIES"
 
             elif subsection == "Brand Comparison":
                 self.btn_BrandComparison.visible = value
                 self.btn_BrandComparison.enabled = value
-                if value and first_visible is None:
-                    first_visible = "BRAND COMPARISON"
-
-        # Load the first visible subform automatically
-        if first_visible:
-            self.show_clicked_button(first_visible)
+                if value and self._first_visible is None:
+                    self._first_visible = "BRAND COMPARISON"
 
     #This function is called when Revision form loads or when Save And New button is clicked in the forms loaded in card_2 component
     def show_clicked_button(self, buttonName, **event_args):

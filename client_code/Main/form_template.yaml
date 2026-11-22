@@ -87,67 +87,67 @@ components:
   - event_bindings: {click: btn_Contact_click}
     layout_properties: {grid_position: 'ISMFLU,FJZVMQ'}
     name: btn_Contact
-    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:users', role: raised, text: CONTACT}
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:users', role: raised, text: CONTACT, visible: false}
     type: Button
   - event_bindings: {click: btn_JobCard_click}
     layout_properties: {full_width_row: false, grid_position: 'DBJWNM,QFZCSN'}
     name: btn_JobCard
-    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:clipboard', role: raised, text: JOB CARD}
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:clipboard', role: raised, text: JOB CARD, visible: false}
     type: Button
   - event_bindings: {click: btn_Booking_click}
     layout_properties: {grid_position: 'ULGDMT,ZWCOSG'}
     name: btn_Booking
-    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:calendar', role: raised, text: BOOKING}
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:calendar', role: raised, text: BOOKING, visible: false}
     type: Button
   - event_bindings: {click: btn_Workflow_click}
     layout_properties: {grid_position: 'DGUCNL,KLUVCT'}
     name: btn_Workflow
-    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:gears', role: raised, text: WORKFLOW}
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:gears', role: raised, text: WORKFLOW, visible: false}
     type: Button
   - event_bindings: {click: btn_Tracker_click}
     layout_properties: {grid_position: 'YAITYQ,JVIJSE'}
     name: btn_Tracker
-    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:steam', role: raised, text: TRACKER}
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:steam', role: raised, text: TRACKER, visible: false}
     type: Button
   - event_bindings: {click: btn_Revision_click}
     layout_properties: {grid_position: 'WXLDNR,KIFELS'}
     name: btn_Revision
-    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:rotate-right', role: raised, text: REVISION, visible: true}
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:rotate-right', role: raised, text: REVISION, visible: false}
     type: Button
   - event_bindings: {click: btn_Payment_click}
     layout_properties: {grid_position: 'XIUWUO,HQSLAS'}
     name: btn_Payment
-    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:money', role: raised, text: PAYMENT, visible: true}
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:money', role: raised, text: PAYMENT, visible: false}
     type: Button
   - event_bindings: {click: btn_Inventory_click}
     layout_properties: {grid_position: 'OSQWPM,OQYHIG'}
     name: btn_Inventory
-    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:gift', role: raised, text: INVENTORY}
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:gift', role: raised, text: INVENTORY, visible: false}
     type: Button
   - event_bindings: {click: btn_Report_click}
     layout_properties: {grid_position: 'RFMGUE,ANMPCK'}
     name: btn_Report
-    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:bar-chart', role: raised, text: REPORTS, visible: true}
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:bar-chart', role: raised, text: REPORTS, visible: false}
     type: Button
   - event_bindings: {click: btn_PartsHub_click}
     layout_properties: {grid_position: 'EGGXOB,VPMSTZ'}
     name: btn_PartsHub
-    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:dropbox', role: raised, text: PARTS HUB, visible: true}
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:dropbox', role: raised, text: PARTS HUB, visible: false}
     type: Button
   - event_bindings: {click: btn_Settings_click}
     layout_properties: {grid_position: 'OETNOG,VUTIGC'}
     name: btn_Settings
-    properties: {align: full, background: '#0056D6', enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:wrench', role: raised, text: SETTINGS, visible: true}
+    properties: {align: full, background: '#0056D6', enabled: true, font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:wrench', role: raised, text: SETTINGS, visible: false}
     type: Button
   - event_bindings: {click: btn_ResetPassword_click}
     layout_properties: {grid_position: 'XGYGHI,OAJOVS'}
     name: btn_ResetPassword
-    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:key', role: raised, text: 'RESET '}
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:key', role: raised, text: 'RESET ', visible: false}
     type: Button
   - event_bindings: {click: btn_FAQs_click}
     layout_properties: {grid_position: 'GFLXZD,FBAMAK'}
     name: btn_FAQs
-    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:question', role: raised, text: FAQs}
+    properties: {align: full, background: '#0056D6', font: Mozilla Headline, font_size: 16, foreground: 'theme:White', icon: 'fa:question', role: raised, text: FAQs, visible: false}
     type: Button
   - event_bindings: {click: btn_Logout_click}
     layout_properties: {grid_position: 'BEMCGF,VNEXVK'}

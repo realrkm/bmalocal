@@ -14,8 +14,9 @@ class AssignedJobCards(AssignedJobCardsTemplate):
         self.init_components(**properties)
         anvil.js.call('replaceBanner')
         
-        # Any code you write here will run before the form opens.
-        self.repeating_panel_1.items = anvil.server.call('get_assigned_jobs', None, None, None)
+        # Single combined bootstrap round-trip for jobs list + technician dropdown
+        bootstrap = anvil.server.call('get_assigned_jobcards_bootstrap') or {}
+        self.repeating_panel_1.items = bootstrap.get("jobs", [])
         grandTotalInvoices = 0
         grandTotalLabour = 0
         for items in self.repeating_panel_1.items:
@@ -24,7 +25,7 @@ class AssignedJobCards(AssignedJobCardsTemplate):
         self.labelInvoiceTotal.text = f"{grandTotalInvoices:,.2f}"
         self.labelLabourTotal.text = f"{grandTotalLabour:,.2f}"
 
-        self.drop_down_selectTechnician.items = anvil.server.call_s("getTechnicianInJobCard")
+        self.drop_down_selectTechnician.items = bootstrap.get("technicians", [])
        
         
     def btn_Search_click(self, **event_args):

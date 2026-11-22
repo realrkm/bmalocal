@@ -15,6 +15,8 @@ class ClientContactReport(ClientContactReportTemplate):
         anvil.js.call('replaceBanner')
         self.client_id = clientID
         self._page_size = 50
+        self.data_grid_1.rows_per_page = self._page_size
+        self.data_grid_1.show_page_controls = False
         self._offset = 0
         self._total = 0
         self._rt_token = None

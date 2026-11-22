@@ -17,6 +17,8 @@ class StockBalance(StockBalanceTemplate):
         # Any code you write here will run before the form opens.
         anvil.js.call('replaceBanner')
         self._page_size = 50
+        self.data_grid_1.rows_per_page = self._page_size
+        self.data_grid_1.show_page_controls = False
         self._offset = 0
         self._total = 0
         self._search_text = ""

@@ -20,7 +20,7 @@ class ClientContactReport(ClientContactReportTemplate):
         self._offset = 0
         self._total = 0
         self._rt_token = None
-        self._pagination_bar = ModPagination.create_pagination_bar(self._prev_page, self._next_page)
+        self._pagination_bar = ModPagination.create_pagination_bar++(self._prev_page, self._next_page)
         self.add_component(self._pagination_bar["panel"])
         self._is_mounted = True
         self.set_event_handler("show", self.form_show)

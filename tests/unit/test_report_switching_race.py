@@ -143,12 +143,9 @@ def test_client_contact_report_loads_data_after_form_show(monkeypatch):
     fake_anvil.users = types.ModuleType("anvil.users")
     fake_anvil.server = types.ModuleType("anvil.server")
     fake_anvil.server.no_loading_indicator = _NoSpinner()
-    fake_anvil.server.call = lambda fn, *a, **kw: {
-        "items": [{"No": 1, "ID": 10, "Fullname": "Jane Doe"}],
-        "total": 1,
-        "limit": 50,
-        "offset": 0,
-    }
+    fake_anvil.server.call = lambda fn, *a, **kw: [
+        {"No": 1, "ID": 10, "Fullname": "Jane Doe"}
+    ]
     fake_anvil.js = types.ModuleType("anvil.js")
     fake_anvil.js.call = lambda *a, **kw: None
     fake_anvil.js.window = types.SimpleNamespace(
@@ -180,8 +177,7 @@ def test_client_contact_report_loads_data_after_form_show(monkeypatch):
     fake_designer.ClientContactReportTemplate = ClientContactReportTemplate
     monkeypatch.setitem(sys.modules, "client_code.ClientContactReport._anvil_designer", fake_designer)
 
-    for mod_name in ("client_code.ModPagination", "client_code.ClientContactReport"):
-        sys.modules.pop(mod_name, None)
+    sys.modules.pop("client_code.ClientContactReport", None)
 
     ccr_mod = importlib.import_module("client_code.ClientContactReport")
     form = ccr_mod.ClientContactReport(None)

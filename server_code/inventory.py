@@ -2935,6 +2935,8 @@ def save_stocktake(repeating_panel_data):
             if not processed:
                 skipped.append(f"PartNo '{part_no}' not found in database — skipped.")
 
+    invalidate_lookup_cache_prefix("price_catalogue:", "stock_balance:")
+    publish_realtime_event("inventory", "stocktake_saved")
     result = "Stocktake saved/updated successfully."
     if skipped:
         result += f"\n{len(skipped)} item(s) skipped:\n" + "\n".join(skipped)
@@ -3016,6 +3018,8 @@ def import_counting_stock_quantity(file):
 
             updated_count += 1
 
+    invalidate_lookup_cache_prefix("price_catalogue:", "stock_balance:")
+    publish_realtime_event("inventory", "stocktake_imported")
     # Build result summary
     summary = f"{updated_count} part(s) updated successfully."
     if skipped_rows:

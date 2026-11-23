@@ -90,6 +90,50 @@ class ServiceHistory(ServiceHistoryTemplate):
         self.repeating_panel_1.items = []
         self.label_3.visible=False
         self.label_4.visible=False
+        self._rt_tokens = []
+        self.set_event_handler("show", self.form_show)
+        self.set_event_handler("hide", self.form_hide)
+
+    def _unsubscribe_realtime(self):
+        try:
+            rt = getattr(anvil.js.window, "bmaRealtime", None)
+            if rt:
+                for tok in self._rt_tokens:
+                    rt.unsubscribe(tok)
+        except Exception:
+            pass
+        self._rt_tokens = []
+
+    def form_show(self, **event_args):
+        self._unsubscribe_realtime()
+        try:
+            rt = getattr(anvil.js.window, "bmaRealtime", None)
+            if rt:
+                self._rt_tokens = [
+                    rt.subscribe("jobcards", self._on_data_changed),
+                    rt.subscribe("payments", self._on_data_changed),
+                ]
+        except Exception:
+            pass
+
+    def form_hide(self, **event_args):
+        self._unsubscribe_realtime()
+
+    def _on_data_changed(self, evt=None):
+        reg_no = (self.txt_VehicleReg.text or "").strip()
+        if not reg_no or not self.repeating_panel_1.items:
+            return
+        with anvil.server.no_loading_indicator:
+            response = anvil.server.call("get_vehicle_service_history", reg_no)
+            records = response.get("records", []) if isinstance(response, dict) else []
+            display_reg = (
+                response.get("reg_no") if isinstance(response, dict) and response.get("reg_no") else reg_no.upper()
+            )
+            make_model = response.get("make_and_model") if isinstance(response, dict) else ""
+            if records:
+                self.repeating_panel_1.items = build_service_history_rows(
+                    records, reg_no=display_reg, make_and_model=make_model
+                )
 
     def btn_SearchJobcard_click(self, **event_args):
         """Search exact vehicle registration and populate data_grid_1."""

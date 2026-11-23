@@ -26,6 +26,45 @@ class AssignedJobCards(AssignedJobCardsTemplate):
         self.labelLabourTotal.text = f"{grandTotalLabour:,.2f}"
 
         self.drop_down_selectTechnician.items = bootstrap.get("technicians", [])
+        self._rt_tokens = []
+        self.set_event_handler("show", self.form_show)
+        self.set_event_handler("hide", self.form_hide)
+
+    def _unsubscribe_realtime(self):
+        try:
+            rt = getattr(anvil.js.window, "bmaRealtime", None)
+            if rt:
+                for tok in self._rt_tokens:
+                    rt.unsubscribe(tok)
+        except Exception:
+            pass
+        self._rt_tokens = []
+
+    def form_show(self, **event_args):
+        self._unsubscribe_realtime()
+        try:
+            rt = getattr(anvil.js.window, "bmaRealtime", None)
+            if rt:
+                self._rt_tokens = [
+                    rt.subscribe("jobcards", self._on_data_changed),
+                    rt.subscribe("payments", self._on_data_changed),
+                ]
+        except Exception:
+            pass
+
+    def form_hide(self, **event_args):
+        self._unsubscribe_realtime()
+
+    def _on_data_changed(self, evt=None):
+        with anvil.server.no_loading_indicator:
+            start_date = self.date_picker_start.date
+            end_date = self.date_picker_end.date
+            tech_id = self.drop_down_selectTechnician.selected_value
+            if (start_date and not end_date) or (end_date and not start_date):
+                start_date, end_date = None, None
+            jobs = anvil.server.call("get_assigned_jobs", start_date, end_date, tech_id) or []
+            self.repeating_panel_1.items = jobs
+            self.calculate_totals()
        
         
     def btn_Search_click(self, **event_args):

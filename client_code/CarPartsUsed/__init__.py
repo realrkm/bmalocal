@@ -15,7 +15,45 @@ class CarPartsUsed(CarPartsUsedTemplate):
 
         # Any code you write here will run before the form opens.
         anvil.js.call('replaceBanner')
-        #self.repeating_panel_1.items = anvil.server.call('get_car_parts_used', None)
+        self._rt_tokens = []
+        self.set_event_handler("show", self.form_show)
+        self.set_event_handler("hide", self.form_hide)
+
+    def _unsubscribe_realtime(self):
+        try:
+            rt = getattr(anvil.js.window, "bmaRealtime", None)
+            if rt:
+                for tok in self._rt_tokens:
+                    rt.unsubscribe(tok)
+        except Exception:
+            pass
+        self._rt_tokens = []
+
+    def form_show(self, **event_args):
+        self._unsubscribe_realtime()
+        try:
+            rt = getattr(anvil.js.window, "bmaRealtime", None)
+            if rt:
+                self._rt_tokens = [
+                    rt.subscribe("inventory", self._on_data_changed),
+                    rt.subscribe("jobcards", self._on_data_changed),
+                ]
+        except Exception:
+            pass
+
+    def form_hide(self, **event_args):
+        self._unsubscribe_realtime()
+
+    def _on_data_changed(self, evt=None):
+        with anvil.server.no_loading_indicator:
+            if self.drop_down_JobCardRefDetails.selected_value:
+                self.repeating_panel_1.items = anvil.server.call_s(
+                    "get_car_parts_used", self.drop_down_JobCardRefDetails.selected_value
+                )
+            elif (self.txtSearchPart.text or "").strip():
+                self.repeating_panel_1.items = anvil.server.call_s(
+                    "get_job_card_from_car_parts_used", self.txtSearchPart.text.strip()
+                )
         
     def btn_SearchCustomer_click(self, **event_args):
         """This method is called when the text in this text box is edited"""

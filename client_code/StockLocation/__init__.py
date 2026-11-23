@@ -14,7 +14,40 @@ class StockLocation(StockLocationTemplate):
 
         # Any code you write here will run before the form opens.
         anvil.js.call('replaceBanner')
+        self._rt_token = None
+        self.set_event_handler("show", self.form_show)
+        self.set_event_handler("hide", self.form_hide)
         self.repeating_panel_1.items = anvil.server.call("search_car_parts_location")
+
+    def _unsubscribe_realtime(self):
+        try:
+            rt = getattr(anvil.js.window, "bmaRealtime", None)
+            if rt and self._rt_token:
+                rt.unsubscribe(self._rt_token)
+        except Exception:
+            pass
+        self._rt_token = None
+
+    def form_show(self, **event_args):
+        self._unsubscribe_realtime()
+        try:
+            rt = getattr(anvil.js.window, "bmaRealtime", None)
+            if rt:
+                self._rt_token = rt.subscribe("inventory", self._on_inventory_changed)
+        except Exception:
+            pass
+
+    def form_hide(self, **event_args):
+        self._unsubscribe_realtime()
+
+    def _on_inventory_changed(self, evt=None):
+        with anvil.server.no_loading_indicator:
+            search_text = (self.text_box_search.text or "").strip()
+            self.repeating_panel_1.items = (
+                anvil.server.call("search_car_parts_location", search_text)
+                if search_text
+                else anvil.server.call("search_car_parts_location")
+            )
 
     def btn_Search_click(self, **event_args):
         """This method is called when the button is clicked"""

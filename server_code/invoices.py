@@ -50,6 +50,9 @@ def saveInvoice(assignedDate, jobCardID, items):
                     query2,
                     (assignedDate, jobCardID, item2["CarPartID"], item2["quantity"]),
                 )
+    publish_realtime_event("payments", "invoice_saved", entity_id=jobCardID)
+    publish_realtime_event("jobcards", "invoice_saved", entity_id=jobCardID)
+    publish_realtime_event("inventory", "parts_issued", entity_id=jobCardID)
 
 
 @anvil.server.callable()
@@ -326,6 +329,9 @@ def updateInvoice(invoicedate, job_card_id, items):
                     query4,
                     (invoicedate, job_card_id, item2["CarPartID"], item2["quantity"]),
                 )
+    publish_realtime_event("payments", "invoice_updated", entity_id=job_card_id)
+    publish_realtime_event("jobcards", "invoice_updated", entity_id=job_card_id)
+    publish_realtime_event("inventory", "parts_issued", entity_id=job_card_id)
 
 
 @anvil.server.callable()
@@ -380,6 +386,8 @@ def save_payment_details(
         cursor.execute(
             query, (paymentDate, jobCardRefID, paymentMode, amountPaid, discount, bal)
         )
+    publish_realtime_event("payments", "payment_created", entity_id=jobCardRefID)
+    publish_realtime_event("jobcards", "payment_created", entity_id=jobCardRefID)
 
 
 
@@ -653,6 +661,8 @@ def delete_payment(payment_id):
                 (total_paid, invoice_total, jobcard_id),
             )
 
+    publish_realtime_event("payments", "payment_deleted", entity_id=jobcard_id)
+    publish_realtime_event("jobcards", "payment_deleted", entity_id=jobcard_id)
     return {"success": True, "payment_id": payment_id, "jobcard_id": jobcard_id}
 
 

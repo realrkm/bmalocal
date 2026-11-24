@@ -162,7 +162,7 @@ class ServiceHistory(ServiceHistoryTemplate):
             if not records:
                 self.repeating_panel_1.items = []
                 Notification(
-                    f"No service history found for registration {display_reg}.",
+                    f"No service history found for registration {reg_no.upper()}.",
                     title="Not Found",
                     style="warning",
                     timeout=4,

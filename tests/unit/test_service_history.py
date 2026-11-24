@@ -409,6 +409,81 @@ def test_selfservice_js_service_history_helpers():
     assert result.returncode == 0, result.stderr
 
 
+def test_selfservice_js_preserves_entered_spacing_in_no_matches_message():
+    js_path = Path(__file__).parents[2] / "theme" / "assets" / "selfservice.js"
+    source = js_path.read_text(encoding="utf-8")
+
+    helpers_start = source.index("    function normalizeServiceHistoryReg(")
+    panel_end = source.index("    function attachServiceHistoryListeners()", helpers_start)
+    panel_code = source[helpers_start:panel_end]
+
+    search_start = source.index("    async function searchServiceHistory()")
+    search_end = source.index("    function closeServiceHistoryInspection()", search_start)
+    search_code = source[search_start:search_end]
+
+    script = f"""
+        function sanitizeHTML(str) {{
+            return String(str || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }}
+        const state = {{
+            serviceHistoryOpen: true,
+            serviceHistoryQuery: ' kDA 123 ',
+            serviceHistoryLastSearched: '',
+            serviceHistoryMakeModel: '',
+            serviceHistoryResults: [],
+            serviceHistoryLoading: false,
+            serviceHistoryError: '',
+            serviceHistoryHasSearched: false
+        }};
+        const mainContent = {{}};
+        const document = {{
+            getElementById: (id) => id === 'service-history-reg-input' ? {{ value: ' kDA 123 ', focus: () => {{}} }} : null
+        }};
+        let loadingSnapshots = [];
+        function refreshServiceHistoryPanel() {{
+            if (state.serviceHistoryLoading) {{
+                loadingSnapshots.push(renderServiceHistoryPanel());
+            }}
+        }}
+        function showToast() {{}}
+        function closeServiceHistoryInspection() {{}}
+        const anvil = {{
+            call: async (_target, _method, _query) => ({{
+                reg_no: 'KDA123',
+                make_and_model: '',
+                records: []
+            }})
+        }};
+        {panel_code}
+        {search_code}
+        (async () => {{
+            await searchServiceHistory();
+            const html = renderServiceHistoryPanel();
+            if (!loadingSnapshots[0] || !loadingSnapshots[0].includes('<strong>KDA 123</strong>')) {{
+                throw new Error('Loading state stripped spacing: ' + (loadingSnapshots[0] || 'missing'));
+            }}
+            if (!html.includes('No service history found for registration <strong>KDA 123</strong>.')) {{
+                throw new Error('Empty state stripped spacing: ' + html);
+            }}
+        }})().catch(err => {{
+            console.error(err);
+            process.exit(1);
+        }});
+    """
+    result = subprocess.run(
+        ["node", "-e", script],
+        capture_output=True,
+        check=False,
+        text=True,
+    )
+    assert result.returncode == 0, result.stderr
+
+
 # =============================================================================
 # Anvil Form: ServiceHistory (data_grid_1 / repeating_panel_1)
 # =============================================================================
@@ -442,7 +517,12 @@ def _load_service_history_form_module(monkeypatch):
             self.txt_VehicleReg = types.SimpleNamespace(text="")
             self.btn_Search = types.SimpleNamespace(enabled=True)
             self.label_2 = types.SimpleNamespace(text="Service History")
+            self.label_3 = types.SimpleNamespace(text="", visible=True)
+            self.label_4 = types.SimpleNamespace(text="", visible=True)
             self.repeating_panel_1 = types.SimpleNamespace(items=[])
+
+        def set_event_handler(self, event_name, handler):
+            pass
 
     stubs = {
         "anvil": anvil,
@@ -499,8 +579,8 @@ def test_service_history_form_search_populates_data_grid(monkeypatch):
 
     anvil.server.call.assert_called_once_with("get_vehicle_service_history", "kda 234s")
     assert form.btn_Search.enabled is True
-    assert "KDA234S" in form.label_2.text
-    assert "Toyota Prado" in form.label_2.text
+    assert "Toyota Prado" in form.label_3.text
+    assert "1 Visit" in form.label_4.text
     assert len(form.repeating_panel_1.items) == 1
     row = form.repeating_panel_1.items[0]
     assert row["date"] == "2026-11-15"
@@ -530,3 +610,23 @@ def test_service_history_form_rejects_blank_reg(monkeypatch):
     anvil.server.call.assert_not_called()
     assert form.repeating_panel_1.items == []
     assert len(notifications) == 1 and notifications[0].shown is True
+
+
+def test_service_history_form_preserves_entered_spacing_in_no_matches_message(monkeypatch):
+    module, anvil, notifications = _load_service_history_form_module(monkeypatch)
+    form = module.ServiceHistory()
+    form.txt_VehicleReg = types.SimpleNamespace(text=" kDA 123 ")
+    form.btn_Search = types.SimpleNamespace(enabled=True)
+    form.repeating_panel_1 = types.SimpleNamespace(items=[{"date": "old"}])
+
+    anvil.server.call.return_value = {
+        "reg_no": "KDA123",
+        "make_and_model": "",
+        "records": [],
+    }
+
+    form.btn_SearchJobcard_click()
+
+    assert form.repeating_panel_1.items == []
+    assert len(notifications) == 1
+    assert notifications[0].message == "No service history found for registration KDA 123."

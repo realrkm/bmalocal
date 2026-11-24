@@ -1066,7 +1066,8 @@
             state.serviceHistoryQuery = regInput.value;
         }
 
-        const normalized = normalizeServiceHistoryReg(state.serviceHistoryQuery);
+        const displayReg = String(state.serviceHistoryQuery || '').trim().toUpperCase();
+        const normalized = normalizeServiceHistoryReg(displayReg);
         if (!normalized) {
             showToast('Please enter an exact vehicle registration number.', 'warning');
             if (regInput) regInput.focus();
@@ -1075,12 +1076,12 @@
 
         state.serviceHistoryLoading = true;
         state.serviceHistoryError = '';
-        state.serviceHistoryLastSearched = normalized;
+        state.serviceHistoryLastSearched = displayReg;
         refreshServiceHistoryPanel();
 
         try {
             const response = await anvil.call(mainContent, 'getServiceHistory', state.serviceHistoryQuery);
-            state.serviceHistoryLastSearched = (response && response.reg_no) ? response.reg_no : normalized;
+            state.serviceHistoryLastSearched = displayReg || ((response && response.reg_no) ? response.reg_no : normalized);
             state.serviceHistoryMakeModel = (response && response.make_and_model) ? response.make_and_model : '';
             state.serviceHistoryResults = (response && Array.isArray(response.records)) ? response.records : [];
             state.serviceHistoryHasSearched = true;

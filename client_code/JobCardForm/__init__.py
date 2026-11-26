@@ -23,8 +23,11 @@ class JobCardForm(JobCardFormTemplate):
         self.form_data = jobcard_data
             
     def populateForm(self, jobcard_data, **event_args):
-        """This method is called when an item is selected"""  
-        self.text_box_technician.text = anvil.server.call_s('getAssignedTechnician',jobcard_data["ID"])
+        """This method is called when an item is selected"""
+        if "AssignedTechnician" in jobcard_data:
+            self.text_box_technician.text = jobcard_data["AssignedTechnician"]
+        else:
+            self.text_box_technician.text = anvil.server.call_s('getAssignedTechnician', jobcard_data["ID"])
         result = jobcard_data     
         self.txt_JobCardRef.text= result["JobCardRef"]
         self.txtDueDate.date = result["DueDate"]
@@ -33,9 +36,13 @@ class JobCardForm(JobCardFormTemplate):
 
 
         #Get staff details
-        staff= anvil.server.call_s("get_staff_details", result["CheckedInBy"])
-        if staff:
-            self.label_checkedInBy.text = staff[0]["Fullname"]
+        if "CheckedInByName" in result:
+            if result["CheckedInByName"]:
+                self.label_checkedInBy.text = result["CheckedInByName"]
+        else:
+            staff = anvil.server.call_s("get_staff_details", result["CheckedInBy"])
+            if staff:
+                self.label_checkedInBy.text = staff[0]["Fullname"]
         
         self.chkComp.checked= result["Comprehensive"]
         self.chkTPO.checked=result["ThirdParty"]
@@ -61,7 +68,10 @@ class JobCardForm(JobCardFormTemplate):
         self.txtInstructions.text=result["ClientInstruction"]
         self.txtTechNotes.text=result["Notes"]
       
-        self.text_area_work_done.text = anvil.server.call("getWorkDoneInJobCard", jobcard_data["ID"])
+        if "WorkDone" in result:
+            self.text_area_work_done.text = result["WorkDone"]
+        else:
+            self.text_area_work_done.text = anvil.server.call("getWorkDoneInJobCard", jobcard_data["ID"])
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.raise_event("x-close-alert", value=True)

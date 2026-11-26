@@ -13,9 +13,15 @@ class QuoteForm(QuoteFormTemplate):
         self.init_components(**properties)
         anvil.js.call('replaceBanner')
         self.label_JobCardID.text = job_id
-        jobcardref = anvil.server.call_s("getJobCardRef", job_id)
-        
-        if jobcardref[0]['JobCardRef'].split("-")[-1] == "IQ":
+        jobcard_ref = None
+        if quote_data and isinstance(quote_data[0], dict):
+            jobcard_ref = quote_data[0].get("JobCardRef")
+        if not jobcard_ref:
+            jobcardref_rows = anvil.server.call_s("getJobCardRef", job_id)
+            if jobcardref_rows:
+                jobcard_ref = jobcardref_rows[0].get("JobCardRef")
+
+        if jobcard_ref and str(jobcard_ref).split("-")[-1] == "IQ":
             self.label_2.text = "INTERIM QUOTATION"
             is_interim = True
         else:

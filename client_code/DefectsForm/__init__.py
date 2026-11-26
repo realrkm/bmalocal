@@ -16,29 +16,33 @@ from datetime import datetime
 
 
 class DefectsForm(DefectsFormTemplate):
-    def __init__(self, defects_data=None, **properties):
+    def __init__(self, defects_data=None, init_data=None, job_id=None, **properties):
         # Set Form properties and Data Bindings.
         self.init_components(**properties)
 
         # Any code you write here will run before the form opens.
         anvil.js.call('replaceBanner')
-               
+
+        if defects_data is None and job_id is not None:
+            defects_data = [{"ID": job_id}]
+
         # Store defects_data for later use
         self.defects_data = defects_data
 
-        self.populateForm(defects_data)
+        self.populateForm(defects_data, init_data=init_data)
                 
     def refresh(self, **event_args):
         self.set_event_handler("x-refresh", self.refresh)
         
 
-    def populateForm(self, defects_data, **event_args):
-        """This method is called when an item is selected""" 
+    def populateForm(self, defects_data, init_data=None, **event_args):
+        """This method is called when an item is selected"""
         if not defects_data or not defects_data[0].get("ID"):
             return
 
         job_id = defects_data[0]["ID"]
-        init_data = anvil.server.call("get_defects_form_init_data", job_id)
+        if init_data is None:
+            init_data = anvil.server.call("get_defects_form_init_data", job_id)
 
         # 1. Populate staff drop-down
         self.drop_down_staff.items = init_data.get("staff_names", [])

@@ -410,7 +410,7 @@ def save_technician_data(fullname, phone, toolkit):
         """
         cursor.execute(query, (fullname, phone, toolkit, 0))
         new_id = cursor.lastrowid
-    invalidate_lookup_cache("technicians")
+    invalidate_lookup_cache("technicians", "staff_and_technician_names")
     publish_realtime_event("contacts", "technician_created", entity_id=new_id)
 
 
@@ -462,7 +462,7 @@ def update_technician_data(name, phone, toolkit, archived, technician_id):
             WHERE ID = %s
         """
         cursor.execute(query, (name, phone, toolkit, archived, technician_id))
-    invalidate_lookup_cache("technicians")
+    invalidate_lookup_cache("technicians", "staff_and_technician_names")
     publish_realtime_event("contacts", "technician_updated", entity_id=technician_id)
 
 
@@ -604,7 +604,7 @@ def save_staff_data(fullname, phone):
         """
         cursor.execute(query, (fullname, phone, 0))
         new_id = cursor.lastrowid
-    invalidate_lookup_cache("staff")
+    invalidate_lookup_cache("staff", "staff_and_technician_names")
     publish_realtime_event("contacts", "staff_created", entity_id=new_id)
 
 
@@ -654,7 +654,7 @@ def update_staff_data(name, phone, archived, staff_id):
             WHERE ID = %s
         """
         cursor.execute(query, (name, phone, archived, staff_id))
-    invalidate_lookup_cache("staff")
+    invalidate_lookup_cache("staff", "staff_and_technician_names")
     publish_realtime_event("contacts", "staff_updated", entity_id=staff_id)
 
 

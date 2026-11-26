@@ -1464,83 +1464,228 @@ def getDefectsList(jobcardID):
     return formatted_data
 
 
-@anvil.server.callable()
-def get_defects_form_init_data(job_id):
+def _validate_positive_job_id(job_id):
+    """Validate and normalize a positive integer job card ID."""
+    if isinstance(job_id, bool) or job_id is None:
+        raise ValueError("Invalid job_id provided.")
+    if isinstance(job_id, int):
+        parsed = job_id
+    elif isinstance(job_id, str) and job_id.strip().isdigit():
+        parsed = int(job_id.strip())
+    else:
+        raise ValueError("Invalid job_id provided.")
+    if parsed <= 0:
+        raise ValueError("Invalid job_id provided.")
+    return parsed
+
+
+def _clean_work_done_text(raw_work_done):
+    if not raw_work_done:
+        return ""
+    text_only = re.sub(r"<[^>]+>", "", raw_work_done)
+    lines = [line.strip() for line in text_only.splitlines() if line.strip()]
+    return "\n".join(lines)
+
+
+def _fetch_jobcard_form_data(cursor, job_id):
+    query = """
+        SELECT
+            j.ID, j.ClientDetails, j.RegNo, j.MakeAndModel, j.ChassisNo,
+            j.EngineCC, j.EngineNo, j.EngineCode, j.Manual, j.Auto,
+            j.PaintCode, j.Comp, j.TPO, j.JobCardRef, j.ReceivedDate, j.DueDate, j.ExpDate,
+            j.CheckedInBy, j.Spare, j.Jack, j.Brace, j.OtherItems, j.Mileage,
+            j.`Empty`, j.`Quarter`, j.Half, j.ThreeQuarter, j.`Full`,
+            j.ClientInstruction, j.Notes, j.Status,
+            s.Staff AS CheckedInByName,
+            (
+                SELECT t.Fullname
+                FROM tbl_pendingassignedjobs p
+                INNER JOIN tbl_technicians t ON p.TechnicianID = t.ID
+                WHERE p.JobCardRefID = j.ID
+                LIMIT 1
+            ) AS AssignedTechnician,
+            (
+                SELECT w.WorkDone
+                FROM tbl_workdoneinjobcard w
+                WHERE w.JobCardRefID = j.ID
+                LIMIT 1
+            ) AS WorkDone
+        FROM tbl_jobcarddetails j
+        LEFT JOIN tbl_checkstaff s ON s.ID = j.CheckedInBy
+        WHERE j.ID = %s
+        LIMIT 1
     """
-    Combined bootstrap endpoint for DefectsForm:
-    Returns defects data, fallback job card instructions/notes, and staff/technician names
-    in a single round-trip and DB connection.
-    """
-    _get_current_user()
-    with db_cursor() as cursor:
-        # 1. Fetch technician defects list (mirrors getDefectsList)
-        query_defects = """
-            SELECT
-                j.ClientInstruction, 
-                j.Notes, 
-                t.Defects,
-                t.PricedDefectsList,
-                t.TechnicianPortalRequestedParts,
-                t.RequestedParts, 
-                t.PreparedByStaff, 
-                t.Signature
-            FROM tbl_jobcarddetails j
-            JOIN tbl_techniciandefectsandrequestedparts t ON t.JobCardRefID = j.ID
-            WHERE j.ID = %s
-            ORDER BY t.ID DESC
-        """
-        cursor.execute(query_defects, (job_id,))
-        results = cursor.fetchall()
+    cursor.execute(query, (job_id,))
+    result = cursor.fetchone()
+    if not result:
+        return None
+    return {
+        "ID": result[0],
+        "ClientDetails": result[1],
+        "RegNo": result[2],
+        "MakeAndModel": result[3],
+        "ChassisNo": result[4],
+        "EngineCC": result[5],
+        "EngineNo": result[6],
+        "EngineCode": result[7],
+        "Manual": result[8],
+        "Auto": result[9],
+        "PaintCode": result[10],
+        "Comprehensive": result[11],
+        "ThirdParty": result[12],
+        "JobCardRef": result[13],
+        "ReceivedDate": result[14],
+        "DueDate": result[15],
+        "ExpDate": result[16],
+        "CheckedInBy": result[17],
+        "Spare": result[18],
+        "Jack": result[19],
+        "Brace": result[20],
+        "OtherItems": result[21],
+        "Mileage": result[22],
+        "Empty": result[23],
+        "Quarter": result[24],
+        "Half": result[25],
+        "ThreeQuarter": result[26],
+        "Full": result[27],
+        "ClientInstruction": result[28],
+        "Notes": result[29],
+        "Status": result[30],
+        "CheckedInByName": result[31] or "",
+        "AssignedTechnician": result[32],
+        "WorkDone": _clean_work_done_text(result[33]),
+    }
 
-        formatted_defects = []
-        for row in results:
-            instruction, notes, defects, pricedDefects, portalParts, parts, staff, sig_bytes = row
-            signature_media = anvil.BlobMedia("image/png", sig_bytes) if sig_bytes else None
-            formatted_defects.append({
-                "Instruction": instruction,
-                "Notes": notes,
-                "Defects": defects,
-                "PricedDefects": pricedDefects,
-                "TechnicianPortalRequestedParts": portalParts if portalParts else "None",
-                "RequestedParts": parts,
-                "PreparedByStaff": staff,
-                "Signature": signature_media,
-            })
 
-        # 2. Fallback job card details (only if defects list is empty or instruction is empty)
-        fallback = None
-        has_instruction = bool(formatted_defects and formatted_defects[0].get("Instruction"))
-        if not has_instruction:
-            cursor.execute(
-                "SELECT ClientInstruction, Notes FROM tbl_jobcarddetails WHERE ID = %s",
-                (job_id,)
-            )
-            jc_row = cursor.fetchone()
-            if jc_row:
-                fallback = {
-                    "ClientInstruction": jc_row[0] or "",
-                    "Notes": jc_row[1] or "",
-                }
-
-        # 3. Fetch staff and technician names (mirrors getStaffAndTechnicianNames)
+def _get_cached_staff_and_technician_names(cursor=None):
+    def _load():
         query_staff = """
             SELECT Staff AS combined_name FROM tbl_checkstaff WHERE IsArchived = FALSE
             UNION ALL
             SELECT Fullname AS combined_name FROM tbl_technicians WHERE IsArchived = FALSE
             ORDER BY combined_name ASC
         """
-        cursor.execute(query_staff)
-        staff_results = cursor.fetchall()
-        staff_names = []
+        if cursor is not None:
+            cursor.execute(query_staff)
+            staff_results = cursor.fetchall()
+        else:
+            with db_cursor() as local_cursor:
+                local_cursor.execute(query_staff)
+                staff_results = local_cursor.fetchall()
+        names = []
         for r in staff_results:
-            val = r['combined_name'] if isinstance(r, dict) else r[0]
-            staff_names.append((val, val))
+            val = r["combined_name"] if isinstance(r, dict) else r[0]
+            names.append((val, val))
+        return names
 
-        return {
-            "defects_list": formatted_defects,
-            "fallback": fallback,
-            "staff_names": staff_names,
-        }
+    return list(cached_lookup("staff_and_technician_names", _load, ttl_seconds=300))
+
+
+def _fetch_defects_form_init_data(cursor, job_id):
+    query_defects = """
+        SELECT
+            j.ClientInstruction,
+            j.Notes,
+            t.Defects,
+            t.PricedDefectsList,
+            t.TechnicianPortalRequestedParts,
+            t.RequestedParts,
+            t.PreparedByStaff,
+            t.Signature
+        FROM tbl_jobcarddetails j
+        JOIN tbl_techniciandefectsandrequestedparts t ON t.JobCardRefID = j.ID
+        WHERE j.ID = %s
+        ORDER BY t.ID DESC
+        LIMIT 1
+    """
+    cursor.execute(query_defects, (job_id,))
+    results = cursor.fetchall()
+
+    formatted_defects = []
+    for row in results:
+        instruction, notes, defects, pricedDefects, portalParts, parts, staff, sig_bytes = row
+        signature_media = anvil.BlobMedia("image/png", sig_bytes) if sig_bytes else None
+        formatted_defects.append({
+            "Instruction": instruction,
+            "Notes": notes,
+            "Defects": defects,
+            "PricedDefects": pricedDefects,
+            "TechnicianPortalRequestedParts": portalParts if portalParts else "None",
+            "RequestedParts": parts,
+            "PreparedByStaff": staff,
+            "Signature": signature_media,
+        })
+
+    fallback = None
+    has_instruction = bool(formatted_defects and formatted_defects[0].get("Instruction"))
+    if not has_instruction:
+        cursor.execute(
+            "SELECT ClientInstruction, Notes FROM tbl_jobcarddetails WHERE ID = %s",
+            (job_id,),
+        )
+        jc_row = cursor.fetchone()
+        if jc_row:
+            fallback = {
+                "ClientInstruction": jc_row[0] or "",
+                "Notes": jc_row[1] or "",
+            }
+
+    staff_names = _get_cached_staff_and_technician_names(cursor=cursor)
+
+    return {
+        "defects_list": formatted_defects,
+        "fallback": fallback,
+        "staff_names": staff_names,
+    }
+
+
+@anvil.server.callable()
+def get_jobcard_form_data(job_id):
+    """
+    Combined bootstrap endpoint for JobCardForm:
+    Returns job card details, assigned technician, checked-in staff name, and work done
+    in a single round-trip and DB connection.
+    """
+    _get_current_user()
+    job_id = _validate_positive_job_id(job_id)
+    with db_cursor() as cursor:
+        return _fetch_jobcard_form_data(cursor, job_id)
+
+
+@anvil.server.callable()
+def get_defects_form_init_data(job_id):
+    """
+    Combined bootstrap endpoint for DefectsForm:
+    Returns latest defects data, fallback job card instructions/notes, and cached staff/technician names
+    in a single round-trip and DB connection.
+    """
+    _get_current_user()
+    job_id = _validate_positive_job_id(job_id)
+    with db_cursor() as cursor:
+        return _fetch_defects_form_init_data(cursor, job_id)
+
+
+@anvil.server.callable()
+def get_progress_tracker_modals_bundle(job_id):
+    """
+    Prefetch endpoint for ProgressTracker modal buttons:
+    Returns payloads for JobCard, Defects, Quote, Confirm, Invoice, and Payment modals
+    in a single RPC round-trip so clicking any modal button renders immediately.
+    """
+    _get_current_user()
+    job_id = _validate_positive_job_id(job_id)
+    with db_cursor() as cursor:
+        jobcard = _fetch_jobcard_form_data(cursor, job_id)
+        defects = _fetch_defects_form_init_data(cursor, job_id) if jobcard else None
+
+    return {
+        "jobcard": jobcard,
+        "defects": defects,
+        "quote": get_quote_details_by_job_id(job_id),
+        "confirm": get_quote_confirmation_details_by_job_id(job_id),
+        "invoice": get_invoice_details_by_job_id(job_id),
+        "payment": getPaymentsDetails(job_id),
+    }
 
 
 # ***************************************************Verify Task  Details Section ************************************
@@ -1843,7 +1988,9 @@ __all__ = [
     'transitionCheckedInToCreateQuote',
     'updateBlankDefectsAndRequestedParts',
     'getDefectsList',
+    'get_jobcard_form_data',
     'get_defects_form_init_data',
+    'get_progress_tracker_modals_bundle',
     'saveConfirmationDetails',
     'getVerifyTaskChecklist',
     'transitionreadyforpickuptocomplete',

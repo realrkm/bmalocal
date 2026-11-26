@@ -23,7 +23,42 @@ class ProgressTracker(ProgressTrackerTemplate):
         anvil.js.call('replaceBanner')
         self._rt_tokens = []
         self._rt_conn_token = None
+        self._modals_cache = {}
+        self._modals_cache_job_id = None
         self.set_event_handler("hide", self.form_hide)
+
+    def _invalidate_modals_cache(self, job_id=None):
+        if job_id is None or self._modals_cache_job_id == job_id:
+            self._modals_cache = {}
+            self._modals_cache_job_id = None
+
+    def _prefetch_modals(self, job_id):
+        if not job_id or self.drop_down_JobCardRefDetails.selected_value != job_id:
+            return
+        try:
+            with anvil.server.no_loading_indicator:
+                bundle = anvil.server.call_s("get_progress_tracker_modals_bundle", job_id)
+            if bundle and self.drop_down_JobCardRefDetails.selected_value == job_id:
+                self._modals_cache = bundle
+                self._modals_cache_job_id = job_id
+        except Exception:
+            pass
+
+    def _schedule_prefetch_modals(self, job_id):
+        try:
+            anvil.js.window.setTimeout(lambda: self._prefetch_modals(job_id), 0)
+        except Exception:
+            self._prefetch_modals(job_id)
+
+    def _get_cached_or_fetch(self, job_id, key, server_fn):
+        if self._modals_cache_job_id == job_id and key in self._modals_cache:
+            return self._modals_cache[key]
+        data = anvil.server.call(server_fn, job_id)
+        if self._modals_cache_job_id != job_id:
+            self._modals_cache = {}
+            self._modals_cache_job_id = job_id
+        self._modals_cache[key] = data
+        return data
 
     def _sync_timer_with_ws(self):
         try:
@@ -108,8 +143,10 @@ class ProgressTracker(ProgressTrackerTemplate):
     def refresh_selected_job_card(self):
         job_id = self.drop_down_JobCardRefDetails.selected_value
         if not job_id:
+            self._invalidate_modals_cache()
             return
 
+        self._invalidate_modals_cache()
         with anvil.server.no_loading_indicator:
             result = anvil.server.call(
                 "get_progress_tracker_data",
@@ -141,6 +178,8 @@ class ProgressTracker(ProgressTrackerTemplate):
                 effective_status,
                 cancelled_reason=result.get("cancelled_reason", ""),
             )
+
+        self._schedule_prefetch_modals(job_id)
 
     def set_progress_state(self, active_state, cancelled_reason=""):
         """Highlight the active workflow step and show cancellation reason if needed."""
@@ -198,99 +237,116 @@ class ProgressTracker(ProgressTrackerTemplate):
     def btn_JobCard_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.btn_JobCard.enabled = False
-        job_id = self.drop_down_JobCardRefDetails.selected_value
+        try:
+            job_id = self.drop_down_JobCardRefDetails.selected_value
+            if not job_id:
+                Notification("No data found for the selected Job ID.", title='Missing Job Card Data', style="danger", timeout=3).show()
+                return
 
-        # Call the server first to check for data
-        jobcard_data = anvil.server.call("getJobCardRow", job_id)
+            jobcard_data = self._get_cached_or_fetch(job_id, "jobcard", "get_jobcard_form_data")
+            if not jobcard_data:
+                Notification("No data found for the selected Job ID.", title='Missing Job Card Data', style="danger", timeout=3).show()
+                return
 
-        if not jobcard_data:
-            Notification("No data found for the selected Job ID.", title='Missing Job Card Data', style="danger", timeout=3).show()
-            self.btn_JobCard.enabled=True
-            return
+            alert(content=JobCardForm(jobcard_data=jobcard_data), buttons=[], dismissible=False, large=True)
+            self._invalidate_modals_cache(job_id)
+            self._schedule_prefetch_modals(job_id)
+        finally:
+            self.btn_JobCard.enabled = True
 
-        # If data exists, now show the form and pass the quote_data along
-        alert(content=JobCardForm(jobcard_data=jobcard_data), buttons=[], dismissible=False, large=True)
-        self.btn_JobCard.enabled=True
     def btn_Defects_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.btn_Defects.enabled = False
-        job_id = self.drop_down_JobCardRefDetails.selected_value
-        
-        # Call the server first to check for data
-        defects_data = anvil.server.call("getJobCardRef", job_id)
-        
-        if not defects_data:
-            Notification("No data found for the selected Job ID.", title='Missing Defects Data', style="danger", timeout=3).show()
-            self.btn_Defects.enabled=True
-            return
+        try:
+            job_id = self.drop_down_JobCardRefDetails.selected_value
+            if not job_id:
+                Notification("No data found for the selected Job ID.", title='Missing Defects Data', style="danger", timeout=3).show()
+                return
 
-        # If data exists, now show the form and pass the quote_data along
-        alert(content=DefectsForm(defects_data=defects_data), buttons=[], dismissible=False, large=True)
-        self.btn_Defects.enabled=True
+            defects_init_data = self._get_cached_or_fetch(job_id, "defects", "get_defects_form_init_data")
+            if not defects_init_data:
+                Notification("No data found for the selected Job ID.", title='Missing Defects Data', style="danger", timeout=3).show()
+                return
+
+            alert(content=DefectsForm(job_id=job_id, init_data=defects_init_data), buttons=[], dismissible=False, large=True)
+            self._invalidate_modals_cache(job_id)
+            self._schedule_prefetch_modals(job_id)
+        finally:
+            self.btn_Defects.enabled = True
+
     def btn_Quotation_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.btn_Quotation.enabled = False
-        job_id = self.drop_down_JobCardRefDetails.selected_value
+        try:
+            job_id = self.drop_down_JobCardRefDetails.selected_value
+            if not job_id:
+                Notification("No data found for the selected Job ID.", title='Missing Quotation Data', style="danger", timeout=3).show()
+                return
 
-        # Call the server first to check for data
-        quote_data = anvil.server.call("get_quote_details_by_job_id", job_id)
+            quote_data = self._get_cached_or_fetch(job_id, "quote", "get_quote_details_by_job_id")
+            if not quote_data:
+                Notification("No data found for the selected Job ID.", title='Missing Quotation Data', style="danger", timeout=3).show()
+                return
 
-        if not quote_data:
-            Notification("No data found for the selected Job ID.", title='Missing Quotation Data', style="danger", timeout=3).show()
+            alert(content=QuoteForm(job_id, quote_data=quote_data), buttons=[], dismissible=False, large=True)
+        finally:
             self.btn_Quotation.enabled = True
-            return
 
-        # If data exists, now show the form and pass the quote_data along
-        alert(content=QuoteForm(job_id, quote_data=quote_data), buttons=[], dismissible=False, large=True)
-        self.btn_Quotation.enabled = True
     def btn_Confirmed_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.btn_Confirmed.enabled = False
-        job_id = self.drop_down_JobCardRefDetails.selected_value
+        try:
+            job_id = self.drop_down_JobCardRefDetails.selected_value
+            if not job_id:
+                Notification("No data found for the selected Job ID.", title='Missing Quotation Data', style="danger", timeout=3).show()
+                return
 
-        # Call the server first to check for data
-        quote_data = anvil.server.call("get_quote_confirmation_details_by_job_id", job_id)
+            quote_data = self._get_cached_or_fetch(job_id, "confirm", "get_quote_confirmation_details_by_job_id")
+            if not quote_data:
+                Notification("No data found for the selected Job ID.", title='Missing Quotation Data', style="danger", timeout=3).show()
+                return
 
-        if not quote_data:
-            Notification("No data found for the selected Job ID.", title='Missing Quotation Data', style="danger", timeout=3).show()
+            alert(content=ConfirmForm(job_id, quote_data=quote_data), buttons=[], dismissible=False, large=True)
+        finally:
             self.btn_Confirmed.enabled = True
-            return
 
-        # If data exists, now show the form and pass the quote_data along
-        alert(content=ConfirmForm(job_id, quote_data=quote_data), buttons=[], dismissible=False, large=True)
-        self.btn_Confirmed.enabled = True
     def btn_Invoice_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.btn_Invoice.enabled = False
-        job_id = self.drop_down_JobCardRefDetails.selected_value
-        
-        # Call the server first to check for data
-        quote_data = anvil.server.call("get_invoice_details_by_job_id", job_id)
-    
-        if not quote_data:
-            Notification("No data found for the selected Job ID.", title='Missing Invoice Data', style="danger", timeout=3).show()
+        try:
+            job_id = self.drop_down_JobCardRefDetails.selected_value
+            if not job_id:
+                Notification("No data found for the selected Job ID.", title='Missing Invoice Data', style="danger", timeout=3).show()
+                return
+
+            quote_data = self._get_cached_or_fetch(job_id, "invoice", "get_invoice_details_by_job_id")
+            if not quote_data:
+                Notification("No data found for the selected Job ID.", title='Missing Invoice Data', style="danger", timeout=3).show()
+                return
+
+            alert(content=InvoiceForm(job_id, quote_data=quote_data), buttons=[], dismissible=False, large=True)
+        finally:
             self.btn_Invoice.enabled = True
-            return
-    
-        # If data exists, now show the form and pass the quote_data along
-        alert(content=InvoiceForm(job_id, quote_data=quote_data), buttons=[], dismissible=False, large=True)
-        self.btn_Invoice.enabled = True
+
     def btn_Payment_click(self, **event_args):
         """This method is called when the button is clicked"""
         self.btn_Payment.enabled = False
-        job_id = self.drop_down_JobCardRefDetails.selected_value
+        try:
+            job_id = self.drop_down_JobCardRefDetails.selected_value
+            if not job_id:
+                Notification("No data found for the selected Job ID.", title='Missing Payment Data', style="danger", timeout=3).show()
+                return
 
-        # Call the server first to check for data
-        payment_data = anvil.server.call('getPaymentsDetails', job_id)
+            payment_data = self._get_cached_or_fetch(job_id, "payment", "getPaymentsDetails")
+            if not payment_data:
+                Notification("No data found for the selected Job ID.", title='Missing Payment Data', style="danger", timeout=3).show()
+                return
 
-        if not payment_data:
-            Notification("No data found for the selected Job ID.", title='Missing Payment Data', style="danger", timeout=3).show()
+            alert(content=PaymentForm(job_id, payment_data=payment_data), buttons=[], dismissible=False, large=True)
+            self._invalidate_modals_cache(job_id)
+            self._schedule_prefetch_modals(job_id)
+        finally:
             self.btn_Payment.enabled = True
-            return
-
-        # If data exists, now show the form and pass the quote_data along
-        alert(content=PaymentForm(job_id, payment_data=payment_data), buttons=[], dismissible=False, large=True)
-        self.btn_Payment.enabled = True
 
     def btn_ViewInspection_click(self, **event_args):
         """This method is called when the button is clicked"""

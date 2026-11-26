@@ -134,7 +134,8 @@ def get_quote_details_by_job_id(job_id):
             tbl_quotation.Item,
             tbl_quotation.QuantityIssued,
             tbl_quotation.Amount,
-            tbl_quotation.AssignedJobID
+            tbl_quotation.AssignedJobID,
+            tbl_jobcarddetails.JobCardRef
         FROM
             (tbl_jobcarddetails
             INNER JOIN tbl_clientcontacts
@@ -197,6 +198,7 @@ def get_quote_details_by_job_id(job_id):
                     "Amount": amount_val,  # This is now always a float or None
                     "AssignedJobID": r[10],
                     "Total": total_calc,  # This is now always a float or None
+                    "JobCardRef": r[11] if len(r) > 11 else None,
                 }
             )
 
@@ -282,6 +284,7 @@ def get_quote_confirmation_details_by_job_id(job_id):
                     "Amount": amount_val,  # This is now always a float or None
                     "AssignedJobID": r[10],
                     "Total": total_calc,  # This is now always a float or None
+                    "JobCardRef": r[11] if len(r) > 11 else None,
                 }
             )
 

@@ -13,34 +13,65 @@ class RepairPriorities(RepairPrioritiesTemplate):
     def __init__(self, **properties):
         # Set Form properties and Data Bindings.
         self.init_components(**properties)
+        self._priority_cache = {}
+        self._part_details_cache = {}
 
-        # Any code you write here will run before the form opens.
-        anvil.js.call('replaceBanner')
-        
     def refresh(self, **event_args):
         self.set_event_handler("x-refresh", self.refresh)
-        
+
+    def _speculative_warm_priority(self, reg_no):
+        if not reg_no or reg_no in self._priority_cache:
+            return
+        try:
+            with anvil.server.no_loading_indicator:
+                self._priority_cache[reg_no] = anvil.server.call_s("getPriorityList", regNo=reg_no)
+        except Exception:
+            pass
+
+    def _speculative_warm_part(self, part_id):
+        if not part_id or part_id in self._part_details_cache:
+            return
+        try:
+            with anvil.server.no_loading_indicator:
+                self._part_details_cache[part_id] = anvil.server.call_s("get_part_edit_details", part_id)
+        except Exception:
+            pass
+
     def btnSearch_click(self, **event_args):
         """This method is called when the button is clicked"""
         search_text = self.txt_SearchRegNo.text.strip()
-        
+
         if not search_text:
             Notification("Please enter Reg No. to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
             self.txt_SearchRegNo.focus()
             return
 
-        result = anvil.server.call('getCarRegNo', search_text = self.txt_SearchRegNo.text)
-        
+        result = anvil.server.call('getCarRegNo', search_text=self.txt_SearchRegNo.text)
+
         if result:
             self.drop_down_select.items = ""
             self.drop_down_select.items = result
+            first_reg = result[0][1] if isinstance(result[0], (list, tuple)) else result[0]
+            try:
+                anvil.js.window.setTimeout(lambda: self._speculative_warm_priority(first_reg), 0)
+            except Exception:
+                pass
         else:
             Notification("No records found for the entered Reg No.", title="Not Found", style="danger", timeout=3).show()
 
     def drop_down_select_change(self, **event_args):
         """This method is called when an item is selected"""
-        self.repeating_panel_assigned_parts.items = anvil.server.call_s('getPriorityList', regNo=self.drop_down_select.selected_value)
-        
+        reg_no = self.drop_down_select.selected_value
+        if not reg_no:
+            self.repeating_panel_assigned_parts.items = []
+            return
+        if reg_no in self._priority_cache:
+            self.repeating_panel_assigned_parts.items = list(self._priority_cache[reg_no])
+        else:
+            items = anvil.server.call_s('getPriorityList', regNo=reg_no)
+            self._priority_cache[reg_no] = items
+            self.repeating_panel_assigned_parts.items = items
+
     def btn_Search_click(self, **event_args):
         """This method is called when the button is clicked"""
         search_value = self.text_box_searchPartNo.text.strip()
@@ -52,14 +83,15 @@ class RepairPriorities(RepairPrioritiesTemplate):
 
         result = anvil.server.call('getCarPartNameAndNumber', search_value)
 
-        #Clear drop down 
         self.drop_down_selectPart.items = ""
 
         if result:
             self.drop_down_selectPart.items = result
-            self.lbl_ID.text = result[0][1]
-            result2 =  anvil.server.call_s("getCarPartNumberWithID", self.lbl_ID.text)
-            self.lbl_PartNumber.text = result2[0]["PartNo"]
+            first_part_id = result[0][1]
+            try:
+                anvil.js.window.setTimeout(lambda: self._speculative_warm_part(first_part_id), 0)
+            except Exception:
+                pass
         else:
             Notification("No records found for the entered part detail.", title="Not Found", style="danger", timeout=3).show()
 
@@ -67,7 +99,13 @@ class RepairPriorities(RepairPrioritiesTemplate):
         """This method is called when an item is selected"""
         part_id = self.drop_down_selectPart.selected_value
         self.lbl_ID.text = part_id
-        details = anvil.server.call_s("get_part_edit_details", part_id)
+        if not part_id:
+            return
+        details = self._part_details_cache.get(part_id)
+        if details is None:
+            details = anvil.server.call_s("get_part_edit_details", part_id)
+            if details:
+                self._part_details_cache[part_id] = details
         if not details:
             return
         self.lbl_PartNumber.text = details["part_no"]
@@ -178,19 +216,21 @@ class RepairPriorities(RepairPrioritiesTemplate):
             self.btn_Save.enabled = True
             return
          
-        #Delete current priority list for the selected reg no
-        anvil.server.call_s('deleteCurrentPriority', self.drop_down_select.selected_value)
-        
-        assignedDate= date.today()
-        regNo=self.drop_down_select.selected_value
-        
-        for row in rows:
-            name= row['Name']
-            number = row.get('Number', "")
-            quantity = None if row.get('Quantity') is None else float(row['Quantity'])
-            amount = float(row["Amount"].replace(",", "")) if "," in row["Amount"] else float(row["Amount"])
-            priority = row["Priority"]
-            anvil.server.call('savePriority', assignedDate, regNo, name, number, quantity, amount, priority)
+        assignedDate = date.today()
+        regNo = self.drop_down_select.selected_value
+
+        batch_items = [
+            {
+                "name": row["Name"],
+                "number": row.get("Number", ""),
+                "quantity": None if row.get("Quantity") is None else float(row["Quantity"]),
+                "amount": float(row["Amount"].replace(",", "")) if "," in str(row["Amount"]) else float(row["Amount"]),
+                "priority": row["Priority"],
+            }
+            for row in rows
+        ]
+        anvil.server.call("save_repair_priorities_batch", assignedDate, regNo, batch_items)
+        self._priority_cache.pop(regNo, None)
             
         Notification("Priority saved successfully and download is initiated", title="Success", style="success", timeout=3).show()
         self.downloadPriorityPdf(regNo)

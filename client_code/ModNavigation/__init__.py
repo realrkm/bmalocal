@@ -6,6 +6,25 @@ from anvil.tables import app_tables
 from anvil import *
 
 home_form = None
+_revision_instance = None
+_revision_perms_snapshot = None
+
+
+def clear_cached_forms():
+    global _revision_instance, _revision_perms_snapshot
+    _revision_instance = None
+    _revision_perms_snapshot = None
+
+
+def prewarm_Revision(permissions):
+    global _revision_instance, _revision_perms_snapshot
+    rev_perms = (permissions or {}).get("REVISION")
+    if _revision_instance is not None and _revision_perms_snapshot == rev_perms:
+        return _revision_instance
+    from ..Revision import Revision
+    _revision_instance = Revision(permissions)
+    _revision_perms_snapshot = rev_perms
+    return _revision_instance
 
 def get_form():
     if home_form is None:
@@ -52,9 +71,9 @@ def go_Tracker():
 
 #Load Revision Form
 def go_Revision(permissions):
-    from ..Revision import Revision
     form = get_form()
-    form.load_component(Revision(permissions))
+    rev_form = prewarm_Revision(permissions)
+    form.load_component(rev_form)
     
 #Load Payment Form
 def go_Payment():

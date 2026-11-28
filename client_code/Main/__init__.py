@@ -105,8 +105,29 @@ class Main(MainTemplate):
         self._wt_user_prof = user_prof
         self.walkie_chat = None
         anvil.js.window.setTimeout(self._mount_walkie_chat, 250)
+        self._attach_sidebar_prewarm()
 
         self._safe_js_call("updateWtBadgeDisplay")
+
+    def _attach_sidebar_prewarm(self):
+        """Pre-warm Revision subforms & interim staff cache when hovering/pressing Revision."""
+        btn = getattr(self, "btn_Revision", None)
+        if btn is None:
+            return
+        def _warm_revision(_evt=None):
+            try:
+                with anvil.server.no_loading_indicator:
+                    ModGetData.getInterimStaffCached()
+                ModNavigation.prewarm_Revision(self.permissions)
+            except Exception:
+                pass
+        try:
+            dom_node = anvil.js.get_dom_node(btn)
+            dom_node.addEventListener("pointerenter", _warm_revision, {"passive": True})
+            dom_node.addEventListener("mousedown", _warm_revision, {"passive": True})
+            dom_node.addEventListener("touchstart", _warm_revision, {"passive": True})
+        except Exception:
+            pass
 
     def _mount_walkie_chat(self):
         """Lazily mount WalkieTalkieChat after Main finishes initial paint."""
@@ -134,6 +155,7 @@ class Main(MainTemplate):
             fresh_perms = context.get("permissions", {})
             if fresh_perms != self.permissions:
                 self.permissions = fresh_perms
+                ModNavigation.clear_cached_forms()
                 self.apply_permissions()
             try:
                 email = self.user.get("email", "") if isinstance(self.user, dict) else self.user["email"]
@@ -466,6 +488,7 @@ class Main(MainTemplate):
             self.timeout_id = None
         self.user = None  # Clear user reference immediately
         try:
+            ModNavigation.clear_cached_forms()
             from .. import ModCache
             ModCache.clear()
         except Exception:

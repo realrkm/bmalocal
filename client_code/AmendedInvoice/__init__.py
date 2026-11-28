@@ -13,12 +13,29 @@ class AmendedInvoice(AmendedInvoiceTemplate):
     def __init__(self, **properties):
         # Set Form properties and Data Bindings.
         self.init_components(**properties)
+        self._invoice_cache = {}
+        self._part_details_cache = {}
 
-        # Any code you write here will run before the form opens.
-        anvil.js.call('replaceBanner')
-        
     def refresh(self, **event_args):
         self.set_event_handler("x-refresh", self.refresh)
+
+    def _speculative_warm_invoice(self, job_id):
+        if not job_id or job_id in self._invoice_cache:
+            return
+        try:
+            with anvil.server.no_loading_indicator:
+                self._invoice_cache[job_id] = anvil.server.call_s("get_invoice_details_by_job_id", job_id)
+        except Exception:
+            pass
+
+    def _speculative_warm_part(self, part_id):
+        if not part_id or part_id in self._part_details_cache:
+            return
+        try:
+            with anvil.server.no_loading_indicator:
+                self._part_details_cache[part_id] = anvil.server.call_s("get_part_edit_details", part_id)
+        except Exception:
+            pass
 
     def btn_SearchCustomer_click(self, **event_args):
         """This method is called when the text in this text box is edited"""
@@ -30,48 +47,56 @@ class AmendedInvoice(AmendedInvoiceTemplate):
             return
 
         result = anvil.server.call("getJobCardRefInvoiceDetails", search_text)
-        
+
         if result:
-            # Clear drop down
             self.drop_down_JobCardRefDetails.items = ""
             self.drop_down_JobCardRefDetails.items = result
+            first_id = result[0][1]
+            try:
+                anvil.js.window.setTimeout(lambda: self._speculative_warm_invoice(first_id), 0)
+            except Exception:
+                pass
         else:
-             Notification("No records found for the entered job card ref.", title="Not Found", style="danger", timeout=3).show()
+            Notification("No records found for the entered job card ref.", title="Not Found", style="danger", timeout=3).show()
 
     def drop_down_JobCardRefDetails_change(self, **event_args):
         """This method is called when an item is selected"""
-        if self.drop_down_JobCardRefDetails.selected_value:
-            existing_jobcard_details = anvil.server.call_s(
-                "get_invoice_details_by_job_id",
-                self.drop_down_JobCardRefDetails.selected_value,
-            )            
+        selected_id = self.drop_down_JobCardRefDetails.selected_value
+        if selected_id:
+            if selected_id in self._invoice_cache:
+                existing_jobcard_details = self._invoice_cache[selected_id]
+            else:
+                existing_jobcard_details = anvil.server.call_s(
+                    "get_invoice_details_by_job_id",
+                    selected_id,
+                )
+                self._invoice_cache[selected_id] = existing_jobcard_details
             if existing_jobcard_details:
-                                
                 self.label_MakeAndModel.text = existing_jobcard_details[0]["MakeAndModel"]
                 self.label_Chassis.text = existing_jobcard_details[0]["ChassisNo"]
                 self.label_RegNo.text = existing_jobcard_details[0]["RegNo"]
                 self.label_EngineCode.text = existing_jobcard_details[0]["EngineCode"]
                 self.date_picker_1.date = existing_jobcard_details[0]["Date"]
-                self.label_Mileage.text = existing_jobcard_details[0]['Mileage']
-                
+                self.label_Mileage.text = existing_jobcard_details[0]["Mileage"]
+
                 items_append = []
                 for x in existing_jobcard_details:
                     items_append.append({
                         "Item": x["Item"],
                         "PartNo": x["PartNo"],
-                        "QuantityIssued":x["QuantityIssued"],
-                        "Amount":f"{float(x['Amount']):,.2f}"
+                        "QuantityIssued": x["QuantityIssued"],
+                        "Amount": f"{float(x['Amount']):,.2f}",
+                        "CarPartID": x.get("CarPartID"),
                     })
                 self.repeating_panel_assigned_parts.items = items_append
-                
-        elif self.drop_down_JobCardRefDetails.selected_value is None:
+
+        elif selected_id is None:
             self.label_MakeAndModel.text = ""
             self.label_Chassis.text = ""
             self.label_RegNo.text = ""
             self.label_EngineCode.text = ""
             self.date_picker_1.date = ""
             self.label_Mileage.text = ""
-            
 
     def btn_Search_click(self, **event_args):
         """This method is called when the text in this text box is edited"""
@@ -81,29 +106,43 @@ class AmendedInvoice(AmendedInvoiceTemplate):
             Notification("Please enter part name or part number to search.", title="Missing Part Details", style="danger", timeout=3).show()
             self.text_box_searchPartNo.focus()
             return
-            
+
         result = anvil.server.call("getCarPartNameAndNumber", search_value)
-        
-        # Clear drop down
+
         self.drop_down_selectPart.items = ""
 
         if result:
             self.drop_down_selectPart.items = result
+            first_part_id = result[0][1]
+            try:
+                anvil.js.window.setTimeout(lambda: self._speculative_warm_part(first_part_id), 0)
+            except Exception:
+                pass
         else:
             Notification("No records found for the entered part detail.", title="Not Found", style="danger", timeout=3).show()
 
     def drop_down_selectPart_change(self, **event_args):
-        """This method is called when an item is selected"""
-        self.lbl_ID.text = self.drop_down_selectPart.selected_value
-        result2 = anvil.server.call_s("getCarPartNumberWithID", self.lbl_ID.text)
-        self.lbl_PartNumber.text = result2[0]["PartNo"]
-        partname = anvil.server.call_s(
-            "getCarPartNamesWithId", self.drop_down_selectPart.selected_value
-        )
-        self.lbl_PartName.text = partname[0]["Name"]
-
-        price = ModGetData.getSellingPrice(self.lbl_ID.text)
-        self.txtSellingPrice.text = price
+        """Populate part number, name, and selling price in a single bundled lookup."""
+        part_id = self.drop_down_selectPart.selected_value
+        self.lbl_ID.text = part_id
+        if not part_id:
+            return
+        details = self._part_details_cache.get(part_id)
+        if details is None:
+            details = anvil.server.call_s("get_part_edit_details", part_id)
+            if details:
+                self._part_details_cache[part_id] = details
+        if not details:
+            return
+        self.lbl_PartNumber.text = details["part_no"]
+        self.lbl_PartName.text = details["part_name"]
+        selling = details.get("selling_details")
+        if selling is None or selling.get("Amount") is None:
+            ModGetData.trackMissingPrice(part_id)
+            Notification("Sorry, please enter selling price to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+            self.txtSellingPrice.text = None
+        else:
+            self.txtSellingPrice.text = selling["Amount"]
 
     def btn_AddParts_click(self, **event_args):
         """This method is called when the button is clicked"""
@@ -404,12 +443,10 @@ class AmendedInvoice(AmendedInvoiceTemplate):
             else:
                 amount = float(row["Amount"])
 
-            CarPartID_result = None # Initialize to None
-            if part_no:
-                # The server call might return a list [123] or None
+            final_id = row.get("CarPartID")
+            if final_id is None and part_no:
                 CarPartID_result = anvil.server.call("getCarPartIDWithNumber", part_no)
-            # Check the result before trying to get an index
-            final_id = CarPartID_result[0] if CarPartID_result else None
+                final_id = CarPartID_result[0] if CarPartID_result else None
 
             items.append({
                 "name": item_name,
@@ -475,8 +512,9 @@ class AmendedInvoice(AmendedInvoiceTemplate):
         # Reset date picker
         self.date_picker_1.date = None
     
-        # Clear repeating panel
+        # Clear repeating panel & local selection cache
         self.repeating_panel_assigned_parts.items = []
+        self._invoice_cache.clear()
     
         # Refresh form
         self.refresh()

@@ -8,23 +8,67 @@ from anvil.tables import app_tables
 import anvil.js
 from .. import ModGetData
 from .. import ModCache
-from ..TransitionInterimQuoteToInvoice import TransitionInterimQuoteToInvoice
+
 
 class InterimQuotation(InterimQuotationTemplate):
     def __init__(self, **properties):
         # Set Form properties and Data Bindings.
         self.init_components(**properties)
+        self._customer_jc_cache = {}
+        self._part_details_cache = {}
+        self._prewarmed_transition_modal = None
+        self.set_event_handler("show", self._on_form_show)
 
-        # Any code you write here will run before the form opens.
-        anvil.js.call('replaceBanner')
-        
-        self.drop_down_CheckInstaff.items = ModCache.get_or_fetch(
-            "interim_staff",
-            lambda: anvil.server.call('getInterimQuoteAndAmendedInvoiceStaff'),
-            topic="contacts",
-            ttl_seconds=300,
-        )
-          
+        cached_staff = ModCache.get_cached("interim_staff")
+        if cached_staff is not None:
+            self.drop_down_CheckInstaff.items = cached_staff
+        else:
+            try:
+                anvil.js.window.setTimeout(self._hydrate_staff_dropdown, 0)
+            except Exception:
+                self._hydrate_staff_dropdown()
+
+    def _hydrate_staff_dropdown(self):
+        try:
+            with anvil.server.no_loading_indicator:
+                self.drop_down_CheckInstaff.items = ModGetData.getInterimStaffCached()
+        except Exception:
+            pass
+
+    def _on_form_show(self, **event_args):
+        if self._prewarmed_transition_modal is None:
+            try:
+                anvil.js.window.setTimeout(self._prewarm_transition_modal, 30)
+            except Exception:
+                pass
+
+    def _prewarm_transition_modal(self):
+        if self._prewarmed_transition_modal is not None:
+            return
+        try:
+            from ..TransitionInterimQuoteToInvoice import TransitionInterimQuoteToInvoice
+            self._prewarmed_transition_modal = TransitionInterimQuoteToInvoice()
+        except Exception:
+            self._prewarmed_transition_modal = None
+
+    def _speculative_warm_customer(self, client_id):
+        if not client_id or client_id in self._customer_jc_cache:
+            return
+        try:
+            with anvil.server.no_loading_indicator:
+                self._customer_jc_cache[client_id] = anvil.server.call_s("getJobCardRowWithClientID", client_id)
+        except Exception:
+            pass
+
+    def _speculative_warm_part(self, part_id):
+        if not part_id or part_id in self._part_details_cache:
+            return
+        try:
+            with anvil.server.no_loading_indicator:
+                self._part_details_cache[part_id] = anvil.server.call_s("get_part_edit_details", part_id)
+        except Exception:
+            pass
+
     def refresh(self, **event_args):
         self.set_event_handler("x-refresh", self.refresh)
 
@@ -36,72 +80,92 @@ class InterimQuotation(InterimQuotationTemplate):
             Notification("Please enter customer name to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
             self.txtCustomerName.focus()
             return
-            
+
         result = anvil.server.call('getClientNameAndPhoneNumber', search_value)
 
-        if result:           
-            #Clear drop down 
+        if result:
             self.drop_down_CustomerDetails.items = ""
             self.drop_down_CustomerDetails.items = result
+            first_client_id = result[0][1]
+            try:
+                anvil.js.window.setTimeout(lambda: self._speculative_warm_customer(first_client_id), 0)
+            except Exception:
+                pass
         else:
             Notification("No records found for the entered customer name.", title="Not Found", style="danger", timeout=3).show()
-            
+
     def drop_down_CustomerDetails_change(self, **event_args):
         """This method is called when an item is selected"""
-        if self.drop_down_CustomerDetails.selected_value:
-            existing_jobcard_details = anvil.server.call_s("getJobCardRowWithClientID", self.drop_down_CustomerDetails.selected_value)
+        selected_client = self.drop_down_CustomerDetails.selected_value
+        if selected_client:
+            if selected_client in self._customer_jc_cache:
+                existing_jobcard_details = self._customer_jc_cache[selected_client]
+            else:
+                existing_jobcard_details = anvil.server.call_s("getJobCardRowWithClientID", selected_client)
+                self._customer_jc_cache[selected_client] = existing_jobcard_details
             if existing_jobcard_details:
                 self.txtMakeAndModel.text = existing_jobcard_details["MakeAndModel"]
                 self.txtChassis.text = existing_jobcard_details["ChassisNo"]
                 self.txtRegNo.text = existing_jobcard_details["RegNo"]
                 self.txtEngineCode.text = existing_jobcard_details["EngineCode"]
 
-                #Update textboxes in order to search for matching previous Interim Quotations
-                self.txt_CustomerID.text = self.drop_down_CustomerDetails.selected_value
+                # Update textboxes in order to search for matching previous Interim Quotations
+                self.txt_CustomerID.text = selected_client
                 self.txt_MakeAndModel.text = self.txtMakeAndModel.text
                 self.txt_Chassis.text = self.txtChassis.text
 
-                #Call function to search previous Interim Quotation
+                # Call function to search previous Interim Quotation
                 self.getPreviousInterimQuoteDetails()
-                
-        elif self.drop_down_CustomerDetails.selected_value is None:
+
+        elif selected_client is None:
             self.txtMakeAndModel.text = ""
             self.txtChassis.text = ""
-            self.txtRegNo.text =""
+            self.txtRegNo.text = ""
             self.txtEngineCode.text = ""
 
 
     def btn_Search_click(self, **event_args):
         """This method is called when the text in this text box is edited"""
         search_value = self.text_box_searchPartNo.text.strip()
-        
+
         if not search_value:
             Notification("Please enter part name or part no. to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
             self.text_box_searchPartNo.focus()
             return
-            
+
         result = anvil.server.call('getCarPartNameAndNumber', search_value)
 
-        #Clear drop down 
         self.drop_down_selectPart.items = ""
 
         if result:
             self.drop_down_selectPart.items = result
+            first_part_id = result[0][1]
+            try:
+                anvil.js.window.setTimeout(lambda: self._speculative_warm_part(first_part_id), 0)
+            except Exception:
+                pass
         else:
             Notification("No records found for the entered part detail.", title="Not Found", style="danger", timeout=3).show()
 
 
     def drop_down_selectPart_change(self, **event_args):
         """This method is called when an item is selected"""
-        self.lbl_ID.text = self.drop_down_selectPart.selected_value
-        details = anvil.server.call_s("get_part_edit_details", self.lbl_ID.text)
+        part_id = self.drop_down_selectPart.selected_value
+        self.lbl_ID.text = part_id
+        if not part_id:
+            return
+        details = self._part_details_cache.get(part_id)
+        if details is None:
+            details = anvil.server.call_s("get_part_edit_details", part_id)
+            if details:
+                self._part_details_cache[part_id] = details
         if not details:
             return
         self.lbl_PartNumber.text = details["part_no"]
         self.lbl_PartName.text = details["part_name"]
         selling = details.get("selling_details")
         if selling is None or selling.get("Amount") is None:
-            ModGetData.trackMissingPrice(self.lbl_ID.text)
+            ModGetData.trackMissingPrice(part_id)
             Notification("Sorry, please enter selling price to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
             self.txtSellingPrice.text = None
         else:
@@ -348,8 +412,9 @@ class InterimQuotation(InterimQuotationTemplate):
         self.drop_down_CustomerDetails.selected_value = None
         self.drop_down_selectPart.items = []
         self.drop_down_selectPart.selected_value = None
-        self.drop_down_CheckInstaff.items = anvil.server.call('getInterimQuoteAndAmendedInvoiceStaff')
+        self.drop_down_CheckInstaff.items = ModGetData.getInterimStaffCached()
         self.drop_down_CheckInstaff.selected_value = None
+        self._customer_jc_cache.clear()
     
         # Reset date pickers
         self.date_picker_1.date = None
@@ -401,6 +466,15 @@ class InterimQuotation(InterimQuotationTemplate):
                 Notification("Previous details loaded successfully", title="Success", style="success", timeout=3).show()
 
     def btn_TransitionInterimQuoteToInvoice_click(self, **event_args):
-        """This method is called when the button is clicked"""
-        alert(content=TransitionInterimQuoteToInvoice(), buttons=[],dismissible=False, large=True)
+        """Open pre-warmed TransitionInterimQuoteToInvoice modal immediately."""
+        modal = self._prewarmed_transition_modal
+        self._prewarmed_transition_modal = None
+        if modal is None:
+            from ..TransitionInterimQuoteToInvoice import TransitionInterimQuoteToInvoice
+            modal = TransitionInterimQuoteToInvoice()
+        alert(content=modal, buttons=[], dismissible=False, large=True)
+        try:
+            anvil.js.window.setTimeout(self._prewarm_transition_modal, 15)
+        except Exception:
+            pass
         

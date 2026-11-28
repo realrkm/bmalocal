@@ -14,18 +14,35 @@ class BrandComparison(BrandComparisonTemplate):
     def __init__(self, **properties):
         # Set Form properties and Data Bindings.
         self.init_components(**properties)
-
-        # Any code you write here will run before the form opens.
-        anvil.js.call('replaceBanner')
+        self._brand_cache = {}
+        self._part_details_cache = {}
 
     def refresh(self, **event_args):
         self.set_event_handler("x-refresh", self.refresh)
 
+    def _speculative_warm_brand(self, reg_no):
+        if not reg_no or reg_no in self._brand_cache:
+            return
+        try:
+            with anvil.server.no_loading_indicator:
+                self._brand_cache[reg_no] = anvil.server.call_s("getBrandComparisonList", regNo=reg_no)
+        except Exception:
+            pass
+
+    def _speculative_warm_part(self, part_id):
+        if not part_id or part_id in self._part_details_cache:
+            return
+        try:
+            with anvil.server.no_loading_indicator:
+                self._part_details_cache[part_id] = anvil.server.call_s("get_part_edit_details", part_id)
+        except Exception:
+            pass
+
     def btnSearch_click(self, **event_args):
         """This method is called when the button is clicked"""
         search_value = self.txt_SearchRegNo.text.strip()
-        
-        if not search_value :
+
+        if not search_value:
             Notification("Please enter RegNo to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
             self.txt_SearchRegNo.focus()
             return
@@ -35,14 +52,26 @@ class BrandComparison(BrandComparisonTemplate):
         if result:
             self.drop_down_select.items = ""
             self.drop_down_select.items = result
+            first_reg = result[0][1] if isinstance(result[0], (list, tuple)) else result[0]
+            try:
+                anvil.js.window.setTimeout(lambda: self._speculative_warm_brand(first_reg), 0)
+            except Exception:
+                pass
         else:
             Notification("No records found for the entered Reg No.", title="Not Found", style="danger", timeout=3).show()
-            
+
     def drop_down_select_change(self, **event_args):
         """This method is called when an item is selected"""
-        self.repeating_panel_assigned_parts.items = anvil.server.call_s(
-            "getBrandComparisonList", regNo=self.drop_down_select.selected_value
-        )
+        reg_no = self.drop_down_select.selected_value
+        if not reg_no:
+            self.repeating_panel_assigned_parts.items = []
+            return
+        if reg_no in self._brand_cache:
+            self.repeating_panel_assigned_parts.items = list(self._brand_cache[reg_no])
+        else:
+            items = anvil.server.call_s("getBrandComparisonList", regNo=reg_no)
+            self._brand_cache[reg_no] = items
+            self.repeating_panel_assigned_parts.items = items
 
     def btn_Search_click(self, **event_args):
         """This method is called when the button is clicked"""
@@ -55,24 +84,40 @@ class BrandComparison(BrandComparisonTemplate):
 
         result = anvil.server.call('getCarPartNameAndNumber', search_value)
 
-        #Clear drop down 
         self.drop_down_selectPart.items = ""
 
         if result:
             self.drop_down_selectPart.items = result
+            first_part_id = result[0][1]
+            try:
+                anvil.js.window.setTimeout(lambda: self._speculative_warm_part(first_part_id), 0)
+            except Exception:
+                pass
         else:
             Notification("No records found for the entered part detail.", title="Not Found", style="danger", timeout=3).show()
 
     def drop_down_selectPart_change(self, **event_args):
-        """This method is called when an item is selected"""
-        partname = anvil.server.call_s(
-            "getCarPartNamesWithId", self.drop_down_selectPart.selected_value
-        )
-        self.lbl_PartName.text = partname[0]["Name"]
-        self.lbl_ID.text = self.drop_down_selectPart.selected_value
-        result2 =  anvil.server.call_s("getCarPartNumberWithID", self.lbl_ID.text)
-        self.lbl_PartNumber.text = result2[0]["PartNo"]
-        self.txtSellingPrice.text = ModGetData.getSellingPrice(self.lbl_ID.text)
+        """Populate part name, number, and selling price in a single bundled lookup."""
+        part_id = self.drop_down_selectPart.selected_value
+        self.lbl_ID.text = part_id
+        if not part_id:
+            return
+        details = self._part_details_cache.get(part_id)
+        if details is None:
+            details = anvil.server.call_s("get_part_edit_details", part_id)
+            if details:
+                self._part_details_cache[part_id] = details
+        if not details:
+            return
+        self.lbl_PartNumber.text = details["part_no"]
+        self.lbl_PartName.text = details["part_name"]
+        selling = details.get("selling_details")
+        if selling is None or selling.get("Amount") is None:
+            ModGetData.trackMissingPrice(part_id)
+            Notification("Sorry, please enter selling price to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
+            self.txtSellingPrice.text = None
+        else:
+            self.txtSellingPrice.text = selling["Amount"]
 
     def btn_AddParts_click(self, **event_args):
         """This method is called when the button is clicked"""
@@ -216,35 +261,28 @@ class BrandComparison(BrandComparisonTemplate):
             self.btn_Save.enabled = True
             return
 
-        # Delete current brnd comparison list for the selected reg no
-        anvil.server.call_s(
-            "deleteCurrentBrandComparison", self.drop_down_select.selected_value
-        )
-
         assignedDate = date.today()
         regNo = self.drop_down_select.selected_value
 
+        batch_items = []
         for row in rows:
-            name = row["Name"]
-            number = row.get("Number", "")
-            quantity = None if row.get("Quantity") is None else float(row["Quantity"])
-            
-            if row["Amount"].upper() == "TO BE CONFIRMED":
-                amount = 0
+            raw_amt = str(row["Amount"])
+            if raw_amt.upper() == "TO BE CONFIRMED":
+                amount = 0.0
             else:
-                amount = float(row["Amount"].replace(",", "")) if "," in row["Amount"] else float(row["Amount"])
-            
-            groupid = row["GroupID"]
-            anvil.server.call(
-                "saveBrand",
-                assignedDate,
-                regNo,
-                name,
-                number,
-                quantity,
-                amount,
-                groupid,
+                amount = float(raw_amt.replace(",", "")) if "," in raw_amt else float(raw_amt)
+            batch_items.append(
+                {
+                    "name": row["Name"],
+                    "number": row.get("Number", ""),
+                    "quantity": None if row.get("Quantity") is None else float(row["Quantity"]),
+                    "amount": amount,
+                    "groupid": row["GroupID"],
+                }
             )
+
+        anvil.server.call("save_brand_comparison_batch", assignedDate, regNo, batch_items)
+        self._brand_cache.pop(regNo, None)
 
         Notification("Brand comparison saved successfully and download is initiated", title="Success", style="success", timeout=3).show()
         self.downloadBrandComparisonPdf(regNo)

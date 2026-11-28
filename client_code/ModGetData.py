@@ -41,6 +41,16 @@ def getStaffCached(force_refresh=False):
         force_refresh=force_refresh,
     )
 
+
+def getInterimStaffCached(force_refresh=False):
+    return ModCache.get_or_fetch(
+        "interim_staff",
+        lambda: anvil.server.call_s("getInterimQuoteAndAmendedInvoiceStaff"),
+        topic="contacts",
+        ttl_seconds=300,
+        force_refresh=force_refresh,
+    )
+
 def _show_error(message, title="", timeout=5):
     """
     Displays an error notification and suppresses duplicates until it expires.

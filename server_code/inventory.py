@@ -611,6 +611,45 @@ def savePriority(assignedDate, regNo, name, number, quantity, amount, priority):
 
 
 @anvil.server.callable()
+def save_repair_priorities_batch(assignedDate, regNo, items):
+    """Atomically replace repair priorities for regNo in a single transaction."""
+    _get_current_user()
+    if not regNo or not isinstance(regNo, str):
+        raise ValueError("Invalid registration number.")
+    if not isinstance(items, list) or not items:
+        raise ValueError("At least one priority item is required.")
+
+    params = []
+    for row in items:
+        if not isinstance(row, dict) or not row.get("name"):
+            raise ValueError("Invalid priority item.")
+        qty = row.get("quantity")
+        qty_val = None if qty in (None, "") else float(qty)
+        amt_val = float(row.get("amount", 0))
+        params.append(
+            (
+                assignedDate,
+                regNo,
+                row["name"],
+                row.get("number", ""),
+                qty_val,
+                amt_val,
+                row.get("priority", ""),
+            )
+        )
+
+    with db_cursor() as cursor:
+        cursor.execute("DELETE FROM tbl_repairpriorities WHERE RegNo = %s", (regNo,))
+        cursor.executemany(
+            """
+            INSERT INTO tbl_repairpriorities(Date, RegNo, PartName, PartNumber, Quantity, Amount, Priority)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """,
+            params,
+        )
+
+
+@anvil.server.callable()
 def get_priority_list(regNo):
     _get_current_user()
     with db_cursor() as cursor:
@@ -1818,6 +1857,45 @@ def saveBrand(assignedDate, regNo, name, number, quantity, amount, groupid):
         """
         cursor.execute(
             query, (assignedDate, regNo, name, number, quantity, amount, groupid)
+        )
+
+
+@anvil.server.callable()
+def save_brand_comparison_batch(assignedDate, regNo, items):
+    """Atomically replace brand comparison rows for regNo in a single transaction."""
+    _get_current_user()
+    if not regNo or not isinstance(regNo, str):
+        raise ValueError("Invalid registration number.")
+    if not isinstance(items, list) or not items:
+        raise ValueError("At least one brand comparison item is required.")
+
+    params = []
+    for row in items:
+        if not isinstance(row, dict) or not row.get("name"):
+            raise ValueError("Invalid brand comparison item.")
+        qty = row.get("quantity")
+        qty_val = None if qty in (None, "") else float(qty)
+        amt_val = float(row.get("amount", 0))
+        params.append(
+            (
+                assignedDate,
+                regNo,
+                row["name"],
+                row.get("number", ""),
+                qty_val,
+                amt_val,
+                row.get("groupid", ""),
+            )
+        )
+
+    with db_cursor() as cursor:
+        cursor.execute("DELETE FROM tbl_brandcomparison WHERE RegNo = %s", (regNo,))
+        cursor.executemany(
+            """
+            INSERT INTO tbl_brandcomparison(Date, RegNo, PartName, PartNumber, Quantity, Amount, GroupID)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """,
+            params,
         )
 
 
@@ -3222,6 +3300,7 @@ __all__ = [
     'getPriorityList',
     'deleteCurrentPriority',
     'savePriority',
+    'save_repair_priorities_batch',
     'get_priority_list',
     'fillFormData',
     'fillDefectsListFormData',
@@ -3233,6 +3312,7 @@ __all__ = [
     'fillBrandComparisonFormData',
     'deleteCurrentBrandComparison',
     'saveBrand',
+    'save_brand_comparison_batch',
     'getLocation',
     'addLocation',
     'getLocationName',

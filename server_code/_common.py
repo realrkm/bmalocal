@@ -286,6 +286,9 @@ def publish_realtime_event(topic: str, action: str = "updated", entity_id=None, 
     """Fire-and-forget broadcast of a lightweight data_changed signal to connected clients."""
     if not topic or not isinstance(topic, str):
         return False
+    clean_topic = topic.strip()
+    if clean_topic in ("jobcards", "contacts", "payments"):
+        invalidate_lookup_cache("tracker_search_index")
     if actor is None:
         try:
             user = anvil.users.get_user()

@@ -9,6 +9,8 @@ home_form = None
 _contacts_instance = None
 _contacts_perms_snapshot = None
 _booking_instance = None
+_tracker_desktop_instance = None
+_tracker_mobile_instance = None
 _revision_instance = None
 _revision_perms_snapshot = None
 _inventory_instance = None
@@ -22,6 +24,7 @@ _report_perms_snapshot = None
 def clear_cached_forms():
     global _contacts_instance, _contacts_perms_snapshot
     global _booking_instance
+    global _tracker_desktop_instance, _tracker_mobile_instance
     global _revision_instance, _revision_perms_snapshot
     global _inventory_instance, _inventory_perms_snapshot
     global _settings_instance, _settings_perms_snapshot
@@ -29,6 +32,8 @@ def clear_cached_forms():
     _contacts_instance = None
     _contacts_perms_snapshot = None
     _booking_instance = None
+    _tracker_desktop_instance = None
+    _tracker_mobile_instance = None
     _revision_instance = None
     _revision_perms_snapshot = None
     _inventory_instance = None
@@ -134,16 +139,25 @@ def go_Workflow(permissions):
     form.load_component(Workflow(permissions))
 
 #Load Progress Tracker Form
+def prewarm_Tracker(is_mobile=None):
+    global _tracker_desktop_instance, _tracker_mobile_instance
+    if is_mobile is None:
+        import anvil.js
+        is_mobile = anvil.js.window.innerWidth <= 768
+    if is_mobile:
+        if _tracker_mobile_instance is None:
+            from ..ProgressTrackerMobileView import ProgressTrackerMobileView
+            _tracker_mobile_instance = ProgressTrackerMobileView()
+        return _tracker_mobile_instance
+    if _tracker_desktop_instance is None:
+        from ..ProgressTracker import ProgressTracker
+        _tracker_desktop_instance = ProgressTracker()
+    return _tracker_desktop_instance
+
+
 def go_Tracker():
     form = get_form()
-    if anvil.js.window.innerWidth <= 768:
-        # Mobile device
-        from ..ProgressTrackerMobileView import ProgressTrackerMobileView
-        form.load_component(ProgressTrackerMobileView())
-    else:
-        #Desktop device
-        from ..ProgressTracker import ProgressTracker
-        form.load_component(ProgressTracker())
+    form.load_component(prewarm_Tracker())
 
 #Load Revision Form
 def go_Revision(permissions):

@@ -33,6 +33,9 @@ This register documents key `@anvil.server.callable` endpoints, their input/outp
 | `getBookingDetails` | `None` | `list[dict]` (No, ID, Fullname, Phone, RegNo, Period, FormattedSchedule, Details) | Any Authenticated | `Booking`, `ModGetData` | [x] | [ ] |
 | `saveBookingDetails` | `customer_id: int, regno: str, period, details: str` | `bool` (invalidates cache + publishes `bookings` event) | Any Authenticated | `Booking` | [x] | [ ] |
 | `updateAppointmentSent` | `booking_id: int` | `None` (invalidates cache + publishes `bookings` event) | Any Authenticated | `Booking.RowTemplate24` | [x] | [ ] |
+| `get_tracker_search_index` | `None` | `list[dict]` (id, label, ref_low, name_low, summary) | Any Authenticated | `ModGetData`, `ProgressTracker`, `ProgressTrackerMobileView` | [x] | [ ] |
+| `search_tracker_jobcards` | `search_value: str` | `dict` (items, summaries, top_modals) | Any Authenticated | `ProgressTracker`, `ProgressTrackerMobileView` | [x] | [ ] |
+| `get_progress_tracker_modals_batch` | `job_ids: list[int]` (up to 5) | `dict[int, dict]` (modals bundles) | Any Authenticated | `ProgressTracker`, `ProgressTrackerMobileView` | [x] | [ ] |
 | `get_stats` | `user_agent_string: str` | `dict` (client geolocation/OS) | Public / Anvil context | `Launcher`, `Main` | [x] | [ ] |
 
 ---

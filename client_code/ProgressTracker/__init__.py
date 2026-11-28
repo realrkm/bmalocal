@@ -6,6 +6,7 @@ from anvil.tables import app_tables
 import anvil.server
 import anvil.users
 import anvil.js
+from .. import ModGetData
 from ..JobCardForm import JobCardForm
 from ..DefectsForm import DefectsForm
 from ..QuoteForm import QuoteForm
@@ -27,9 +28,34 @@ class ProgressTracker(ProgressTrackerTemplate):
         self._modals_cache_job_id = None
         self._prewarmed_modals = {}
         self._job_bundles_lru = {}
+        self._tracker_summary_map = {}
+        self._inflight_bundle_jobs = set()
         self._preload_modal_assets()
         self._attach_hover_prewarm()
+        if hasattr(self.txtJobCardRef, "set_event_handler"):
+            self.txtJobCardRef.set_event_handler("pressed_enter", self.btn_SearchCustomer_click)
+        self.set_event_handler("show", self.form_show)
         self.set_event_handler("hide", self.form_hide)
+        try:
+            anvil.js.window.setTimeout(self._warm_search_index_async, 0)
+        except Exception:
+            pass
+
+    def _warm_search_index_async(self, _evt=None, force_refresh=False):
+        try:
+            fn = getattr(ModGetData, "getTrackerSearchIndexCached", None)
+            if not callable(fn):
+                return
+            rows = fn(force_refresh=force_refresh) or []
+            smap = getattr(self, "_tracker_summary_map", None)
+            if smap is None:
+                self._tracker_summary_map = smap = {}
+            for entry in rows:
+                jid = entry.get("id")
+                if jid is not None and "summary" in entry:
+                    smap[int(jid) if str(jid).isdigit() else jid] = entry["summary"]
+        except Exception:
+            pass
 
     def _preload_modal_assets(self):
         try:
@@ -68,8 +94,25 @@ class ProgressTracker(ProgressTrackerTemplate):
                 dom_node.addEventListener("touchstart", h, {"passive": True})
             except Exception:
                 pass
+        search_btn = getattr(self, "btn_SearchCustomer", None)
+        if search_btn is not None:
+            try:
+                s_dom = anvil.js.get_dom_node(search_btn)
+                s_dom.addEventListener("pointerenter", self._warm_search_index_async, {"passive": True})
+                s_dom.addEventListener("mousedown", self._warm_search_index_async, {"passive": True})
+                s_dom.addEventListener("touchstart", self._warm_search_index_async, {"passive": True})
+            except Exception:
+                pass
 
     def _evict_lru_job(self, job_id=None):
+        smap = getattr(self, "_tracker_summary_map", None)
+        if smap:
+            if job_id is None:
+                smap.clear()
+            else:
+                for k in list(smap.keys()):
+                    if str(k) == str(job_id):
+                        smap.pop(k, None)
         lru = getattr(self, "_job_bundles_lru", None)
         if not lru:
             return
@@ -232,7 +275,14 @@ class ProgressTracker(ProgressTrackerTemplate):
 
     def _on_realtime_event(self, evt=None):
         entity_id = evt.get("entity_id") if isinstance(evt, dict) else None
+        inv_fn = getattr(ModGetData, "invalidateTrackerSearchIndex", None)
+        if callable(inv_fn):
+            inv_fn()
         self._evict_lru_job(entity_id)
+        try:
+            anvil.js.window.setTimeout(lambda: self._warm_search_index_async(force_refresh=True), 50)
+        except Exception:
+            pass
         selected_id = self.drop_down_JobCardRefDetails.selected_value
         if not selected_id:
             return
@@ -247,16 +297,23 @@ class ProgressTracker(ProgressTrackerTemplate):
                 self._rt_tokens = [
                     rt.subscribe("jobcards", self._on_realtime_event),
                     rt.subscribe("payments", self._on_realtime_event),
+                    rt.subscribe("contacts", self._on_realtime_event),
                 ]
                 def _on_conn(status):
                     self._sync_timer_with_ws()
                     if status and status.get("reconnected"):
                         self._evict_lru_job(None)
+                        self._warm_search_index_async(force_refresh=True)
                         self.refresh_selected_job_card(force_server=True)
                 self._rt_conn_token = rt.onConnectionChange(_on_conn)
         except Exception:
             pass
         self._sync_timer_with_ws()
+        if getattr(ModGetData, "peekTrackerSearchIndexCached", lambda: None)() is None:
+            try:
+                anvil.js.window.setTimeout(self._warm_search_index_async, 0)
+            except Exception:
+                pass
 
     def form_hide(self, **event_args):
         self.timer_update.interval = 0
@@ -276,55 +333,155 @@ class ProgressTracker(ProgressTrackerTemplate):
     def timer_update_tick(self, **event_args):
         self.refresh_selected_job_card(force_server=True)
 
-    def _background_speculative_warm(self, job_id):
-        lru = getattr(self, "_job_bundles_lru", None)
-        if not job_id or (lru and job_id in lru):
+    def _store_modals_into_lru_and_active(self, job_id, modals, summary=None):
+        smap = getattr(self, "_tracker_summary_map", None) or {}
+        tracker_summary = summary or smap.get(job_id)
+        if tracker_summary is None and modals and modals.get("jobcard"):
+            jc = modals["jobcard"]
+            inv_rows = modals.get("invoice") or []
+            pay_rows = modals.get("payment") or []
+            raw_inv = sum(
+                (r["QuantityIssued"] if isinstance(r.get("QuantityIssued"), (int, float)) else 1.0)
+                * (r.get("Amount") or 0.0)
+                for r in inv_rows
+            )
+            raw_pay = sum(
+                float(str(r.get("AmountPaid") or 0).replace(",", "") or 0)
+                for r in pay_rows
+            )
+            tracker_summary = {
+                "job_card": {
+                    "ID": jc["ID"],
+                    "ClientDetails": jc["ClientDetails"],
+                    "RegNo": jc["RegNo"],
+                    "MakeAndModel": jc["MakeAndModel"],
+                    "Mileage": jc["Mileage"],
+                    "ReceivedDate": jc["ReceivedDate"],
+                    "Status": jc["Status"],
+                },
+                "client": {
+                    "Fullname": jc.get("ClientFullname", ""),
+                    "Phone": jc.get("ClientPhone", ""),
+                },
+                "invoice_status": inv_rows[-1].get("Status") if inv_rows else None,
+                "invoice_total": f"{float(raw_inv):,.2f}" if inv_rows else 0.0,
+                "previous_payment": f"{float(raw_pay):,.2f}" if pay_rows else 0.0,
+                "cancelled_reason": "",
+            }
+        if tracker_summary is None:
             return
-        try:
-            with anvil.server.no_loading_indicator:
-                res = anvil.server.call_s("get_progress_tracker_data", job_id, True)
-            if not res or "modals" not in res:
+        prewarmed = {}
+        self._store_lru_job(job_id, tracker_summary, modals, prewarmed)
+        if self.drop_down_JobCardRefDetails.selected_value == job_id:
+            self._modals_cache = modals
+            self._modals_cache_job_id = job_id
+            self._prewarmed_modals = prewarmed
+            jc_status = tracker_summary["job_card"]["Status"]
+            eff = tracker_summary["invoice_status"] if jc_status == "Ready for Pickup" else jc_status
+            self._schedule_prewarm_modals(job_id, active_status=eff)
+            return
+
+        keys = ("jobcard", "defects", "quote", "confirm", "invoice", "payment")
+        def _bg_step(idx=0):
+            if idx >= len(keys):
                 return
-            modals = res["modals"]
-            prewarmed = {}
-            self._store_lru_job(job_id, res, modals, prewarmed)
-            keys = ("jobcard", "defects", "quote", "confirm", "invoice", "payment")
-            def _bg_step(idx=0):
-                if idx >= len(keys):
-                    return
-                if self.drop_down_JobCardRefDetails.selected_value == job_id:
-                    return  # Foreground selection took over
-                self._prewarm_for_bundle(job_id, modals, prewarmed, keys[idx])
-                try:
-                    anvil.js.window.setTimeout(lambda: _bg_step(idx + 1), 0)
-                except Exception:
-                    pass
+            if self.drop_down_JobCardRefDetails.selected_value == job_id:
+                return
+            self._prewarm_for_bundle(job_id, modals, prewarmed, keys[idx])
+            try:
+                anvil.js.window.setTimeout(lambda: _bg_step(idx + 1), 0)
+            except Exception:
+                pass
+        try:
             anvil.js.window.setTimeout(lambda: _bg_step(0), 0)
         except Exception:
             pass
 
+    def _speculative_warm_batch(self, job_ids):
+        lru = getattr(self, "_job_bundles_lru", None) or {}
+        inflight = getattr(self, "_inflight_bundle_jobs", None)
+        if inflight is None:
+            self._inflight_bundle_jobs = inflight = set()
+        missing = [jid for jid in (job_ids or ()) if jid and jid not in lru and jid not in inflight]
+        if not missing:
+            return
+        inflight.update(missing)
+        try:
+            with anvil.server.no_loading_indicator:
+                batch = anvil.server.call_s("get_progress_tracker_modals_batch", missing[:3]) or {}
+            for raw_id, modals in batch.items():
+                jid = int(raw_id) if str(raw_id).isdigit() else raw_id
+                if modals:
+                    self._store_modals_into_lru_and_active(jid, modals)
+        except Exception:
+            pass
+        finally:
+            for jid in missing:
+                inflight.discard(jid)
+
+    def _background_speculative_warm(self, job_id):
+        self._speculative_warm_batch([job_id])
+
     def btn_SearchCustomer_click(self, **event_args):
-        """This method is called when the text in this text box is edited"""
-        self.txtJobCardRef.text = self.txtJobCardRef.text.strip()
-        if self.txtJobCardRef.text:
-            search_value = self.txtJobCardRef.text
-            result = anvil.server.call("getJobCardDetailsWithRefOrFullnameSearch", search_value)
-            # Clear drop down
-            self.drop_down_JobCardRefDetails.items = ""
-            self.drop_down_JobCardRefDetails.items = result
-            # Speculatively warm the top search hit while the user opens the dropdown
-            if result and len(result) > 0:
-                first_id = result[0][1]
-                try:
-                    anvil.js.window.setTimeout(lambda: self._background_speculative_warm(first_id), 0)
-                except Exception:
-                    pass
-        else:
+        """Search JobCardRef or client Fullname in <2ms from ModCache, with 1-RPC cold fallback."""
+        self.txtJobCardRef.text = (self.txtJobCardRef.text or "").strip()
+        if not self.txtJobCardRef.text:
             Notification("Please enter job card ref to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
             self.txtJobCardRef.focus()
+            return
+
+        search_value = self.txtJobCardRef.text
+        smap = getattr(self, "_tracker_summary_map", None)
+        if smap is None:
+            self._tracker_summary_map = smap = {}
+
+        idx_rows = getattr(ModGetData, "peekTrackerSearchIndexCached", lambda: None)()
+        if idx_rows is not None:
+            low = search_value.lower()
+            matches = [
+                r for r in idx_rows
+                if low in r.get("ref_low", "") or low in r.get("name_low", "")
+            ]
+            for m in matches:
+                jid = int(m["id"]) if str(m["id"]).isdigit() else m["id"]
+                smap[jid] = m["summary"]
+            result = [(m["label"], int(m["id"]) if str(m["id"]).isdigit() else m["id"]) for m in matches]
+            self.drop_down_JobCardRefDetails.items = result
+            if result:
+                top_ids = [r[1] for r in result[:3]]
+                try:
+                    anvil.js.window.setTimeout(lambda: self._speculative_warm_batch(top_ids), 0)
+                except Exception:
+                    pass
+            return
+
+        with anvil.server.no_loading_indicator:
+            payload = anvil.server.call("search_tracker_jobcards", search_value)
+
+        if isinstance(payload, dict):
+            raw_items = payload.get("items") or []
+            result = [(lbl, int(jid) if str(jid).isdigit() else jid) for lbl, jid in raw_items]
+            for raw_id, summary in (payload.get("summaries") or {}).items():
+                jid = int(raw_id) if str(raw_id).isdigit() else raw_id
+                smap[jid] = summary
+            for raw_id, modals in (payload.get("top_modals") or {}).items():
+                jid = int(raw_id) if str(raw_id).isdigit() else raw_id
+                if modals:
+                    self._store_modals_into_lru_and_active(jid, modals, summary=smap.get(jid))
+        else:
+            result = payload or []
+
+        self.drop_down_JobCardRefDetails.items = result
+        try:
+            anvil.js.window.setTimeout(self._warm_search_index_async, 0)
+            if result and len(result) > 1:
+                next_ids = [r[1] for r in result[1:3]]
+                anvil.js.window.setTimeout(lambda: self._speculative_warm_batch(next_ids), 0)
+        except Exception:
+            pass
 
     def drop_down_JobCardRefDetails_change(self, **event_args):
-        """This method is called when an item is selected"""
+        """Render selected Job Card summary in <2ms from RAM cache and warm modals asynchronously."""
         if self.drop_down_JobCardRefDetails.selected_value:
             self.refresh_selected_job_card()
         else:
@@ -372,6 +529,19 @@ class ProgressTracker(ProgressTrackerTemplate):
             self._schedule_prewarm_modals(job_id, active_status=effective_status)
             return
 
+        smap = getattr(self, "_tracker_summary_map", None)
+        if not force_server and smap and job_id in smap:
+            if self._modals_cache_job_id is not None and self._modals_cache_job_id != job_id:
+                self._modals_cache = {}
+                self._modals_cache_job_id = None
+                self._prewarmed_modals = {}
+            self._apply_tracker_ui(smap[job_id])
+            try:
+                anvil.js.window.setTimeout(lambda: self._speculative_warm_batch([job_id]), 0)
+            except Exception:
+                self._speculative_warm_batch([job_id])
+            return
+
         # Only clear cache immediately if switching to an uncached different job_id;
         # when refreshing the SAME job_id, keep existing cache warm until new data arrives!
         if self._modals_cache_job_id is not None and self._modals_cache_job_id != job_id:
@@ -390,6 +560,9 @@ class ProgressTracker(ProgressTrackerTemplate):
                 return
 
             effective_status = self._apply_tracker_ui(result)
+
+        if smap is not None:
+            smap[job_id] = {k: v for k, v in result.items() if k != "modals"}
 
         modals = result.get("modals")
         if modals is not None:

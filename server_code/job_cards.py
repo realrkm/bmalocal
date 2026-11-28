@@ -452,28 +452,34 @@ def getJobCardDetailsWithNameSearch(value):
 @anvil.server.callable()
 def getJobCardDetailsWithRefOrFullnameSearch(value):
     _get_current_user()
+    term = (value or "").strip()
+    if not term:
+        return []
+    with _LOOKUP_CACHE_LOCK:
+        entry = _LOOKUP_CACHE.get("tracker_search_index")
+    if entry is not None and time.monotonic() < entry[0]:
+        low = term.lower()
+        return [
+            (item["label"], item["id"])
+            for item in entry[1]
+            if low in item["ref_low"] or low in item["name_low"]
+        ]
     with db_cursor() as cursor:
         query = """
-            SELECT 
-                tbl_jobcarddetails.ID, 
-                tbl_jobcarddetails.JobCardRef,
-                tbl_clientcontacts.Fullname
-            FROM
-                tbl_jobcarddetails
-            JOIN
-                tbl_clientcontacts
-                ON tbl_jobcarddetails.ClientDetails = tbl_clientcontacts.ID
-            WHERE
-                LOWER(tbl_jobcarddetails.JobCardRef) LIKE LOWER(%s)
-                OR LOWER(tbl_clientcontacts.Fullname) LIKE LOWER(%s)
-            ORDER BY
-                tbl_jobcarddetails.ReceivedDate DESC;
+            SELECT
+                j.ID,
+                j.JobCardRef,
+                c.Fullname
+            FROM tbl_jobcarddetails j
+            INNER JOIN tbl_clientcontacts c
+                ON j.ClientDetails = c.ID
+            WHERE j.JobCardRef LIKE %s
+               OR c.Fullname LIKE %s
+            ORDER BY j.ReceivedDate DESC, j.ID DESC
         """
-        like_value = f"%{value}%"
+        like_value = f"%{term}%"
         cursor.execute(query, (like_value, like_value))
         results = cursor.fetchall()
-
-        # Return format: ("Fullname - JobCardRef", ID)
         return [(f"{row[2]} - {row[1]}", row[0]) for row in results]
 
 
@@ -2044,6 +2050,178 @@ def transitionreadyforpickuptocomplete():
     publish_realtime_event("jobcards", "bulk_completed")
     return "All 'Ready for Pickup' jobcards have been updated to 'Complete'."
 
+def _fetch_tracker_search_index_rows(cursor):
+    query = """
+        SELECT
+            j.ID,
+            j.JobCardRef,
+            j.ClientDetails,
+            j.RegNo,
+            j.MakeAndModel,
+            j.Mileage,
+            j.ReceivedDate,
+            j.Status,
+            c.Fullname,
+            c.Phone,
+            inv_agg.InvoiceTotal,
+            inv_agg.LatestInvoiceID,
+            inv_latest.Status AS InvoiceStatus,
+            pay.TotalPaid,
+            can.Reason
+        FROM tbl_jobcarddetails j
+        INNER JOIN tbl_clientcontacts c ON c.ID = j.ClientDetails
+        LEFT JOIN (
+            SELECT
+                AssignedJobID,
+                SUM(
+                    CASE
+                        WHEN QuantityIssued IS NULL THEN COALESCE(Amount, 0)
+                        ELSE QuantityIssued * COALESCE(Amount, 0)
+                    END
+                ) AS InvoiceTotal,
+                MAX(ID) AS LatestInvoiceID
+            FROM tbl_invoices
+            GROUP BY AssignedJobID
+        ) inv_agg ON inv_agg.AssignedJobID = j.ID
+        LEFT JOIN tbl_invoices inv_latest ON inv_latest.ID = inv_agg.LatestInvoiceID
+        LEFT JOIN (
+            SELECT JobCardRefID, SUM(AmountPaid) AS TotalPaid
+            FROM tbl_payments
+            GROUP BY JobCardRefID
+        ) pay ON pay.JobCardRefID = j.ID
+        LEFT JOIN (
+            SELECT c1.AssignedJobID, c1.Reason
+            FROM tbl_cancelledjobcards c1
+            INNER JOIN (
+                SELECT AssignedJobID, MAX(ID) AS MaxID
+                FROM tbl_cancelledjobcards
+                GROUP BY AssignedJobID
+            ) cmax ON c1.ID = cmax.MaxID
+        ) can ON can.AssignedJobID = j.ID AND j.Status = 'Cancel Jobcard'
+        ORDER BY j.ReceivedDate DESC, j.ID DESC
+    """
+    cursor.execute(query)
+    rows = cursor.fetchall()
+    index_entries = []
+    for row in rows:
+        (
+            job_id,
+            jobcard_ref,
+            client_id,
+            reg_no,
+            make_model,
+            mileage,
+            received_date,
+            status,
+            fullname,
+            phone,
+            inv_total,
+            latest_inv_id,
+            inv_status,
+            total_paid,
+            cancel_reason,
+        ) = row
+        fullname_str = fullname or ""
+        ref_str = jobcard_ref or ""
+        index_entries.append({
+            "id": job_id,
+            "label": f"{fullname_str} - {ref_str}",
+            "ref_low": ref_str.lower(),
+            "name_low": fullname_str.lower(),
+            "summary": {
+                "job_card": {
+                    "ID": job_id,
+                    "ClientDetails": client_id,
+                    "RegNo": reg_no,
+                    "MakeAndModel": make_model,
+                    "Mileage": mileage,
+                    "ReceivedDate": received_date,
+                    "Status": status,
+                },
+                "client": {
+                    "Fullname": fullname_str,
+                    "Phone": phone or "",
+                },
+                "invoice_status": inv_status if latest_inv_id is not None else None,
+                "invoice_total": f"{float(inv_total or 0):,.2f}" if latest_inv_id is not None else 0.0,
+                "previous_payment": f"{float(total_paid):,.2f}" if total_paid is not None else 0.0,
+                "cancelled_reason": (cancel_reason or "") if status == "Cancel Jobcard" else "",
+            },
+        })
+    return index_entries
+
+
+def _get_or_load_tracker_search_index(cursor=None):
+    def _loader():
+        if cursor is not None:
+            return _fetch_tracker_search_index_rows(cursor)
+        with db_cursor() as local_cursor:
+            return _fetch_tracker_search_index_rows(local_cursor)
+
+    return list(cached_lookup("tracker_search_index", _loader, ttl_seconds=180))
+
+
+@anvil.server.callable()
+def get_tracker_search_index():
+    """Return cached lightweight ProgressTracker search + summary index."""
+    _get_current_user()
+    return _get_or_load_tracker_search_index()
+
+
+@anvil.server.callable()
+def search_tracker_jobcards(search_value):
+    """
+    Cold-cache single-RPC search for ProgressTracker:
+    Returns matched dropdown items, pre-computed tracker summaries for ALL matches,
+    and the modal bundle for the top match in one DB connection checkout.
+    """
+    _get_current_user()
+    if not isinstance(search_value, str) or not search_value.strip():
+        raise ValueError("search_value must be a non-empty string.")
+    low = search_value.strip().lower()
+
+    with db_cursor() as cursor:
+        index_rows = _get_or_load_tracker_search_index(cursor=cursor)
+        matches = [
+            entry
+            for entry in index_rows
+            if low in entry["ref_low"] or low in entry["name_low"]
+        ]
+        top_modals = {}
+        if matches:
+            first_id = matches[0]["id"]
+            top_modals[first_id] = _fetch_modals_bundle_with_cursor(cursor, first_id)
+
+    return {
+        "items": [(m["label"], m["id"]) for m in matches],
+        "summaries": {m["id"]: m["summary"] for m in matches},
+        "top_modals": top_modals,
+    }
+
+
+@anvil.server.callable()
+def get_progress_tracker_modals_batch(job_ids):
+    """Fetch modal bundles for up to 5 Job Card IDs in a single RPC and DB cursor."""
+    _get_current_user()
+    if not isinstance(job_ids, (list, tuple)):
+        raise ValueError("job_ids must be a list of positive integers.")
+    validated_ids = []
+    seen = set()
+    for raw_id in job_ids[:5]:
+        jid = _validate_positive_job_id(raw_id)
+        if jid not in seen:
+            seen.add(jid)
+            validated_ids.append(jid)
+    if not validated_ids:
+        return {}
+
+    bundles = {}
+    with db_cursor() as cursor:
+        for jid in validated_ids:
+            bundles[jid] = _fetch_modals_bundle_with_cursor(cursor, jid)
+    return bundles
+
+
 __all__ = [
     'getJobCardInstructions',
     'getJobCardTechNotes',
@@ -2086,6 +2264,9 @@ __all__ = [
     'get_jobcard_form_data',
     'get_defects_form_init_data',
     'get_progress_tracker_modals_bundle',
+    'get_tracker_search_index',
+    'search_tracker_jobcards',
+    'get_progress_tracker_modals_batch',
     'saveConfirmationDetails',
     'getVerifyTaskChecklist',
     'transitionreadyforpickuptocomplete',

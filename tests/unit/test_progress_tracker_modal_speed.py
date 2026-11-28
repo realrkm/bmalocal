@@ -725,3 +725,249 @@ def test_progress_tracker_atomic_hydration_lru_and_post_edit_cache_preservation(
         assert form._modals_cache != {}
     finally:
         sys.modules.pop("client_code.ProgressTracker", None)
+
+
+def test_tracker_search_index_and_batch_modals_happy_invalid_unauth_and_invalidation():
+    _common.invalidate_lookup_cache()
+    cursor = MagicMock()
+    cursor.fetchall.side_effect = [
+        [
+            (42, "JC-0042", 10, "KDA 123A", "BMW X5", "85000", "2026-11-01", "Ready for Pickup", "Alice Doe", "0711", 4000.0, 9, "Pending", 1500.0, None),
+            (41, "JC-0041", 11, "KDB 456B", "BMW X3", "50000", "2026-10-20", "Cancel Jobcard", "Bob Roe", "0722", None, None, None, None, "Client deferred"),
+        ],
+        [
+            (42, "JC-0042", 10, "KDA 123A", "BMW X5", "85000", "2026-11-01", "Ready for Pickup", "Alice Doe", "0711", 4000.0, 9, "Paid", 4000.0, None),
+        ],
+    ]
+    fake_bundle = {
+        "jobcard": {"ID": 42, "JobCardRef": "JC-0042"},
+        "defects": None,
+        "quote": [],
+        "confirm": [],
+        "invoice": [],
+        "payment": [],
+    }
+
+    with patch.object(job_cards, "_get_current_user", return_value={"role_id": 1}), \
+         patch.object(job_cards, "db_cursor") as db_ctx, \
+         patch.object(job_cards, "_fetch_modals_bundle_with_cursor", return_value=fake_bundle) as fetch_modals:
+        db_ctx.return_value.__enter__.return_value = cursor
+
+        idx1 = bma.get_tracker_search_index()
+        idx2 = bma.get_tracker_search_index()
+        assert len(idx1) == 2
+        assert idx1 == idx2
+        assert db_ctx.call_count == 1  # Served from server TTL cache!
+        assert idx1[0]["summary"]["invoice_total"] == "4,000.00"
+        assert idx1[0]["summary"]["previous_payment"] == "1,500.00"
+        assert idx1[1]["summary"]["invoice_total"] == 0.0
+        assert idx1[1]["summary"]["cancelled_reason"] == "Client deferred"
+
+        # Cold/warm search_tracker_jobcards uses cached index + fetches top_modals in 1 DB checkout
+        search_res = bma.search_tracker_jobcards("alice")
+        assert search_res["items"] == [("Alice Doe - JC-0042", 42)]
+        assert 42 in search_res["summaries"]
+        assert search_res["top_modals"] == {42: fake_bundle}
+        fetch_modals.assert_called_once_with(cursor, 42)
+
+        # Batch modals deduplicates IDs and runs on 1 cursor
+        batch = bma.get_progress_tracker_modals_batch([42, 42, 41])
+        assert set(batch.keys()) == {42, 41}
+
+        # Publishing jobcards/payments/contacts automatically invalidates tracker_search_index
+        with patch.object(_common, "_ensure_realtime_publisher_started"):
+            _common.publish_realtime_event("payments", "payment_created", entity_id=42)
+        idx3 = bma.get_tracker_search_index()
+        assert len(idx3) == 1
+        assert idx3[0]["summary"]["invoice_status"] == "Paid"
+
+    # Invalid inputs rejected
+    with patch.object(job_cards, "_get_current_user", return_value={"role_id": 1}):
+        with pytest.raises(ValueError, match="non-empty string"):
+            bma.search_tracker_jobcards("   ")
+        with pytest.raises(ValueError, match="list of positive integers"):
+            bma.get_progress_tracker_modals_batch("42")
+        with pytest.raises(ValueError, match="Invalid job_id"):
+            bma.get_progress_tracker_modals_batch([0])
+
+    # Unauthenticated callers rejected
+    with patch.object(job_cards, "_get_current_user", side_effect=PermissionError("Authentication required")):
+        with pytest.raises(PermissionError, match="Authentication required"):
+            bma.get_tracker_search_index()
+        with pytest.raises(PermissionError, match="Authentication required"):
+            bma.search_tracker_jobcards("JC")
+        with pytest.raises(PermissionError, match="Authentication required"):
+            bma.get_progress_tracker_modals_batch([42])
+
+    _common.invalidate_lookup_cache()
+
+
+@pytest.mark.parametrize(
+    "module_name,template_name",
+    [
+        ("ProgressTracker", "ProgressTrackerTemplate"),
+        ("ProgressTrackerMobileView", "ProgressTrackerMobileViewTemplate"),
+    ],
+)
+def test_progress_tracker_search_and_dropdown_change_execute_with_zero_blocking_rpcs(
+    monkeypatch, module_name, template_name
+):
+    timeouts = []
+    server_call = MagicMock()
+    server_call_s = MagicMock(return_value={
+        "42": {"jobcard": {"ID": 42}, "defects": None, "quote": [], "confirm": [], "invoice": [], "payment": []},
+        "43": {"jobcard": {"ID": 43}, "defects": None, "quote": [], "confirm": [], "invoice": [], "payment": []},
+    })
+
+    cached_index = [
+        {
+            "id": 42 + i,
+            "label": f"Alice Doe - JC-00{42 + i}",
+            "ref_low": f"jc-00{42 + i}",
+            "name_low": "alice doe",
+            "summary": {
+                "job_card": {
+                    "ID": 42 + i,
+                    "ClientDetails": 10,
+                    "RegNo": f"KDA 10{i}A",
+                    "MakeAndModel": f"BMW X{i + 1}",
+                    "Mileage": "50000",
+                    "ReceivedDate": "2026-11-01",
+                    "Status": "In Service",
+                },
+                "client": {"Fullname": "Alice Doe", "Phone": "0711000000"},
+                "invoice_status": None,
+                "invoice_total": 0.0,
+                "previous_payment": 0.0,
+                "cancelled_reason": "",
+            },
+        }
+        for i in range(5)
+    ]
+
+    anvil = _module("anvil", Notification=MagicMock(), alert=MagicMock())
+    anvil.__path__ = []
+    anvil_tables = _module("anvil.tables", app_tables=MagicMock())
+    anvil_tables.__path__ = []
+    anvil_server = _module("anvil.server", call=server_call, call_s=server_call_s, no_loading_indicator=nullcontext())
+    anvil_users = _module("anvil.users")
+    anvil_js = _module(
+        "anvil.js",
+        call=MagicMock(),
+        get_dom_node=MagicMock(return_value=SimpleNamespace(addEventListener=MagicMock())),
+        window=SimpleNamespace(setTimeout=lambda fn, _ms=0: timeouts.append(fn), bmaRealtime=None, Image=None),
+    )
+    anvil.tables = anvil_tables
+    anvil.server = anvil_server
+    anvil.users = anvil_users
+    anvil.js = anvil_js
+
+    mod_get_data = _module(
+        "client_code.ModGetData",
+        peekTrackerSearchIndexCached=lambda: cached_index,
+        getTrackerSearchIndexCached=lambda force_refresh=False: cached_index,
+        invalidateTrackerSearchIndex=MagicMock(),
+    )
+
+    class FakeTrackerTemplate:
+        def init_components(self, **_kw):
+            self.txtJobCardRef = SimpleNamespace(text="", focus=MagicMock(), set_event_handler=MagicMock())
+            self.drop_down_JobCardRefDetails = SimpleNamespace(items=[], selected_value=None, focus=MagicMock())
+            self.btn_SearchCustomer = SimpleNamespace()
+            self.btn_JobCard = SimpleNamespace(enabled=True)
+            self.btn_Defects = SimpleNamespace(enabled=True)
+            self.btn_Quotation = SimpleNamespace(enabled=True)
+            self.btn_Confirmed = SimpleNamespace(enabled=True)
+            self.btn_Invoice = SimpleNamespace(enabled=True)
+            self.btn_Payment = SimpleNamespace(enabled=True)
+            self.label_MakeAndModel = SimpleNamespace(text="")
+            self.label_Mileage = SimpleNamespace(text="")
+            self.label_RegNo = SimpleNamespace(text="")
+            self.label_date_received = SimpleNamespace(text="")
+            self.label_Owner = SimpleNamespace(text="")
+            self.label_Phone = SimpleNamespace(text="")
+            self.label_Due = SimpleNamespace(text=0)
+            self.label_Paid = SimpleNamespace(text=0)
+            self.label_Balance = SimpleNamespace(text=0)
+            self.label_Discount = SimpleNamespace(text=0)
+            self.text_area_1 = SimpleNamespace(text="", visible=False)
+            for lbl_attr in (
+                "label_checked_in",
+                "label_create_quote",
+                "label_confirm_quote",
+                "label_in_service",
+                "label_verify_task",
+                "label_issue_invoice",
+                "label_cancelled",
+                "label_payment_due",
+                "label_payment_done",
+                "label_completed",
+            ):
+                setattr(self, lbl_attr, SimpleNamespace(background="white", foreground="black"))
+
+        def set_event_handler(self, *_a, **_kw):
+            pass
+
+    stubs = {
+        "anvil": anvil,
+        "anvil.tables": anvil_tables,
+        "anvil.tables.query": _module("anvil.tables.query"),
+        "anvil.server": anvil_server,
+        "anvil.users": anvil_users,
+        "anvil.js": anvil_js,
+        "client_code.ModGetData": mod_get_data,
+        f"client_code.{module_name}._anvil_designer": _module(
+            f"client_code.{module_name}._anvil_designer",
+            **{template_name: FakeTrackerTemplate},
+        ),
+    }
+    for sub_mod, cls_name in (
+        ("JobCardForm", "JobCardForm"),
+        ("DefectsForm", "DefectsForm"),
+        ("QuoteForm", "QuoteForm"),
+        ("ConfirmForm", "ConfirmForm"),
+        ("InvoiceForm", "InvoiceForm"),
+        ("PaymentForm", "PaymentForm"),
+        ("VehicleInspectionChecklist", "VehicleInspectionChecklist"),
+    ):
+        stubs[f"client_code.{sub_mod}"] = _module(f"client_code.{sub_mod}", **{cls_name: MagicMock()})
+
+    target = f"client_code.{module_name}"
+    monkeypatch.delitem(sys.modules, target, raising=False)
+    for name, mod in stubs.items():
+        monkeypatch.setitem(sys.modules, name, mod)
+    import client_code
+    monkeypatch.setattr(client_code, "ModGetData", mod_get_data, raising=False)
+
+    tracker_mod = importlib.import_module(target)
+    try:
+        cls = getattr(tracker_mod, module_name)
+        form = cls()
+        timeouts.clear()  # Clear initial index warm timer before testing click latency
+
+        # 1. btn_SearchCustomer_click populates all 5 dropdown results in 0 blocking RPCs!
+        form.txtJobCardRef.text = "  alice  "
+        form.btn_SearchCustomer_click()
+        assert len(form.drop_down_JobCardRefDetails.items) == 5
+        assert form.drop_down_JobCardRefDetails.items[0] == ("Alice Doe - JC-0042", 42)
+        assert server_call.call_count == 0
+        assert server_call_s.call_count == 0  # Speculative batch deferred to setTimeout(..., 0)!
+
+        # 2. Even BEFORE background batch runs, selecting the 5th item (job 46, outside top 3!)
+        # renders the ENTIRE tracker UI immediately in 0 blocking RPCs!
+        form.drop_down_JobCardRefDetails.selected_value = 46
+        form.drop_down_JobCardRefDetails_change()
+        assert server_call.call_count == 0
+        assert server_call_s.call_count == 0
+        assert form.label_Owner.text == "Alice Doe"
+        assert form.label_RegNo.text == "KDA 104A"
+        assert form.label_MakeAndModel.text == "BMW X5"
+        assert form.label_in_service.background == "black"
+
+        # 3. Flushing background timeouts warms top-3 + selected job modals via call_s without blocking UI!
+        while timeouts:
+            timeouts.pop(0)()
+        assert server_call.call_count == 0
+        assert server_call_s.call_count >= 1
+    finally:
+        sys.modules.pop(target, None)

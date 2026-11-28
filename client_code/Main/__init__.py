@@ -171,8 +171,27 @@ class Main(MainTemplate):
             except Exception:
                 pass
 
+        def _warm_tracker(_evt=None):
+            try:
+                with anvil.server.no_loading_indicator:
+                    ModGetData.getTrackerSearchIndexCached()
+                ModNavigation.prewarm_Tracker()
+            except Exception:
+                pass
+
         _bind_btn("btn_Contact", _warm_contact)
         _bind_btn("btn_Booking", _warm_booking)
+        _bind_btn("btn_Tracker", _warm_tracker)
+
+        tracker_perms = (getattr(self, "permissions", None) or {}).get("TRACKER", {})
+        if tracker_perms.get("main") or any((tracker_perms.get("subs") or {}).values()):
+            try:
+                anvil.js.window.setTimeout(
+                    lambda: ModGetData.getTrackerSearchIndexCached(),
+                    1200,
+                )
+            except Exception:
+                pass
         _bind_btn("btn_Revision", _warm_revision)
         _bind_btn("btn_Inventory", _warm_inventory)
         _bind_btn("btn_Settings", _warm_settings)

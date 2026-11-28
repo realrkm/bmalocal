@@ -86,6 +86,24 @@ def getBookingsCached(force_refresh=False):
     )
 
 
+def peekTrackerSearchIndexCached():
+    return ModCache.get_cached("tracker_search_index")
+
+
+def getTrackerSearchIndexCached(force_refresh=False):
+    return ModCache.get_or_fetch(
+        "tracker_search_index",
+        lambda: _call_silent("get_tracker_search_index"),
+        topic="jobcards",
+        ttl_seconds=180,
+        force_refresh=force_refresh,
+    )
+
+
+def invalidateTrackerSearchIndex():
+    ModCache.invalidate_key("tracker_search_index")
+
+
 def getInterimStaffCached(force_refresh=False):
     return ModCache.get_or_fetch(
         "interim_staff",

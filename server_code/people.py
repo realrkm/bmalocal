@@ -515,23 +515,39 @@ def getTechnicianInJobCard():
 
 
 @anvil.server.callable()
-def get_toolkits(value):
+def get_toolkits(value=None):
     _get_current_user()
+    if value is None:
+        def _load_toolkits():
+            with db_cursor() as cursor:
+                cursor.execute(
+                    "SELECT ID, ToolkitName, Cost FROM tbl_toolkits ORDER BY ToolkitName ASC"
+                )
+                rows = cursor.fetchall()
+                return [
+                    {
+                        "ID": row[0],
+                        "ToolkitName": row[1],
+                        "Cost": row[2] if len(row) > 2 else None,
+                    }
+                    for row in rows
+                ]
+        return list(cached_lookup("toolkits", _load_toolkits, ttl_seconds=300))
+
     with db_cursor() as cursor:
-        if value is None:
-            query = """
-                SELECT ID, ToolkitName FROM tbl_toolkits ORDER BY ToolkitName ASC
-            """
-            cursor.execute(query)
-        else:
-            query2 = """
-                        SELECT ID, ToolkitName FROM tbl_toolkits WHERE ID = %s
-                    """
-            cursor.execute(query2, (value,))
-
-        result = cursor.fetchall()
-
-        return [{"ID": row[0], "ToolkitName": row[1]} for row in result]
+        cursor.execute(
+            "SELECT ID, ToolkitName, Cost FROM tbl_toolkits WHERE ID = %s",
+            (value,),
+        )
+        rows = cursor.fetchall()
+        return [
+            {
+                "ID": row[0],
+                "ToolkitName": row[1],
+                "Cost": row[2] if len(row) > 2 else None,
+            }
+            for row in rows
+        ]
 
 
 # Check for existing toolkits
@@ -559,6 +575,9 @@ def save_toolkit_data(name, amount):
                 VALUES(%s, %s)
         """
         cursor.execute(query, (name, amount))
+        new_id = cursor.lastrowid
+    invalidate_lookup_cache("toolkits")
+    publish_realtime_event("contacts", "toolkit_created", entity_id=new_id)
 
 
 @anvil.server.callable()
@@ -590,6 +609,8 @@ def update_toolkit_data(name, amount, toolkit_id):
             WHERE ID = %s
         """
         cursor.execute(query, (name, amount, toolkit_id))
+    invalidate_lookup_cache("toolkits")
+    publish_realtime_event("contacts", "toolkit_updated", entity_id=toolkit_id)
 
 
 # ***************************************************Staff Details Section ************************************

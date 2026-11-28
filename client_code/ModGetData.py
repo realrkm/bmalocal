@@ -52,6 +52,26 @@ def getStaffCached(force_refresh=False):
     )
 
 
+def peekToolkitsCached():
+    return ModCache.get_cached("toolkits_list")
+
+
+def getToolkitsCached(force_refresh=False):
+    return ModCache.get_or_fetch(
+        "toolkits_list",
+        lambda: _call_silent("get_toolkits", None),
+        topic="contacts",
+        ttl_seconds=300,
+        force_refresh=force_refresh,
+    )
+
+
+def warmContactsCaches(permissions=None, force_refresh=False):
+    subs = ((permissions or {}).get("CONTACT") or {}).get("subs") if permissions is not None else None
+    if subs is None or not subs or subs.get("Technicians"):
+        getToolkitsCached(force_refresh=force_refresh)
+
+
 def getInterimStaffCached(force_refresh=False):
     return ModCache.get_or_fetch(
         "interim_staff",

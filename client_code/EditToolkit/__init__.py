@@ -6,24 +6,17 @@ from anvil.tables import app_tables
 import anvil.server
 import anvil.users
 import anvil.js
+from .. import ModGetData
 
 
 class EditToolkit(EditToolkitTemplate):
     def __init__(self, **properties):
-        # Set Form properties and Data Bindings.
         self.init_components(**properties)
-
-        # Any code you write here will run before the form opens.
-        anvil.js.call('replaceBanner')
-        
-        # Set focus to search client
+        self._updated = False
         self.search_keyword_1.text_box_search.focus()
 
-        # Attach the event that fetches technicians
         self.search_keyword_1.set_event_handler("x-get-search-keys", self.getToolkit)
         self.search_keyword_1.text_box_search.placeholder = "Search Toolkit's Name *"
-
-        # Handle what happens when a user selects a result
         self.search_keyword_1.set_event_handler(
             "x-search-hints-result", self.populateClientDetails
         )
@@ -32,51 +25,56 @@ class EditToolkit(EditToolkitTemplate):
         self.set_event_handler("x-refresh", self.refresh)
 
     def getToolkit(self, **event_args):
-        """Return toolkit records to SearchKeyword."""
-        results = anvil.server.call("get_toolkits", None)
+        """Return cached toolkit records to SearchKeyword in 0ms."""
+        if hasattr(ModGetData, "getToolkitsCached"):
+            results = ModGetData.getToolkitsCached() or []
+        else:
+            results = anvil.server.call("get_toolkits", None) or []
         return [{"entry": r["ToolkitName"], "ID": r["ID"]} for r in results]
 
     def populateClientDetails(self, result, **event_args):
-        """This method is called when an item is selected"""
-        x = anvil.server.call("get_toolkit_details", result["ID"])
+        """Populate toolkit details from RAM cache when Cost is cached, otherwise fetch by ID."""
+        toolkit_id = result["ID"]
+        cached = getattr(ModGetData, "peekToolkitsCached", lambda: None)()
+        match = next((r for r in (cached or ()) if r.get("ID") == toolkit_id and r.get("Cost") is not None), None)
+        if match is not None:
+            self.txt_name.text = match["ToolkitName"]
+            self.txt_amount.text = match["Cost"]
+            return
+        x = anvil.server.call("get_toolkit_details", toolkit_id)
         self.txt_name.text = x[0]["ToolkitName"]
         self.txt_amount.text = x[0]["Cost"]
 
     def btn_Update_click(self, **event_args):
-        """This method is called when the 'Save and New' button is clicked"""
-        self.btn_Update.enabled = False  # Disable button to prevent multiple clicks
+        """Update toolkit and notify caller on close."""
+        self.btn_Update.enabled = False
 
         if self.search_keyword_1.selected_result is None:
             Notification("Please select toolkit's name to proceed.", style="warning", timeout=3).show()
             self.search_keyword_1.text_box_search.focus()
-            self.btn_Update.enabled =True
+            self.btn_Update.enabled = True
             return
         else:
             toolkit_id = self.search_keyword_1.selected_result["ID"]
-            
+
         name = self.txt_name.text.strip().upper()
         amount = self.txt_amount.text
 
-        # Validation
         if not name:
             Notification("Please enter toolkit's name.", style="warning", timeout=3).show()
             self.txt_name.focus()
             self.btn_Update.enabled = True
             return
-        
         elif not amount:
             Notification("Please enter toolkit amount.", style="warning", timeout=3).show()
             self.txt_amount.focus()
             self.btn_Update.enabled = True
             return
 
-        # Save data
         anvil.server.call("update_toolkit_data", name, amount, toolkit_id)
+        self._updated = True
         Notification("Toolkit updated successfully.", title="Success", style="success", timeout=3).show()
-
-        # Clear form
         self.btn_Close_click()
 
     def btn_Close_click(self, **event_args):
-        """This method is called when the button is clicked"""
-        self.raise_event("x-close-alert", value=True)
+        self.raise_event("x-close-alert", value="updated" if self._updated else False)

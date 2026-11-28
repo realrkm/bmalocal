@@ -6,18 +6,69 @@ import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
 import anvil.js
+from .. import ModGetData
 import re
 
 
 class Tehnicians(TehniciansTemplate):
     def __init__(self, **properties):
-        # Set Form properties and Data Bindings.
         self.init_components(**properties)
+        self._prewarmed_edit_tech = None
+        self._prewarmed_toolkits = None
 
-        # Any code you write here will run before the form opens.
-        anvil.js.call('replaceBanner')
-        self.dropdown_toolkits.items = [(r["ToolkitName"], r) for r in anvil.server.call('get_toolkits', None)]
-        
+        cached = getattr(ModGetData, "peekToolkitsCached", lambda: None)()
+        if cached is not None:
+            self.dropdown_toolkits.items = [(r["ToolkitName"], r) for r in cached]
+        else:
+            anvil.js.window.setTimeout(self.refresh_toolkits, 0)
+
+        self._attach_hover_prewarm()
+
+    def refresh_toolkits(self, force_refresh=False):
+        if hasattr(ModGetData, "getToolkitsCached"):
+            toolkits = ModGetData.getToolkitsCached(force_refresh=force_refresh) or []
+        else:
+            with anvil.server.no_loading_indicator:
+                toolkits = anvil.server.call('get_toolkits', None) or []
+        self.dropdown_toolkits.items = [(r["ToolkitName"], r) for r in toolkits]
+
+    def _prewarm_edit_tech(self, _evt=None):
+        if getattr(self, "_prewarmed_edit_tech", None) is not None:
+            return
+        try:
+            from ..EditTechnician import EditTechnician
+            self._prewarmed_edit_tech = EditTechnician()
+        except Exception:
+            pass
+
+    def _prewarm_toolkits(self, _evt=None):
+        if getattr(self, "_prewarmed_toolkits", None) is not None:
+            return
+        try:
+            from ..Toolkits import Toolkits
+            self._prewarmed_toolkits = Toolkits()
+        except Exception:
+            pass
+
+    def _attach_hover_prewarm(self):
+        get_dom = getattr(anvil.js, "get_dom_node", None)
+        if not callable(get_dom):
+            return
+        for attr, handler in (
+            ("btn_EditTechnician", self._prewarm_edit_tech),
+            ("btn_Toolkit", self._prewarm_toolkits),
+        ):
+            btn = getattr(self, attr, None)
+            if btn is None:
+                continue
+            try:
+                dom_node = get_dom(btn)
+                dom_node.addEventListener("pointerenter", handler, {"passive": True})
+                dom_node.addEventListener("mousedown", handler, {"passive": True})
+                dom_node.addEventListener("touchstart", handler, {"passive": True})
+            except Exception:
+                pass
+
     def refresh(self, **event_args):
         self.set_event_handler("x-refresh", self.refresh)
 
@@ -81,24 +132,34 @@ class Tehnicians(TehniciansTemplate):
         self.clear_form_fields()
 
     def clear_form_fields(self):
-        """Helper function to clear all form fields after saving"""
+        """Helper function to clear all form fields after saving without extra server calls."""
         self.txt_name.text = ""
         self.txt_phone.text = ""
-        self.dropdown_toolkits.items = [(r["ToolkitName"], r) for r in anvil.server.call('get_toolkits', None)]
         self.dropdown_toolkits.selected_value = None
-
-        # Reset focus to the first field
         self.txt_name.focus()
-
-        # Re-enable Save button
         self.btn_SaveAndNew.enabled = True
-            
+
     def btn_EditTechnician_click(self, **event_args):
-        """This method is called when the button is clicked"""
+        """Open pre-warmed EditTechnician modal in milliseconds."""
         from ..EditTechnician import EditTechnician
-        alert(content=EditTechnician(), buttons=[], dismissible=False,large=True)
+        modal = self._prewarmed_edit_tech or EditTechnician()
+        self._prewarmed_edit_tech = None
+        alert(content=modal, buttons=[], dismissible=False, large=True)
+        try:
+            anvil.js.window.setTimeout(self._prewarm_edit_tech, 0)
+        except Exception:
+            pass
 
     def btn_Toolkit_click(self, **event_args):
-        """This method is called when the button is clicked"""
+        """Open pre-warmed Toolkits modal in milliseconds and refresh dropdown if toolkits changed."""
         from ..Toolkits import Toolkits
-        alert(content=Toolkits(),buttons=[], dismissible=False,large=True)
+        modal = self._prewarmed_toolkits or Toolkits()
+        self._prewarmed_toolkits = None
+        res = alert(content=modal, buttons=[], dismissible=False, large=True)
+        if res == "updated":
+            self._prewarmed_edit_tech = None
+            self.refresh_toolkits(force_refresh=True)
+        try:
+            anvil.js.window.setTimeout(self._prewarm_toolkits, 0)
+        except Exception:
+            pass

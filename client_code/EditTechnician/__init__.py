@@ -6,26 +6,25 @@ import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
 import anvil.js
-from .. import ModNavigation
+from .. import ModGetData
 import re
+
 
 class EditTechnician(EditTechnicianTemplate):
     def __init__(self, **properties):
-        # Set Form properties and Data Bindings.
         self.init_components(**properties)
-
-        # Any code you write here will run before the form opens.
-        anvil.js.call('replaceBanner')
-        
-        self.dropdown_toolkits.items = [(r["ToolkitName"], r) for r in anvil.server.call('get_toolkits', None)]
-        
-        #Set focus to search client
+        if hasattr(ModGetData, "getToolkitsCached"):
+            toolkits = ModGetData.getToolkitsCached() or []
+        else:
+            toolkits = anvil.server.call('get_toolkits', None) or []
+        self._toolkits_by_id = {r["ID"]: r for r in toolkits}
+        self.dropdown_toolkits.items = [(r["ToolkitName"], r) for r in toolkits]
         self.txt_technicianName.focus()
-        
+
     def refresh(self, **event_args):
         self.set_event_handler("x-refresh", self.refresh)
 
-    def btn_Search_click(self,  **event_args):
+    def btn_Search_click(self, **event_args):
         """Return technician records to drop down component."""
         valueName = self.txt_technicianName.text
         if valueName:
@@ -33,14 +32,23 @@ class EditTechnician(EditTechnicianTemplate):
         else:
             Notification("Sorry, please enter technician name to proceed", title="Blank Field(s) Found", style="warning", timeout=3).show()
             return
-            
-    def drop_down_selectName_change(self,  **event_args):
-        """This method is called when an item is selected"""
-        x = anvil.server.call('get_technician_details', self.drop_down_selectName.selected_value)
+
+    def drop_down_selectName_change(self, **event_args):
+        """Populate technician details and resolve toolkit in RAM without a second RPC."""
+        tech_id = self.drop_down_selectName.selected_value
+        if tech_id is None:
+            return
+        x = anvil.server.call('get_technician_details', tech_id)
+        if not x:
+            return
         self.txt_name.text = x[0]['Fullname']
         self.txt_phone.text = x[0]['Phone']
-        tool = anvil.server.call_s('get_toolkits', x[0]["ToolkitID"])
-        self.dropdown_toolkits.selected_value = tool[0]
+        toolkit_id = x[0]["ToolkitID"]
+        matched_tool = self._toolkits_by_id.get(toolkit_id)
+        if matched_tool is None:
+            tool = anvil.server.call_s('get_toolkits', toolkit_id)
+            matched_tool = tool[0] if tool else None
+        self.dropdown_toolkits.selected_value = matched_tool
         self.drop_down_archived.selected_value = x[0]["Active"]
         
         

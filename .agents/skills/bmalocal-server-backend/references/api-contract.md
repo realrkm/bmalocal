@@ -27,6 +27,9 @@ This register documents key `@anvil.server.callable` endpoints, their input/outp
 | `get_reports_bootstrap` | `sections: list[str] \| None = None` | `dict` (clients, car_details, technicians_report, assigned_jobcards, staffs_report, price_catalogue, stock_location, stock_balance, quote_invoice_totals, payment_summary) | Any Authenticated | `ModGetData`, `Report` | [x] | [ ] |
 | `get_periodic_invoices_with_summary` | `start_date, end_date, jobcard_id: int` | `dict` (invoices, summary) | Any Authenticated | `MonthlyPerformanceSchedule` | [x] | [ ] |
 | `save_monthly_schedule_batch` | `jobcard_id: int, fullname: str, invoice_total, total_paid, total_discount, balance, rows: list[dict]` | `dict` (success, saved_count) | Any Authenticated | `MonthlyPerformanceSchedule` | [x] | [ ] |
+| `get_toolkits` | `value: int \| None = None` | `list[dict]` (ID, ToolkitName, Cost) | Any Authenticated | `Tehnicians`, `EditTechnician`, `EditToolkit`, `ModGetData` | [x] | [ ] |
+| `save_toolkit_data` | `name: str, amount: float` | `None` (invalidates cache + publishes `contacts` event) | Any Authenticated | `Toolkits` | [x] | [ ] |
+| `update_toolkit_data` | `name: str, amount: float, toolkit_id: int` | `None` (invalidates cache + publishes `contacts` event) | Any Authenticated | `EditToolkit` | [x] | [ ] |
 | `get_stats` | `user_agent_string: str` | `dict` (client geolocation/OS) | Public / Anvil context | `Launcher`, `Main` | [x] | [ ] |
 
 ---

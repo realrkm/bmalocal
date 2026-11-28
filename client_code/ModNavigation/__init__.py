@@ -6,6 +6,8 @@ from anvil.tables import app_tables
 from anvil import *
 
 home_form = None
+_contacts_instance = None
+_contacts_perms_snapshot = None
 _revision_instance = None
 _revision_perms_snapshot = None
 _inventory_instance = None
@@ -17,10 +19,13 @@ _report_perms_snapshot = None
 
 
 def clear_cached_forms():
+    global _contacts_instance, _contacts_perms_snapshot
     global _revision_instance, _revision_perms_snapshot
     global _inventory_instance, _inventory_perms_snapshot
     global _settings_instance, _settings_perms_snapshot
     global _report_instance, _report_perms_snapshot
+    _contacts_instance = None
+    _contacts_perms_snapshot = None
     _revision_instance = None
     _revision_perms_snapshot = None
     _inventory_instance = None
@@ -29,6 +34,17 @@ def clear_cached_forms():
     _settings_perms_snapshot = None
     _report_instance = None
     _report_perms_snapshot = None
+
+
+def prewarm_Contacts(permissions):
+    global _contacts_instance, _contacts_perms_snapshot
+    con_perms = (permissions or {}).get("CONTACT")
+    if _contacts_instance is not None and _contacts_perms_snapshot == con_perms:
+        return _contacts_instance
+    from ..Contacts import Contacts
+    _contacts_instance = Contacts(permissions)
+    _contacts_perms_snapshot = con_perms
+    return _contacts_instance
 
 
 def prewarm_Revision(permissions):
@@ -83,9 +99,9 @@ def get_form():
 
 #Load Client Form
 def go_Contact(permissions):
-    from ..Contacts import Contacts
     form = get_form()
-    form.load_component(Contacts(permissions))
+    contacts_form = prewarm_Contacts(permissions)
+    form.load_component(contacts_form)
 
 #Load Job Card Form
 def go_JobCard():

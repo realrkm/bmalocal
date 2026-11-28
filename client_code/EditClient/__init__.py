@@ -6,35 +6,37 @@ import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
 import anvil.js
+from .. import ModGetData
 import re
+
 
 class EditClient(EditClientTemplate):
     def __init__(self, **properties):
-        # Set Form properties and Data Bindings.
         self.init_components(**properties)
-
-        # Any code you write here will run before the form opens.
-        anvil.js.call('replaceBanner')
-        #Set focus to search client
         self.txt_clientname.focus()
-        
-            
-    def btn_Search_click(self,  **event_args):
-        """This function is called when the function is clicked"""
+
+    def btn_Search_click(self, **event_args):
+        """Search clients by name or phone."""
         if self.txt_clientname.text:
             self.drop_down_selectClient.items = anvil.server.call('getClientNameAndPhoneNumber', self.txt_clientname.text)
         else:
             Notification("Sorry, please enter client name to proceed", title="Blank Field(s) Found", style="warning", timeout=3).show()
             return
-            
+
     def drop_down_selectClient_change(self, **event_args):
-        """This method is called when an item is selected"""
-        x = anvil.server.call('getClientNameWithID', self.drop_down_selectClient.selected_value)
+        """Populate client fields from RAM cache when warm, otherwise fetch by ID."""
+        selected_id = self.drop_down_selectClient.selected_value
+        if selected_id is None:
+            return
+        cached = getattr(ModGetData, "peekClientReportCached", lambda: None)()
+        x = next((r for r in (cached or ()) if r.get("ID") == selected_id), None)
+        if x is None:
+            x = anvil.server.call('getClientNameWithID', selected_id)
         self.txt_name.text = x['Fullname']
         self.txt_phone.text = x['Phone']
         self.txt_address.text = x['Address']
         self.txt_email.text = x['Email']
-        self.txt_narration.text=x['Narration']
+        self.txt_narration.text = x['Narration']
     
 
     def btn_Update_click(self,  **event_args):

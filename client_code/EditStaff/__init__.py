@@ -6,21 +6,15 @@ from anvil.tables import app_tables
 import anvil.server
 import anvil.users
 import anvil.js
-from .. import ModNavigation
+from .. import ModGetData
 import re
 
 
 class EditStaff(EditStaffTemplate):
     def __init__(self, **properties):
-        # Set Form properties and Data Bindings.
         self.init_components(**properties)
+        self.txt_StaffName.focus()
 
-        # Any code you write here will run before the form opens.
-        anvil.js.call('replaceBanner')
-
-        # Set focus to search client
-        self.txt_StaffName.focus() 
-        
     def refresh(self, **event_args):
         self.set_event_handler("x-refresh", self.refresh)
 
@@ -32,10 +26,20 @@ class EditStaff(EditStaffTemplate):
         else:
             Notification("Sorry, please enter staff name to procced", title="Blank Field(s) Found", style="warning", timeout=3).show()
             return
-            
-    def drop_down_selectName_change(self,  **event_args):
-        """This method is called when an item is selected"""
-        x = anvil.server.call("get_staff_details", self.drop_down_selectName.selected_value)
+
+    def drop_down_selectName_change(self, **event_args):
+        """Populate staff fields from RAM cache when warm, otherwise fetch by ID."""
+        selected_id = self.drop_down_selectName.selected_value
+        if selected_id is None:
+            return
+        cached = getattr(ModGetData, "peekStaffReportCached", lambda: None)()
+        match = next((r for r in (cached or ()) if r.get("ID") == selected_id), None)
+        if match is not None:
+            self.txt_name.text = match["Fullname"]
+            self.txt_phone.text = match["Phone"]
+            self.drop_down_archived.selected_value = match["Active"]
+            return
+        x = anvil.server.call("get_staff_details", selected_id)
         self.txt_name.text = x[0]["Fullname"]
         self.txt_phone.text = x[0]["Phone"]
         self.drop_down_archived.selected_value = x[0]["Active"]

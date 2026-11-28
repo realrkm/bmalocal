@@ -6,19 +6,37 @@ import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
 import anvil.js
-from ..EditStaff import EditStaff
-from .. import ModNavigation
 import re
 
 
 class Staffs(StaffsTemplate):
     def __init__(self, **properties):
-        # Set Form properties and Data Bindings.
         self.init_components(**properties)
+        self._prewarmed_edit_staff = None
+        self._attach_hover_prewarm()
 
-        # Any code you write here will run before the form opens.
-        anvil.js.call('replaceBanner')
-    
+    def _prewarm_edit_modal(self, _evt=None):
+        if getattr(self, "_prewarmed_edit_staff", None) is not None:
+            return
+        try:
+            from ..EditStaff import EditStaff
+            self._prewarmed_edit_staff = EditStaff()
+        except Exception:
+            pass
+
+    def _attach_hover_prewarm(self):
+        get_dom = getattr(anvil.js, "get_dom_node", None)
+        btn = getattr(self, "btn_EditStaff", None)
+        if not callable(get_dom) or btn is None:
+            return
+        try:
+            dom_node = get_dom(btn)
+            dom_node.addEventListener("pointerenter", self._prewarm_edit_modal, {"passive": True})
+            dom_node.addEventListener("mousedown", self._prewarm_edit_modal, {"passive": True})
+            dom_node.addEventListener("touchstart", self._prewarm_edit_modal, {"passive": True})
+        except Exception:
+            pass
+
     def refresh(self, **event_args):
         self.set_event_handler("x-refresh", self.refresh)
 
@@ -89,5 +107,12 @@ class Staffs(StaffsTemplate):
         self.btn_SaveAndNew.enabled = True
 
     def btn_EditStaff_click(self, **event_args):
-        """This method is called when the button is clicked"""
-        alert(content=EditStaff(), buttons=[], dismissible=False, large=True)
+        """Open pre-warmed EditStaff modal in milliseconds."""
+        from ..EditStaff import EditStaff
+        modal = self._prewarmed_edit_staff or EditStaff()
+        self._prewarmed_edit_staff = None
+        alert(content=modal, buttons=[], dismissible=False, large=True)
+        try:
+            anvil.js.window.setTimeout(self._prewarm_edit_modal, 0)
+        except Exception:
+            pass

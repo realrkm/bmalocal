@@ -22,6 +22,7 @@ This skill governs all client-side Anvil UI components, form templates, user int
 - Shared client utilities and navigation helpers:
   - [client_code/ModNavigation](file:///d:/BMAAutoAccessories/venv/Lib/site-packages/BMALocal/client_code/ModNavigation) for routing between views.
   - [client_code/ModGetData.py](file:///d:/BMAAutoAccessories/venv/Lib/site-packages/BMALocal/client_code/ModGetData.py) for common client data lookups.
+  - [client_code/ModCache.py](file:///d:/BMAAutoAccessories/venv/Lib/site-packages/BMALocal/client_code/ModCache.py) for TTL client caching with automatic WebSocket topic invalidation.
   - [client_code/WalkieTalkieChat.py](file:///d:/BMAAutoAccessories/venv/Lib/site-packages/BMALocal/client_code/WalkieTalkieChat.py) for realtime chat integration.
 
 ---
@@ -30,8 +31,10 @@ This skill governs all client-side Anvil UI components, form templates, user int
 
 1. **Component Initialization**:
    - Always call `self.init_components(**properties)` as the first line in `__init__`.
+   - Do **not** call `anvil.js.call('replaceBanner')` inside modal forms (`alert()` content) or reusable subcomponents (`SearchKeyword`); banner suppression is handled globally by CSS and top-level shell forms.
 2. **Server Calls**:
-   - Use `anvil.server.call_s()` for silent/background requests where failure does not block the UI.
+   - **Never fire multiple sequential `anvil.server.call` / `call_s` round-trips inside `__init__` or `populateForm`**. Pass preloaded data into the form constructor or fetch a single bundled bootstrap dictionary.
+   - Use `anvil.server.call_s()` with `with anvil.server.no_loading_indicator:` for silent background prefetches/revalidations where failure does not block the UI.
    - For primary user actions, wrap `anvil.server.call()` in error handling:
      ```python
      try:
@@ -45,6 +48,52 @@ This skill governs all client-side Anvil UI components, form templates, user int
    - Store state in explicit Python instance attributes (`self.job_id`, `self.current_step`), never by reading text or properties off visual DOM components.
 4. **In-Flight UI Feedback**:
    - Disable submission buttons while requests are in flight to prevent duplicate submissions.
+
+---
+
+## 2A. Instant Form & Modal Loading Architecture (`< 16 ms` Target)
+
+Reference implementations: [ProgressTracker/\_\_init\_\_.py](file:///d:/BMAAutoAccessories/venv/Lib/site-packages/BMALocal/client_code/ProgressTracker/__init__.py), [JobCardForm/\_\_init\_\_.py](file:///d:/BMAAutoAccessories/venv/Lib/site-packages/BMALocal/client_code/JobCardForm/__init__.py), and [EditJobCard/\_\_init\_\_.py](file:///d:/BMAAutoAccessories/venv/Lib/site-packages/BMALocal/client_code/EditJobCard/__init__.py).
+
+Whenever building or optimizing forms, modals, or multi-tab hubs, eliminate **all** click-time RPCs, synchronous Skulpt component construction, cache-miss race windows, and GPU paint bottlenecks:
+
+1. **Atomic Single-RPC Hydration (Eliminate Two-RPC Race Windows)**:
+   - When selecting an entity on a parent screen (e.g., selecting a Job Card in `ProgressTracker`), fetch **both** the parent summary and child modal payloads in **one atomic RPC** (e.g., `get_progress_tracker_data(job_id, include_modals=True)`).
+   - Never wait for RPC #1 to render the UI and then start RPC #2 in the background for button payloads — clicking a button while RPC #2 is in flight causes a cache miss and queues behind RPC #2.
+   - Where a search precedes dropdown selection (`btn_SearchCustomer_click`), **speculatively warm `result[0]`** in `setTimeout(..., 0)` while the user opens the dropdown.
+
+2. **Idle Pre-Warming + Hover/Pointer Pre-Warming of Form Instances**:
+   - Even with cached JSON data, constructing 35–60 Anvil components in Skulpt (`DatePicker`, `DataGrid`, `RepeatingPanel` row templates, `SignatureForm`) takes `150–400 ms` if run synchronously on `click`.
+   - **Staggered Idle Pre-Warm**: As soon as modal data arrives, pre-instantiate non-empty modal forms in detached DOM memory via `setTimeout(..., 0)` slices, ordered with the active workflow status's modal **first**. Defer nested second-level pre-warms (e.g., `JobCardForm(prewarm_edit=False)` only pre-warming `EditJobCard` on its `show` event).
+   - **Hover / Pointer-Down Pre-Warm**: Attach passive `pointerenter`, `mousedown`, and `touchstart` listeners on modal trigger buttons to immediately build that button's form (`80–250 ms` before `click` fires).
+   - **Read-Only Close Preservation**: Return `value="updated"` from `x-close-alert` **only** when data actually mutated (`value=False` on read-only close). On `False`, keep `_modals_cache` intact and immediately re-prewarm that single modal at `setTimeout(..., 0)`. On `"updated"`, atomically refresh via `refresh_selected_job_card(force_server=True)` — never clear `_modals_cache` without refilling it.
+
+3. **In-Place Modal Swapping (Never Close + Re-open `alert()`)**:
+   - Transitioning from one modal to another via `self.btn_Close_click()` followed by `alert(content=NextForm(...))` triggers two full modal transitions, tears down the backdrop, and **prematurely resumes the caller's post-`alert()` code**.
+   - Instead, swap inside the already-open modal container and forward `x-close-alert`:
+     ```python
+     edit_form = self._prewarmed_edit_form or EditJobCard(jobcard_data=self.form_data)
+     edit_form.set_event_handler(
+         "x-close-alert",
+         lambda **e: self.raise_event("x-close-alert", value=e.get("value", False)),
+     )
+     self.clear()
+     self.add_component(edit_form, full_width_row=True)
+     ```
+
+4. **Non-Destructive Realtime Refresh & Multi-Entity LRU Cache**:
+   - Maintain a bounded LRU cache (e.g., last 8 entities) mapping `entity_id -> {summary, modals, prewarmed_forms}`, selectively evicted by `entity_id` on `window.bmaRealtime` events, so switching back to a recent item takes `0 ms` and `0 RPCs`.
+   - When refreshing the **same** currently selected entity (via WebSocket event or fallback timer), **keep the existing `_modals_cache` and `_prewarmed_modals` active while the RPC is in flight** and swap atomically on completion — never wipe the cache upfront.
+
+5. **Lazy Subform Imports, Cached Reference Lookups & Stale-Load Guards**:
+   - Import subforms lazily inside button/dropdown handlers (`Contacts`, `Settings`, `PartsHub`, `Report`, `DefectsForm` secondary dialogs) rather than at module top-level.
+   - Always back `SearchKeyword` / dropdown reference lists with `ModGetData` (`ModCache` + realtime invalidation), e.g., `ModGetData.getTechniciansCached()` and `ModGetData.getStaffCached()`.
+   - Guard rapid tab/report switching with a monotonic sequence counter (`self._load_seq += 1`) so slow views never overwrite newer user selections.
+
+6. **Modal CSS, GPU Compositing & Asset Preloading**:
+   - **No Nested `backdrop-filter`**: `.modal-content` already applies `backdrop-filter: blur(28px)`. Inner `.modal-content .anvil-role-glass-panel` cards must keep `backdrop-filter: none !important` to avoid 9–10x stacked GPU Gaussian blur passes.
+   - **Instant Modal Paint & Layout Containment**: Keep `.modal.fade` transitions disabled (`transition: none !important`), use `contain: layout style;` on `.modal-dialog` and `.modal-content` so mounting `DataGrid` rows never reflows the underlying page, avoid `body.modal-open` background flushes, and preload static modal images (`new Image().src = ...`) once at startup.
+   - **Inline Base64 for Small Dynamic Images**: Pass small DB images (like signatures) as `data:image/png;base64,...` strings rather than `anvil.BlobMedia` inside bundled payloads to avoid secondary `/_/downlink-media/...` HTTP fetches on render.
 
 ---
 

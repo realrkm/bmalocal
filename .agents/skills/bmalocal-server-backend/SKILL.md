@@ -63,6 +63,10 @@ def update_job_status(job_id, new_status, notes=None):
 - **No Bare `except:`**: Catch specific exceptions (`ValueError`, `mysql.connector.Error`).
 - **Sanitized Logging**: Log errors with context to [logs/service_output.log](file:///d:/BMAAutoAccessories/venv/Lib/site-packages/BMALocal/logs/service_output.log); never log customer passwords or payment tokens.
 - **Strict Separation of Test Code**: Test-specific utilities, mock endpoints, and calculations MUST NEVER be added to [server_code/BMALocal.py](file:///d:/BMAAutoAccessories/venv/Lib/site-packages/BMALocal/server_code/BMALocal.py). All unit tests and calculation helpers belong strictly in `tests/` (e.g. `tests/helpers.py`, `tests/unit/`). Production files must remain purely production logic.
+- **Bundled Bootstrap Callables & Cursor Sharing**:
+  - For forms or views with multiple panels/modals (e.g., `get_progress_tracker_data(..., include_modals=True)`, `get_jobcard_form_data`, `get_part_edit_details`, `get_self_service_bootstrap`), expose a single atomic bootstrap callable rather than forcing the client to chain sequential RPCs in `__init__`.
+  - Share database work across modules via private `_fetch_*(cursor, ...)` helpers inside **one** `_get_current_user()` gate and **one** `with db_cursor() as cursor:` block. Never have a composite callable invoke 4–6 other `@anvil.server.callable()` wrappers that each re-run `_get_current_user()` and check out separate pool connections, and **never** add auth-skipping parameters to `@anvil.server.callable()` functions.
+  - After mutations, call `invalidate_lookup_cache(...)` (if cached via `cached_lookup()`) and `publish_realtime_event(topic, action, entity_id=...)` outside/after commit so open browsers synchronize without polling.
 
 
 ---

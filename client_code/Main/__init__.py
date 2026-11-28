@@ -147,9 +147,18 @@ class Main(MainTemplate):
             except Exception:
                 pass
 
+        def _warm_report(_evt=None):
+            try:
+                with anvil.server.no_loading_indicator:
+                    ModGetData.warmReportsCaches(self.permissions)
+                ModNavigation.prewarm_Report(self.permissions)
+            except Exception:
+                pass
+
         _bind_btn("btn_Revision", _warm_revision)
         _bind_btn("btn_Inventory", _warm_inventory)
         _bind_btn("btn_Settings", _warm_settings)
+        _bind_btn("btn_Report", _warm_report)
 
     def _mount_walkie_chat(self):
         """Lazily mount WalkieTalkieChat after Main finishes initial paint."""

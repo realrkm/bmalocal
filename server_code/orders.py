@@ -439,6 +439,176 @@ def get_monthly_schedule_pivot(start_date=None, end_date=None):
 
         return results
 
+@anvil.server.callable()
+def get_periodic_invoices_with_summary(start_date, end_date, jobcard_id):
+    """Single-RPC, single-cursor lookup for MonthlyPerformanceSchedule job card selection."""
+    _get_current_user()
+    if not isinstance(jobcard_id, int) or isinstance(jobcard_id, bool) or jobcard_id <= 0:
+        raise ValueError("Invalid jobcard_id provided.")
+    if start_date is None or end_date is None:
+        raise ValueError("Both start_date and end_date are required.")
+    if start_date > end_date:
+        raise ValueError("start_date cannot be greater than end_date.")
+
+    def _safe_float(val):
+        if val is None or val == "":
+            return 0.0
+        if isinstance(val, (int, float)):
+            return float(val)
+        try:
+            return float(str(val).replace(",", "").strip())
+        except ValueError:
+            return 0.0
+
+    with db_cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT Date, Item, Part_No, QuantityIssued, Amount
+            FROM tbl_invoices
+            WHERE Date BETWEEN %s AND %s
+              AND AssignedJobID = %s
+            ORDER BY Date DESC
+            """,
+            (start_date, end_date, jobcard_id),
+        )
+        inv_period_rows = cursor.fetchall()
+        invoices = [
+            {
+                "No": idx,
+                "Date": r[0].strftime("%Y-%m-%d") if r[0] else None,
+                "Item": r[1],
+                "Part_No": r[2],
+                "QuantityIssued": r[3],
+                "Amount": f"{float(r[4]):,.2f}" if r[4] is not None else "0.00",
+            }
+            for idx, r in enumerate(inv_period_rows, start=1)
+        ]
+
+        cursor.execute(
+            """
+            SELECT c.Fullname,
+                   SUM(
+                       CASE
+                           WHEN i.QuantityIssued IS NULL THEN COALESCE(i.Amount, 0)
+                           ELSE COALESCE(i.QuantityIssued, 0) * COALESCE(i.Amount, 0)
+                       END
+                   ) AS TotalInvoice
+            FROM tbl_jobcarddetails j
+            INNER JOIN tbl_clientcontacts c ON c.ID = j.ClientDetails
+            LEFT JOIN tbl_invoices i ON i.AssignedJobID = j.ID
+            WHERE j.ID = %s
+            GROUP BY c.Fullname
+            """,
+            (jobcard_id,),
+        )
+        summary_row = cursor.fetchone()
+        if not summary_row:
+            summary = {
+                "Fullname": "",
+                "TotalInvoiceAmount": 0.0,
+                "TotalAmountPaid": 0.0,
+                "TotalDiscount": 0.0,
+                "Balance": 0.0,
+            }
+        else:
+            fullname = summary_row[0] or ""
+            total_invoice = _safe_float(summary_row[1])
+            cursor.execute(
+                """
+                SELECT COALESCE(SUM(AmountPaid), 0), COALESCE(SUM(Discount), 0)
+                FROM tbl_payments
+                WHERE JobCardRefID = %s
+                """,
+                (jobcard_id,),
+            )
+            pay_row = cursor.fetchone() or (0, 0)
+            total_paid = _safe_float(pay_row[0])
+            total_discount = _safe_float(pay_row[1])
+            balance = total_invoice - total_paid - total_discount
+            summary = {
+                "Fullname": fullname,
+                "TotalInvoiceAmount": round(total_invoice, 2),
+                "TotalAmountPaid": round(total_paid, 2),
+                "TotalDiscount": round(total_discount, 2),
+                "Balance": round(balance, 2),
+            }
+
+    return {"invoices": invoices, "summary": summary}
+
+
+@anvil.server.callable()
+def save_monthly_schedule_batch(
+    jobcard_id,
+    fullname,
+    invoice_total,
+    total_paid,
+    total_discount,
+    balance,
+    rows,
+):
+    """Atomically replace and insert all categorized monthly schedule rows in a single transaction."""
+    _get_current_user()
+    if not isinstance(jobcard_id, int) or isinstance(jobcard_id, bool) or jobcard_id <= 0:
+        raise ValueError("Invalid jobcard_id provided.")
+    if not isinstance(rows, list) or not rows:
+        raise ValueError("rows must be a non-empty list.")
+
+    def _safe_float(value):
+        if value is None or value == "":
+            return 0.0
+        if isinstance(value, (int, float)):
+            return float(value)
+        return float(str(value).replace(",", "").strip())
+
+    inv_total_val = _safe_float(invoice_total)
+    paid_val = _safe_float(total_paid)
+    disc_val = _safe_float(total_discount)
+    bal_val = _safe_float(balance)
+
+    batch_values = []
+    for i, row in enumerate(rows, start=1):
+        if not isinstance(row, dict):
+            raise ValueError(f"Row #{i} must be a dictionary.")
+        category = str(row.get("Category") or "").strip()
+        if not category:
+            raise ValueError(f"Missing category for item #{i}: {row.get('Item', 'Unknown Item')}")
+        qty_raw = row.get("QuantityIssued")
+        batch_values.append(
+            (
+                row.get("Date"),
+                int(jobcard_id),
+                fullname,
+                inv_total_val,
+                paid_val,
+                disc_val,
+                bal_val,
+                row.get("Item"),
+                row.get("Part_No"),
+                _safe_float(qty_raw) if qty_raw not in (None, "") else None,
+                _safe_float(row.get("Amount")),
+                category,
+            )
+        )
+
+    with db_cursor() as cursor:
+        cursor.execute(
+            "DELETE FROM tbl_monthlyschedule WHERE AssignedJobID = %s",
+            (int(jobcard_id),),
+        )
+        cursor.executemany(
+            """
+            INSERT INTO tbl_monthlyschedule
+            (Date, AssignedJobID, ClientName, TotalInvoiceAmount,
+             TotalAmountPaid, TotalDiscount, PaymentBalance,
+             Item, Part_No, QuantityIssued, Amount, Category)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """,
+            batch_values,
+        )
+    publish_realtime_event("payments", "monthly_schedule_saved", entity_id=int(jobcard_id))
+    return {"success": True, "saved_count": len(batch_values)}
+
+
 __all__ = [
     'saveImportOrderTracking',
     'search_client_import_orders',
@@ -449,6 +619,8 @@ __all__ = [
     'getFullnameInvoiceAmountAndBalance',
     'deleteMonthlySchedule',
     'saveMonthlySchedule',
+    'get_periodic_invoices_with_summary',
+    'save_monthly_schedule_batch',
     'get_monthly_schedule_pivot',
 ]
 

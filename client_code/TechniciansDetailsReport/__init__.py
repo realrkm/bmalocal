@@ -6,16 +6,28 @@ from anvil.tables import app_tables
 import anvil.server
 import anvil.users
 import anvil.js
+from .. import ModGetData
+
 
 class TechniciansDetailsReport(TechniciansDetailsReportTemplate):
-    def __init__(self,  **properties):
-        # Set Form properties and Data Bindings.
+    def __init__(self, **properties):
         self.init_components(**properties)
-        anvil.js.call('replaceBanner')
         self._rt_token = None
+        self._is_mounted = True
         self.set_event_handler("show", self.form_show)
         self.set_event_handler("hide", self.form_hide)
-        self.refresh_technician_table()
+
+        cached = getattr(ModGetData, "peekTechnicianReportCached", lambda: None)()
+        if cached is not None:
+            self.client_repeater.items = cached
+        else:
+            anvil.js.window.setTimeout(self._load_initial_data, 0)
+
+    def _load_initial_data(self):
+        if not self._is_mounted:
+            return
+        with anvil.server.no_loading_indicator:
+            self.refresh_technician_table()
 
     def _unsubscribe_realtime(self):
         try:
@@ -27,6 +39,7 @@ class TechniciansDetailsReport(TechniciansDetailsReportTemplate):
         self._rt_token = None
 
     def form_show(self, **event_args):
+        self._is_mounted = True
         self._unsubscribe_realtime()
         try:
             rt = getattr(anvil.js.window, "bmaRealtime", None)
@@ -36,15 +49,22 @@ class TechniciansDetailsReport(TechniciansDetailsReportTemplate):
             pass
 
     def form_hide(self, **event_args):
+        self._is_mounted = False
         self._unsubscribe_realtime()
 
     def _on_contacts_changed(self, evt=None):
         with anvil.server.no_loading_indicator:
             search_term = (self.txt_Search.text or "").strip()
-            self.client_repeater.items = anvil.server.call("getTechnicianReport", search_term or None)
+            if search_term:
+                self.client_repeater.items = anvil.server.call("getTechnicianReport", search_term)
+            else:
+                self.refresh_technician_table(force_refresh=True)
 
-    def refresh_technician_table(self):
-        technicians = anvil.server.call('getTechnicianReport', None)
+    def refresh_technician_table(self, force_refresh=False):
+        if hasattr(ModGetData, "getTechnicianReportCached"):
+            technicians = ModGetData.getTechnicianReportCached(force_refresh=force_refresh)
+        else:
+            technicians = anvil.server.call('getTechnicianReport', None)
         self.client_repeater.items = technicians
 
     def btn_Search_click(self, **event_args):

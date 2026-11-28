@@ -12,18 +12,23 @@ _inventory_instance = None
 _inventory_perms_snapshot = None
 _settings_instance = None
 _settings_perms_snapshot = None
+_report_instance = None
+_report_perms_snapshot = None
 
 
 def clear_cached_forms():
     global _revision_instance, _revision_perms_snapshot
     global _inventory_instance, _inventory_perms_snapshot
     global _settings_instance, _settings_perms_snapshot
+    global _report_instance, _report_perms_snapshot
     _revision_instance = None
     _revision_perms_snapshot = None
     _inventory_instance = None
     _inventory_perms_snapshot = None
     _settings_instance = None
     _settings_perms_snapshot = None
+    _report_instance = None
+    _report_perms_snapshot = None
 
 
 def prewarm_Revision(permissions):
@@ -57,6 +62,17 @@ def prewarm_Settings(permissions):
     _settings_instance = Settings(permissions)
     _settings_perms_snapshot = set_perms
     return _settings_instance
+
+
+def prewarm_Report(permissions):
+    global _report_instance, _report_perms_snapshot
+    rep_perms = (permissions or {}).get("REPORTS")
+    if _report_instance is not None and _report_perms_snapshot == rep_perms:
+        return _report_instance
+    from ..Report import Report
+    _report_instance = Report(permissions)
+    _report_perms_snapshot = rep_perms
+    return _report_instance
 
 def get_form():
     if home_form is None:
@@ -122,9 +138,9 @@ def go_Inventory(permissions):
   
 #Load Report Form
 def go_Report(permissions):
-    from ..Report import Report
     form = get_form()
-    form.load_component(Report(permissions))
+    rep_form = prewarm_Report(permissions)
+    form.load_component(rep_form)
 
 #Load PartsHub Form
 def go_PartsHub(permissions):

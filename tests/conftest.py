@@ -18,6 +18,14 @@ def mock_anvil_users(request):
             "role_id": 1,
         }
         yield mock_get_user
+    mod_cache = sys.modules.get("client_code.ModCache")
+    if mod_cache is not None and hasattr(mod_cache, "clear"):
+        mod_cache.clear()
+    pkg = sys.modules.get("client_code")
+    if pkg is not None:
+        for attr in list(vars(pkg)):
+            if not attr.startswith("__"):
+                delattr(pkg, attr)
 
 @pytest.fixture(scope="session")
 def browser_context_args(browser_context_args):

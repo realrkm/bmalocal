@@ -6,18 +6,22 @@ import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
 import anvil.js
+from .. import ModGetData
 
 
 class CarDetailsReport(CarDetailsReportTemplate):
     def __init__(self, **properties):
-        # Set Form properties and Data Bindings.
         self.init_components(**properties)
-        anvil.js.call('replaceBanner')
         self._is_mounted = True
         self._rt_token = None
         self.set_event_handler("show", self.form_show)
         self.set_event_handler("hide", self.form_hide)
-        anvil.js.window.setTimeout(self._load_initial_data, 10)
+
+        cached = getattr(ModGetData, "peekCarDetailsCached", lambda: None)()
+        if cached is not None:
+            self.car_repeater.items = cached
+        else:
+            anvil.js.window.setTimeout(self._load_initial_data, 0)
 
     def _unsubscribe_realtime(self):
         try:
@@ -49,7 +53,10 @@ class CarDetailsReport(CarDetailsReportTemplate):
             search_term = (self.txt_Search.text or "").strip()
             part_name = (self.txt_PartName.text or "").strip()
             if not search_term and not part_name:
-                rows = anvil.server.call("get_car_details", None)
+                if hasattr(ModGetData, "getCarDetailsCached"):
+                    rows = ModGetData.getCarDetailsCached(force_refresh=True)
+                else:
+                    rows = anvil.server.call("get_car_details", None)
             elif search_term and not part_name:
                 rows = anvil.server.call("get_car_details", search_term)
             else:
@@ -61,7 +68,10 @@ class CarDetailsReport(CarDetailsReportTemplate):
         if not self._is_mounted:
             return
         with anvil.server.no_loading_indicator:
-            rows = anvil.server.call("get_car_details", None)
+            if hasattr(ModGetData, "getCarDetailsCached"):
+                rows = ModGetData.getCarDetailsCached()
+            else:
+                rows = anvil.server.call("get_car_details", None)
         if self._is_mounted:
             self.car_repeater.items = rows
         

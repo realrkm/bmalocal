@@ -6,29 +6,42 @@ import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
 import anvil.js
+from .. import ModGetData
 
 
 class AssignedJobCards(AssignedJobCardsTemplate):
     def __init__(self, **properties):
-        # Set Form properties and Data Bindings.
         self.init_components(**properties)
-        anvil.js.call('replaceBanner')
-        
-        # Single combined bootstrap round-trip for jobs list + technician dropdown
-        bootstrap = anvil.server.call('get_assigned_jobcards_bootstrap') or {}
-        self.repeating_panel_1.items = bootstrap.get("jobs", [])
-        grandTotalInvoices = 0
-        grandTotalLabour = 0
-        for items in self.repeating_panel_1.items:
-            grandTotalInvoices += float(items["InvoicedAmount"].replace(",",""))
-            grandTotalLabour += float(items["LabourAmount"].replace(",",""))
-        self.labelInvoiceTotal.text = f"{grandTotalInvoices:,.2f}"
-        self.labelLabourTotal.text = f"{grandTotalLabour:,.2f}"
-
-        self.drop_down_selectTechnician.items = bootstrap.get("technicians", [])
         self._rt_tokens = []
+        self._is_mounted = True
         self.set_event_handler("show", self.form_show)
         self.set_event_handler("hide", self.form_hide)
+
+        cached = getattr(ModGetData, "peekAssignedJobcardsBootstrapCached", lambda: None)()
+        if cached is not None:
+            self._apply_bootstrap(cached)
+        else:
+            self.repeating_panel_1.items = []
+            self.labelInvoiceTotal.text = "0.00"
+            self.labelLabourTotal.text = "0.00"
+            anvil.js.window.setTimeout(self._load_initial_data, 0)
+
+    def _apply_bootstrap(self, bootstrap):
+        data = bootstrap or {}
+        self.repeating_panel_1.items = data.get("jobs", [])
+        self.drop_down_selectTechnician.items = data.get("technicians", [])
+        self.calculate_totals()
+
+    def _load_initial_data(self):
+        if not self._is_mounted:
+            return
+        with anvil.server.no_loading_indicator:
+            if hasattr(ModGetData, "getAssignedJobcardsBootstrapCached"):
+                bootstrap = ModGetData.getAssignedJobcardsBootstrapCached()
+            else:
+                bootstrap = anvil.server.call('get_assigned_jobcards_bootstrap')
+        if self._is_mounted:
+            self._apply_bootstrap(bootstrap)
 
     def _unsubscribe_realtime(self):
         try:
@@ -41,6 +54,7 @@ class AssignedJobCards(AssignedJobCardsTemplate):
         self._rt_tokens = []
 
     def form_show(self, **event_args):
+        self._is_mounted = True
         self._unsubscribe_realtime()
         try:
             rt = getattr(anvil.js.window, "bmaRealtime", None)
@@ -53,6 +67,7 @@ class AssignedJobCards(AssignedJobCardsTemplate):
             pass
 
     def form_hide(self, **event_args):
+        self._is_mounted = False
         self._unsubscribe_realtime()
 
     def _on_data_changed(self, evt=None):
@@ -62,9 +77,13 @@ class AssignedJobCards(AssignedJobCardsTemplate):
             tech_id = self.drop_down_selectTechnician.selected_value
             if (start_date and not end_date) or (end_date and not start_date):
                 start_date, end_date = None, None
-            jobs = anvil.server.call("get_assigned_jobs", start_date, end_date, tech_id) or []
-            self.repeating_panel_1.items = jobs
-            self.calculate_totals()
+            if not start_date and not end_date and not tech_id and hasattr(ModGetData, "getAssignedJobcardsBootstrapCached"):
+                bootstrap = ModGetData.getAssignedJobcardsBootstrapCached(force_refresh=True)
+                self._apply_bootstrap(bootstrap)
+            else:
+                jobs = anvil.server.call("get_assigned_jobs", start_date, end_date, tech_id) or []
+                self.repeating_panel_1.items = jobs
+                self.calculate_totals()
        
         
     def btn_Search_click(self, **event_args):

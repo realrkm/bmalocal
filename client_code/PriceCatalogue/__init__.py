@@ -5,37 +5,38 @@ import anvil.tables.query as q
 from anvil.tables import app_tables
 import anvil.server
 import anvil.users
-from ..BuyingPrice import BuyingPrice
-from ..MissingBuyingPrice import MissingBuyingPrice
-from ..SellingPrice import SellingPrice
-from ..MissingSellingPrice import MissingSellingPrice
 import anvil.js
+from .. import ModGetData
+
 
 class PriceCatalogue(PriceCatalogueTemplate):
     def __init__(self, **properties):
-        # Set Form properties and Data Bindings.
         self.init_components(**properties)
-
-        # Any code you write here will run before the form opens.
-        anvil.js.call('replaceBanner')
         self.data_grid_1.show_page_controls = True
+        self.data_grid_1.role = 'wide'
         self._rt_token = None
+        self._is_mounted = True
         self.set_event_handler("show", self.form_show)
         self.set_event_handler("hide", self.form_hide)
 
-        self.repeating_panel_1.items = anvil.server.call("get_filtered_parts")
-        self.data_grid_1.role = 'wide'
+        cached = getattr(ModGetData, "peekPriceCatalogueCached", lambda: None)()
+        if cached is not None:
+            self.repeating_panel_1.items = cached
+        else:
+            anvil.js.window.setTimeout(self._load_initial_data, 0)
 
-    def form_show(self, **event_args):
-        self.form_hide()
-        try:
-            rt = getattr(anvil.js.window, "bmaRealtime", None)
-            if rt:
-                self._rt_token = rt.subscribe("inventory", self._on_inventory_changed)
-        except Exception:
-            pass
+    def _load_initial_data(self):
+        if not self._is_mounted:
+            return
+        with anvil.server.no_loading_indicator:
+            if hasattr(ModGetData, "getPriceCatalogueCached"):
+                rows = ModGetData.getPriceCatalogueCached()
+            else:
+                rows = anvil.server.call("get_filtered_parts")
+        if self._is_mounted:
+            self.repeating_panel_1.items = rows
 
-    def form_hide(self, **event_args):
+    def _unsubscribe_realtime(self):
         try:
             rt = getattr(anvil.js.window, "bmaRealtime", None)
             if rt and self._rt_token:
@@ -44,14 +45,29 @@ class PriceCatalogue(PriceCatalogueTemplate):
             pass
         self._rt_token = None
 
+    def form_show(self, **event_args):
+        self._is_mounted = True
+        self._unsubscribe_realtime()
+        try:
+            rt = getattr(anvil.js.window, "bmaRealtime", None)
+            if rt:
+                self._rt_token = rt.subscribe("inventory", self._on_inventory_changed)
+        except Exception:
+            pass
+
+    def form_hide(self, **event_args):
+        self._is_mounted = False
+        self._unsubscribe_realtime()
+
     def _on_inventory_changed(self, evt=None):
         with anvil.server.no_loading_indicator:
             search_text = (self.text_box_search.text or "").strip()
-            self.repeating_panel_1.items = (
-                anvil.server.call("get_filtered_parts", search_text)
-                if search_text
-                else anvil.server.call("get_filtered_parts")
-            )
+            if search_text:
+                self.repeating_panel_1.items = anvil.server.call("get_filtered_parts", search_text)
+            elif hasattr(ModGetData, "getPriceCatalogueCached"):
+                self.repeating_panel_1.items = ModGetData.getPriceCatalogueCached(force_refresh=True)
+            else:
+                self.repeating_panel_1.items = anvil.server.call("get_filtered_parts")
 
     def btn_Search_click(self, **event_args):
         """This method is called when the button is clicked"""
@@ -71,27 +87,27 @@ class PriceCatalogue(PriceCatalogueTemplate):
             Notification("No records found for the entered part detail.", title="Not Found", style="danger", timeout=3).show()
 
     def btn_BuyingPrice_click(self, **event_args):
-        """This method is called when the button is clicked"""
+        from ..BuyingPrice import BuyingPrice
         self.btn_BuyingPrice.enabled = False
-        alert(content=BuyingPrice(), buttons=[], dismissible=False,large=True)
+        alert(content=BuyingPrice(), buttons=[], dismissible=False, large=True)
         self.btn_BuyingPrice.enabled = True
 
     def btn_SellingPrice_click(self, **event_args):
-        """This method is called when the button is clicked"""
+        from ..SellingPrice import SellingPrice
         self.btn_SellingPrice.enabled = False
-        alert(content=SellingPrice(), buttons=[], dismissible=False,large=True)
+        alert(content=SellingPrice(), buttons=[], dismissible=False, large=True)
         self.btn_SellingPrice.enabled = True
-        
+
     def btn_MissingBuyingPrice_click(self, **event_args):
-        """This method is called when the button is clicked"""
+        from ..MissingBuyingPrice import MissingBuyingPrice
         self.btn_MissingBuyingPrice.enabled = False
-        alert(content=MissingBuyingPrice(), buttons=[], dismissible=False,large=True)
+        alert(content=MissingBuyingPrice(), buttons=[], dismissible=False, large=True)
         self.btn_MissingBuyingPrice.enabled = True
-        
+
     def btn_MissingSellingPrice_click(self, **event_args):
-        """This method is called when the button is clicked"""
+        from ..MissingSellingPrice import MissingSellingPrice
         self.btn_MissingSellingPrice.enabled = False
-        alert(content=MissingSellingPrice(), buttons=[], dismissible=False,large=True)
+        alert(content=MissingSellingPrice(), buttons=[], dismissible=False, large=True)
         self.btn_MissingSellingPrice.enabled = True
 
    
@@ -159,5 +175,7 @@ class PriceCatalogue(PriceCatalogueTemplate):
         finally:
             notification.hide()           # Dismiss notification when processing is done
             self._reset_file_uploader()   # Clear after processing completes
-        """Refresh the repeating panel with the latest data from the database."""
-        self.repeating_panel_1.items = anvil.server.call("get_filtered_parts")
+        if hasattr(ModGetData, "getPriceCatalogueCached"):
+            self.repeating_panel_1.items = ModGetData.getPriceCatalogueCached(force_refresh=True)
+        else:
+            self.repeating_panel_1.items = anvil.server.call("get_filtered_parts")

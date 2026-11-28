@@ -6,33 +6,51 @@ from anvil.tables import app_tables
 import anvil.server
 import anvil.users
 import anvil.js
+from .. import ModGetData
+
 
 class PeriodicPayment(PeriodicPaymentTemplate):
     def __init__(self, **properties):
-        # Set Form properties and Data Bindings.
         self.init_components(**properties)
-
-        # Any code you write here will run before the form opens.
-        anvil.js.call('replaceBanner')
         self._rt_token = None
+        self._is_mounted = True
         self.set_event_handler("show", self.form_show)
         self.set_event_handler("hide", self.form_hide)
-        anvil.js.window.setTimeout(self._load_initial_data, 10)
+
+        cached = getattr(ModGetData, "peekPaymentSummaryCached", lambda: None)()
+        if cached is not None:
+            self.repeating_panel_1.items = cached
+        else:
+            anvil.js.window.setTimeout(self._load_initial_data, 0)
 
     def _load_initial_data(self):
+        if not self._is_mounted:
+            return
         with anvil.server.no_loading_indicator:
-            self.repeating_panel_1.items = anvil.server.call("get_client_payment_summary")
+            if hasattr(ModGetData, "getPaymentSummaryCached"):
+                rows = ModGetData.getPaymentSummaryCached()
+            else:
+                rows = anvil.server.call("get_client_payment_summary")
+        if self._is_mounted:
+            self.repeating_panel_1.items = rows
 
-    def form_show(self, **event_args):
-        self.form_hide()
-        try:
-            rt = getattr(anvil.js.window, "bmaRealtime", None)
-            if rt:
-                self._rt_token = rt.subscribe("payments", lambda evt: self._load_initial_data())
-        except Exception:
-            pass
+    def _on_payments_changed(self, evt=None):
+        if not self._is_mounted:
+            return
+        with anvil.server.no_loading_indicator:
+            start_date = self.date_picker_start.date
+            end_date = self.date_picker_end.date
+            search_term = (self.txt_SearchTerm.text or "").strip()
+            if (start_date and not end_date) or (end_date and not start_date):
+                start_date, end_date = None, None
+            if not start_date and not end_date and not search_term and hasattr(ModGetData, "getPaymentSummaryCached"):
+                rows = ModGetData.getPaymentSummaryCached(force_refresh=True)
+            else:
+                rows = anvil.server.call("get_client_payment_summary", search_term or None, start_date, end_date)
+        if self._is_mounted:
+            self.repeating_panel_1.items = rows
 
-    def form_hide(self, **event_args):
+    def _unsubscribe_realtime(self):
         try:
             rt = getattr(anvil.js.window, "bmaRealtime", None)
             if rt and self._rt_token:
@@ -40,6 +58,20 @@ class PeriodicPayment(PeriodicPaymentTemplate):
         except Exception:
             pass
         self._rt_token = None
+
+    def form_show(self, **event_args):
+        self._is_mounted = True
+        self._unsubscribe_realtime()
+        try:
+            rt = getattr(anvil.js.window, "bmaRealtime", None)
+            if rt:
+                self._rt_token = rt.subscribe("payments", self._on_payments_changed)
+        except Exception:
+            pass
+
+    def form_hide(self, **event_args):
+        self._is_mounted = False
+        self._unsubscribe_realtime()
 
     def btn_Search_click(self, **event_args):
         """This method is called when the button is clicked"""

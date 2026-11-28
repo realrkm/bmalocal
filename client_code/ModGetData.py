@@ -12,10 +12,20 @@ from . import ModCache
 _notification_shown_at = {}  # title -> JS timestamp
 
 
+def _call_silent(fn_name, *args):
+    import anvil.server as _srv
+    caller = getattr(_srv, "call_s", None) or _srv.call
+    no_spinner = getattr(_srv, "no_loading_indicator", None)
+    if no_spinner is not None:
+        with no_spinner:
+            return caller(fn_name, *args)
+    return caller(fn_name, *args)
+
+
 def getLocationAndSupplier(force_refresh=False):
     return ModCache.get_or_fetch(
         "locations_and_suppliers",
-        lambda: anvil.server.call_s("getLocationAndSupplier"),
+        lambda: _call_silent("getLocationAndSupplier"),
         topic="inventory",
         ttl_seconds=300,
         force_refresh=force_refresh,
@@ -25,7 +35,7 @@ def getLocationAndSupplier(force_refresh=False):
 def getTechniciansCached(force_refresh=False):
     return ModCache.get_or_fetch(
         "technicians_list",
-        lambda: anvil.server.call_s("getTechnicians"),
+        lambda: _call_silent("getTechnicians"),
         topic="contacts",
         ttl_seconds=300,
         force_refresh=force_refresh,
@@ -35,7 +45,7 @@ def getTechniciansCached(force_refresh=False):
 def getStaffCached(force_refresh=False):
     return ModCache.get_or_fetch(
         "staff_list",
-        lambda: anvil.server.call_s("getStaff"),
+        lambda: _call_silent("getStaff"),
         topic="contacts",
         ttl_seconds=300,
         force_refresh=force_refresh,
@@ -45,7 +55,7 @@ def getStaffCached(force_refresh=False):
 def getInterimStaffCached(force_refresh=False):
     return ModCache.get_or_fetch(
         "interim_staff",
-        lambda: anvil.server.call_s("getInterimQuoteAndAmendedInvoiceStaff"),
+        lambda: _call_silent("getInterimQuoteAndAmendedInvoiceStaff"),
         topic="contacts",
         ttl_seconds=300,
         force_refresh=force_refresh,
@@ -55,7 +65,7 @@ def getInterimStaffCached(force_refresh=False):
 def getRolesCached(force_refresh=False):
     return ModCache.get_or_fetch(
         "roles_dropdown",
-        lambda: anvil.server.call_s("getRoles"),
+        lambda: _call_silent("getRoles"),
         topic="permissions",
         ttl_seconds=300,
         force_refresh=force_refresh,
@@ -65,7 +75,7 @@ def getRolesCached(force_refresh=False):
 def getRolesListCached(force_refresh=False):
     return ModCache.get_or_fetch(
         "roles_list",
-        lambda: anvil.server.call_s("listRoles"),
+        lambda: _call_silent("listRoles"),
         topic="permissions",
         ttl_seconds=300,
         force_refresh=force_refresh,
@@ -75,7 +85,7 @@ def getRolesListCached(force_refresh=False):
 def getRolesPermissionsHtmlCached(force_refresh=False):
     return ModCache.get_or_fetch(
         "roles_permissions_html",
-        lambda: anvil.server.call_s("get_roles_permissions_html"),
+        lambda: _call_silent("get_roles_permissions_html"),
         topic="permissions",
         ttl_seconds=300,
         force_refresh=force_refresh,
@@ -85,7 +95,7 @@ def getRolesPermissionsHtmlCached(force_refresh=False):
 def getUsersCached(force_refresh=False):
     return ModCache.get_or_fetch(
         "users_list",
-        lambda: anvil.server.call_s("getUsers"),
+        lambda: _call_silent("getUsers"),
         topic="users",
         ttl_seconds=180,
         force_refresh=force_refresh,
@@ -98,7 +108,7 @@ def warmSettingsCaches(force_refresh=False):
         and ModCache.get_cached("users_list") is not None
     ):
         return
-    bundle = anvil.server.call_s("get_settings_bootstrap")
+    bundle = _call_silent("get_settings_bootstrap")
     if not bundle:
         return
     if bundle.get("roles") is not None:
@@ -109,6 +119,209 @@ def warmSettingsCaches(force_refresh=False):
         ModCache.set_cached("roles_permissions_html", bundle["roles_html"], topic="permissions", ttl_seconds=300)
     if bundle.get("users") is not None:
         ModCache.set_cached("users_list", bundle["users"], topic="users", ttl_seconds=180)
+
+
+def peekClientReportCached():
+    return ModCache.get_cached("report_clients")
+
+
+def getClientReportCached(force_refresh=False):
+    return ModCache.get_or_fetch(
+        "report_clients",
+        lambda: _call_silent("getClientReport", None),
+        topic="contacts",
+        ttl_seconds=300,
+        force_refresh=force_refresh,
+    )
+
+
+def getClientFullnameCached(force_refresh=False):
+    if not force_refresh:
+        clients = ModCache.get_cached("report_clients")
+        if clients is not None:
+            return clients
+    return ModCache.get_or_fetch(
+        "client_fullnames",
+        lambda: _call_silent("getClientFullname"),
+        topic="contacts",
+        ttl_seconds=300,
+        force_refresh=force_refresh,
+    )
+
+
+def peekCarDetailsCached():
+    return ModCache.get_cached("report_car_details")
+
+
+def getCarDetailsCached(force_refresh=False):
+    return ModCache.get_or_fetch(
+        "report_car_details",
+        lambda: _call_silent("get_car_details", None),
+        topic="jobcards",
+        ttl_seconds=180,
+        force_refresh=force_refresh,
+    )
+
+
+def peekTechnicianReportCached():
+    return ModCache.get_cached("report_technicians")
+
+
+def getTechnicianReportCached(force_refresh=False):
+    return ModCache.get_or_fetch(
+        "report_technicians",
+        lambda: _call_silent("getTechnicianReport", None),
+        topic="contacts",
+        ttl_seconds=300,
+        force_refresh=force_refresh,
+    )
+
+
+def peekAssignedJobcardsBootstrapCached():
+    return ModCache.get_cached("report_assigned_jobcards")
+
+
+def getAssignedJobcardsBootstrapCached(force_refresh=False):
+    return ModCache.get_or_fetch(
+        "report_assigned_jobcards",
+        lambda: _call_silent("get_assigned_jobcards_bootstrap"),
+        topic="jobcards",
+        ttl_seconds=180,
+        force_refresh=force_refresh,
+    )
+
+
+def peekStaffReportCached():
+    return ModCache.get_cached("report_staffs")
+
+
+def getStaffReportCached(force_refresh=False):
+    return ModCache.get_or_fetch(
+        "report_staffs",
+        lambda: _call_silent("getStaffReport", None),
+        topic="contacts",
+        ttl_seconds=300,
+        force_refresh=force_refresh,
+    )
+
+
+def peekPriceCatalogueCached():
+    return ModCache.get_cached("report_price_catalogue")
+
+
+def getPriceCatalogueCached(force_refresh=False):
+    return ModCache.get_or_fetch(
+        "report_price_catalogue",
+        lambda: _call_silent("get_filtered_parts"),
+        topic="inventory",
+        ttl_seconds=180,
+        force_refresh=force_refresh,
+    )
+
+
+def peekStockLocationCached():
+    return ModCache.get_cached("report_stock_location")
+
+
+def getStockLocationCached(force_refresh=False):
+    return ModCache.get_or_fetch(
+        "report_stock_location",
+        lambda: _call_silent("search_car_parts_location"),
+        topic="inventory",
+        ttl_seconds=180,
+        force_refresh=force_refresh,
+    )
+
+
+def peekStockBalanceCached():
+    return ModCache.get_cached("report_stock_balance")
+
+
+def getStockBalanceCached(force_refresh=False):
+    return ModCache.get_or_fetch(
+        "report_stock_balance",
+        lambda: _call_silent("get_car_parts_summary", ""),
+        topic="inventory",
+        ttl_seconds=180,
+        force_refresh=force_refresh,
+    )
+
+
+def peekQuoteInvoiceTotalsCached():
+    return ModCache.get_cached("report_quote_invoice_totals")
+
+
+def getQuoteInvoiceTotalsCached(force_refresh=False):
+    return ModCache.get_or_fetch(
+        "report_quote_invoice_totals",
+        lambda: _call_silent("get_jobcard_quote_invoice_totals"),
+        topic="jobcards",
+        ttl_seconds=180,
+        force_refresh=force_refresh,
+    )
+
+
+def peekPaymentSummaryCached():
+    return ModCache.get_cached("report_payment_summary")
+
+
+def getPaymentSummaryCached(force_refresh=False):
+    return ModCache.get_or_fetch(
+        "report_payment_summary",
+        lambda: _call_silent("get_client_payment_summary"),
+        topic="payments",
+        ttl_seconds=180,
+        force_refresh=force_refresh,
+    )
+
+
+def warmReportsCaches(permissions=None, force_refresh=False):
+    """Warm initial report datasets in one atomic server bootstrap call."""
+    perm_to_section = (
+        ("Client Report", "clients", ("report_clients",)),
+        ("Car Details Report", "car_details", ("report_car_details",)),
+        ("Technicians Report", "technicians", ("report_technicians", "report_assigned_jobcards")),
+        ("Staffs Report", "staffs", ("report_staffs",)),
+        ("Inventory Report", "inventory", ("report_price_catalogue", "report_stock_location", "report_stock_balance")),
+        ("Quote And Invoice Report", "quote_invoice", ("report_quote_invoice_totals",)),
+        ("Payment Report", "payments", ("report_payment_summary",)),
+    )
+    subs = ((permissions or {}).get("REPORTS") or {}).get("subs") if permissions is not None else None
+    requested_sections = []
+    for perm_name, section_key, cache_keys in perm_to_section:
+        if subs is not None and subs and not subs.get(perm_name):
+            continue
+        if not force_refresh and all(ModCache.get_cached(k) is not None for k in cache_keys):
+            continue
+        requested_sections.append(section_key)
+
+    if not requested_sections:
+        return
+
+    bundle = _call_silent("get_reports_bootstrap", requested_sections)
+    if not isinstance(bundle, dict):
+        return
+    if bundle.get("clients") is not None:
+        ModCache.set_cached("report_clients", bundle["clients"], topic="contacts", ttl_seconds=300)
+        ModCache.set_cached("client_fullnames", bundle["clients"], topic="contacts", ttl_seconds=300)
+    if bundle.get("car_details") is not None:
+        ModCache.set_cached("report_car_details", bundle["car_details"], topic="jobcards", ttl_seconds=180)
+    if bundle.get("technicians_report") is not None:
+        ModCache.set_cached("report_technicians", bundle["technicians_report"], topic="contacts", ttl_seconds=300)
+    if bundle.get("assigned_jobcards") is not None:
+        ModCache.set_cached("report_assigned_jobcards", bundle["assigned_jobcards"], topic="jobcards", ttl_seconds=180)
+    if bundle.get("staffs_report") is not None:
+        ModCache.set_cached("report_staffs", bundle["staffs_report"], topic="contacts", ttl_seconds=300)
+    if bundle.get("price_catalogue") is not None:
+        ModCache.set_cached("report_price_catalogue", bundle["price_catalogue"], topic="inventory", ttl_seconds=180)
+    if bundle.get("stock_location") is not None:
+        ModCache.set_cached("report_stock_location", bundle["stock_location"], topic="inventory", ttl_seconds=180)
+    if bundle.get("stock_balance") is not None:
+        ModCache.set_cached("report_stock_balance", bundle["stock_balance"], topic="inventory", ttl_seconds=180)
+    if bundle.get("quote_invoice_totals") is not None:
+        ModCache.set_cached("report_quote_invoice_totals", bundle["quote_invoice_totals"], topic="jobcards", ttl_seconds=180)
+    if bundle.get("payment_summary") is not None:
+        ModCache.set_cached("report_payment_summary", bundle["payment_summary"], topic="payments", ttl_seconds=180)
 
 def _show_error(message, title="", timeout=5):
     """

@@ -24,6 +24,9 @@ This register documents key `@anvil.server.callable` endpoints, their input/outp
 | `saveOrUpdateTechnicianPortalDefectsAndRequestedParts` | `jobcardID, tech_notes, defects, requiredparts, staff, signature, checklist=None, inspection_images=None` | `bool`; checklist saves require and upsert `image_1`, `image_2`, and `image_3` in `tbl_vehicleinspectionimages` | Any Authenticated | `SelfService` | [x] | [ ] |
 | `delete_payment` | `payment_id: int` | `dict` (success, payment_id, jobcard_id) | `Admin` | `PaymentForm.RowTemplate3` | [x] | [ ] |
 | `calculate_invoice_breakdown` | `subtotal: float, discount_percent: float = 0.0, tax_rate_percent: float = 16.0` | `dict` (subtotal, discount_amount, net_subtotal, tax_amount, total_amount) | Any Authenticated | `InvoiceForm`, `QuoteForm` | [x] | [ ] |
+| `get_reports_bootstrap` | `sections: list[str] \| None = None` | `dict` (clients, car_details, technicians_report, assigned_jobcards, staffs_report, price_catalogue, stock_location, stock_balance, quote_invoice_totals, payment_summary) | Any Authenticated | `ModGetData`, `Report` | [x] | [ ] |
+| `get_periodic_invoices_with_summary` | `start_date, end_date, jobcard_id: int` | `dict` (invoices, summary) | Any Authenticated | `MonthlyPerformanceSchedule` | [x] | [ ] |
+| `save_monthly_schedule_batch` | `jobcard_id: int, fullname: str, invoice_total, total_paid, total_discount, balance, rows: list[dict]` | `dict` (success, saved_count) | Any Authenticated | `MonthlyPerformanceSchedule` | [x] | [ ] |
 | `get_stats` | `user_agent_string: str` | `dict` (client geolocation/OS) | Public / Anvil context | `Launcher`, `Main` | [x] | [ ] |
 
 ---

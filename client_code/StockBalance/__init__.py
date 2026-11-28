@@ -6,32 +6,36 @@ from anvil.tables import app_tables
 import anvil.server
 import anvil.users
 import anvil.js
+from .. import ModGetData
 
 
 class StockBalance(StockBalanceTemplate):
     def __init__(self, **properties):
-        # Set Form properties and Data Bindings.
         self.init_components(**properties)
-
-        # Any code you write here will run before the form opens.
-        anvil.js.call('replaceBanner')
         self.data_grid_1.show_page_controls = True
         self._rt_token = None
+        self._is_mounted = True
         self.set_event_handler("show", self.form_show)
         self.set_event_handler("hide", self.form_hide)
 
-        self.repeating_panel_1.items = anvil.server.call("get_car_parts_summary", "")
+        cached = getattr(ModGetData, "peekStockBalanceCached", lambda: None)()
+        if cached is not None:
+            self.repeating_panel_1.items = cached
+        else:
+            anvil.js.window.setTimeout(self._load_initial_data, 0)
 
-    def form_show(self, **event_args):
-        self.form_hide()
-        try:
-            rt = getattr(anvil.js.window, "bmaRealtime", None)
-            if rt:
-                self._rt_token = rt.subscribe("inventory", self._on_inventory_changed)
-        except Exception:
-            pass
+    def _load_initial_data(self):
+        if not self._is_mounted:
+            return
+        with anvil.server.no_loading_indicator:
+            if hasattr(ModGetData, "getStockBalanceCached"):
+                rows = ModGetData.getStockBalanceCached()
+            else:
+                rows = anvil.server.call("get_car_parts_summary", "")
+        if self._is_mounted:
+            self.repeating_panel_1.items = rows
 
-    def form_hide(self, **event_args):
+    def _unsubscribe_realtime(self):
         try:
             rt = getattr(anvil.js.window, "bmaRealtime", None)
             if rt and self._rt_token:
@@ -40,10 +44,29 @@ class StockBalance(StockBalanceTemplate):
             pass
         self._rt_token = None
 
+    def form_show(self, **event_args):
+        self._is_mounted = True
+        self._unsubscribe_realtime()
+        try:
+            rt = getattr(anvil.js.window, "bmaRealtime", None)
+            if rt:
+                self._rt_token = rt.subscribe("inventory", self._on_inventory_changed)
+        except Exception:
+            pass
+
+    def form_hide(self, **event_args):
+        self._is_mounted = False
+        self._unsubscribe_realtime()
+
     def _on_inventory_changed(self, evt=None):
         with anvil.server.no_loading_indicator:
             search_text = (self.text_box_search.text or "").strip()
-            self.repeating_panel_1.items = anvil.server.call("get_car_parts_summary", search_text)
+            if search_text:
+                self.repeating_panel_1.items = anvil.server.call("get_car_parts_summary", search_text)
+            elif hasattr(ModGetData, "getStockBalanceCached"):
+                self.repeating_panel_1.items = ModGetData.getStockBalanceCached(force_refresh=True)
+            else:
+                self.repeating_panel_1.items = anvil.server.call("get_car_parts_summary", "")
 
     def btn_Search_click(self, **event_args):
         """This method is called when the button is clicked"""

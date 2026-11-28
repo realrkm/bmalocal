@@ -1145,18 +1145,21 @@ def get_client_payment_summary(search_term=None, start_date=None, end_date=None)
                 tbl_jobcarddetails.ReceivedDate,
                 SUM(tbl_payments.AmountPaid) AS TotalPaid,
                 MAX(tbl_payments.Discount)   AS Discount,
-                (
-                    SELECT tbl_payments.Balance
-                    FROM tbl_payments
-                    WHERE tbl_payments.JobCardRefID = tbl_jobcarddetails.ID
-                    ORDER BY tbl_payments.ID DESC
-                    LIMIT 1
-                ) AS LatestBalance
+                lp.Balance                   AS LatestBalance
             FROM tbl_payments 
             INNER JOIN tbl_jobcarddetails  
                 ON tbl_jobcarddetails.ID = tbl_payments.JobCardRefID
             INNER JOIN tbl_clientcontacts  
                 ON tbl_clientcontacts.ID = tbl_jobcarddetails.ClientDetails
+            LEFT JOIN (
+                SELECT p1.JobCardRefID, p1.Balance
+                FROM tbl_payments p1
+                INNER JOIN (
+                    SELECT JobCardRefID, MAX(ID) AS MaxID
+                    FROM tbl_payments
+                    GROUP BY JobCardRefID
+                ) pmax ON p1.ID = pmax.MaxID
+            ) lp ON lp.JobCardRefID = tbl_jobcarddetails.ID
             WHERE 1=1
         """
 
@@ -1179,7 +1182,7 @@ def get_client_payment_summary(search_term=None, start_date=None, end_date=None)
             params.append(end_date)
 
         query += """
-            GROUP BY tbl_clientcontacts.Fullname, tbl_clientcontacts.Phone, tbl_jobcarddetails.JobCardRef, tbl_jobcarddetails.ReceivedDate, tbl_jobcarddetails.ID
+            GROUP BY tbl_clientcontacts.Fullname, tbl_clientcontacts.Phone, tbl_jobcarddetails.JobCardRef, tbl_jobcarddetails.ReceivedDate, tbl_jobcarddetails.ID, lp.Balance
             ORDER BY tbl_jobcarddetails.ReceivedDate DESC
         """
 

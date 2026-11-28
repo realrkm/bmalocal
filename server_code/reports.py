@@ -1292,6 +1292,402 @@ def createSignedJobcardPdf(jobCardID):
         print("PDF generation failed:", str(e))
         raise
 
+@anvil.server.callable()
+def get_reports_bootstrap(sections=None):
+    """
+    Single-RPC, single-cursor bootstrap for initial read-only Report datasets.
+
+    Args:
+        sections (list[str] | tuple[str] | set[str] | None): Optional subset of
+            {"clients", "car_details", "technicians", "staffs", "inventory",
+             "quote_invoice", "payments"}. Defaults to all sections when None.
+    Returns:
+        dict: Bundled initial datasets keyed by report target.
+    """
+    _get_current_user()
+    allowed_sections = {
+        "clients",
+        "car_details",
+        "technicians",
+        "staffs",
+        "inventory",
+        "quote_invoice",
+        "payments",
+    }
+    if sections is None:
+        wanted = allowed_sections
+    elif isinstance(sections, (list, tuple, set)):
+        wanted = set()
+        for sec in sections:
+            if not isinstance(sec, str) or sec not in allowed_sections:
+                raise ValueError(f"Invalid report bootstrap section: {sec!r}")
+            wanted.add(sec)
+    else:
+        raise ValueError("sections must be a list of valid section names or None.")
+
+    if not wanted:
+        return {}
+
+    bundle = {}
+    with db_cursor() as cursor:
+        if "clients" in wanted:
+            cursor.execute(
+                "SELECT ID, Fullname, Phone, Address, Email, Narration "
+                "FROM tbl_clientcontacts "
+                "ORDER BY Fullname ASC"
+            )
+            bundle["clients"] = [
+                {
+                    "No": idx,
+                    "ID": r[0],
+                    "Fullname": r[1],
+                    "Phone": r[2],
+                    "Address": r[3],
+                    "Email": r[4],
+                    "Narration": r[5],
+                }
+                for idx, r in enumerate(cursor.fetchall(), start=1)
+            ]
+
+        if "car_details" in wanted:
+            cursor.execute(
+                """
+                SELECT
+                    c.Fullname,
+                    c.Phone,
+                    j.RegNo,
+                    j.ChassisNo,
+                    j.ReceivedDate,
+                    j.JobCardRef,
+                    j.MakeAndModel
+                FROM tbl_clientcontacts c
+                INNER JOIN tbl_jobcarddetails j ON c.ID = j.ClientDetails
+                ORDER BY j.ReceivedDate DESC
+                LIMIT %s
+                """,
+                (200,),
+            )
+            bundle["car_details"] = [
+                {
+                    "No": idx,
+                    "Fullname": r[0],
+                    "Phone": r[1],
+                    "RegNo": r[2],
+                    "ChassisNo": r[3],
+                    "ReceivedDate": r[4],
+                    "JobCardRef": r[5],
+                    "MakeAndModel": r[6],
+                }
+                for idx, r in enumerate(cursor.fetchall(), start=1)
+            ]
+
+        if "technicians" in wanted:
+            cursor.execute(
+                """
+                SELECT tbl_technicians.ID, tbl_technicians.Fullname, tbl_technicians.Phone,
+                       tbl_toolkits.ToolkitName, tbl_technicians.IsArchived
+                FROM tbl_technicians
+                INNER JOIN tbl_toolkits ON tbl_technicians.ToolkitID = tbl_toolkits.ID
+                ORDER BY Fullname ASC
+                """
+            )
+            bundle["technicians_report"] = [
+                {
+                    "No": idx,
+                    "ID": r[0],
+                    "Fullname": r[1],
+                    "Phone": r[2],
+                    "Toolkit": r[3],
+                    "IsArchived": "Yes" if r[4] == 1 else "No",
+                }
+                for idx, r in enumerate(cursor.fetchall(), start=1)
+            ]
+
+            cursor.execute(
+                """
+                SELECT
+                    jd.ReceivedDate,
+                    jd.JobCardRef,
+                    t.Fullname,
+                    SUM(
+                        CASE
+                            WHEN i.QuantityIssued IS NULL THEN i.Amount
+                            ELSE i.Amount * i.QuantityIssued
+                        END
+                    ) AS InvoicedAmount,
+                    MAX(
+                        CASE
+                            WHEN i.Item LIKE '%Labour%' THEN i.Amount
+                            ELSE 0
+                        END
+                    ) AS LabourAmount,
+                    jd.MakeAndModel
+                FROM tbl_invoices AS i
+                INNER JOIN tbl_jobcarddetails AS jd ON i.AssignedJobID = jd.ID
+                INNER JOIN tbl_pendingassignedjobs AS pj ON jd.ID = pj.JobCardRefID
+                INNER JOIN tbl_technicians AS t ON t.ID = pj.TechnicianID
+                GROUP BY jd.ReceivedDate, jd.JobCardRef, t.Fullname, jd.MakeAndModel
+                ORDER BY jd.ReceivedDate DESC
+                """
+            )
+            assigned_jobs = [
+                {
+                    "No": idx,
+                    "ReceivedDate": r[0],
+                    "JobCardRef": r[1],
+                    "Technician": r[2],
+                    "InvoicedAmount": f"{float(r[3] or 0):,.2f}",
+                    "LabourAmount": f"{float(r[4] or 0):,.2f}",
+                    "MakeAndModel": r[5],
+                }
+                for idx, r in enumerate(cursor.fetchall(), start=1)
+            ]
+            cursor.execute(
+                """
+                SELECT ID, Fullname
+                FROM tbl_technicians
+                WHERE IsArchived = FALSE
+                ORDER BY Fullname ASC
+                """
+            )
+            active_techs = [(r[1], r[0]) for r in cursor.fetchall()]
+            bundle["assigned_jobcards"] = {"jobs": assigned_jobs, "technicians": active_techs}
+
+        if "staffs" in wanted:
+            cursor.execute(
+                "SELECT ID, Staff, Phone, IsArchived "
+                "FROM tbl_checkstaff "
+                "ORDER BY Staff ASC"
+            )
+            bundle["staffs_report"] = [
+                {
+                    "No": idx,
+                    "ID": r[0],
+                    "Fullname": r[1],
+                    "Phone": r[2],
+                    "Active": "Yes" if r[3] == 1 else "No",
+                }
+                for idx, r in enumerate(cursor.fetchall(), start=1)
+            ]
+
+        if "inventory" in wanted:
+            cursor.execute(
+                """
+                WITH latest_stock AS (
+                    SELECT sp.CarPart, sp.UnitCost, sp.Date,
+                           ROW_NUMBER() OVER (PARTITION BY sp.CarPart ORDER BY sp.ID DESC) AS rn
+                    FROM tbl_stockparts sp
+                ),
+                issued AS (
+                    SELECT CarPartID, SUM(QuantityIssued) AS TotalIssued
+                    FROM tbl_assignedcarparts
+                    GROUP BY CarPartID
+                ),
+                latest_stocktake AS (
+                    SELECT CarPartNameID, HarmornizedValue
+                    FROM (
+                        SELECT
+                            CarPartNameID,
+                            HarmornizedValue,
+                            ROW_NUMBER() OVER (PARTITION BY CarPartNameID ORDER BY StockTakeDate DESC) AS rn
+                        FROM tbl_stocktakeharmonized
+                    ) ranked
+                    WHERE rn = 1
+                )
+                SELECT
+                    cpn.Name,
+                    cpn.PartNo,
+                    cpn.OrderLevel AS `Reorder Level`,
+                    ls.UnitCost AS Cost,
+                    psp.Amount AS Selling,
+                    psp.SaleDiscount AS Discount,
+                    MAX(sp.Date) AS MaxOfDate,
+                    (COALESCE(SUM(sp.NoOfUnits), 0)
+                        - COALESCE(i.TotalIssued, 0)
+                        + COALESCE(lst.HarmornizedValue, 0)) AS StockBalance
+                FROM tbl_carpartnames cpn
+                INNER JOIN tbl_partssellingprice psp ON cpn.ID = psp.CarPartsNamesID
+                INNER JOIN tbl_stockparts sp ON cpn.ID = sp.CarPart
+                INNER JOIN latest_stock ls ON ls.CarPart = cpn.ID AND ls.rn = 1
+                LEFT JOIN issued i ON cpn.ID = i.CarPartID
+                LEFT JOIN latest_stocktake lst ON cpn.ID = lst.CarPartNameID
+                GROUP BY
+                    cpn.Name, cpn.PartNo, cpn.OrderLevel, psp.Amount, psp.SaleDiscount,
+                    cpn.ID, ls.UnitCost, i.TotalIssued, lst.HarmornizedValue
+                ORDER BY cpn.Name
+                """
+            )
+            bundle["price_catalogue"] = [
+                {
+                    "No": idx,
+                    "Name": r[0],
+                    "PartNo": r[1],
+                    "ReorderLevel": r[2],
+                    "Cost": f"{float(r[3]):,.2f}" if r[3] is not None else None,
+                    "Selling": f"{float(r[4]):,.2f}" if r[4] is not None else None,
+                    "Discount": r[5],
+                    "MaxOfDate": r[6],
+                    "StockBalance": f"{float(r[7] or 0):.2f}",
+                }
+                for idx, r in enumerate(cursor.fetchall(), start=1)
+            ]
+
+            cursor.execute(
+                """
+                SELECT n.ID, n.Name, n.PartNo, l.Location
+                FROM tbl_carpartnames n
+                INNER JOIN tbl_carpartslocation l ON l.ID = n.Location
+                ORDER BY n.Name
+                """
+            )
+            bundle["stock_location"] = [
+                {"No": idx, "Name": r[1], "PartNo": r[2], "Location": r[3]}
+                for idx, r in enumerate(cursor.fetchall(), start=1)
+            ]
+
+            cursor.execute(
+                """
+                WITH issued AS (
+                    SELECT CarPartID, SUM(QuantityIssued) AS TotalIssued
+                    FROM tbl_assignedcarparts
+                    GROUP BY CarPartID
+                ),
+                latest_stocktake AS (
+                    SELECT CarPartNameID, HarmornizedValue
+                    FROM (
+                        SELECT
+                            CarPartNameID,
+                            HarmornizedValue,
+                            ROW_NUMBER() OVER (PARTITION BY CarPartNameID ORDER BY StockTakeDate DESC) AS rn
+                        FROM tbl_stocktakeharmonized
+                    ) ranked
+                    WHERE rn = 1
+                )
+                SELECT
+                    cp.ID,
+                    cp.Name,
+                    cp.PartNo,
+                    cp.OrderLevel,
+                    COALESCE(i.TotalIssued, 0) AS TotalIssued,
+                    COALESCE(l.HarmornizedValue, 0) AS LatestStockTake,
+                    MAX(sp.Date) AS LastStockDate,
+                    SUM(sp.NoOfUnits) AS TotalStock,
+                    (COALESCE(SUM(sp.NoOfUnits), 0)
+                        - COALESCE(i.TotalIssued, 0)
+                        + COALESCE(l.HarmornizedValue, 0)) AS StockBalance,
+                    CASE
+                        WHEN (COALESCE(SUM(sp.NoOfUnits), 0)
+                            - COALESCE(i.TotalIssued, 0)
+                            + COALESCE(l.HarmornizedValue, 0)) < cp.OrderLevel
+                        THEN 'Yes'
+                        ELSE 'No'
+                    END AS BelowOrderLevel
+                FROM tbl_carpartnames cp
+                LEFT JOIN tbl_stockparts sp ON cp.ID = sp.CarPart
+                LEFT JOIN issued i ON cp.ID = i.CarPartID
+                LEFT JOIN latest_stocktake l ON cp.ID = l.CarPartNameID
+                GROUP BY cp.ID, cp.Name, cp.PartNo, cp.OrderLevel, i.TotalIssued, l.HarmornizedValue
+                ORDER BY cp.Name
+                """
+            )
+            bundle["stock_balance"] = [
+                {
+                    "No": idx,
+                    "Name": r[1],
+                    "PartNo": r[2],
+                    "OrderLevel": r[3],
+                    "TotalIssued": float(r[4] or 0),
+                    "LatestStockTake": float(r[5] or 0),
+                    "TotalStock": float(r[7] or 0),
+                    "StockBalance": f"{float(r[8] or 0):.2f}",
+                    "BelowOrderLevel": r[9],
+                }
+                for idx, r in enumerate(cursor.fetchall(), start=1)
+            ]
+
+        if "quote_invoice" in wanted:
+            cursor.execute(
+                """
+                SELECT
+                    j.ID AS ID,
+                    j.ReceivedDate AS ReceivedDate,
+                    j.JobCardRef AS JobCardRef,
+                    COALESCE(q.QuotationTotal, 0) AS QuotationTotal,
+                    COALESCE(i.InvoiceTotal, 0) AS InvoiceTotal
+                FROM tbl_jobcarddetails j
+                INNER JOIN (
+                    SELECT AssignedJobID,
+                           SUM(CASE WHEN QuantityIssued IS NULL THEN Amount ELSE QuantityIssued * Amount END) AS QuotationTotal
+                    FROM tbl_quotation
+                    GROUP BY AssignedJobID
+                ) q ON q.AssignedJobID = j.ID
+                INNER JOIN (
+                    SELECT AssignedJobID,
+                           SUM(CASE WHEN QuantityIssued IS NULL THEN Amount ELSE QuantityIssued * Amount END) AS InvoiceTotal
+                    FROM tbl_invoices
+                    GROUP BY AssignedJobID
+                ) i ON i.AssignedJobID = j.ID
+                ORDER BY j.ReceivedDate DESC
+                """
+            )
+            bundle["quote_invoice_totals"] = [
+                {
+                    "No": idx,
+                    "ID": r[0],
+                    "ReceivedDate": r[1],
+                    "JobCardRef": r[2],
+                    "QuotationTotal": f"{float(r[3] or 0):,.2f}",
+                    "InvoiceTotal": f"{float(r[4] or 0):,.2f}",
+                }
+                for idx, r in enumerate(cursor.fetchall(), start=1)
+            ]
+
+        if "payments" in wanted:
+            cursor.execute(
+                """
+                SELECT
+                    tbl_clientcontacts.Fullname,
+                    tbl_clientcontacts.Phone,
+                    tbl_jobcarddetails.JobCardRef,
+                    tbl_jobcarddetails.ReceivedDate,
+                    SUM(tbl_payments.AmountPaid) AS TotalPaid,
+                    MAX(tbl_payments.Discount) AS Discount,
+                    lp.Balance AS LatestBalance
+                FROM tbl_payments
+                INNER JOIN tbl_jobcarddetails ON tbl_jobcarddetails.ID = tbl_payments.JobCardRefID
+                INNER JOIN tbl_clientcontacts ON tbl_clientcontacts.ID = tbl_jobcarddetails.ClientDetails
+                LEFT JOIN (
+                    SELECT p1.JobCardRefID, p1.Balance
+                    FROM tbl_payments p1
+                    INNER JOIN (
+                        SELECT JobCardRefID, MAX(ID) AS MaxID
+                        FROM tbl_payments
+                        GROUP BY JobCardRefID
+                    ) pmax ON p1.ID = pmax.MaxID
+                ) lp ON lp.JobCardRefID = tbl_jobcarddetails.ID
+                GROUP BY tbl_clientcontacts.Fullname, tbl_clientcontacts.Phone,
+                         tbl_jobcarddetails.JobCardRef, tbl_jobcarddetails.ReceivedDate,
+                         tbl_jobcarddetails.ID, lp.Balance
+                ORDER BY tbl_jobcarddetails.ReceivedDate DESC
+                """
+            )
+            bundle["payment_summary"] = [
+                {
+                    "No": idx,
+                    "JobReceivedDate": r[3].strftime("%Y-%m-%d") if r[3] else None,
+                    "JobCardRef": r[2],
+                    "Fullname": r[0],
+                    "Phone": r[1],
+                    "TotalPaid": f"{float(r[4] or 0):,.2f}",
+                    "Discount": f"{float(r[5] or 0):,.2f}",
+                    "Balance": f"{float(r[6] or 0):,.2f}",
+                }
+                for idx, r in enumerate(cursor.fetchall(), start=1)
+            ]
+
+    return bundle
+
+
 __all__ = [
     'make_excel',
     'export_assigned_jobcards',
@@ -1309,6 +1705,7 @@ __all__ = [
     'get_createdAt',
     'fillJobCardReport',
     'createSignedJobcardPdf',
+    'get_reports_bootstrap',
 ]
 
 from . import BMALocal as _compatibility_facade

@@ -25,12 +25,88 @@ class ProgressTrackerMobileView(ProgressTrackerMobileViewTemplate):
         self._rt_conn_token = None
         self._modals_cache = {}
         self._modals_cache_job_id = None
+        self._prewarmed_modals = {}
+        self._preload_modal_assets()
         self.set_event_handler("hide", self.form_hide)
+
+    def _preload_modal_assets(self):
+        try:
+            img_cls = getattr(anvil.js.window, "Image", None)
+            if img_cls:
+                img = img_cls()
+                img.src = "_/theme/Invoice Header Logo.jpg"
+        except Exception:
+            pass
 
     def _invalidate_modals_cache(self, job_id=None):
         if job_id is None or self._modals_cache_job_id == job_id:
             self._modals_cache = {}
             self._modals_cache_job_id = None
+            self._prewarmed_modals = {}
+
+    def _build_modal_instance(self, job_id, key, data):
+        if not data:
+            return None
+        if key == "jobcard":
+            return JobCardForm(jobcard_data=data, prewarm_edit=False)
+        if key == "defects":
+            return DefectsForm(job_id=job_id, init_data=data)
+        if key == "quote":
+            return QuoteForm(job_id, quote_data=data)
+        if key == "confirm":
+            return ConfirmForm(job_id, quote_data=data)
+        if key == "invoice":
+            return InvoiceForm(job_id, quote_data=data)
+        if key == "payment":
+            return PaymentForm(job_id, payment_data=data)
+        return None
+
+    def _prewarm_single_modal(self, job_id, key):
+        if self._modals_cache_job_id != job_id or self.drop_down_JobCardRefDetails.selected_value != job_id:
+            return
+        prewarmed = getattr(self, "_prewarmed_modals", None)
+        if prewarmed is None:
+            self._prewarmed_modals = prewarmed = {}
+        if key in prewarmed:
+            return
+        data = self._modals_cache.get(key)
+        if not data:
+            return
+        try:
+            inst = self._build_modal_instance(job_id, key, data)
+            if inst is not None and self._modals_cache_job_id == job_id:
+                prewarmed[key] = inst
+        except Exception:
+            pass
+
+    def _schedule_prewarm_single_modal(self, job_id, key):
+        try:
+            anvil.js.window.setTimeout(lambda: self._prewarm_single_modal(job_id, key), 15)
+        except Exception:
+            pass
+
+    def _schedule_prewarm_modals(self, job_id):
+        keys = ("jobcard", "defects", "quote", "confirm", "invoice", "payment")
+        def _step(idx=0):
+            if idx >= len(keys):
+                return
+            if self._modals_cache_job_id != job_id or self.drop_down_JobCardRefDetails.selected_value != job_id:
+                return
+            self._prewarm_single_modal(job_id, keys[idx])
+            try:
+                anvil.js.window.setTimeout(lambda: _step(idx + 1), 10)
+            except Exception:
+                pass
+        try:
+            anvil.js.window.setTimeout(lambda: _step(0), 10)
+        except Exception:
+            pass
+
+    def _pop_or_build_modal(self, job_id, key, data):
+        prewarmed = getattr(self, "_prewarmed_modals", None)
+        if self._modals_cache_job_id == job_id and prewarmed and key in prewarmed:
+            return prewarmed.pop(key)
+        return self._build_modal_instance(job_id, key, data)
 
     def _prefetch_modals(self, job_id):
         if not job_id or self.drop_down_JobCardRefDetails.selected_value != job_id:
@@ -41,6 +117,8 @@ class ProgressTrackerMobileView(ProgressTrackerMobileViewTemplate):
             if bundle and self.drop_down_JobCardRefDetails.selected_value == job_id:
                 self._modals_cache = bundle
                 self._modals_cache_job_id = job_id
+                self._prewarmed_modals = {}
+                self._schedule_prewarm_modals(job_id)
         except Exception:
             pass
 
@@ -256,14 +334,17 @@ class ProgressTrackerMobileView(ProgressTrackerMobileViewTemplate):
                 alert("No data found for the selected Job ID.", title="Missing Job Card Data", large=False)
                 return
 
-            alert(
-                content=JobCardForm(jobcard_data=jobcard_data),
+            form_inst = self._pop_or_build_modal(job_id, "jobcard", jobcard_data)
+            outcome = alert(
+                content=form_inst,
                 buttons=[],
                 dismissible=False,
                 large=True,
             )
-            self._invalidate_modals_cache(job_id)
-            self._schedule_prefetch_modals(job_id)
+            if outcome == "updated":
+                self._invalidate_modals_cache(job_id)
+            else:
+                self._schedule_prewarm_single_modal(job_id, "jobcard")
         finally:
             self.btn_JobCard.enabled = True
 
@@ -281,14 +362,18 @@ class ProgressTrackerMobileView(ProgressTrackerMobileViewTemplate):
                 alert("No data found for the selected Job ID.", title="Missing Defects Data", large=False)
                 return
 
-            alert(
-                content=DefectsForm(job_id=job_id, init_data=defects_init_data),
+            form_inst = self._pop_or_build_modal(job_id, "defects", defects_init_data)
+            outcome = alert(
+                content=form_inst,
                 buttons=[],
                 dismissible=False,
                 large=True,
             )
-            self._invalidate_modals_cache(job_id)
-            self._schedule_prefetch_modals(job_id)
+            if outcome == "updated":
+                self._invalidate_modals_cache(job_id)
+                self._schedule_prefetch_modals(job_id)
+            else:
+                self._schedule_prewarm_single_modal(job_id, "defects")
         finally:
             self.btn_Defects.enabled = True
 
@@ -306,12 +391,14 @@ class ProgressTrackerMobileView(ProgressTrackerMobileViewTemplate):
                 alert("No data found for the selected Job ID.", title="Missing Quotation Data", large=False)
                 return
 
+            form_inst = self._pop_or_build_modal(job_id, "quote", quote_data)
             alert(
-                content=QuoteForm(job_id, quote_data=quote_data),
+                content=form_inst,
                 buttons=[],
                 dismissible=False,
                 large=True,
             )
+            self._schedule_prewarm_single_modal(job_id, "quote")
         finally:
             self.btn_Quotation.enabled = True
 
@@ -329,7 +416,9 @@ class ProgressTrackerMobileView(ProgressTrackerMobileViewTemplate):
                 Notification("No data found for the selected Job ID.", title='Missing Quotation Data', style="danger", timeout=3).show()
                 return
 
-            alert(content=ConfirmForm(job_id, quote_data=quote_data), buttons=[], dismissible=False, large=True)
+            form_inst = self._pop_or_build_modal(job_id, "confirm", quote_data)
+            alert(content=form_inst, buttons=[], dismissible=False, large=True)
+            self._schedule_prewarm_single_modal(job_id, "confirm")
         finally:
             self.btn_Confirmed.enabled = True
 
@@ -347,12 +436,14 @@ class ProgressTrackerMobileView(ProgressTrackerMobileViewTemplate):
                 alert("No data found for the selected Job ID.", title="Missing Invoice Data", large=False)
                 return
 
+            form_inst = self._pop_or_build_modal(job_id, "invoice", quote_data)
             alert(
-                content=InvoiceForm(job_id, quote_data=quote_data),
+                content=form_inst,
                 buttons=[],
                 dismissible=False,
                 large=True,
             )
+            self._schedule_prewarm_single_modal(job_id, "invoice")
         finally:
             self.btn_Invoice.enabled = True
 
@@ -370,14 +461,18 @@ class ProgressTrackerMobileView(ProgressTrackerMobileViewTemplate):
                 alert("No data found for the selected Job ID.", title="Missing Payment Data", large=False)
                 return
 
-            alert(
-                content=PaymentForm(job_id, payment_data=payment_data),
+            form_inst = self._pop_or_build_modal(job_id, "payment", payment_data)
+            outcome = alert(
+                content=form_inst,
                 buttons=[],
                 dismissible=False,
                 large=True,
             )
-            self._invalidate_modals_cache(job_id)
-            self._schedule_prefetch_modals(job_id)
+            if outcome == "updated":
+                self._invalidate_modals_cache(job_id)
+                self._schedule_prefetch_modals(job_id)
+            else:
+                self._schedule_prewarm_single_modal(job_id, "payment")
         finally:
             self.btn_Payment.enabled = True
 

@@ -33,63 +33,104 @@ class EditJobCard(EditJobCardTemplate):
         self.search_keyword_4.text_box_search.placeholder = "Checked In By *"
         
 
-    def populateForm(self, jobcard_data, **event_args):
-        """This method is called when an item is selected"""  
-        technician_name = anvil.server.call_s('getAssignedTechnician',jobcard_data["ID"])
-        technician_details = anvil.server.call("getTechnicianDetailsFromName", technician_name)
-        
-        #Set technician
-        self.search_keyword_1.set_result(
-            {"entry": technician_details[0]["Fullname"], "ID": technician_details[0]["ID"]}
+    def _needs_hydration(self, jobcard_data):
+        required_keys = (
+            "AssignedTechnicianID",
+            "AssignedTechnician",
+            "ClientFullname",
+            "ClientPhone",
+            "ClientAddress",
+            "ClientEmail",
+            "CheckedInByName",
+            "WorkDone",
         )
-        
-        # Populate client details 
-        clientDetails = ModGetData.getClientNameWithID(jobcard_data["ClientDetails"])
-     
-        self.txt_ClientName.text = clientDetails['Fullname']
+        return any(k not in jobcard_data for k in required_keys)
+
+    def populateForm(self, jobcard_data, **event_args):
+        """Populate EditJobCard using preloaded jobcard_data (0 RPCs) or a single bundled fetch."""
+        result = jobcard_data or {}
+        if self._needs_hydration(result) and result.get("ID"):
+            hydrated = anvil.server.call_s("get_jobcard_form_data", result["ID"])
+            if hydrated:
+                result = hydrated
+
+        # Set technician (with fallback to cached list if server worker hasn't restarted yet)
+        tech_id = result.get("AssignedTechnicianID")
+        tech_name = result.get("AssignedTechnician")
+        if tech_id is None and tech_name and "AssignedTechnicianID" not in result:
+            tech_id = next(
+                (t["ID"] for t in ModGetData.getTechniciansCached() if t.get("Fullname") == tech_name),
+                None,
+            )
+        if tech_id is not None and tech_name:
+            self.search_keyword_1.set_result(
+                {"entry": tech_name, "ID": tech_id}
+            )
+
+        # Populate client details without extra round-trips
+        client_id = result.get("ClientDetails")
+        if "ClientFullname" in result:
+            client_name = result.get("ClientFullname") or ""
+            client_phone = result.get("ClientPhone") or ""
+            client_address = result.get("ClientAddress") or ""
+            client_email = result.get("ClientEmail") or ""
+        elif client_id is not None:
+            legacy_client = ModGetData.getClientNameWithID(client_id) or {}
+            client_name = legacy_client.get("Fullname") or ""
+            client_phone = legacy_client.get("Phone") or ""
+            client_address = legacy_client.get("Address") or ""
+            client_email = legacy_client.get("Email") or ""
+        else:
+            client_name = client_phone = client_address = client_email = ""
+
+        self.txt_ClientName.text = client_name
         self.drop_down_selectCustomer.include_placeholder = False
-        self.btn_SearchCustomer_click()
-        self.drop_down_selectCustomer_change()
-        
-        result = jobcard_data 
-        self.txt_JobCardRef.text= result["JobCardRef"]
+        if client_id is not None and client_name:
+            self.drop_down_selectCustomer.items = [(client_name, client_id)]
+            self.drop_down_selectCustomer.selected_value = client_id
+        else:
+            self.drop_down_selectCustomer.items = []
+        self.txt_PhoneNo.text = client_phone
+        self.txt_Address.text = client_address
+        self.txt_Email.text = client_email
+
+        self.txt_JobCardRef.text = result["JobCardRef"]
         self.txtDueDate.date = result["DueDate"]
         self.txtReceivedDate.date = result["ReceivedDate"]
         self.txtExpDate.date = result["ExpDate"]
-        
-        #Get staff details
-        staff= anvil.server.call_s("get_staff_details", result["CheckedInBy"])
-        if staff:
+
+        # Set checked-in-by staff
+        staff_id = result.get("CheckedInBy")
+        staff_name = result.get("CheckedInByName")
+        if staff_id is not None and staff_name:
             self.search_keyword_4.set_result(
-                {"entry": staff[0]["Fullname"], "ID": staff[0]["ID"]}
+                {"entry": staff_name, "ID": staff_id}
             )
-     
 
-        self.chkComp.checked= result["Comprehensive"]
-        self.chkTPO.checked=result["ThirdParty"]
-        self.chkSpare.checked=result["Spare"]
-        self.chkJack.checked=result["Jack"]
-        self.chkBrace.checked=result["Brace"]
-        self.text_area_other_items.text=result["OtherItems"]
-        self.txtRegNo.text=result["RegNo"]
-        self.txtMakeAndModel.text=result["MakeAndModel"]
-        self.txtChassisNo.text=result["ChassisNo"]
-        self.txtEngineCC.text=result["EngineCC"]
-        self.txtMileage.text= result["Mileage"]
-        self.txtEngineNo.text=result["EngineNo"]
-        self.txtEngineCode.text=result["EngineCode"]
-        self.txtPaintCode.text=result["PaintCode"]
-        self.chkManual.checked=result["Manual"]
-        self.chkAuto.checked=result["Auto"]
-        self.chkEmpty.checked=result["Empty"]
-        self.chkQuarter.checked=result["Quarter"]
-        self.chkHalf.checked=result["Half"]
-        self.chkThreeQuarter.checked=result["ThreeQuarter"]
-        self.chkFull.checked=result["Full"]
-        self.txtInstructions.text=result["ClientInstruction"]
-        self.txtTechNotes.text=result["Notes"]
-
-        self.text_area_work_done.text = anvil.server.call("getWorkDoneInJobCard", self.label_ID.text)
+        self.chkComp.checked = result["Comprehensive"]
+        self.chkTPO.checked = result["ThirdParty"]
+        self.chkSpare.checked = result["Spare"]
+        self.chkJack.checked = result["Jack"]
+        self.chkBrace.checked = result["Brace"]
+        self.text_area_other_items.text = result["OtherItems"]
+        self.txtRegNo.text = result["RegNo"]
+        self.txtMakeAndModel.text = result["MakeAndModel"]
+        self.txtChassisNo.text = result["ChassisNo"]
+        self.txtEngineCC.text = result["EngineCC"]
+        self.txtMileage.text = result["Mileage"]
+        self.txtEngineNo.text = result["EngineNo"]
+        self.txtEngineCode.text = result["EngineCode"]
+        self.txtPaintCode.text = result["PaintCode"]
+        self.chkManual.checked = result["Manual"]
+        self.chkAuto.checked = result["Auto"]
+        self.chkEmpty.checked = result["Empty"]
+        self.chkQuarter.checked = result["Quarter"]
+        self.chkHalf.checked = result["Half"]
+        self.chkThreeQuarter.checked = result["ThreeQuarter"]
+        self.chkFull.checked = result["Full"]
+        self.txtInstructions.text = result["ClientInstruction"]
+        self.txtTechNotes.text = result["Notes"]
+        self.text_area_work_done.text = result.get("WorkDone") or ""
         
     def btn_Search_click(self, **event_args):
         """This method is called when the text in this text box is edited"""
@@ -102,7 +143,7 @@ class EditJobCard(EditJobCardTemplate):
         
     def getTechnicianName(self, **event_args):
         """Return technician records to SearchKeyword."""
-        results = anvil.server.call("getTechnicians")
+        results = ModGetData.getTechniciansCached()
         return [{"entry": r["Fullname"], "ID": r["ID"]} for r in results]
 
     def getCarRegistrationNumbers(self, **event_args):
@@ -116,8 +157,8 @@ class EditJobCard(EditJobCardTemplate):
         return [{"entry": r["Fullname"], "ID": r["ID"]} for r in results]
 
     def getStaffDetails(self, **event_args):
-        """Return customer records to SearchKeyword."""
-        results = anvil.server.call("getStaff")
+        """Return staff records to SearchKeyword."""
+        results = ModGetData.getStaffCached()
         return [{"entry": r["Staff"], "ID": r["ID"]} for r in results]
 
     
@@ -141,7 +182,13 @@ class EditJobCard(EditJobCardTemplate):
 
     def drop_down_selectCustomer_change(self, **event_args):
         """This method is called when an item is selected"""
-        self.getClientDetailsWithoutCarDetails(self.drop_down_selectCustomer.selected_value)
+        selected = self.drop_down_selectCustomer.selected_value
+        if not selected:
+            self.txt_PhoneNo.text = ""
+            self.txt_Address.text = ""
+            self.txt_Email.text = ""
+            return
+        self.getClientDetailsWithoutCarDetails(selected)
         
     def getClientDetailsWithoutCarDetails(self, result, **event_args):
         """This method is called when an item is selected"""
@@ -425,33 +472,23 @@ class EditJobCard(EditJobCardTemplate):
         
         Notification("Job card details updated successfully", title="Success", style="success", timeout=3).show()
         
-        # Close form
-        self.btn_Close_click()
+        # Close modal signalling an update occurred
+        self.raise_event("x-close-alert", value="updated")
 
-        
         form = get_open_form()
-
         progress_tracker = self.find_progress_tracker(form)
-        
         if not progress_tracker:
-            print("ProgressTracker not found")
             return
-        
-        # Save current dropdown value
+
+        # Save current dropdown value, refresh dropdown label (in case RegNo/Mileage changed), and refresh tracker once
         value = progress_tracker.drop_down_JobCardRefDetails.selected_value
-        
-        # Refresh ProgressTracker data
         progress_tracker.btn_SearchCustomer_click()
-        
-        # Restore selection
         progress_tracker.drop_down_JobCardRefDetails.selected_value = value
-        
-        # Trigger UI update
         progress_tracker.drop_down_JobCardRefDetails_change()
 
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""
-        self.raise_event('x-close-alert', value = True)
+        self.raise_event('x-close-alert', value=False)
 
     def find_progress_tracker(self, component, level=0):
         # Step 1: Found ProgressTracker — return it directly

@@ -1497,21 +1497,19 @@ def _fetch_jobcard_form_data(cursor, job_id):
             j.`Empty`, j.`Quarter`, j.Half, j.ThreeQuarter, j.`Full`,
             j.ClientInstruction, j.Notes, j.Status,
             s.Staff AS CheckedInByName,
-            (
-                SELECT t.Fullname
-                FROM tbl_pendingassignedjobs p
-                INNER JOIN tbl_technicians t ON p.TechnicianID = t.ID
-                WHERE p.JobCardRefID = j.ID
-                LIMIT 1
-            ) AS AssignedTechnician,
-            (
-                SELECT w.WorkDone
-                FROM tbl_workdoneinjobcard w
-                WHERE w.JobCardRefID = j.ID
-                LIMIT 1
-            ) AS WorkDone
+            t.Fullname AS AssignedTechnician,
+            w.WorkDone AS WorkDone,
+            t.ID AS AssignedTechnicianID,
+            c.Fullname AS ClientFullname,
+            c.Phone AS ClientPhone,
+            c.Address AS ClientAddress,
+            c.Email AS ClientEmail
         FROM tbl_jobcarddetails j
         LEFT JOIN tbl_checkstaff s ON s.ID = j.CheckedInBy
+        LEFT JOIN tbl_clientcontacts c ON c.ID = j.ClientDetails
+        LEFT JOIN tbl_pendingassignedjobs p ON p.JobCardRefID = j.ID
+        LEFT JOIN tbl_technicians t ON t.ID = p.TechnicianID
+        LEFT JOIN tbl_workdoneinjobcard w ON w.JobCardRefID = j.ID
         WHERE j.ID = %s
         LIMIT 1
     """
@@ -1554,6 +1552,11 @@ def _fetch_jobcard_form_data(cursor, job_id):
         "CheckedInByName": result[31] or "",
         "AssignedTechnician": result[32],
         "WorkDone": _clean_work_done_text(result[33]),
+        "AssignedTechnicianID": result[34],
+        "ClientFullname": result[35] or "",
+        "ClientPhone": result[36] or "",
+        "ClientAddress": result[37] or "",
+        "ClientEmail": result[38] or "",
     }
 
 
@@ -1581,7 +1584,7 @@ def _get_cached_staff_and_technician_names(cursor=None):
     return list(cached_lookup("staff_and_technician_names", _load, ttl_seconds=300))
 
 
-def _fetch_defects_form_init_data(cursor, job_id):
+def _fetch_defects_form_init_data(cursor, job_id, jobcard=None):
     query_defects = """
         SELECT
             j.ClientInstruction,
@@ -1619,16 +1622,22 @@ def _fetch_defects_form_init_data(cursor, job_id):
     fallback = None
     has_instruction = bool(formatted_defects and formatted_defects[0].get("Instruction"))
     if not has_instruction:
-        cursor.execute(
-            "SELECT ClientInstruction, Notes FROM tbl_jobcarddetails WHERE ID = %s",
-            (job_id,),
-        )
-        jc_row = cursor.fetchone()
-        if jc_row:
+        if jobcard is not None:
             fallback = {
-                "ClientInstruction": jc_row[0] or "",
-                "Notes": jc_row[1] or "",
+                "ClientInstruction": jobcard.get("ClientInstruction") or "",
+                "Notes": jobcard.get("Notes") or "",
             }
+        else:
+            cursor.execute(
+                "SELECT ClientInstruction, Notes FROM tbl_jobcarddetails WHERE ID = %s",
+                (job_id,),
+            )
+            jc_row = cursor.fetchone()
+            if jc_row:
+                fallback = {
+                    "ClientInstruction": jc_row[0] or "",
+                    "Notes": jc_row[1] or "",
+                }
 
     staff_names = _get_cached_staff_and_technician_names(cursor=cursor)
 
@@ -1670,21 +1679,40 @@ def get_progress_tracker_modals_bundle(job_id):
     """
     Prefetch endpoint for ProgressTracker modal buttons:
     Returns payloads for JobCard, Defects, Quote, Confirm, Invoice, and Payment modals
-    in a single RPC round-trip so clicking any modal button renders immediately.
+    in a single RPC round-trip AND a single DB connection / auth check.
     """
+    from .quotations import (
+        _fetch_quote_confirmation_details_by_job_id,
+        _fetch_quote_details_by_job_id,
+    )
+    from .invoices import _fetch_invoice_details_by_job_id, _fetch_payments_details
+
     _get_current_user()
     job_id = _validate_positive_job_id(job_id)
     with db_cursor() as cursor:
         jobcard = _fetch_jobcard_form_data(cursor, job_id)
-        defects = _fetch_defects_form_init_data(cursor, job_id) if jobcard else None
+        if not jobcard:
+            return {
+                "jobcard": None,
+                "defects": None,
+                "quote": [],
+                "confirm": [],
+                "invoice": [],
+                "payment": [],
+            }
+        defects = _fetch_defects_form_init_data(cursor, job_id, jobcard=jobcard)
+        quote = _fetch_quote_details_by_job_id(cursor, job_id)
+        confirm = _fetch_quote_confirmation_details_by_job_id(cursor, job_id)
+        invoice = _fetch_invoice_details_by_job_id(cursor, job_id)
+        payment = _fetch_payments_details(cursor, job_id)
 
     return {
         "jobcard": jobcard,
         "defects": defects,
-        "quote": get_quote_details_by_job_id(job_id),
-        "confirm": get_quote_confirmation_details_by_job_id(job_id),
-        "invoice": get_invoice_details_by_job_id(job_id),
-        "payment": getPaymentsDetails(job_id),
+        "quote": quote,
+        "confirm": confirm,
+        "invoice": invoice,
+        "payment": payment,
     }
 
 

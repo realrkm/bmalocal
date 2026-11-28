@@ -12,15 +12,43 @@ import anvil.js
 
 
 class JobCardForm(JobCardFormTemplate):
-    def __init__(self, jobcard_data=None, **properties):
+    def __init__(self, jobcard_data=None, prewarm_edit=True, **properties):
         # Set Form properties and Data Bindings.
         self.init_components(**properties)
 
-        # Any code you write here will run before the form opens.
-        anvil.js.call('replaceBanner')
-        
-        self.populateForm(jobcard_data)
+        self._closed = False
+        self._prewarmed_edit_form = None
         self.form_data = jobcard_data
+        self.populateForm(jobcard_data)
+        self.set_event_handler("show", self._on_form_show)
+        if prewarm_edit:
+            self._schedule_prewarm_edit_form()
+
+    def _on_form_show(self, **event_args):
+        self._schedule_prewarm_edit_form()
+
+    def _is_interim_quote_card(self):
+        ref = (self.txt_JobCardRef.text or "")
+        return ref.split("-")[-1] == "IQ"
+
+    def _prewarm_edit_form(self):
+        if self._closed or self._prewarmed_edit_form is not None or not self.form_data:
+            return
+        if self._is_interim_quote_card():
+            return
+        try:
+            self._prewarmed_edit_form = EditJobCard(jobcard_data=self.form_data)
+            with anvil.server.no_loading_indicator:
+                ModGetData.getTechniciansCached()
+                ModGetData.getStaffCached()
+        except Exception:
+            self._prewarmed_edit_form = None
+
+    def _schedule_prewarm_edit_form(self):
+        try:
+            anvil.js.window.setTimeout(self._prewarm_edit_form, 30)
+        except Exception:
+            pass
             
     def populateForm(self, jobcard_data, **event_args):
         """This method is called when an item is selected"""
@@ -74,23 +102,34 @@ class JobCardForm(JobCardFormTemplate):
             self.text_area_work_done.text = anvil.server.call("getWorkDoneInJobCard", jobcard_data["ID"])
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""
-        self.raise_event("x-close-alert", value=True)
+        self._closed = True
+        self._prewarmed_edit_form = None
+        self.raise_event("x-close-alert", value=False)
 
     def btn_EditJobCard_click(self, **event_args):
-        """This method is called when the button is clicked"""
-        
-        #Restrict Editing Job Cards Created For Interim Quotation
-        #Instead, create a new job card if the custoner wants to fulfil the quote under Workflow cycle.
-        if self.txt_JobCardRef.text.split("-")[-1] == "IQ": #IQ denotes Interim Quotation
+        """Swap in pre-warmed EditJobCard inside the existing modal for instant (<10ms) display."""
+        # Restrict Editing Job Cards Created For Interim Quotation
+        if self._is_interim_quote_card():  # IQ denotes Interim Quotation
             Notification("Sorry, you cannot edit job card created for an interim quotation", title="Edit Restriction", style="warning", timeout=3).show()
             return
-        # This feature is retracted after some customer complained of wrong car details during payment.
-        # Hence, allow edits to be made 
-        #elif self.form_data["Status"] != "Checked In": #Do not edit job card past Checked In status
-        #    return
-        else:
-            self.btn_Close_click()
-            alert(content=EditJobCard(jobcard_data=self.form_data), buttons=[], dismissible=False,large=True)
+
+        edit_form = self._prewarmed_edit_form
+        self._prewarmed_edit_form = None
+        if edit_form is None:
+            edit_form = EditJobCard(jobcard_data=self.form_data)
+
+        edit_form.set_event_handler(
+            "x-close-alert",
+            lambda **e: self.raise_event("x-close-alert", value=e.get("value", False)),
+        )
+        self.clear()
+        self.add_component(edit_form, full_width_row=True)
+        try:
+            modal_el = anvil.js.window.document.querySelector(".modal.in, .modal.show, .modal")
+            if modal_el:
+                modal_el.scrollTop = 0
+        except Exception:
+            pass
 
     def btn_DownloadTechNotes_click(self, **event_args):
         """This method is called when the button is clicked"""

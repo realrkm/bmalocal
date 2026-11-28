@@ -55,98 +55,92 @@ def saveInvoice(assignedDate, jobCardID, items):
     publish_realtime_event("inventory", "parts_issued", entity_id=jobCardID)
 
 
+def _safe_invoice_float(value):
+    if value is None:
+        return None
+    if isinstance(value, (int, float, decimal.Decimal)):
+        return float(value)
+    if isinstance(value, str):
+        try:
+            return float(value.replace(",", ""))
+        except ValueError:
+            return None
+    return None
+
+
+def _fetch_invoice_details_by_job_id(cursor, job_id):
+    query = """
+            SELECT 
+                tbl_clientcontacts.Fullname, 
+                tbl_jobcarddetails.MakeAndModel, 
+                tbl_jobcarddetails.RegNo, 
+                tbl_invoices.Date, 
+                tbl_jobcarddetails.ChassisNo, 
+                tbl_jobcarddetails.EngineCode, 
+                tbl_jobcarddetails.Mileage, 
+                tbl_invoices.Item, 
+                tbl_invoices.QuantityIssued, 
+                tbl_invoices.Amount, 
+                tbl_invoices.AssignedJobID,
+                tbl_invoices.Part_No,
+                tbl_carpartnames.ID AS CarPartID
+            FROM 
+                (tbl_jobcarddetails 
+                INNER JOIN tbl_clientcontacts 
+                    ON tbl_jobcarddetails.ClientDetails = tbl_clientcontacts.ID) 
+            INNER JOIN tbl_invoices 
+                ON tbl_jobcarddetails.ID = tbl_invoices.AssignedJobID
+            LEFT JOIN tbl_carpartnames
+                ON tbl_invoices.Part_No = tbl_carpartnames.PartNo
+            WHERE 
+                tbl_invoices.AssignedJobID = %s
+            ORDER BY 
+                tbl_invoices.ID
+    """
+    cursor.execute(query, (job_id,))
+    rows = cursor.fetchall()
+
+    result = []
+    for r in rows:
+        quantity_issued_val = _safe_invoice_float(r[8])
+        amount_val = _safe_invoice_float(r[9])
+        display_quantity_issued = (
+            ""
+            if r[8] is None or not isinstance(r[8], (int, float, decimal.Decimal))
+            else quantity_issued_val
+        )
+        total_calc = None
+        if quantity_issued_val is None:
+            total_calc = amount_val
+        elif amount_val is not None:
+            total_calc = round(quantity_issued_val * amount_val, 2)
+
+        result.append(
+            {
+                "Fullname": r[0],
+                "MakeAndModel": r[1],
+                "RegNo": r[2],
+                "Date": r[3],
+                "ChassisNo": r[4],
+                "EngineCode": r[5],
+                "Mileage": r[6],
+                "Item": r[7],
+                "QuantityIssued": display_quantity_issued,
+                "Amount": amount_val,
+                "AssignedJobID": r[10],
+                "PartNo": r[11],
+                "CarPartID": r[12],
+                "Total": total_calc,
+            }
+        )
+    return result
+
+
 @anvil.server.callable()
 def get_invoice_details_by_job_id(job_id):
     _get_current_user()
     with db_cursor() as cursor:
-        query = """
-                SELECT 
-                    tbl_clientcontacts.Fullname, 
-                    tbl_jobcarddetails.MakeAndModel, 
-                    tbl_jobcarddetails.RegNo, 
-                    tbl_invoices.Date, 
-                    tbl_jobcarddetails.ChassisNo, 
-                    tbl_jobcarddetails.EngineCode, 
-                    tbl_jobcarddetails.Mileage, 
-                    tbl_invoices.Item, 
-                    tbl_invoices.QuantityIssued, 
-                    tbl_invoices.Amount, 
-                    tbl_invoices.AssignedJobID,
-                    tbl_invoices.Part_No,
-                    tbl_carpartnames.ID AS CarPartID   -- ✅ new column
-                FROM 
-                    (tbl_jobcarddetails 
-                    INNER JOIN tbl_clientcontacts 
-                        ON tbl_jobcarddetails.ClientDetails = tbl_clientcontacts.ID) 
-                INNER JOIN tbl_invoices 
-                    ON tbl_jobcarddetails.ID = tbl_invoices.AssignedJobID
-                LEFT JOIN tbl_carpartnames   -- ✅ join to match PartNo
-                    ON tbl_invoices.Part_No = tbl_carpartnames.PartNo
-                WHERE 
-                    tbl_invoices.AssignedJobID = %s
-                ORDER BY 
-                    tbl_invoices.ID
-
-        """
-        cursor.execute(query, (job_id,))
-        rows = cursor.fetchall()
-
-        result = []
-        for r in rows:
-            # Helper function to ensure we get a float from various types
-            def safe_float_convert(value):
-                if value is None:
-                    return None  # Or 0.0, depending on desired behavior for NULLs
-                if isinstance(value, (int, float, decimal.Decimal)):
-                    return float(value)
-                # If it's a string, try to clean it and convert
-                if isinstance(value, str):
-                    try:
-                        return float(value.replace(",", ""))
-                    except ValueError:
-                        # Handle cases where string cannot be converted (e.g., non-numeric string)
-                        print(f"Warning: Could not convert string '{value}' to float.")
-                        return None  # Or raise an error
-                return None  # Default if type is unexpected
-
-            quantity_issued_val = safe_float_convert(r[8])  # QuantityIssued
-            amount_val = safe_float_convert(r[9])  # Amount
-
-            # Ensure 'QuantityIssued' for the dictionary can be "" if originally None or non-numeric string
-            # If your front-end expects an empty string, keep this logic
-            display_quantity_issued = (
-                ""
-                if r[8] is None or not isinstance(r[8], (int, float, decimal.Decimal))
-                else quantity_issued_val
-            )
-
-            # Calculate Total - ensuring we use the float versions for calculation
-            total_calc = None
-            if quantity_issued_val is None:  # If QuantityIssued was NULL/None from DB
-                total_calc = amount_val
-            elif amount_val is not None:  # Ensure Amount is not None for multiplication
-                total_calc = round(quantity_issued_val * amount_val, 2)
-            # If amount_val is None and quantity_issued_val is not None, total_calc would remain None
-
-            result.append(
-                {
-                    "Fullname": r[0],
-                    "MakeAndModel": r[1],
-                    "RegNo": r[2],
-                    "Date": r[3],
-                    "ChassisNo": r[4],
-                    "EngineCode": r[5],
-                    "Mileage": r[6],
-                    "Item": r[7],
-                    "QuantityIssued": display_quantity_issued,  # Use the potentially "" value for display
-                    "Amount": amount_val,  # This is now always a float or None
-                    "AssignedJobID": r[10],
-                    "PartNo": r[11],
-                    "CarPartID": r[12],
-                    "Total": total_calc,  # This is now always a float or None
-                }
-            )
-        return result
+        return _fetch_invoice_details_by_job_id(cursor, job_id)
 
 
 
@@ -461,21 +455,50 @@ def getPaidPendingInvoices(status, start_date, end_date):
 
 
 
-@anvil.server.callable()
-def getPaymentsDetails(paymentID):
-    _get_current_user()
+def _fetch_payments_details(cursor, paymentID):
+    # 1. Check invoices first
+    query = """
+        SELECT
+            p.Date,
+            j.JobCardRef,
+            p.PaymentMode,
+            SUM(
+                COALESCE(i.QuantityIssued, 1) * i.Amount
+            ) AS InvoiceAmount,
+            p.AmountPaid,
+            p.Discount,
+            p.Balance,
+            p.ID
+        FROM tbl_payments AS p
+        JOIN tbl_jobcarddetails AS j
+            ON p.JobCardRefID = j.ID
+        JOIN tbl_invoices AS i
+            ON j.ID = i.AssignedJobID
+        WHERE p.JobCardRefID = %s
+        GROUP BY
+            p.ID,
+            p.Date,
+            j.JobCardRef,
+            p.PaymentMode,
+            p.AmountPaid,
+            p.Discount,
+            p.Balance
+        ORDER BY p.Date ASC
+    """
+    cursor.execute(query, (paymentID,))
+    rows = cursor.fetchall()
+    source = "Invoice"
 
-    with db_cursor() as cursor:
-
-        # 1. Check invoices first
-        query = """
+    # 2. If no invoice records exist, check quotations
+    if not rows:
+        query2 = """
             SELECT
                 p.Date,
                 j.JobCardRef,
                 p.PaymentMode,
                 SUM(
-                    COALESCE(i.QuantityIssued, 1) * i.Amount
-                ) AS InvoiceAmount,
+                    COALESCE(q.QuantityIssued, 1) * q.Amount
+                ) AS QuotationAmount,
                 p.AmountPaid,
                 p.Discount,
                 p.Balance,
@@ -483,8 +506,8 @@ def getPaymentsDetails(paymentID):
             FROM tbl_payments AS p
             JOIN tbl_jobcarddetails AS j
                 ON p.JobCardRefID = j.ID
-            JOIN tbl_invoices AS i
-                ON j.ID = i.AssignedJobID
+            JOIN tbl_quotation AS q
+                ON j.ID = q.AssignedJobID
             WHERE p.JobCardRefID = %s
             GROUP BY
                 p.ID,
@@ -496,81 +519,32 @@ def getPaymentsDetails(paymentID):
                 p.Balance
             ORDER BY p.Date ASC
         """
-
-        cursor.execute(query, (paymentID,))
+        cursor.execute(query2, (paymentID,))
         rows = cursor.fetchall()
+        source = "Quotation"
 
-        source = "Invoice"
+    return [
+        {
+            "No": index + 1,
+            "Date": row[0].strftime("%d-%m-%Y") if row[0] else None,
+            "JobCardRef": row[1],
+            "PaymentMode": row[2],
+            "ChargedAmount": f"{float(row[3]):,.2f}" if row[3] is not None else "0.00",
+            "AmountPaid": f"{float(row[4]):,.2f}" if row[4] is not None else "0.00",
+            "Discount": f"{float(row[5]):,.2f}" if row[5] is not None else "0.00",
+            "Balance": f"{float(row[6]):,.2f}" if row[6] is not None else "0.00",
+            "PaymentID": row[7],
+            "Source": source,
+        }
+        for index, row in enumerate(rows)
+    ]
 
-        # 2. If no invoice records exist, check quotations
-        if not rows:
-            query2 = """
-                SELECT
-                    p.Date,
-                    j.JobCardRef,
-                    p.PaymentMode,
-                    SUM(
-                        COALESCE(q.QuantityIssued, 1) * q.Amount
-                    ) AS QuotationAmount,
-                    p.AmountPaid,
-                    p.Discount,
-                    p.Balance,
-                    p.ID
-                FROM tbl_payments AS p
-                JOIN tbl_jobcarddetails AS j
-                    ON p.JobCardRefID = j.ID
-                JOIN tbl_quotation AS q
-                    ON j.ID = q.AssignedJobID
-                WHERE p.JobCardRefID = %s
-                GROUP BY
-                    p.ID,
-                    p.Date,
-                    j.JobCardRef,
-                    p.PaymentMode,
-                    p.AmountPaid,
-                    p.Discount,
-                    p.Balance
-                ORDER BY p.Date ASC
-            """
 
-            cursor.execute(query2, (paymentID,))
-            rows = cursor.fetchall()
-
-            source = "Quotation"
-
-        # 3. Format the result
-        result = [
-            {
-                "No": index + 1,
-                "Date": (
-                    row[0].strftime("%d-%m-%Y")
-                    if row[0] else None
-                ),
-                "JobCardRef": row[1],
-                "PaymentMode": row[2],
-                "ChargedAmount": (
-                    f"{float(row[3]):,.2f}"
-                    if row[3] is not None else "0.00"
-                ),
-                "AmountPaid": (
-                    f"{float(row[4]):,.2f}"
-                    if row[4] is not None else "0.00"
-                ),
-                "Discount": (
-                    f"{float(row[5]):,.2f}"
-                    if row[5] is not None else "0.00"
-                ),
-                "Balance": (
-                    f"{float(row[6]):,.2f}"
-                    if row[6] is not None else "0.00"
-                ),
-                "PaymentID": row[7],
-                "Source": source
-            }
-            for index, row in enumerate(rows)
-        ]
-
-        return result
+@anvil.server.callable()
+def getPaymentsDetails(paymentID):
+    _get_current_user()
+    with db_cursor() as cursor:
+        return _fetch_payments_details(cursor, paymentID)
 
 @anvil.server.callable()
 def delete_payment(payment_id):

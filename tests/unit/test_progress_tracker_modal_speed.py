@@ -28,6 +28,7 @@ def test_get_jobcard_form_data_happy_invalid_and_unauth():
         0, 0, 1, 0, 0,
         "Check brakes", "Front pads worn", "In Service",
         "Jane Staff", "John Tech", "<div>Replaced pads</div><br><div>Bled brakes</div>",
+        7, "Alice Client", "0712345678", "Nairobi", "alice@example.com",
     )
 
     with patch.object(job_cards, "_get_current_user"), \
@@ -40,6 +41,11 @@ def test_get_jobcard_form_data_happy_invalid_and_unauth():
     assert res["JobCardRef"] == "JC-0042"
     assert res["CheckedInByName"] == "Jane Staff"
     assert res["AssignedTechnician"] == "John Tech"
+    assert res["AssignedTechnicianID"] == 7
+    assert res["ClientFullname"] == "Alice Client"
+    assert res["ClientPhone"] == "0712345678"
+    assert res["ClientAddress"] == "Nairobi"
+    assert res["ClientEmail"] == "alice@example.com"
     assert res["WorkDone"] == "Replaced padsBled brakes"
 
     cursor.fetchone.return_value = None
@@ -109,21 +115,26 @@ def test_get_quote_details_by_job_id_includes_jobcard_ref():
 
 
 def test_get_progress_tracker_modals_bundle_happy_invalid_and_unauth():
+    from server_code import invoices
+
     cursor = MagicMock()
-    fake_jc = {"ID": 42, "JobCardRef": "JC-0042"}
+    fake_jc = {"ID": 42, "JobCardRef": "JC-0042", "ClientInstruction": "Check", "Notes": "None"}
     fake_defects = {"defects_list": [], "fallback": None, "staff_names": []}
 
-    with patch.object(job_cards, "_get_current_user"), \
+    with patch.object(job_cards, "_get_current_user") as auth_mock, \
          patch.object(job_cards, "db_cursor") as db_ctx, \
          patch.object(job_cards, "_fetch_jobcard_form_data", return_value=fake_jc), \
          patch.object(job_cards, "_fetch_defects_form_init_data", return_value=fake_defects), \
-         patch.object(job_cards, "get_quote_details_by_job_id", return_value=[{"Item": "Oil"}]), \
-         patch.object(job_cards, "get_quote_confirmation_details_by_job_id", return_value=[]), \
-         patch.object(job_cards, "get_invoice_details_by_job_id", return_value=[]), \
-         patch.object(job_cards, "getPaymentsDetails", return_value=[]):
+         patch.object(quotations, "_fetch_quote_details_by_job_id", return_value=[{"Item": "Oil"}]), \
+         patch.object(quotations, "_fetch_quote_confirmation_details_by_job_id", return_value=[]), \
+         patch.object(invoices, "_fetch_invoice_details_by_job_id", return_value=[]), \
+         patch.object(invoices, "_fetch_payments_details", return_value=[]):
         db_ctx.return_value.__enter__.return_value = cursor
         bundle = bma.get_progress_tracker_modals_bundle(42)
 
+    # Single auth check and single DB connection checkout across all 6 modals
+    assert auth_mock.call_count == 1
+    assert db_ctx.call_count == 1
     assert bundle["jobcard"] == fake_jc
     assert bundle["defects"] == fake_defects
     assert bundle["quote"] == [{"Item": "Oil"}]
@@ -206,6 +217,7 @@ def test_progress_tracker_uses_prefetched_cache_with_zero_server_calls_on_click(
     )
     try:
         cls = mod.ProgressTracker
+        alert_mock.return_value = False
         form = SimpleNamespace(
             drop_down_JobCardRefDetails=SimpleNamespace(selected_value=42),
             btn_JobCard=SimpleNamespace(enabled=True),
@@ -216,8 +228,14 @@ def test_progress_tracker_uses_prefetched_cache_with_zero_server_calls_on_click(
             btn_Payment=SimpleNamespace(enabled=True),
             _modals_cache={},
             _modals_cache_job_id=None,
+            _prewarmed_modals={},
         )
         form._invalidate_modals_cache = lambda jid=None: cls._invalidate_modals_cache(form, jid)
+        form._build_modal_instance = lambda jid, k, d: cls._build_modal_instance(form, jid, k, d)
+        form._prewarm_single_modal = lambda jid, k: cls._prewarm_single_modal(form, jid, k)
+        form._schedule_prewarm_single_modal = MagicMock()
+        form._schedule_prewarm_modals = MagicMock()
+        form._pop_or_build_modal = lambda jid, k, d: cls._pop_or_build_modal(form, jid, k, d)
         form._prefetch_modals = lambda jid: cls._prefetch_modals(form, jid)
         form._schedule_prefetch_modals = MagicMock()
         form._get_cached_or_fetch = lambda jid, key, fn: cls._get_cached_or_fetch(form, jid, key, fn)
@@ -233,16 +251,37 @@ def test_progress_tracker_uses_prefetched_cache_with_zero_server_calls_on_click(
 
         cls._prefetch_modals(form, 42)
         assert form._modals_cache_job_id == 42
+        form._schedule_prewarm_modals.assert_called_once_with(42)
 
-        # Clicking Quote / Confirm / Invoice makes ZERO blocking server calls
+        # Simulate idle pre-warming completing for all 6 modals
+        for key in ("jobcard", "defects", "quote", "confirm", "invoice", "payment"):
+            cls._prewarm_single_modal(form, 42, key)
+        assert len(form._prewarmed_modals) == 6
+        mod.JobCardForm.reset_mock()
+        mod.DefectsForm.reset_mock()
+        mod.QuoteForm.reset_mock()
+        mod.ConfirmForm.reset_mock()
+        mod.InvoiceForm.reset_mock()
+        mod.PaymentForm.reset_mock()
+
+        # Clicking ALL 6 buttons makes ZERO server calls AND ZERO synchronous form constructions!
+        cls.btn_JobCard_click(form)
+        cls.btn_Defects_click(form)
         cls.btn_Quotation_click(form)
         cls.btn_Confirmed_click(form)
         cls.btn_Invoice_click(form)
+        cls.btn_Payment_click(form)
         assert server_call.call_count == 0
-        assert alert_mock.call_count == 3
-        assert form.btn_Quotation.enabled is True
-        assert form.btn_Confirmed.enabled is True
-        assert form.btn_Invoice.enabled is True
+        assert alert_mock.call_count == 6
+        assert mod.JobCardForm.call_count == 0
+        assert mod.DefectsForm.call_count == 0
+        assert mod.QuoteForm.call_count == 0
+        assert mod.ConfirmForm.call_count == 0
+        assert mod.InvoiceForm.call_count == 0
+        assert mod.PaymentForm.call_count == 0
+        # Read-only close keeps _modals_cache warm and schedules single-modal re-prewarm
+        assert form._modals_cache_job_id == 42
+        assert form._schedule_prewarm_single_modal.call_count == 6
     finally:
         sys.modules.pop("client_code.ProgressTracker", None)
 
@@ -273,3 +312,288 @@ def test_progress_tracker_mobile_reenables_buttons_when_data_missing(monkeypatch
         assert server_call.call_count == 0
     finally:
         sys.modules.pop("client_code.ProgressTrackerMobileView", None)
+
+
+def _load_edit_jobcard_module(monkeypatch):
+    server_call = MagicMock()
+    server_call_s = MagicMock()
+    mod_get_data = _module(
+        "client_code.ModGetData",
+        getTechniciansCached=MagicMock(return_value=[{"ID": 7, "Fullname": "John Tech"}]),
+        getStaffCached=MagicMock(return_value=[{"ID": 3, "Staff": "Jane Staff"}]),
+    )
+    anvil = _module("anvil", Notification=MagicMock(), alert=MagicMock(), get_open_form=MagicMock())
+    anvil.__path__ = []
+    anvil_tables = _module("anvil.tables", app_tables=MagicMock())
+    anvil_tables.__path__ = []
+    anvil_server = _module("anvil.server", call=server_call, call_s=server_call_s)
+    anvil_users = _module("anvil.users")
+    anvil_js = _module("anvil.js", call=MagicMock())
+    anvil.tables = anvil_tables
+    anvil.server = anvil_server
+    anvil.users = anvil_users
+    anvil.js = anvil_js
+
+    stubs = {
+        "anvil": anvil,
+        "anvil.tables": anvil_tables,
+        "anvil.tables.query": _module("anvil.tables.query"),
+        "anvil.server": anvil_server,
+        "anvil.users": anvil_users,
+        "anvil.js": anvil_js,
+        "client_code.ModGetData": mod_get_data,
+        "client_code.EditJobCard._anvil_designer": _module(
+            "client_code.EditJobCard._anvil_designer",
+            EditJobCardTemplate=type("EditJobCardTemplate", (), {}),
+        ),
+    }
+
+    target = "client_code.EditJobCard"
+    monkeypatch.delitem(sys.modules, target, raising=False)
+    for name, mod in stubs.items():
+        monkeypatch.setitem(sys.modules, name, mod)
+
+    mod = importlib.import_module(target)
+    return mod, server_call, server_call_s, mod_get_data
+
+
+def _make_edit_jobcard_form(cls):
+    def _box():
+        return SimpleNamespace(text="")
+
+    def _date():
+        return SimpleNamespace(date=None)
+
+    def _chk():
+        return SimpleNamespace(checked=False)
+
+    form = SimpleNamespace(
+        label_ID=_box(),
+        search_keyword_1=SimpleNamespace(set_result=MagicMock(), text_box_search=_box()),
+        search_keyword_4=SimpleNamespace(set_result=MagicMock(), text_box_search=_box()),
+        txt_ClientName=_box(),
+        drop_down_selectCustomer=SimpleNamespace(
+            include_placeholder=True, items=[], selected_value=None
+        ),
+        txt_PhoneNo=_box(),
+        txt_Address=_box(),
+        txt_Email=_box(),
+        txt_JobCardRef=_box(),
+        txtDueDate=_date(),
+        txtReceivedDate=_date(),
+        txtExpDate=_date(),
+        chkComp=_chk(),
+        chkTPO=_chk(),
+        chkSpare=_chk(),
+        chkJack=_chk(),
+        chkBrace=_chk(),
+        text_area_other_items=_box(),
+        txtRegNo=_box(),
+        txtMakeAndModel=_box(),
+        txtChassisNo=_box(),
+        txtEngineCC=_box(),
+        txtMileage=_box(),
+        txtEngineNo=_box(),
+        txtEngineCode=_box(),
+        txtPaintCode=_box(),
+        chkManual=_chk(),
+        chkAuto=_chk(),
+        chkEmpty=_chk(),
+        chkQuarter=_chk(),
+        chkHalf=_chk(),
+        chkThreeQuarter=_chk(),
+        chkFull=_chk(),
+        txtInstructions=_box(),
+        txtTechNotes=_box(),
+        text_area_work_done=_box(),
+    )
+    form._needs_hydration = lambda data: cls._needs_hydration(form, data)
+    return form
+
+
+def _sample_full_jobcard():
+    return {
+        "ID": 42,
+        "ClientDetails": 10,
+        "ClientFullname": "Alice Client",
+        "ClientPhone": "0712345678",
+        "ClientAddress": "Nairobi",
+        "ClientEmail": "alice@example.com",
+        "AssignedTechnicianID": 7,
+        "AssignedTechnician": "John Tech",
+        "CheckedInBy": 3,
+        "CheckedInByName": "Jane Staff",
+        "JobCardRef": "JC-0042",
+        "ReceivedDate": "2026-11-01",
+        "DueDate": "2026-11-05",
+        "ExpDate": "2026-11-06",
+        "Comprehensive": 1,
+        "ThirdParty": 0,
+        "Spare": 1,
+        "Jack": 1,
+        "Brace": 1,
+        "OtherItems": "Toolkit",
+        "RegNo": "KDA 123A",
+        "MakeAndModel": "BMW X5",
+        "ChassisNo": "WBA123",
+        "EngineCC": "3000",
+        "Mileage": "85000",
+        "EngineNo": "ENG1",
+        "EngineCode": "N55",
+        "PaintCode": "A52",
+        "Manual": 0,
+        "Auto": 1,
+        "Empty": 0,
+        "Quarter": 0,
+        "Half": 1,
+        "ThreeQuarter": 0,
+        "Full": 0,
+        "ClientInstruction": "Check brakes",
+        "Notes": "Front pads worn",
+        "WorkDone": "Replaced pads",
+    }
+
+
+def test_edit_job_card_populates_with_zero_server_calls_when_preloaded(monkeypatch):
+    mod, server_call, server_call_s, mod_get_data = _load_edit_jobcard_module(monkeypatch)
+    try:
+        cls = mod.EditJobCard
+        form = _make_edit_jobcard_form(cls)
+        cls.populateForm(form, _sample_full_jobcard())
+
+        assert server_call.call_count == 0
+        assert server_call_s.call_count == 0
+        form.search_keyword_1.set_result.assert_called_once_with({"entry": "John Tech", "ID": 7})
+        form.search_keyword_4.set_result.assert_called_once_with({"entry": "Jane Staff", "ID": 3})
+        assert form.txt_ClientName.text == "Alice Client"
+        assert form.drop_down_selectCustomer.items == [("Alice Client", 10)]
+        assert form.drop_down_selectCustomer.selected_value == 10
+        assert form.txt_PhoneNo.text == "0712345678"
+        assert form.txt_Address.text == "Nairobi"
+        assert form.txt_Email.text == "alice@example.com"
+        assert form.text_area_work_done.text == "Replaced pads"
+
+        # SearchKeyword lookups use ModGetData caches
+        assert cls.getTechnicianName(form) == [{"entry": "John Tech", "ID": 7}]
+        assert cls.getStaffDetails(form) == [{"entry": "Jane Staff", "ID": 3}]
+        mod_get_data.getTechniciansCached.assert_called_once()
+        mod_get_data.getStaffCached.assert_called_once()
+        assert server_call.call_count == 0
+    finally:
+        sys.modules.pop("client_code.EditJobCard", None)
+
+
+def test_edit_job_card_hydrates_in_single_call_when_minimal_data(monkeypatch):
+    mod, server_call, server_call_s, _ = _load_edit_jobcard_module(monkeypatch)
+    try:
+        cls = mod.EditJobCard
+        form = _make_edit_jobcard_form(cls)
+        full = _sample_full_jobcard()
+        server_call_s.return_value = full
+
+        minimal = {k: v for k, v in full.items() if k not in (
+            "AssignedTechnicianID", "AssignedTechnician", "ClientFullname",
+            "ClientPhone", "ClientAddress", "ClientEmail", "CheckedInByName", "WorkDone",
+        )}
+        cls.populateForm(form, minimal)
+
+        assert server_call.call_count == 0
+        server_call_s.assert_called_once_with("get_jobcard_form_data", 42)
+        assert form.txt_ClientName.text == "Alice Client"
+        assert form.text_area_work_done.text == "Replaced pads"
+    finally:
+        sys.modules.pop("client_code.EditJobCard", None)
+
+
+def test_jobcard_form_prewarms_and_swaps_edit_jobcard_in_place_without_new_alert(monkeypatch):
+    alert_mock = MagicMock()
+    notif_mock = MagicMock()
+    edit_instance = SimpleNamespace(set_event_handler=MagicMock())
+    edit_cls_mock = MagicMock(return_value=edit_instance)
+    mod_get_data = _module(
+        "client_code.ModGetData",
+        getTechniciansCached=MagicMock(),
+        getStaffCached=MagicMock(),
+    )
+    anvil = _module("anvil", Notification=notif_mock, alert=alert_mock)
+    anvil.__path__ = []
+    anvil_tables = _module("anvil.tables", app_tables=MagicMock())
+    anvil_tables.__path__ = []
+    anvil_server = _module(
+        "anvil.server",
+        call=MagicMock(),
+        call_s=MagicMock(),
+        no_loading_indicator=nullcontext(),
+    )
+    anvil_users = _module("anvil.users")
+    modal_el = SimpleNamespace(scrollTop=250)
+    anvil_js = _module(
+        "anvil.js",
+        call=MagicMock(),
+        window=SimpleNamespace(
+            setTimeout=MagicMock(),
+            document=SimpleNamespace(querySelector=MagicMock(return_value=modal_el)),
+        ),
+    )
+    anvil.tables = anvil_tables
+    anvil.server = anvil_server
+    anvil.users = anvil_users
+    anvil.js = anvil_js
+
+    stubs = {
+        "anvil": anvil,
+        "anvil.tables": anvil_tables,
+        "anvil.tables.query": _module("anvil.tables.query"),
+        "anvil.server": anvil_server,
+        "anvil.users": anvil_users,
+        "anvil.js": anvil_js,
+        "client_code.ModGetData": mod_get_data,
+        "client_code.EditJobCard": _module("client_code.EditJobCard", EditJobCard=edit_cls_mock),
+        "client_code.JobCardForm._anvil_designer": _module(
+            "client_code.JobCardForm._anvil_designer",
+            JobCardFormTemplate=type("JobCardFormTemplate", (), {}),
+        ),
+    }
+
+    target = "client_code.JobCardForm"
+    monkeypatch.delitem(sys.modules, target, raising=False)
+    for name, m in stubs.items():
+        monkeypatch.setitem(sys.modules, name, m)
+
+    mod = importlib.import_module(target)
+    try:
+        cls = mod.JobCardForm
+        data = _sample_full_jobcard()
+        form = SimpleNamespace(
+            _closed=False,
+            _prewarmed_edit_form=None,
+            form_data=data,
+            txt_JobCardRef=SimpleNamespace(text="JC-0042"),
+            clear=MagicMock(),
+            add_component=MagicMock(),
+            raise_event=MagicMock(),
+        )
+        form._is_interim_quote_card = lambda: cls._is_interim_quote_card(form)
+
+        # Idle pre-warm builds EditJobCard once and warms technician/staff caches
+        cls._prewarm_edit_form(form)
+        edit_cls_mock.assert_called_once_with(jobcard_data=data)
+        assert form._prewarmed_edit_form is edit_instance
+        mod_get_data.getTechniciansCached.assert_called_once()
+        mod_get_data.getStaffCached.assert_called_once()
+
+        # Clicking EDIT JOB CARD reuses the pre-warmed instance IN-PLACE with ZERO alert() calls
+        cls.btn_EditJobCard_click(form)
+        assert edit_cls_mock.call_count == 1  # Not constructed a second time!
+        assert alert_mock.call_count == 0     # Existing modal stays open (no close+reopen lag)!
+        form.clear.assert_called_once_with()
+        form.add_component.assert_called_once_with(edit_instance, full_width_row=True)
+        assert modal_el.scrollTop == 0
+
+        # Forwarding x-close-alert from EditJobCard closes outer JobCardForm alert cleanly
+        event_name, close_cb = edit_instance.set_event_handler.call_args.args
+        assert event_name == "x-close-alert"
+        close_cb(value="updated")
+        form.raise_event.assert_called_once_with("x-close-alert", value="updated")
+    finally:
+        sys.modules.pop(target, None)

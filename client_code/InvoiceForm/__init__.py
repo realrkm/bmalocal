@@ -10,7 +10,6 @@ import anvil.js
 class InvoiceForm(InvoiceFormTemplate):
     def __init__(self, job_id, quote_data=None, **properties):
         self.init_components(**properties)
-        anvil.js.call('replaceBanner')
         self.label_JobCardID.text = job_id
         
         # Use provided data (already checked in caller)

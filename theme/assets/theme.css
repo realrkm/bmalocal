@@ -1340,10 +1340,9 @@ h1, h2, h3, h4, h5, h6,
 /* Fallback for secondary UI elements */
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&display=swap');
 
-/* ── Full Page Background ──────────────────────────────────── */
+/* ── Full Page Background (GPU-cached fixed backdrop without software fixed-attachment repaint) ── */
 .modal-backdrop {
-    background: url("_/theme/screen.png") no-repeat center center fixed !important;
-    background-size: cover !important;
+    background: url("_/theme/screen.png") no-repeat center center / cover !important;
     opacity: 1 !important;
 }
 
@@ -1578,10 +1577,6 @@ body {
 .anvil-role-standard-page, .content, .left-nav, .app-bar{
     background-color: transparent !important;
 }
-/* Hide body background elements when a modal (Login Form) is active */
-body.modal-open {
-    background: #000 !important; /* Optional: Set to black so the focus is entirely on the glass login card */
-}
 /* Apply this role to any ColumnPanel or Card in your other forms */
 .anvil-role-glass-panel {
     background: rgba(255, 255, 255, 0.1) !important;
@@ -1590,6 +1585,21 @@ body.modal-open {
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 15px;
     padding: 20px;
+}
+
+/* Outer .modal-content already applies blur(28px); avoid 9x nested GPU blur passes on inner cards */
+.modal-content .anvil-role-glass-panel {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+/* Instant modal open/close — eliminates 300ms Bootstrap fade/slide lag over blur backdrop */
+.modal.fade,
+.modal.fade .modal-dialog,
+.modal-backdrop.fade {
+    transition: none !important;
+    -webkit-transition: none !important;
+    transform: none !important;
 }
 /* Display the left-nav from view
 .left-nav {

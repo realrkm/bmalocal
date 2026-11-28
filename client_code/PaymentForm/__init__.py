@@ -11,7 +11,7 @@ class PaymentForm(PaymentFormTemplate):
     def __init__(self, jobcard_id, payment_data=None, **properties):
         # Set Form properties and Data Bindings.
         self.init_components(**properties)
-        anvil.js.call('replaceBanner')
+        self._updated = False
         self.JobCardId=jobcard_id
         self.refresh_client_table(payment_data)
         self.label_JobCardID.text = jobcard_id
@@ -43,5 +43,5 @@ class PaymentForm(PaymentFormTemplate):
 
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""
-        self.raise_event("x-close-alert", value=True)
+        self.raise_event("x-close-alert", value="updated" if getattr(self, "_updated", False) else False)
 

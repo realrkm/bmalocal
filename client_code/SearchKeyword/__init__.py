@@ -15,7 +15,6 @@ class SearchKeyword(SearchKeywordTemplate):
         self.init_components(**properties)
 
         # The results panel is initially empty
-        anvil.js.call('replaceBanner')
         self.repeating_panel_results.items = []
 
         # Set up the result handling event

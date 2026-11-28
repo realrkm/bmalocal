@@ -118,177 +118,152 @@ def save_quotation_parts_and_services_batch(assignedDate, jobCardID, items):
         cursor.executemany(query, data)
 
 
+def _safe_float_convert(value):
+    if value is None:
+        return None
+    if isinstance(value, (int, float, decimal.Decimal)):
+        return float(value)
+    if isinstance(value, str):
+        try:
+            return float(value.replace(",", ""))
+        except ValueError:
+            return None
+    return None
+
+
+def _fetch_quote_details_by_job_id(cursor, job_id):
+    query = """
+    SELECT
+        tbl_clientcontacts.Fullname,
+        tbl_jobcarddetails.MakeAndModel,
+        tbl_jobcarddetails.RegNo,
+        tbl_quotation.Date,
+        tbl_jobcarddetails.ChassisNo,
+        tbl_jobcarddetails.EngineCode,
+        tbl_jobcarddetails.Mileage,
+        tbl_quotation.Item,
+        tbl_quotation.QuantityIssued,
+        tbl_quotation.Amount,
+        tbl_quotation.AssignedJobID,
+        tbl_jobcarddetails.JobCardRef
+    FROM
+        (tbl_jobcarddetails
+        INNER JOIN tbl_clientcontacts
+        ON tbl_jobcarddetails.ClientDetails = tbl_clientcontacts.ID)
+    INNER JOIN tbl_quotation
+        ON tbl_jobcarddetails.ID = tbl_quotation.AssignedJobID
+    WHERE tbl_quotation.AssignedJobID = %s
+    """
+    cursor.execute(query, (job_id,))
+    rows = cursor.fetchall()
+
+    result = []
+    for r in rows:
+        quantity_issued_val = _safe_float_convert(r[8])
+        amount_val = _safe_float_convert(r[9])
+        display_quantity_issued = (
+            ""
+            if r[8] is None or not isinstance(r[8], (int, float, decimal.Decimal))
+            else quantity_issued_val
+        )
+        total_calc = None
+        if quantity_issued_val is None:
+            total_calc = amount_val
+        elif amount_val is not None:
+            total_calc = round(quantity_issued_val * amount_val, 2)
+
+        result.append(
+            {
+                "Fullname": r[0],
+                "MakeAndModel": r[1],
+                "RegNo": r[2],
+                "Date": r[3],
+                "ChassisNo": r[4],
+                "EngineCode": r[5],
+                "Mileage": r[6],
+                "Item": r[7],
+                "QuantityIssued": display_quantity_issued,
+                "Amount": amount_val,
+                "AssignedJobID": r[10],
+                "Total": total_calc,
+                "JobCardRef": r[11] if len(r) > 11 else None,
+            }
+        )
+    return result
+
+
 @anvil.server.callable()
 def get_quote_details_by_job_id(job_id):
     _get_current_user()
     with db_cursor() as cursor:
-        query = """
-        SELECT
-            tbl_clientcontacts.Fullname,
-            tbl_jobcarddetails.MakeAndModel,
-            tbl_jobcarddetails.RegNo,
-            tbl_quotation.Date,
-            tbl_jobcarddetails.ChassisNo,
-            tbl_jobcarddetails.EngineCode,
-            tbl_jobcarddetails.Mileage,
-            tbl_quotation.Item,
-            tbl_quotation.QuantityIssued,
-            tbl_quotation.Amount,
-            tbl_quotation.AssignedJobID,
-            tbl_jobcarddetails.JobCardRef
-        FROM
-            (tbl_jobcarddetails
-            INNER JOIN tbl_clientcontacts
-            ON tbl_jobcarddetails.ClientDetails = tbl_clientcontacts.ID)
-        INNER JOIN tbl_quotation
-            ON tbl_jobcarddetails.ID = tbl_quotation.AssignedJobID
-        WHERE tbl_quotation.AssignedJobID = %s
-        """
-        cursor.execute(query, (job_id,))
-        rows = cursor.fetchall()
+        return _fetch_quote_details_by_job_id(cursor, job_id)
 
-        result = []
-        for r in rows:
-            # Helper function to ensure we get a float from various types
-            def safe_float_convert(value):
-                if value is None:
-                    return None  # Or 0.0, depending on desired behavior for NULLs
-                if isinstance(value, (int, float, decimal.Decimal)):
-                    return float(value)
-                # If it's a string, try to clean it and convert
-                if isinstance(value, str):
-                    try:
-                        return float(value.replace(",", ""))
-                    except ValueError:
-                        # Handle cases where string cannot be converted (e.g., non-numeric string)
-                        print(f"Warning: Could not convert string '{value}' to float.")
-                        return None  # Or raise an error
-                return None  # Default if type is unexpected
 
-            quantity_issued_val = safe_float_convert(r[8])  # QuantityIssued
-            amount_val = safe_float_convert(r[9])  # Amount
+def _fetch_quote_confirmation_details_by_job_id(cursor, job_id):
+    query = """
+    SELECT
+        tbl_clientcontacts.Fullname,
+        tbl_jobcarddetails.MakeAndModel,
+        tbl_jobcarddetails.RegNo,
+        tbl_quotationpartsandservicesfeedback.Date,
+        tbl_jobcarddetails.ChassisNo,
+        tbl_jobcarddetails.EngineCode,
+        tbl_jobcarddetails.Mileage,
+        tbl_quotationpartsandservicesfeedback.Item,
+        tbl_quotationpartsandservicesfeedback.QuantityIssued,
+        tbl_quotationpartsandservicesfeedback.Amount,
+        tbl_quotationpartsandservicesfeedback.AssignedJobID
+    FROM
+        (tbl_jobcarddetails
+        INNER JOIN tbl_clientcontacts
+        ON tbl_jobcarddetails.ClientDetails = tbl_clientcontacts.ID)
+    INNER JOIN tbl_quotationpartsandservicesfeedback
+        ON tbl_jobcarddetails.ID = tbl_quotationpartsandservicesfeedback.AssignedJobID
+    WHERE tbl_quotationpartsandservicesfeedback.AssignedJobID = %s
+    """
+    cursor.execute(query, (job_id,))
+    rows = cursor.fetchall()
 
-            # Ensure 'QuantityIssued' for the dictionary can be "" if originally None or non-numeric string
-            # If your front-end expects an empty string, keep this logic
-            display_quantity_issued = (
-                ""
-                if r[8] is None or not isinstance(r[8], (int, float, decimal.Decimal))
-                else quantity_issued_val
-            )
+    result = []
+    for r in rows:
+        quantity_issued_val = _safe_float_convert(r[8])
+        amount_val = _safe_float_convert(r[9])
+        display_quantity_issued = (
+            ""
+            if r[8] is None or not isinstance(r[8], (int, float, decimal.Decimal))
+            else quantity_issued_val
+        )
+        total_calc = None
+        if quantity_issued_val is None:
+            total_calc = amount_val
+        elif amount_val is not None:
+            total_calc = round(quantity_issued_val * amount_val, 2)
 
-            # Calculate Total - ensuring we use the float versions for calculation
-            total_calc = None
-            if quantity_issued_val is None:  # If QuantityIssued was NULL/None from DB
-                total_calc = amount_val
-            elif amount_val is not None:  # Ensure Amount is not None for multiplication
-                total_calc = round(quantity_issued_val * amount_val, 2)
-            # If amount_val is None and quantity_issued_val is not None, total_calc would remain None
-
-            result.append(
-                {
-                    "Fullname": r[0],
-                    "MakeAndModel": r[1],
-                    "RegNo": r[2],
-                    "Date": r[3],
-                    "ChassisNo": r[4],
-                    "EngineCode": r[5],
-                    "Mileage": r[6],
-                    "Item": r[7],
-                    "QuantityIssued": display_quantity_issued,  # Use the potentially "" value for display
-                    "Amount": amount_val,  # This is now always a float or None
-                    "AssignedJobID": r[10],
-                    "Total": total_calc,  # This is now always a float or None
-                    "JobCardRef": r[11] if len(r) > 11 else None,
-                }
-            )
-
-        return result
+        result.append(
+            {
+                "Fullname": r[0],
+                "MakeAndModel": r[1],
+                "RegNo": r[2],
+                "Date": r[3],
+                "ChassisNo": r[4],
+                "EngineCode": r[5],
+                "Mileage": r[6],
+                "Item": r[7],
+                "QuantityIssued": display_quantity_issued,
+                "Amount": amount_val,
+                "AssignedJobID": r[10],
+                "Total": total_calc,
+                "JobCardRef": r[11] if len(r) > 11 else None,
+            }
+        )
+    return result
 
 
 @anvil.server.callable()
 def get_quote_confirmation_details_by_job_id(job_id):
     _get_current_user()
     with db_cursor() as cursor:
-        query = """
-        SELECT
-            tbl_clientcontacts.Fullname,
-            tbl_jobcarddetails.MakeAndModel,
-            tbl_jobcarddetails.RegNo,
-            tbl_quotationpartsandservicesfeedback.Date,
-            tbl_jobcarddetails.ChassisNo,
-            tbl_jobcarddetails.EngineCode,
-            tbl_jobcarddetails.Mileage,
-            tbl_quotationpartsandservicesfeedback.Item,
-            tbl_quotationpartsandservicesfeedback.QuantityIssued,
-            tbl_quotationpartsandservicesfeedback.Amount,
-            tbl_quotationpartsandservicesfeedback.AssignedJobID
-        FROM
-            (tbl_jobcarddetails
-            INNER JOIN tbl_clientcontacts
-            ON tbl_jobcarddetails.ClientDetails = tbl_clientcontacts.ID)
-        INNER JOIN tbl_quotationpartsandservicesfeedback
-            ON tbl_jobcarddetails.ID = tbl_quotationpartsandservicesfeedback.AssignedJobID
-        WHERE tbl_quotationpartsandservicesfeedback.AssignedJobID = %s
-        """
-        cursor.execute(query, (job_id,))
-        rows = cursor.fetchall()
-
-        result = []
-        for r in rows:
-            # Helper function to ensure we get a float from various types
-            def safe_float_convert(value):
-                if value is None:
-                    return None  # Or 0.0, depending on desired behavior for NULLs
-                if isinstance(value, (int, float, decimal.Decimal)):
-                    return float(value)
-                # If it's a string, try to clean it and convert
-                if isinstance(value, str):
-                    try:
-                        return float(value.replace(",", ""))
-                    except ValueError:
-                        # Handle cases where string cannot be converted (e.g., non-numeric string)
-                        print(f"Warning: Could not convert string '{value}' to float.")
-                        return None  # Or raise an error
-                return None  # Default if type is unexpected
-
-            quantity_issued_val = safe_float_convert(r[8])  # QuantityIssued
-            amount_val = safe_float_convert(r[9])  # Amount
-
-            # Ensure 'QuantityIssued' for the dictionary can be "" if originally None or non-numeric string
-            # If your front-end expects an empty string, keep this logic
-            display_quantity_issued = (
-                ""
-                if r[8] is None or not isinstance(r[8], (int, float, decimal.Decimal))
-                else quantity_issued_val
-            )
-
-            # Calculate Total - ensuring we use the float versions for calculation
-            total_calc = None
-            if quantity_issued_val is None:  # If QuantityIssued was NULL/None from DB
-                total_calc = amount_val
-            elif amount_val is not None:  # Ensure Amount is not None for multiplication
-                total_calc = round(quantity_issued_val * amount_val, 2)
-            # If amount_val is None and quantity_issued_val is not None, total_calc would remain None
-
-            result.append(
-                {
-                    "Fullname": r[0],
-                    "MakeAndModel": r[1],
-                    "RegNo": r[2],
-                    "Date": r[3],
-                    "ChassisNo": r[4],
-                    "EngineCode": r[5],
-                    "Mileage": r[6],
-                    "Item": r[7],
-                    "QuantityIssued": display_quantity_issued,  # Use the potentially "" value for display
-                    "Amount": amount_val,  # This is now always a float or None
-                    "AssignedJobID": r[10],
-                    "Total": total_calc,  # This is now always a float or None
-                    "JobCardRef": r[11] if len(r) > 11 else None,
-                }
-            )
-
-        return result
+        return _fetch_quote_confirmation_details_by_job_id(cursor, job_id)
 
 @anvil.server.callable()
 def get_interimandquotation_total_by_job_id(assigned_job_id):

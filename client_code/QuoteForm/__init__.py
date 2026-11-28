@@ -11,7 +11,6 @@ class QuoteForm(QuoteFormTemplate):
     def __init__(self, job_id, quote_data=None, **properties):
         # Set Form properties and Data Bindings.
         self.init_components(**properties)
-        anvil.js.call('replaceBanner')
         self.label_JobCardID.text = job_id
         jobcard_ref = None
         if quote_data and isinstance(quote_data[0], dict):

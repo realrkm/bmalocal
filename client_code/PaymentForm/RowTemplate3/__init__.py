@@ -42,6 +42,12 @@ class RowTemplate3(RowTemplate3Template):
                 {**row, "JobCardID": jobcard_id}
                 for row in payment_data
             ]
+            curr = self.parent
+            while curr is not None:
+                if hasattr(curr, "refresh_client_table"):
+                    curr._updated = True
+                    break
+                curr = getattr(curr, "parent", None)
             Notification("Payment deleted.", style="success").show()
         finally:
             self.btn_DeleteRow.enabled = True

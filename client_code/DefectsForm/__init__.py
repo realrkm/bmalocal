@@ -11,7 +11,6 @@ import base64
 import time
 from .. import ModGetData
 from .. import ModNavigation
-from ..AddMorePartsInConfirmQuote import AddMorePartsInConfirmQuote
 from datetime import datetime
 
 
@@ -20,9 +19,7 @@ class DefectsForm(DefectsFormTemplate):
         # Set Form properties and Data Bindings.
         self.init_components(**properties)
 
-        # Any code you write here will run before the form opens.
-        anvil.js.call('replaceBanner')
-
+        self._updated = False
         if defects_data is None and job_id is not None:
             defects_data = [{"ID": job_id}]
 
@@ -113,6 +110,7 @@ class DefectsForm(DefectsFormTemplate):
         anvil.server.call_s("updateBlankDefectsAndRequestedParts")
         
         Notification("Update is successful", title="Success", style="success", timeout=3).show()
+        self._updated = True
         self.label_staffchanged.text = ""
         self.column_panel_update_signature.visible=False
         defectListData=anvil.server.call("getDefectsList", self.defects_data[0]["ID"])
@@ -201,7 +199,7 @@ class DefectsForm(DefectsFormTemplate):
 
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""
-        self.raise_event("x-close-alert", value=True)
+        self.raise_event("x-close-alert", value="updated" if getattr(self, "_updated", False) else False)
 
     def drop_down_staff_change(self, **event_args):
         """This method is called when an item is selected"""
@@ -260,7 +258,9 @@ class DefectsForm(DefectsFormTemplate):
         self.btn_AddMorePartsAndServicesInConfirmedQuote.enabled=False
         result = anvil.server.call("getJobCardRow", self.defects_data[0]["ID"])
         if result["Status"] == "In Service" or result["Status"] == "Verify Task" or  result["Status"] == "Issue Invoice":
+            from ..AddMorePartsInConfirmQuote import AddMorePartsInConfirmQuote
             alert(content=AddMorePartsInConfirmQuote(self.defects_data[0]["ID"]), buttons=[], dismissible=False,large=True)
+            self._updated = True
             self.btn_AddMorePartsAndServicesInConfirmedQuote.enabled=True
         else:
             Notification("Sorry, you can only update In Service, Verify Task or Issue Invoice jobcards.", title="Workflow Action", style="warning", timeout=3).show()

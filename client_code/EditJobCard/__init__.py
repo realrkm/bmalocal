@@ -484,7 +484,10 @@ class EditJobCard(EditJobCardTemplate):
         value = progress_tracker.drop_down_JobCardRefDetails.selected_value
         progress_tracker.btn_SearchCustomer_click()
         progress_tracker.drop_down_JobCardRefDetails.selected_value = value
-        progress_tracker.drop_down_JobCardRefDetails_change()
+        if hasattr(progress_tracker, "refresh_selected_job_card"):
+            progress_tracker.refresh_selected_job_card(force_server=True)
+        else:
+            progress_tracker.drop_down_JobCardRefDetails_change()
 
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""

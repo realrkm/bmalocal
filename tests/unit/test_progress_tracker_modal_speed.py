@@ -230,8 +230,10 @@ def test_progress_tracker_uses_prefetched_cache_with_zero_server_calls_on_click(
             _modals_cache_job_id=None,
             _prewarmed_modals={},
         )
+        form._evict_lru_job = lambda jid=None: cls._evict_lru_job(form, jid)
         form._invalidate_modals_cache = lambda jid=None: cls._invalidate_modals_cache(form, jid)
         form._build_modal_instance = lambda jid, k, d: cls._build_modal_instance(form, jid, k, d)
+        form._prewarm_for_bundle = lambda jid, b, p, k: cls._prewarm_for_bundle(form, jid, b, p, k)
         form._prewarm_single_modal = lambda jid, k: cls._prewarm_single_modal(form, jid, k)
         form._schedule_prewarm_single_modal = MagicMock()
         form._schedule_prewarm_modals = MagicMock()
@@ -597,3 +599,129 @@ def test_jobcard_form_prewarms_and_swaps_edit_jobcard_in_place_without_new_alert
         form.raise_event.assert_called_once_with("x-close-alert", value="updated")
     finally:
         sys.modules.pop(target, None)
+
+
+def test_get_progress_tracker_data_include_modals_single_cursor_and_inline_signature():
+    from server_code import invoices
+
+    cursor = MagicMock()
+    cursor.fetchone.return_value = (2500.0,)  # SUM(AmountPaid)
+    fake_jc = _sample_full_jobcard()
+    fake_jc["Status"] = "Ready for Pickup"
+    fake_defects = {
+        "defects_list": [{"Signature": "data:image/png;base64,cG5nLWJ5dGVz"}],
+        "fallback": None,
+        "staff_names": [],
+    }
+    fake_invoices = [
+        {"Item": "Pads", "QuantityIssued": 2.0, "Amount": 1500.0, "Status": "Pending"},
+        {"Item": "Labour", "QuantityIssued": "", "Amount": 1000.0, "Status": "Paid"},
+    ]
+
+    with patch.object(job_cards, "_get_current_user") as auth_mock, \
+         patch.object(job_cards, "db_cursor") as db_ctx, \
+         patch.object(job_cards, "_fetch_jobcard_form_data", return_value=fake_jc), \
+         patch.object(job_cards, "_fetch_defects_form_init_data", return_value=fake_defects), \
+         patch.object(quotations, "_fetch_quote_details_by_job_id", return_value=[]), \
+         patch.object(quotations, "_fetch_quote_confirmation_details_by_job_id", return_value=[]), \
+         patch.object(invoices, "_fetch_invoice_details_by_job_id", return_value=fake_invoices), \
+         patch.object(invoices, "_fetch_payments_details", return_value=[{"PaymentID": 1}]):
+        db_ctx.return_value.__enter__.return_value = cursor
+        res = bma.get_progress_tracker_data(42, include_modals=True)
+
+    assert auth_mock.call_count == 1
+    assert db_ctx.call_count == 1
+    assert res["job_card"]["ID"] == 42
+    assert res["client"]["Fullname"] == "Alice Client"
+    assert res["invoice_status"] == "Paid"
+    assert res["invoice_total"] == "4,000.00"
+    assert res["previous_payment"] == "2,500.00"
+    assert res["modals"]["jobcard"] == fake_jc
+    assert res["modals"]["invoice"] == fake_invoices
+
+
+def test_progress_tracker_atomic_hydration_lru_and_post_edit_cache_preservation(monkeypatch):
+    mod, server_call, server_call_s, alert_mock = _load_tracker_module(
+        monkeypatch, "ProgressTracker", "ProgressTrackerTemplate"
+    )
+    try:
+        cls = mod.ProgressTracker
+        form = SimpleNamespace(
+            drop_down_JobCardRefDetails=SimpleNamespace(selected_value=42),
+            label_MakeAndModel=SimpleNamespace(text=""),
+            label_Mileage=SimpleNamespace(text=""),
+            label_RegNo=SimpleNamespace(text=""),
+            label_date_received=SimpleNamespace(text=""),
+            label_Owner=SimpleNamespace(text=""),
+            label_Phone=SimpleNamespace(text=""),
+            btn_JobCard=SimpleNamespace(enabled=True),
+            _modals_cache={},
+            _modals_cache_job_id=None,
+            _prewarmed_modals={},
+            _job_bundles_lru={},
+        )
+        form.populatePaymentDetails = MagicMock()
+        form.set_progress_state = MagicMock()
+        form._evict_lru_job = lambda jid=None: cls._evict_lru_job(form, jid)
+        form._store_lru_job = lambda jid, t, m, p=None: cls._store_lru_job(form, jid, t, m, p)
+        form._invalidate_modals_cache = lambda jid=None: cls._invalidate_modals_cache(form, jid)
+        form._apply_tracker_ui = lambda r: cls._apply_tracker_ui(form, r)
+        form._priority_modal_keys = lambda s=None: cls._priority_modal_keys(form, s)
+        form._schedule_prewarm_modals = MagicMock()
+        form._schedule_prewarm_single_modal = MagicMock()
+        form._schedule_prefetch_modals = MagicMock()
+        form._build_modal_instance = lambda jid, k, d: cls._build_modal_instance(form, jid, k, d)
+        form._pop_or_build_modal = lambda jid, k, d: cls._pop_or_build_modal(form, jid, k, d)
+        form._get_cached_or_fetch = lambda jid, k, fn: cls._get_cached_or_fetch(form, jid, k, fn)
+        form.refresh_selected_job_card = lambda force_server=False: cls.refresh_selected_job_card(form, force_server=force_server)
+
+        payload_42 = {
+            "job_card": {"ID": 42, "MakeAndModel": "BMW X5", "Mileage": "85000", "RegNo": "KDA 123A", "ReceivedDate": "2026-11-01", "Status": "Issue Invoice"},
+            "client": {"Fullname": "Alice", "Phone": "0712"},
+            "invoice_status": "Pending",
+            "invoice_total": "4,000.00",
+            "previous_payment": 0.0,
+            "cancelled_reason": "",
+            "modals": {
+                "jobcard": {"ID": 42, "JobCardRef": "JC-0042"},
+                "defects": {"defects_list": [], "fallback": None, "staff_names": []},
+                "quote": [],
+                "confirm": [],
+                "invoice": [{"Item": "Pads"}],
+                "payment": [],
+            },
+        }
+        payload_99 = {
+            **payload_42,
+            "job_card": {**payload_42["job_card"], "ID": 99, "RegNo": "KDB 999Z"},
+            "modals": {**payload_42["modals"], "jobcard": {"ID": 99, "JobCardRef": "JC-0099"}},
+        }
+
+        server_call.side_effect = [payload_42, payload_99]
+
+        # 1. Selecting job 42 hydrates BOTH tracker and modals in 1 RPC (zero separate bundle prefetch!)
+        cls.refresh_selected_job_card(form)
+        server_call.assert_called_once_with("get_progress_tracker_data", 42, True)
+        assert server_call_s.call_count == 0
+        assert form._modals_cache_job_id == 42
+        assert form._modals_cache["invoice"] == [{"Item": "Pads"}]
+        # Status-aware priority puts "invoice" first when Status == "Issue Invoice"
+        assert cls._priority_modal_keys(form, "Issue Invoice")[0] == "invoice"
+
+        # 2. Switch to job 99 (1 RPC), then switch back to job 42 -> 0 RPCs (served from LRU!)
+        form.drop_down_JobCardRefDetails.selected_value = 99
+        cls.refresh_selected_job_card(form)
+        assert server_call.call_count == 2
+        form.drop_down_JobCardRefDetails.selected_value = 42
+        cls.refresh_selected_job_card(form)
+        assert server_call.call_count == 2  # Zero extra server calls!
+        assert form.label_RegNo.text == "KDA 123A"
+        assert form._modals_cache_job_id == 42
+
+        # 3. Regression check: EditJobCard returning "updated" after refreshing tracker does NOT wipe _modals_cache!
+        alert_mock.return_value = "updated"
+        cls.btn_JobCard_click(form)
+        assert form._modals_cache_job_id == 42
+        assert form._modals_cache != {}
+    finally:
+        sys.modules.pop("client_code.ProgressTracker", None)

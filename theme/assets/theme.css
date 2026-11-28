@@ -1346,19 +1346,21 @@ h1, h2, h3, h4, h5, h6,
     opacity: 1 !important;
 }
 
-/* ── Modal Shell (The Fix for Squeezing) ───────────────────── */
+/* ── Modal Shell (The Fix for Squeezing + Layout Containment) ── */
 .modal-dialog {
     display: flex;
     align-items: center;
     justify-content: center;
     min-height: 100vh;
     margin: 0 auto;
+    contain: layout style;
 }
 
 /* ── THE GLASS CARD ────────────────────────────────────────── */
 .modal-content {
     font-family: 'Mozilla Headline', 'Outfit', sans-serif !important;
     border-radius: 28px !important;
+    contain: layout style;
 
     /* Glass Effect */
     background: rgba(255, 255, 255, 0.12) !important;

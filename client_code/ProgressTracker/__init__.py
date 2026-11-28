@@ -26,19 +26,76 @@ class ProgressTracker(ProgressTrackerTemplate):
         self._modals_cache = {}
         self._modals_cache_job_id = None
         self._prewarmed_modals = {}
+        self._job_bundles_lru = {}
         self._preload_modal_assets()
+        self._attach_hover_prewarm()
         self.set_event_handler("hide", self.form_hide)
 
     def _preload_modal_assets(self):
         try:
             img_cls = getattr(anvil.js.window, "Image", None)
             if img_cls:
-                img = img_cls()
-                img.src = "_/theme/Invoice Header Logo.jpg"
+                for asset in ("_/theme/Invoice Header Logo.jpg", "_/theme/screen.png"):
+                    img = img_cls()
+                    img.src = asset
         except Exception:
             pass
 
+    def _attach_hover_prewarm(self):
+        button_map = (
+            ("btn_JobCard", "jobcard"),
+            ("btn_Defects", "defects"),
+            ("btn_Quotation", "quote"),
+            ("btn_Confirmed", "confirm"),
+            ("btn_Invoice", "invoice"),
+            ("btn_Payment", "payment"),
+        )
+        for attr, key in button_map:
+            btn = getattr(self, attr, None)
+            if btn is None:
+                continue
+            try:
+                dom_node = anvil.js.get_dom_node(btn)
+                def _make_handler(modal_key):
+                    def _handler(_evt=None):
+                        jid = self.drop_down_JobCardRefDetails.selected_value
+                        if jid:
+                            self._prewarm_single_modal(jid, modal_key)
+                    return _handler
+                h = _make_handler(key)
+                dom_node.addEventListener("pointerenter", h, {"passive": True})
+                dom_node.addEventListener("mousedown", h, {"passive": True})
+                dom_node.addEventListener("touchstart", h, {"passive": True})
+            except Exception:
+                pass
+
+    def _evict_lru_job(self, job_id=None):
+        lru = getattr(self, "_job_bundles_lru", None)
+        if not lru:
+            return
+        if job_id is None:
+            lru.clear()
+        else:
+            for k in list(lru.keys()):
+                if str(k) == str(job_id):
+                    lru.pop(k, None)
+
+    def _store_lru_job(self, job_id, tracker_data, modals_bundle, prewarmed=None):
+        lru = getattr(self, "_job_bundles_lru", None)
+        if lru is None:
+            self._job_bundles_lru = lru = {}
+        lru.pop(job_id, None)
+        lru[job_id] = {
+            "tracker": tracker_data,
+            "modals": modals_bundle,
+            "prewarmed": prewarmed if prewarmed is not None else {},
+        }
+        while len(lru) > 8:
+            oldest = next(iter(lru))
+            lru.pop(oldest, None)
+
     def _invalidate_modals_cache(self, job_id=None):
+        self._evict_lru_job(job_id)
         if job_id is None or self._modals_cache_job_id == job_id:
             self._modals_cache = {}
             self._modals_cache_job_id = None
@@ -61,44 +118,66 @@ class ProgressTracker(ProgressTrackerTemplate):
             return PaymentForm(job_id, payment_data=data)
         return None
 
-    def _prewarm_single_modal(self, job_id, key):
-        if self._modals_cache_job_id != job_id or self.drop_down_JobCardRefDetails.selected_value != job_id:
+    def _prewarm_for_bundle(self, job_id, modals_bundle, prewarmed_dict, key):
+        if key in prewarmed_dict:
             return
-        prewarmed = getattr(self, "_prewarmed_modals", None)
-        if prewarmed is None:
-            self._prewarmed_modals = prewarmed = {}
-        if key in prewarmed:
-            return
-        data = self._modals_cache.get(key)
+        data = modals_bundle.get(key)
         if not data:
             return
         try:
             inst = self._build_modal_instance(job_id, key, data)
-            if inst is not None and self._modals_cache_job_id == job_id:
-                prewarmed[key] = inst
+            if inst is not None:
+                prewarmed_dict[key] = inst
         except Exception:
             pass
+
+    def _prewarm_single_modal(self, job_id, key):
+        if self._modals_cache_job_id != job_id:
+            return
+        prewarmed = getattr(self, "_prewarmed_modals", None)
+        if prewarmed is None:
+            self._prewarmed_modals = prewarmed = {}
+        self._prewarm_for_bundle(job_id, self._modals_cache, prewarmed, key)
 
     def _schedule_prewarm_single_modal(self, job_id, key):
         try:
-            anvil.js.window.setTimeout(lambda: self._prewarm_single_modal(job_id, key), 15)
+            anvil.js.window.setTimeout(lambda: self._prewarm_single_modal(job_id, key), 0)
         except Exception:
             pass
 
-    def _schedule_prewarm_modals(self, job_id):
-        keys = ("jobcard", "defects", "quote", "confirm", "invoice", "payment")
+    def _priority_modal_keys(self, active_status=None):
+        status_first = {
+            "Checked In": ("jobcard", "defects"),
+            "Create Quote": ("defects", "quote", "jobcard"),
+            "Confirm Quote": ("quote", "confirm", "defects"),
+            "In Service": ("confirm", "defects", "jobcard"),
+            "Verify Task": ("defects", "confirm", "jobcard"),
+            "Issue Invoice": ("invoice", "confirm", "defects"),
+            "Pending": ("payment", "invoice", "jobcard"),
+            "Paid": ("payment", "invoice", "jobcard"),
+            "Complete": ("invoice", "payment", "jobcard"),
+        }.get(active_status, ())
+        all_keys = ("jobcard", "defects", "quote", "confirm", "invoice", "payment")
+        ordered = list(status_first)
+        for k in all_keys:
+            if k not in ordered:
+                ordered.append(k)
+        return tuple(ordered)
+
+    def _schedule_prewarm_modals(self, job_id, active_status=None):
+        keys = self._priority_modal_keys(active_status)
         def _step(idx=0):
             if idx >= len(keys):
                 return
-            if self._modals_cache_job_id != job_id or self.drop_down_JobCardRefDetails.selected_value != job_id:
+            if self._modals_cache_job_id != job_id:
                 return
             self._prewarm_single_modal(job_id, keys[idx])
             try:
-                anvil.js.window.setTimeout(lambda: _step(idx + 1), 10)
+                anvil.js.window.setTimeout(lambda: _step(idx + 1), 0)
             except Exception:
                 pass
         try:
-            anvil.js.window.setTimeout(lambda: _step(0), 10)
+            anvil.js.window.setTimeout(lambda: _step(0), 0)
         except Exception:
             pass
 
@@ -152,12 +231,13 @@ class ProgressTracker(ProgressTrackerTemplate):
             self.timer_update.enabled = True
 
     def _on_realtime_event(self, evt=None):
+        entity_id = evt.get("entity_id") if isinstance(evt, dict) else None
+        self._evict_lru_job(entity_id)
         selected_id = self.drop_down_JobCardRefDetails.selected_value
         if not selected_id:
             return
-        entity_id = evt.get("entity_id") if isinstance(evt, dict) else None
         if entity_id is None or str(entity_id) == str(selected_id):
-            self.refresh_selected_job_card()
+            self.refresh_selected_job_card(force_server=True)
 
     def form_show(self, **event_args):
         self.form_hide()
@@ -171,7 +251,8 @@ class ProgressTracker(ProgressTrackerTemplate):
                 def _on_conn(status):
                     self._sync_timer_with_ws()
                     if status and status.get("reconnected"):
-                        self.refresh_selected_job_card()
+                        self._evict_lru_job(None)
+                        self.refresh_selected_job_card(force_server=True)
                 self._rt_conn_token = rt.onConnectionChange(_on_conn)
         except Exception:
             pass
@@ -193,8 +274,35 @@ class ProgressTracker(ProgressTrackerTemplate):
         self._rt_conn_token = None
 
     def timer_update_tick(self, **event_args):
-        self.refresh_selected_job_card()
-        
+        self.refresh_selected_job_card(force_server=True)
+
+    def _background_speculative_warm(self, job_id):
+        lru = getattr(self, "_job_bundles_lru", None)
+        if not job_id or (lru and job_id in lru):
+            return
+        try:
+            with anvil.server.no_loading_indicator:
+                res = anvil.server.call_s("get_progress_tracker_data", job_id, True)
+            if not res or "modals" not in res:
+                return
+            modals = res["modals"]
+            prewarmed = {}
+            self._store_lru_job(job_id, res, modals, prewarmed)
+            keys = ("jobcard", "defects", "quote", "confirm", "invoice", "payment")
+            def _bg_step(idx=0):
+                if idx >= len(keys):
+                    return
+                if self.drop_down_JobCardRefDetails.selected_value == job_id:
+                    return  # Foreground selection took over
+                self._prewarm_for_bundle(job_id, modals, prewarmed, keys[idx])
+                try:
+                    anvil.js.window.setTimeout(lambda: _bg_step(idx + 1), 0)
+                except Exception:
+                    pass
+            anvil.js.window.setTimeout(lambda: _bg_step(0), 0)
+        except Exception:
+            pass
+
     def btn_SearchCustomer_click(self, **event_args):
         """This method is called when the text in this text box is edited"""
         self.txtJobCardRef.text = self.txtJobCardRef.text.strip()
@@ -203,8 +311,14 @@ class ProgressTracker(ProgressTrackerTemplate):
             result = anvil.server.call("getJobCardDetailsWithRefOrFullnameSearch", search_value)
             # Clear drop down
             self.drop_down_JobCardRefDetails.items = ""
-    
             self.drop_down_JobCardRefDetails.items = result
+            # Speculatively warm the top search hit while the user opens the dropdown
+            if result and len(result) > 0:
+                first_id = result[0][1]
+                try:
+                    anvil.js.window.setTimeout(lambda: self._background_speculative_warm(first_id), 0)
+                except Exception:
+                    pass
         else:
             Notification("Please enter job card ref to proceed.", title="Blank Field(s) Found", style="warning", timeout=3).show()
             self.txtJobCardRef.focus()
@@ -213,51 +327,81 @@ class ProgressTracker(ProgressTrackerTemplate):
         """This method is called when an item is selected"""
         if self.drop_down_JobCardRefDetails.selected_value:
             self.refresh_selected_job_card()
-                
         else:
             Notification("Please enter job card ref to procced.", title="Blank Field(s) Found", style="warning", timeout=3).show()
             self.drop_down_JobCardRefDetails.focus()
 
-    def refresh_selected_job_card(self):
+    def _apply_tracker_ui(self, result):
+        job_card = result["job_card"]
+        client = result["client"]
+
+        self.label_MakeAndModel.text = job_card["MakeAndModel"]
+        self.label_Mileage.text = job_card["Mileage"]
+        self.label_RegNo.text = job_card["RegNo"]
+        self.label_date_received.text = job_card["ReceivedDate"]
+
+        self.label_Owner.text = client["Fullname"]
+        self.label_Phone.text = client["Phone"]
+
+        self.populatePaymentDetails(result)
+
+        effective_status = (
+            result["invoice_status"]
+            if job_card["Status"] == "Ready for Pickup"
+            else job_card["Status"]
+        )
+        self.set_progress_state(
+            effective_status,
+            cancelled_reason=result.get("cancelled_reason", ""),
+        )
+        return effective_status
+
+    def refresh_selected_job_card(self, force_server=False):
         job_id = self.drop_down_JobCardRefDetails.selected_value
         if not job_id:
             self._invalidate_modals_cache()
             return
 
-        self._invalidate_modals_cache()
+        lru = getattr(self, "_job_bundles_lru", None)
+        if not force_server and lru and job_id in lru:
+            entry = lru[job_id]
+            effective_status = self._apply_tracker_ui(entry["tracker"])
+            self._modals_cache = entry["modals"]
+            self._modals_cache_job_id = job_id
+            self._prewarmed_modals = entry["prewarmed"]
+            self._schedule_prewarm_modals(job_id, active_status=effective_status)
+            return
+
+        # Only clear cache immediately if switching to an uncached different job_id;
+        # when refreshing the SAME job_id, keep existing cache warm until new data arrives!
+        if self._modals_cache_job_id is not None and self._modals_cache_job_id != job_id:
+            self._modals_cache = {}
+            self._modals_cache_job_id = None
+            self._prewarmed_modals = {}
+
         with anvil.server.no_loading_indicator:
             result = anvil.server.call(
                 "get_progress_tracker_data",
-                job_id
+                job_id,
+                True,
             )
 
             if not result:
                 return
 
-            job_card = result["job_card"]
-            client = result["client"]
+            effective_status = self._apply_tracker_ui(result)
 
-            self.label_MakeAndModel.text = job_card["MakeAndModel"]
-            self.label_Mileage.text = job_card["Mileage"]
-            self.label_RegNo.text = job_card["RegNo"]
-            self.label_date_received.text = job_card["ReceivedDate"]
-
-            self.label_Owner.text = client["Fullname"]
-            self.label_Phone.text = client["Phone"]
-
-            self.populatePaymentDetails(result)
-
-            effective_status = (
-                result["invoice_status"]
-                if job_card["Status"] == "Ready for Pickup"
-                else job_card["Status"]
-            )
-            self.set_progress_state(
-                effective_status,
-                cancelled_reason=result.get("cancelled_reason", ""),
-            )
-
-        self._schedule_prefetch_modals(job_id)
+        modals = result.get("modals")
+        if modals is not None:
+            new_prewarmed = {}
+            self._modals_cache = modals
+            self._modals_cache_job_id = job_id
+            self._prewarmed_modals = new_prewarmed
+            self._store_lru_job(job_id, result, modals, new_prewarmed)
+            self._schedule_prewarm_modals(job_id, active_status=effective_status)
+        else:
+            # Fallback if legacy worker responded without modals
+            self._schedule_prefetch_modals(job_id)
 
     def set_progress_state(self, active_state, cancelled_reason=""):
         """Highlight the active workflow step and show cancellation reason if needed."""
@@ -329,7 +473,8 @@ class ProgressTracker(ProgressTrackerTemplate):
             form_inst = self._pop_or_build_modal(job_id, "jobcard", jobcard_data)
             outcome = alert(content=form_inst, buttons=[], dismissible=False, large=True)
             if outcome == "updated":
-                self._invalidate_modals_cache(job_id)
+                if self._modals_cache_job_id != job_id or not self._modals_cache:
+                    self.refresh_selected_job_card(force_server=True)
             else:
                 self._schedule_prewarm_single_modal(job_id, "jobcard")
         finally:
@@ -352,8 +497,7 @@ class ProgressTracker(ProgressTrackerTemplate):
             form_inst = self._pop_or_build_modal(job_id, "defects", defects_init_data)
             outcome = alert(content=form_inst, buttons=[], dismissible=False, large=True)
             if outcome == "updated":
-                self._invalidate_modals_cache(job_id)
-                self._schedule_prefetch_modals(job_id)
+                self.refresh_selected_job_card(force_server=True)
             else:
                 self._schedule_prewarm_single_modal(job_id, "defects")
         finally:
@@ -436,8 +580,7 @@ class ProgressTracker(ProgressTrackerTemplate):
             form_inst = self._pop_or_build_modal(job_id, "payment", payment_data)
             outcome = alert(content=form_inst, buttons=[], dismissible=False, large=True)
             if outcome == "updated":
-                self._invalidate_modals_cache(job_id)
-                self._schedule_prefetch_modals(job_id)
+                self.refresh_selected_job_card(force_server=True)
             else:
                 self._schedule_prewarm_single_modal(job_id, "payment")
         finally:

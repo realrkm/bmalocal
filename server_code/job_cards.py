@@ -713,10 +713,68 @@ def getWorkDoneInJobCard(jobcardID):
 # ***************************************************Progress Tracker Refresh Details Section ************************************
 
 @anvil.server.callable()
-def get_progress_tracker_data(job_id):
+def get_progress_tracker_data(job_id, include_modals=False):
     _get_current_user()
 
     with db_cursor() as cursor:
+        if include_modals:
+            modals = _fetch_modals_bundle_with_cursor(cursor, job_id)
+            jc = modals["jobcard"]
+            if not jc:
+                return None
+
+            inv_rows = modals["invoice"]
+            invoice_status = inv_rows[-1].get("Status") if inv_rows else None
+            if inv_rows:
+                raw_inv_total = sum(
+                    (r["QuantityIssued"] if isinstance(r["QuantityIssued"], (int, float)) else 1.0)
+                    * (r["Amount"] or 0.0)
+                    for r in inv_rows
+                )
+                invoice_total = f"{float(raw_inv_total):,.2f}"
+            else:
+                invoice_total = 0.0
+
+            cursor.execute(
+                "SELECT SUM(AmountPaid) FROM tbl_payments WHERE JobCardRefID = %s",
+                (job_id,),
+            )
+            pay_row = cursor.fetchone()
+            previous_payment = (
+                f"{float(pay_row[0]):,.2f}"
+                if pay_row and pay_row[0] is not None
+                else 0.0
+            )
+
+            cancelled_reason = ""
+            if jc["Status"] == "Cancel Jobcard":
+                cursor.execute(
+                    "SELECT Reason FROM tbl_cancelledjobcards WHERE AssignedJobID = %s",
+                    (job_id,),
+                )
+                reason_row = cursor.fetchone()
+                cancelled_reason = reason_row[0] if reason_row else ""
+
+            return {
+                "job_card": {
+                    "ID": jc["ID"],
+                    "ClientDetails": jc["ClientDetails"],
+                    "RegNo": jc["RegNo"],
+                    "MakeAndModel": jc["MakeAndModel"],
+                    "Mileage": jc["Mileage"],
+                    "ReceivedDate": jc["ReceivedDate"],
+                    "Status": jc["Status"],
+                },
+                "client": {
+                    "Fullname": jc["ClientFullname"],
+                    "Phone": jc["ClientPhone"],
+                },
+                "invoice_status": invoice_status,
+                "invoice_total": invoice_total,
+                "previous_payment": previous_payment,
+                "cancelled_reason": cancelled_reason,
+                "modals": modals,
+            }
 
         query = """
             SELECT
@@ -1607,7 +1665,13 @@ def _fetch_defects_form_init_data(cursor, job_id, jobcard=None):
     formatted_defects = []
     for row in results:
         instruction, notes, defects, pricedDefects, portalParts, parts, staff, sig_bytes = row
-        signature_media = anvil.BlobMedia("image/png", sig_bytes) if sig_bytes else None
+        if sig_bytes:
+            if isinstance(sig_bytes, (bytes, bytearray, memoryview)):
+                signature_src = f"data:image/png;base64,{base64.b64encode(bytes(sig_bytes)).decode('ascii')}"
+            else:
+                signature_src = sig_bytes
+        else:
+            signature_src = None
         formatted_defects.append({
             "Instruction": instruction,
             "Notes": notes,
@@ -1616,7 +1680,7 @@ def _fetch_defects_form_init_data(cursor, job_id, jobcard=None):
             "TechnicianPortalRequestedParts": portalParts if portalParts else "None",
             "RequestedParts": parts,
             "PreparedByStaff": staff,
-            "Signature": signature_media,
+            "Signature": signature_src,
         })
 
     fallback = None
@@ -1674,38 +1738,28 @@ def get_defects_form_init_data(job_id):
         return _fetch_defects_form_init_data(cursor, job_id)
 
 
-@anvil.server.callable()
-def get_progress_tracker_modals_bundle(job_id):
-    """
-    Prefetch endpoint for ProgressTracker modal buttons:
-    Returns payloads for JobCard, Defects, Quote, Confirm, Invoice, and Payment modals
-    in a single RPC round-trip AND a single DB connection / auth check.
-    """
+def _fetch_modals_bundle_with_cursor(cursor, job_id):
     from .quotations import (
         _fetch_quote_confirmation_details_by_job_id,
         _fetch_quote_details_by_job_id,
     )
     from .invoices import _fetch_invoice_details_by_job_id, _fetch_payments_details
 
-    _get_current_user()
-    job_id = _validate_positive_job_id(job_id)
-    with db_cursor() as cursor:
-        jobcard = _fetch_jobcard_form_data(cursor, job_id)
-        if not jobcard:
-            return {
-                "jobcard": None,
-                "defects": None,
-                "quote": [],
-                "confirm": [],
-                "invoice": [],
-                "payment": [],
-            }
-        defects = _fetch_defects_form_init_data(cursor, job_id, jobcard=jobcard)
-        quote = _fetch_quote_details_by_job_id(cursor, job_id)
-        confirm = _fetch_quote_confirmation_details_by_job_id(cursor, job_id)
-        invoice = _fetch_invoice_details_by_job_id(cursor, job_id)
-        payment = _fetch_payments_details(cursor, job_id)
-
+    jobcard = _fetch_jobcard_form_data(cursor, job_id)
+    if not jobcard:
+        return {
+            "jobcard": None,
+            "defects": None,
+            "quote": [],
+            "confirm": [],
+            "invoice": [],
+            "payment": [],
+        }
+    defects = _fetch_defects_form_init_data(cursor, job_id, jobcard=jobcard)
+    quote = _fetch_quote_details_by_job_id(cursor, job_id)
+    confirm = _fetch_quote_confirmation_details_by_job_id(cursor, job_id)
+    invoice = _fetch_invoice_details_by_job_id(cursor, job_id)
+    payment = _fetch_payments_details(cursor, job_id)
     return {
         "jobcard": jobcard,
         "defects": defects,
@@ -1714,6 +1768,19 @@ def get_progress_tracker_modals_bundle(job_id):
         "invoice": invoice,
         "payment": payment,
     }
+
+
+@anvil.server.callable()
+def get_progress_tracker_modals_bundle(job_id):
+    """
+    Prefetch endpoint for ProgressTracker modal buttons:
+    Returns payloads for JobCard, Defects, Quote, Confirm, Invoice, and Payment modals
+    in a single RPC round-trip AND a single DB connection / auth check.
+    """
+    _get_current_user()
+    job_id = _validate_positive_job_id(job_id)
+    with db_cursor() as cursor:
+        return _fetch_modals_bundle_with_cursor(cursor, job_id)
 
 
 # ***************************************************Verify Task  Details Section ************************************

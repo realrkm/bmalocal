@@ -83,7 +83,8 @@ def _fetch_invoice_details_by_job_id(cursor, job_id):
                 tbl_invoices.Amount, 
                 tbl_invoices.AssignedJobID,
                 tbl_invoices.Part_No,
-                tbl_carpartnames.ID AS CarPartID
+                tbl_carpartnames.ID AS CarPartID,
+                tbl_invoices.Status
             FROM 
                 (tbl_jobcarddetails 
                 INNER JOIN tbl_clientcontacts 
@@ -115,24 +116,25 @@ def _fetch_invoice_details_by_job_id(cursor, job_id):
         elif amount_val is not None:
             total_calc = round(quantity_issued_val * amount_val, 2)
 
-        result.append(
-            {
-                "Fullname": r[0],
-                "MakeAndModel": r[1],
-                "RegNo": r[2],
-                "Date": r[3],
-                "ChassisNo": r[4],
-                "EngineCode": r[5],
-                "Mileage": r[6],
-                "Item": r[7],
-                "QuantityIssued": display_quantity_issued,
-                "Amount": amount_val,
-                "AssignedJobID": r[10],
-                "PartNo": r[11],
-                "CarPartID": r[12],
-                "Total": total_calc,
-            }
-        )
+        row_dict = {
+            "Fullname": r[0],
+            "MakeAndModel": r[1],
+            "RegNo": r[2],
+            "Date": r[3],
+            "ChassisNo": r[4],
+            "EngineCode": r[5],
+            "Mileage": r[6],
+            "Item": r[7],
+            "QuantityIssued": display_quantity_issued,
+            "Amount": amount_val,
+            "AssignedJobID": r[10],
+            "PartNo": r[11],
+            "CarPartID": r[12],
+            "Total": total_calc,
+        }
+        if len(r) > 13:
+            row_dict["Status"] = r[13]
+        result.append(row_dict)
     return result
 
 

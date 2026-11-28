@@ -5,25 +5,29 @@ import anvil.users
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
-from ...EditUserAccounts import EditUserAccounts
-from ...ResetForgotPassword import ResetForgotPassword
-
-
 class RowTemplate14(RowTemplate14Template):
     def __init__(self, **properties):
         # Set Form properties and Data Bindings.
         self.init_components(**properties)
 
-        # Any code you write here will run before the form opens.
+    def _notify_parent_refresh(self):
+        curr = self.parent
+        while curr is not None:
+            if hasattr(curr, "refresh_users"):
+                curr.refresh_users(force_refresh=True)
+                return
+            curr = getattr(curr, "parent", None)
 
     def btn_Edit_click(self, **event_args):
-        """This method is called when the button is clicked"""
-        items = list(self.parent.items)
-        alert(content=EditUserAccounts(items[list(self.parent.items).index(self.item)]), buttons=[], dismissible=False, large=True)
+        """Open EditUserAccounts with zero blocking server lookups."""
+        from ...EditUserAccounts import EditUserAccounts
+        outcome = alert(content=EditUserAccounts(self.item), buttons=[], dismissible=False, large=True)
+        if outcome == "updated":
+            self._notify_parent_refresh()
 
     def btn_ResetForgotPassword_click(self, **event_args):
-        """This method is called when the button is clicked"""
-        items = list(self.parent.items)
-        alert(content=ResetForgotPassword(items[list(self.parent.items).index(self.item)]), buttons=[], dismissible=False, large=True)
+        """Open ResetForgotPassword lazily."""
+        from ...ResetForgotPassword import ResetForgotPassword
+        alert(content=ResetForgotPassword(self.item), buttons=[], dismissible=False, large=True)
 
     

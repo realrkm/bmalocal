@@ -6,6 +6,7 @@ from anvil.tables import app_tables
 import anvil.server
 import anvil.users
 import anvil.js
+from .. import ModGetData
 
 
 class EditUserAccounts(EditUserAccountsTemplate):
@@ -13,16 +14,24 @@ class EditUserAccounts(EditUserAccountsTemplate):
         # Set Form properties and Data Bindings.
         self.init_components(**properties)
 
-        # Any code you write here will run before the form opens.
-        anvil.js.call('replaceBanner')
-        
-        self.drop_down_role.items  = anvil.server.call("get_account_roles")
-        
+        roles = ModGetData.getRolesCached() or []
+        self.drop_down_role.items = roles
+
         self.label_oldemail.text = items["email"]
         self.txt_email.text = items["email"]
-        self.drop_down_role.selected_value = anvil.server.call("get_role_id", items["role"])
+
+        role_id = items.get("role_id")
+        if role_id is None and items.get("role"):
+            role_id = next((val for label, val in roles if label == items["role"]), None)
+            if role_id is None:
+                role_id = anvil.server.call_s("get_role_id", items["role"])
+        self.drop_down_role.selected_value = role_id
+
         self.drop_down_active.selected_value = items["enabled"]
-        self.text_box_login_attempts.text = anvil.server.call("getFailedAttempts", items["email"])
+        if "loginattempts" in items:
+            self.text_box_login_attempts.text = items["loginattempts"]
+        else:
+            self.text_box_login_attempts.text = anvil.server.call_s("getFailedAttempts", items["email"])
 
     def btn_Update_click(self, **event_args):
         """This method is called when the button is clicked"""
@@ -30,7 +39,7 @@ class EditUserAccounts(EditUserAccountsTemplate):
         email = self.txt_email.text.strip()
         role = self.drop_down_role.selected_value
         active = True if self.drop_down_active.selected_value == "Yes" else False
-    
+
         # Validate inputs
         if not email:
             Notification("Email is required.", title="Error", style="danger", timeout=3).show()
@@ -41,18 +50,18 @@ class EditUserAccounts(EditUserAccountsTemplate):
         if active not in [True, False]:
             Notification("Active status is required.", title="Error", style="danger", timeout=3).show()
             return
-    
+
         # Call server
+        updated = False
         try:
-            result = anvil.server.call("update_user",email=oldemail, new_email=email,enabled=active,role_id=role,)
+            result = anvil.server.call("update_user", email=oldemail, new_email=email, enabled=active, role_id=role)
+            updated = True
             alert(result, large=False)
         except Exception as e:
             alert(str(e), title="Error", large=False)
-        self.btn_Close_click()
-        get_open_form().btn_Settings_click()
+        self.raise_event("x-close-alert", value="updated" if updated else False)
 
-            
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""
-        self.raise_event("x-close-alert", value=True)
+        self.raise_event("x-close-alert", value=False)
 

@@ -5,49 +5,86 @@ import anvil.tables.query as q
 from anvil.tables import app_tables
 import anvil.server
 import anvil.users
-from ..AddLocation import AddLocation
-from ..AddSupplier import AddSupplier
-from ..EditAddNewParts import EditAddNewParts
 import anvil.js
-from ..ViewAndUpdateCarPartCategoriesForTechnicianPortal import  ViewAndUpdateCarPartCategoriesForTechnicianPortal
-from .. import ModGetData 
+from .. import ModGetData
+from .. import ModCache
+
 
 class AddNewParts(AddNewPartsTemplate):
-    def __init__(self, isPopup= False, **properties):
-
-        self.isPopup = isPopup #Instance variable, hence available in other methods
-        
-        # Set Form properties and Data Bindings.
+    def __init__(self, isPopup=False, **properties):
+        self.isPopup = isPopup
         self.init_components(**properties)
-        anvil.js.call('replaceBanner')
-        
-        # Any code you write here will run before the form opens.
-        self.data = ModGetData.getLocationAndSupplier()
-        self.drop_down_location.items = self.data["locations"]
-        self.drop_down_supplier.items = self.data["suppliers"]
+        self.data = {"locations": [], "suppliers": []}
+        self._prewarmed_edit_modal = None
+        self.set_event_handler("show", self._on_form_show)
+
+        cached = ModCache.get_cached("locations_and_suppliers")
+        if cached is not None:
+            self._apply_lookups(cached)
+        else:
+            try:
+                anvil.js.window.setTimeout(self._hydrate_lookups, 0)
+            except Exception:
+                self._hydrate_lookups()
 
         # Disable Close button when form appears under Inventory
         if self.isPopup is False:
             self.btn_Close.visible = False
-            self.btn_Close.enabled=False
-            self.btn_EditNewPart.visible=True
+            self.btn_Close.enabled = False
+            self.btn_EditNewPart.visible = True
             self.btn_EditNewPart.enabled = True
-        else: #Display Close button and hide Edit button when form is called in MapBarcodePartNo as a popup 
-            self.btn_EditNewPart.visible=False
+        else:  # Display Close button and hide Edit button when form is called in MapBarcodePartNo as a popup
+            self.btn_EditNewPart.visible = False
             self.btn_EditNewPart.enabled = False
             self.btn_Close.visible = True
-            self.btn_Close.enabled= True
-            
+            self.btn_Close.enabled = True
+
+    def _apply_lookups(self, lookups):
+        self.data = lookups or {"locations": [], "suppliers": []}
+        self.drop_down_location.items = self.data.get("locations", [])
+        self.drop_down_supplier.items = self.data.get("suppliers", [])
+
+    def _hydrate_lookups(self):
+        try:
+            with anvil.server.no_loading_indicator:
+                lookups = ModGetData.getLocationAndSupplier()
+            self._apply_lookups(lookups)
+        except Exception:
+            pass
+
+    def _prewarm_edit_modal(self):
+        if self.isPopup or self._prewarmed_edit_modal is not None:
+            return
+        try:
+            from ..EditAddNewParts import EditAddNewParts
+            self._prewarmed_edit_modal = EditAddNewParts()
+        except Exception:
+            self._prewarmed_edit_modal = None
+
+    def _on_form_show(self, **event_args):
+        cached = ModCache.get_cached("locations_and_suppliers")
+        if cached is not None and cached != self.data:
+            self._apply_lookups(cached)
+        if not self.isPopup and self._prewarmed_edit_modal is None:
+            try:
+                anvil.js.window.setTimeout(self._prewarm_edit_modal, 30)
+            except Exception:
+                pass
+
     def refresh(self, **event_args):
         self.set_event_handler("x-refresh", self.refresh)
-        
+
     def btn_AddLocation_click(self, **event_args):
         """This method is called when the button is clicked"""
+        from ..AddLocation import AddLocation
         alert(content=AddLocation(), buttons=[], dismissible=False, large=True)
+        self._hydrate_lookups()
 
     def btn_AddSupplier_click(self, **event_args):
         """This method is called when the button is clicked"""
+        from ..AddSupplier import AddSupplier
         alert(content=AddSupplier(), buttons=[], dismissible=False, large=True)
+        self._hydrate_lookups()
 
     def btn_SaveAndNew_click(self, **event_args):
         """This method is called when the button is clicked"""
@@ -139,8 +176,17 @@ class AddNewParts(AddNewPartsTemplate):
             self.clear_form_fields()       
 
     def btn_EditNewPart_click(self, **event_args):
-        """This method is called when the button is clicked"""
-        alert(content=EditAddNewParts(), buttons=[], dismissible=False, large=True)
+        """Open pre-warmed EditAddNewParts modal immediately."""
+        modal = self._prewarmed_edit_modal
+        self._prewarmed_edit_modal = None
+        if modal is None:
+            from ..EditAddNewParts import EditAddNewParts
+            modal = EditAddNewParts()
+        alert(content=modal, buttons=[], dismissible=False, large=True)
+        try:
+            anvil.js.window.setTimeout(self._prewarm_edit_modal, 15)
+        except Exception:
+            pass
 
     def clear_form_fields(self):
         """Reset all form fields to blank/initial values"""
@@ -154,15 +200,16 @@ class AddNewParts(AddNewPartsTemplate):
         self.txtSellingPrice.text = ""
         self.txtSellingDiscountedPrice.text = ""
         self.txtReorderLevel.text = ""
-        self.drop_down_location.items = self.data["locations"]
-        self.drop_down_supplier.items = self.data["suppliers"]
+        self.drop_down_location.items = self.data.get("locations", [])
+        self.drop_down_supplier.items = self.data.get("suppliers", [])
         self.refresh()
         self.btn_SaveAndNew.enabled = True
 
     def btn_Close_click(self, **event_args):
         """This method is called when the button is clicked"""
-        self.raise_event('x-close-alert', value = True)
+        self.raise_event('x-close-alert', value=True)
 
     def btn_ViewCarPartCategories_click(self, **event_args):
         """This method is called when the button is clicked"""
-        alert(content=ViewAndUpdateCarPartCategoriesForTechnicianPortal(),buttons=[], dismissible=False, large=True)
+        from ..ViewAndUpdateCarPartCategoriesForTechnicianPortal import ViewAndUpdateCarPartCategoriesForTechnicianPortal
+        alert(content=ViewAndUpdateCarPartCategoriesForTechnicianPortal(), buttons=[], dismissible=False, large=True)

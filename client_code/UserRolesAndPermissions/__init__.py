@@ -5,15 +5,26 @@ import anvil.users
 import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
-from ..Roles import Roles
-from ..ViewRoles import ViewRoles
 import anvil.js
+from .. import ModGetData
+from .. import ModCache
+
 
 class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
     def __init__(self, **properties):
         self.init_components(**properties)
-        anvil.js.call('replaceBanner')
-        self.drop_down_selectrole.items = anvil.server.call("getRoles")
+        self._prewarmed_roles_modal = None
+        self._prewarmed_view_modal = None
+        self.set_event_handler("show", self._on_form_show)
+
+        cached_roles = ModCache.get_cached("roles_dropdown")
+        if cached_roles is not None:
+            self.drop_down_selectrole.items = cached_roles
+        else:
+            try:
+                anvil.js.window.setTimeout(lambda: self.refresh_roles(force_refresh=False), 0)
+            except Exception:
+                self.refresh_roles(force_refresh=False)
 
         # Set checkbox tags
         self.chk_contact.tag = "CONTACT"
@@ -126,10 +137,50 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
                 return section
         return None
 
+    def refresh_roles(self, force_refresh=False):
+        try:
+            with anvil.server.no_loading_indicator:
+                if not force_refresh and ModCache.get_cached("roles_dropdown") is None:
+                    ModGetData.warmSettingsCaches()
+                self.drop_down_selectrole.items = ModGetData.getRolesCached(force_refresh=force_refresh) or []
+            self._prewarmed_roles_modal = None
+            self._prewarmed_view_modal = None
+        except Exception:
+            pass
+
+    def _prewarm_modals(self):
+        try:
+            if self._prewarmed_roles_modal is None:
+                from ..Roles import Roles
+                self._prewarmed_roles_modal = Roles()
+            if self._prewarmed_view_modal is None:
+                from ..ViewRoles import ViewRoles
+                self._prewarmed_view_modal = ViewRoles()
+        except Exception:
+            pass
+
+    def _on_form_show(self, **event_args):
+        cached_roles = ModCache.get_cached("roles_dropdown")
+        if cached_roles is not None and self.drop_down_selectrole.items != cached_roles:
+            self.drop_down_selectrole.items = cached_roles
+        try:
+            anvil.js.window.setTimeout(self._prewarm_modals, 20)
+        except Exception:
+            pass
+
     def btn_AddRole_click(self, **event_args):
-        alert(content=Roles(), buttons=[], dismissible=False, large=True)
-        #Update dropdown component
-        self.drop_down_selectrole.items = anvil.server.call_s("getRoles")
+        modal = self._prewarmed_roles_modal
+        self._prewarmed_roles_modal = None
+        if modal is None:
+            from ..Roles import Roles
+            modal = Roles()
+        outcome = alert(content=modal, buttons=[], dismissible=False, large=True)
+        if outcome == "updated":
+            self.refresh_roles(force_refresh=True)
+        try:
+            anvil.js.window.setTimeout(self._prewarm_modals, 15)
+        except Exception:
+            pass
 
     def btn_UpdateRoleAndPermissions_click(self, **event_args):
         role_id = self.drop_down_selectrole.selected_value
@@ -187,6 +238,8 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
 
         # Send to server
         anvil.server.call("save_user_permissions", role_id, selected_permissions)
+        ModCache.invalidate_key("roles_permissions_html")
+        self._prewarmed_view_modal = None
         Notification("Permissions saved successfully", title="Success", style="success", timeout=3).show()
 
         # Reload Form
@@ -194,16 +247,24 @@ class UserRolesAndPermissions(UserRolesAndPermissionsTemplate):
 
 
     def btn_ViewRoles_click(self, **event_args):
-        """This method is called when the button is clicked"""
-        alert(content=ViewRoles(), buttons=[], dismissible=False, large=True)
+        """Open pre-warmed ViewRoles modal immediately."""
+        modal = self._prewarmed_view_modal
+        self._prewarmed_view_modal = None
+        if modal is None:
+            from ..ViewRoles import ViewRoles
+            modal = ViewRoles()
+        alert(content=modal, buttons=[], dismissible=False, large=True)
+        try:
+            anvil.js.window.setTimeout(self._prewarm_modals, 15)
+        except Exception:
+            pass
 
     def refresh(self, **event_args):
         self.set_event_handler("x-refresh", self.refresh)
-        
+
     def reset_form(self):
         """Called when resetting the form"""
-        # Reload dropdown
-        self.drop_down_selectrole.items = anvil.server.call("getRoles")
+        self.drop_down_selectrole.items = ModGetData.getRolesCached() or []
         self.drop_down_selectrole.selected_value = None
 
         # Clear all main + sub checkboxes

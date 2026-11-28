@@ -6,33 +6,68 @@ import anvil.tables as tables
 import anvil.tables.query as q
 from anvil.tables import app_tables
 from anvil.js import window, report_exceptions
-from ..StockTakingTip import StockTakingTip 
-from ..MapBarCodePartNo import MapBarCodePartNo
+
 
 class StockTake(StockTakeTemplate):
     def __init__(self, **properties):
         self.init_components(**properties)
-        alert(content=StockTakingTip(), buttons=[], dismissible=False, large=True)
         self.repeating_panel_1.items = []   # start with empty list
-        
+        self._tip_shown = False
+        self._prewarmed_tip = None
+
         # Wrap callback so errors show in Anvil logs
         @report_exceptions
         def _display_result_from_js(result_text):
-            # Show result directly in txt_barcode
             self.txt_BarcodePartNo.text = result_text
             self.add_part(result_text)
-
-            # Auto-stop scanner after first successful scan
             if hasattr(window, "stopScanner"):
                 window.stopScanner()
 
-        # Expose callback to JS
-        window.display_result = _display_result_from_js
         self._js_display_ref = _display_result_from_js
+        self.set_event_handler("show", self.form_show)
+        self.set_event_handler("hide", self.form_hide)
+        try:
+            window.setTimeout(self._prewarm_tip_modal, 15)
+        except Exception:
+            pass
+
+    def _prewarm_tip_modal(self):
+        if self._tip_shown or self._prewarmed_tip is not None:
+            return
+        try:
+            from ..StockTakingTip import StockTakingTip
+            self._prewarmed_tip = StockTakingTip()
+        except Exception:
+            self._prewarmed_tip = None
+
+    def _open_tip_if_needed(self):
+        if self._tip_shown:
+            return
+        self._tip_shown = True
+        tip = self._prewarmed_tip
+        self._prewarmed_tip = None
+        if tip is None:
+            from ..StockTakingTip import StockTakingTip
+            tip = StockTakingTip()
+        alert(content=tip, buttons=[], dismissible=False, large=True)
+
+    def form_show(self, **event_args):
+        """Attach scanner callback and show StockTakingTip once StockTake is mounted."""
+        try:
+            window.display_result = self._js_display_ref
+        except Exception:
+            pass
+        if not self._tip_shown:
+            try:
+                window.setTimeout(self._open_tip_if_needed, 0)
+            except Exception:
+                self._open_tip_if_needed()
 
     def form_hide(self, **event_args):
         """Clean up when form closes"""
         try:
+            if hasattr(window, "stopScanner"):
+                window.stopScanner()
             window.display_result = None
         except Exception:
             pass
@@ -65,6 +100,7 @@ class StockTake(StockTakeTemplate):
     
         if not part_info:
             # If not found in database → open mapping form
+            from ..MapBarCodePartNo import MapBarCodePartNo
             alert(MapBarCodePartNo(barcode_or_partno=value), buttons=[], dismissible=False, large=True)
             #When MapBarCodePartNo is closed without mapping, the form keeps appearing, hence need to comment below code 
             #self.btn_AddPart_click() #Display the added barcode item in the repeating panel

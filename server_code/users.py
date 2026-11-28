@@ -3,13 +3,7 @@ from ._common import *
 # *************************************************** Users Section ************************************
 
 
-@anvil.server.callable()
-def getUsers():
-    _require_role("Administrator")
-    with db_cursor() as cursor:
-        cursor.execute("SELECT ID, Roles FROM tbl_roles")
-        roles_by_id = {row[0]: row[1] for row in cursor.fetchall()}
-
+def _format_users_rows(roles_by_id):
     rows = app_tables.users.search()
     result = []
 
@@ -21,18 +15,28 @@ def getUsers():
         return None
 
     for i, row in enumerate(rows, start=1):
+        role_id = row["role_id"]
         result.append(
             {
                 "No": i,
                 "email": row["email"],
                 "last_login": fmt_date(row["last_login"]),
                 "signed_up": fmt_date(row["signed_up"]),
-                "role": roles_by_id.get(row["role_id"]),
+                "role_id": role_id,
+                "role": roles_by_id.get(role_id),
                 "enabled": "Yes" if row["enabled"] else "No",
                 "loginattempts": row["n_password_failures"],
             }
         )
     return result
+
+
+@anvil.server.callable()
+def getUsers():
+    _require_role("Administrator")
+    roles_pairs = getRoles()
+    roles_by_id = {role_id: role_name for role_name, role_id in roles_pairs}
+    return _format_users_rows(roles_by_id)
 
 
 # *************************************************** Roles Section ************************************
@@ -71,7 +75,8 @@ def duplicateRole(role, description):
         query = "INSERT INTO tbl_roles (Roles, Description) VALUES (%s, %s)"
         cursor.execute(query, (role, description))
         new_id = cursor.lastrowid
-    invalidate_lookup_cache("roles_list", "roles_dropdown")
+    invalidate_lookup_cache("roles_list", "roles_dropdown", "roles_permissions_html")
+    publish_realtime_event("permissions", "role_created", entity_id=new_id)
     return {
         "status": "inserted",
         "id": new_id,
@@ -95,30 +100,23 @@ def save_user_permissions(role_id, permissions_dict):
     _require_role("Administrator")
     global _ROLE_PERMS_CACHE
     _ROLE_PERMS_CACHE.pop(role_id, None)
-    with db_cursor() as cursor:
-        # Delete old permissions first
-        cursor.execute("DELETE FROM tbl_userpermissions WHERE RoleID = %s", (role_id,))
+    params = []
+    for section, data in permissions_dict.items():
+        params.append((role_id, section, None, int(data["main"])))
+        for sub, allowed in data["subs"].items():
+            params.append((role_id, section, sub, int(allowed)))
 
-        # Insert new permissions
-        for section, data in permissions_dict.items():
-            # Save main section permission
-            cursor.execute(
+    with db_cursor() as cursor:
+        cursor.execute("DELETE FROM tbl_userpermissions WHERE RoleID = %s", (role_id,))
+        if params:
+            cursor.executemany(
                 """
                 INSERT INTO tbl_userpermissions (RoleID, Section, SubSection, Allowed)
                 VALUES (%s, %s, %s, %s)
                 """,
-                (role_id, section, None, int(data["main"])),
+                params,
             )
-
-            # Save each sub permission
-            for sub, allowed in data["subs"].items():
-                cursor.execute(
-                    """
-                    INSERT INTO tbl_userpermissions (RoleID, Section, SubSection, Allowed)
-                    VALUES (%s, %s, %s, %s)
-                    """,
-                    (role_id, section, sub, int(allowed)),
-                )
+    invalidate_lookup_cache("roles_permissions_html")
     publish_realtime_event("permissions", "updated", entity_id=role_id)
 
 
@@ -183,14 +181,7 @@ def get_user_session_context(role_id=None, *args, **kwargs):
 # *************************************************** Edit User Account Section ************************************
 @anvil.server.callable()
 def get_account_roles():
-    _get_current_user()
-    with db_cursor() as cursor:
-        query = "SELECT ID, Roles FROM tbl_roles ORDER BY Roles ASC"
-        cursor.execute(query)
-        rows = cursor.fetchall()
-
-    # Return as list of tuples (label, value) for dropdown
-    return [(row[1], row[0]) for row in rows]
+    return getRoles()
 
 
 @anvil.server.callable()
@@ -239,6 +230,7 @@ def update_user(email, new_email, enabled, role_id):
     if updates:
         user.update(**updates)
 
+    publish_realtime_event("users", "updated", entity_id=new_email or email)
     return "User updated successfully."
 
 
@@ -283,15 +275,14 @@ def reset_password(email, new_password):
 
     bcrypt = get_bcrypt()
     user["password_hash"] = hash_password(new_password, bcrypt.gensalt())
+    publish_realtime_event("users", "password_reset", entity_id=email)
     return "Password reset successfully."
 
 
 # *************************************************** Get Roles And Permissions In HTML Format Section ************************************
 
 
-@anvil.server.callable()
-def get_roles_permissions_html():
-    _get_current_user()
+def _build_roles_permissions_html():
     html = """
     <style>
       body {
@@ -368,7 +359,6 @@ def get_roles_permissions_html():
         cursor.execute(query)
         rows = cursor.fetchall()
 
-    # Build HTML hierarchy
     current_role = None
     current_section = None
 
@@ -382,14 +372,12 @@ def get_roles_permissions_html():
             html += f'<tr><td class="section" colspan="2">{section}</td></tr>'
             current_section = section
 
-        # Handle sections without subsections
         if section in sections_without_subs:
             if int(allowed) == 1:
                 html += '<tr><td class="allowed">Allowed</td><td><span style="color:green;">&#10004;</span></td></tr>'
             else:
                 html += '<tr><td class="allowed">Allowed</td><td><span style="color:red;">&#10008;</span></td></tr>'
         else:
-            # Normal subsection logic
             if subsection and subsection != "None":
                 html += f'<tr><td class="subsection">{subsection}</td>'
                 if int(allowed) == 1:
@@ -399,6 +387,38 @@ def get_roles_permissions_html():
 
     html += "</table>"
     return html
+
+
+@anvil.server.callable()
+def get_roles_permissions_html():
+    _get_current_user()
+    return cached_lookup("roles_permissions_html", _build_roles_permissions_html, ttl_seconds=300)
+
+
+@anvil.server.callable()
+def get_settings_bootstrap():
+    """Single-round-trip bootstrap for Settings (UserAccounts + UserRolesAndPermissions + modals)."""
+    user = _get_current_user()
+    roles = getRoles()
+    roles_by_id = {role_id: role_name for role_name, role_id in roles}
+    roles_list = listRoles()
+    roles_html = get_roles_permissions_html()
+
+    users_data = None
+    try:
+        user_role_id = user["role_id"]
+    except Exception:
+        user_role_id = None
+    if roles_by_id.get(user_role_id) == "Administrator":
+        users_data = _format_users_rows(roles_by_id)
+
+    return {
+        "roles": roles,
+        "roles_list": roles_list,
+        "roles_html": roles_html,
+        "users": users_data,
+    }
+
 
 __all__ = [
     'getUsers',
@@ -417,6 +437,7 @@ __all__ = [
     '_validate_password_strength',
     'reset_password',
     'get_roles_permissions_html',
+    'get_settings_bootstrap',
 ]
 
 from . import BMALocal as _compatibility_facade

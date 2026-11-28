@@ -8,11 +8,12 @@ from anvil.tables import app_tables
 import anvil.js
 
 
+from .. import ModGetData
+
+
 class DisplayRolesAndPermissions(DisplayRolesAndPermissionsTemplate):
     def __init__(self, **properties):
         # Set Form properties and Data Bindings.
         self.init_components(**properties)
-
-        # Any code you write here will run before the form opens.
-        anvil.js.call('replaceBanner')
-        self.html = anvil.server.call("get_roles_permissions_html")
+        with anvil.server.no_loading_indicator:
+            self.html = ModGetData.getRolesPermissionsHtmlCached() or ""

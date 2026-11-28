@@ -8,12 +8,22 @@ from anvil import *
 home_form = None
 _revision_instance = None
 _revision_perms_snapshot = None
+_inventory_instance = None
+_inventory_perms_snapshot = None
+_settings_instance = None
+_settings_perms_snapshot = None
 
 
 def clear_cached_forms():
     global _revision_instance, _revision_perms_snapshot
+    global _inventory_instance, _inventory_perms_snapshot
+    global _settings_instance, _settings_perms_snapshot
     _revision_instance = None
     _revision_perms_snapshot = None
+    _inventory_instance = None
+    _inventory_perms_snapshot = None
+    _settings_instance = None
+    _settings_perms_snapshot = None
 
 
 def prewarm_Revision(permissions):
@@ -25,6 +35,28 @@ def prewarm_Revision(permissions):
     _revision_instance = Revision(permissions)
     _revision_perms_snapshot = rev_perms
     return _revision_instance
+
+
+def prewarm_Inventory(permissions):
+    global _inventory_instance, _inventory_perms_snapshot
+    inv_perms = (permissions or {}).get("INVENTORY")
+    if _inventory_instance is not None and _inventory_perms_snapshot == inv_perms:
+        return _inventory_instance
+    from ..Inventory import Inventory
+    _inventory_instance = Inventory(permissions)
+    _inventory_perms_snapshot = inv_perms
+    return _inventory_instance
+
+
+def prewarm_Settings(permissions):
+    global _settings_instance, _settings_perms_snapshot
+    set_perms = (permissions or {}).get("SETTINGS")
+    if _settings_instance is not None and _settings_perms_snapshot == set_perms:
+        return _settings_instance
+    from ..Settings import Settings
+    _settings_instance = Settings(permissions)
+    _settings_perms_snapshot = set_perms
+    return _settings_instance
 
 def get_form():
     if home_form is None:
@@ -83,9 +115,9 @@ def go_Payment():
 
 #Load Inventory Form
 def go_Inventory(permissions):
-    from ..Inventory import Inventory
     form = get_form()
-    form.load_component(Inventory(permissions))
+    inv_form = prewarm_Inventory(permissions)
+    form.load_component(inv_form)
     
   
 #Load Report Form
@@ -102,9 +134,9 @@ def go_PartsHub(permissions):
 
 #Load Settings Form
 def go_Settings(permissions):
-    from ..Settings import Settings
     form = get_form()
-    form.load_component(Settings(permissions))
+    settings_form = prewarm_Settings(permissions)
+    form.load_component(settings_form)
 
 #Load FAQs Form
 def go_FAQs():

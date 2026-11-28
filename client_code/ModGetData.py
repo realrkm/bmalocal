@@ -15,7 +15,7 @@ _notification_shown_at = {}  # title -> JS timestamp
 def getLocationAndSupplier(force_refresh=False):
     return ModCache.get_or_fetch(
         "locations_and_suppliers",
-        lambda: anvil.server.call("getLocationAndSupplier"),
+        lambda: anvil.server.call_s("getLocationAndSupplier"),
         topic="inventory",
         ttl_seconds=300,
         force_refresh=force_refresh,
@@ -50,6 +50,65 @@ def getInterimStaffCached(force_refresh=False):
         ttl_seconds=300,
         force_refresh=force_refresh,
     )
+
+
+def getRolesCached(force_refresh=False):
+    return ModCache.get_or_fetch(
+        "roles_dropdown",
+        lambda: anvil.server.call_s("getRoles"),
+        topic="permissions",
+        ttl_seconds=300,
+        force_refresh=force_refresh,
+    )
+
+
+def getRolesListCached(force_refresh=False):
+    return ModCache.get_or_fetch(
+        "roles_list",
+        lambda: anvil.server.call_s("listRoles"),
+        topic="permissions",
+        ttl_seconds=300,
+        force_refresh=force_refresh,
+    )
+
+
+def getRolesPermissionsHtmlCached(force_refresh=False):
+    return ModCache.get_or_fetch(
+        "roles_permissions_html",
+        lambda: anvil.server.call_s("get_roles_permissions_html"),
+        topic="permissions",
+        ttl_seconds=300,
+        force_refresh=force_refresh,
+    )
+
+
+def getUsersCached(force_refresh=False):
+    return ModCache.get_or_fetch(
+        "users_list",
+        lambda: anvil.server.call_s("getUsers"),
+        topic="users",
+        ttl_seconds=180,
+        force_refresh=force_refresh,
+    )
+
+
+def warmSettingsCaches(force_refresh=False):
+    if not force_refresh and (
+        ModCache.get_cached("roles_dropdown") is not None
+        and ModCache.get_cached("users_list") is not None
+    ):
+        return
+    bundle = anvil.server.call_s("get_settings_bootstrap")
+    if not bundle:
+        return
+    if bundle.get("roles") is not None:
+        ModCache.set_cached("roles_dropdown", bundle["roles"], topic="permissions", ttl_seconds=300)
+    if bundle.get("roles_list") is not None:
+        ModCache.set_cached("roles_list", bundle["roles_list"], topic="permissions", ttl_seconds=300)
+    if bundle.get("roles_html") is not None:
+        ModCache.set_cached("roles_permissions_html", bundle["roles_html"], topic="permissions", ttl_seconds=300)
+    if bundle.get("users") is not None:
+        ModCache.set_cached("users_list", bundle["users"], topic="users", ttl_seconds=180)
 
 def _show_error(message, title="", timeout=5):
     """

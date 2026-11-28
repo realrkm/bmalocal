@@ -163,7 +163,16 @@ class Main(MainTemplate):
             except Exception:
                 pass
 
+        def _warm_booking(_evt=None):
+            try:
+                with anvil.server.no_loading_indicator:
+                    ModGetData.getBookingsCached()
+                ModNavigation.prewarm_Booking()
+            except Exception:
+                pass
+
         _bind_btn("btn_Contact", _warm_contact)
+        _bind_btn("btn_Booking", _warm_booking)
         _bind_btn("btn_Revision", _warm_revision)
         _bind_btn("btn_Inventory", _warm_inventory)
         _bind_btn("btn_Settings", _warm_settings)

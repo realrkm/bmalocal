@@ -72,6 +72,20 @@ def warmContactsCaches(permissions=None, force_refresh=False):
         getToolkitsCached(force_refresh=force_refresh)
 
 
+def peekBookingsCached():
+    return ModCache.get_cached("upcoming_bookings")
+
+
+def getBookingsCached(force_refresh=False):
+    return ModCache.get_or_fetch(
+        "upcoming_bookings",
+        lambda: _call_silent("getBookingDetails"),
+        topic="bookings",
+        ttl_seconds=120,
+        force_refresh=force_refresh,
+    )
+
+
 def getInterimStaffCached(force_refresh=False):
     return ModCache.get_or_fetch(
         "interim_staff",

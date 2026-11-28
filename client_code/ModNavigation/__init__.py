@@ -8,6 +8,7 @@ from anvil import *
 home_form = None
 _contacts_instance = None
 _contacts_perms_snapshot = None
+_booking_instance = None
 _revision_instance = None
 _revision_perms_snapshot = None
 _inventory_instance = None
@@ -20,12 +21,14 @@ _report_perms_snapshot = None
 
 def clear_cached_forms():
     global _contacts_instance, _contacts_perms_snapshot
+    global _booking_instance
     global _revision_instance, _revision_perms_snapshot
     global _inventory_instance, _inventory_perms_snapshot
     global _settings_instance, _settings_perms_snapshot
     global _report_instance, _report_perms_snapshot
     _contacts_instance = None
     _contacts_perms_snapshot = None
+    _booking_instance = None
     _revision_instance = None
     _revision_perms_snapshot = None
     _inventory_instance = None
@@ -34,6 +37,15 @@ def clear_cached_forms():
     _settings_perms_snapshot = None
     _report_instance = None
     _report_perms_snapshot = None
+
+
+def prewarm_Booking():
+    global _booking_instance
+    if _booking_instance is not None:
+        return _booking_instance
+    from ..Booking import Booking
+    _booking_instance = Booking()
+    return _booking_instance
 
 
 def prewarm_Contacts(permissions):
@@ -111,9 +123,9 @@ def go_JobCard():
 
 #Load Booking Form
 def go_Booking():
-    from ..Booking import Booking
     form = get_form()
-    form.load_component(Booking())
+    booking_form = prewarm_Booking()
+    form.load_component(booking_form)
     
 #Load Workflowt Form
 def go_Workflow(permissions):

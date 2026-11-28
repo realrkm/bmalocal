@@ -30,6 +30,9 @@ This register documents key `@anvil.server.callable` endpoints, their input/outp
 | `get_toolkits` | `value: int \| None = None` | `list[dict]` (ID, ToolkitName, Cost) | Any Authenticated | `Tehnicians`, `EditTechnician`, `EditToolkit`, `ModGetData` | [x] | [ ] |
 | `save_toolkit_data` | `name: str, amount: float` | `None` (invalidates cache + publishes `contacts` event) | Any Authenticated | `Toolkits` | [x] | [ ] |
 | `update_toolkit_data` | `name: str, amount: float, toolkit_id: int` | `None` (invalidates cache + publishes `contacts` event) | Any Authenticated | `EditToolkit` | [x] | [ ] |
+| `getBookingDetails` | `None` | `list[dict]` (No, ID, Fullname, Phone, RegNo, Period, FormattedSchedule, Details) | Any Authenticated | `Booking`, `ModGetData` | [x] | [ ] |
+| `saveBookingDetails` | `customer_id: int, regno: str, period, details: str` | `bool` (invalidates cache + publishes `bookings` event) | Any Authenticated | `Booking` | [x] | [ ] |
+| `updateAppointmentSent` | `booking_id: int` | `None` (invalidates cache + publishes `bookings` event) | Any Authenticated | `Booking.RowTemplate24` | [x] | [ ] |
 | `get_stats` | `user_agent_string: str` | `dict` (client geolocation/OS) | Public / Anvil context | `Launcher`, `Main` | [x] | [ ] |
 
 ---
